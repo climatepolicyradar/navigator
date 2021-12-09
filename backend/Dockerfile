@@ -7,7 +7,13 @@ WORKDIR /app
 RUN apt update && \
     apt install -y postgresql-client
 
-COPY requirements.txt ./
-RUN pip install --no-cache-dir -r requirements.txt
+# Install pip and poetry
+RUN pip install --upgrade pip
+RUN pip install "poetry==1.1.8"
 
+# Copy files to image
 COPY . .
+
+# Install python dependencies using poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install

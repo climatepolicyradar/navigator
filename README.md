@@ -1,42 +1,35 @@
-# navigator
-
-## Features
-
-- **FastAPI** with Python 3.8
-- **React 16** with Typescript, Redux, and react-router
-- Postgres
-- SqlAlchemy with Alembic for migrations
-- Pytest for backend tests
-- Jest for frontend tests
-- Perttier/Eslint (with Airbnb style guide)
-- Docker compose for easier development
-- Nginx as a reverse proxy to allow backend and frontend on the same port
+# Climate Policy Radar Navigator
 
 ## Development
 
 The only dependencies for this project should be docker and docker-compose.
 
-### Quick Start
+### Development using vscode and containers.
 
-Starting the project with hot-reloading enabled
-(the first time it will take a while):
-
-```bash
-docker-compose up -d
-```
-
-To run the alembic migrations (for the users table):
+For development inside docker containers using vscode, run the following command:
 
 ```bash
-docker-compose run --rm backend alembic upgrade head
+make build
 ```
+
+This will build and bring up the containers, run database migrations and populate the database with initial data.
 
 And navigate to http://localhost:8000
 
-_Note: If you see an Nginx error at first with a `502: Bad Gateway` page, you may have to wait for webpack to build the development server (the nginx container builds much more quickly)._
-
 Auto-generated docs will be at
 http://localhost:8000/api/docs
+
+Open the project locally in vscode. It should detect that the project is configured to use a dev container and prompt to open the project in the container.
+
+### Local development
+
+For development on your local machine not using containers
+
+```bash
+make dev_install
+```
+
+This will install pip, poetry, git pre-commit hooks and set up a poetry environment for the backend.
 
 ### Rebuilding containers:
 
@@ -128,32 +121,4 @@ Or for a specific service:
 
 ```
 docker-compose logs -f name_of_service # frontend|backend|db
-```
-
-## Project Layout
-
-```
-backend
-└── app
-    ├── alembic
-    │   └── versions # where migrations are located
-    ├── api
-    │   └── api_v1
-    │       └── endpoints
-    ├── core    # config
-    ├── db      # db models
-    ├── tests   # pytest
-    └── main.py # entrypoint to backend
-
-frontend
-└── public
-└── src
-    ├── components
-    │   └── Home.tsx
-    ├── config
-    │   └── index.tsx   # constants
-    ├── __tests__
-    │   └── test_home.tsx
-    ├── index.tsx   # entrypoint
-    └── App.tsx     # handles routing
 ```
