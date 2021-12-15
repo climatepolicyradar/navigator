@@ -1,9 +1,9 @@
 # Node dependencies
-/app/node_modules
+/frontend/node_modules
 
 # next.js
-/app/.next/
-/app/out/
+/frontend/.next/
+/frontend/out/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
