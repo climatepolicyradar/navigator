@@ -33,6 +33,8 @@ services:
     environment:
       PYTHONPATH: .
       DATABASE_URL: ${DATABASE_URL}
+    env_file:
+      - .env
     depends_on:
       - "postgres"
 
