@@ -4,6 +4,29 @@
 
 The only dependencies for this project should be docker and docker-compose.
 
+### Environment variables
+To set up a local or docker-based development environment, you need to set up a few environment variables first. To files are provided for reference:
+
+- `.env.template` - template environment file showing required environment variables
+- `.env.example`  - example environment file with example values for each of the environment variables.
+
+Create a `.env` file in the root of the project by copying the `.env.template` file, or using the example file for reference. The following variables should be specified:
+
+#### Postgres connection settings
+
+The following settings will be used when setting up the Postgres server, and by the app to access the database.
+
+- POSTGRES_USER - name of user to connect to Postgres server
+- POSTGRES_PASSWORD - password of user to connect to Postgres server
+- DATABASE_URL - postgres connection string - should not need to be changed for a local environment
+
+#### Admin user settings
+
+The following superuser account will be created in the navigator database.
+
+- SUPERUSER_EMAIL - email address of a superuser account to create to access user admin in the app
+- SUPERUSER_PASSWORD - password for superuser account
+
 ### Development using vscode and containers.
 
 For development inside docker containers using vscode, run the following command:
@@ -19,7 +42,14 @@ And navigate to http://localhost:8000
 Auto-generated docs will be at
 http://localhost:8000/api/docs
 
-Open the project locally in vscode. It should detect that the project is configured to use a dev container and prompt to open the project in the container.
+#### VSCode development container
+
+Open the project locally in vscode. It should detect that the project is configured to use a dev container 
+and prompt to open the project in the container. Note that it is configured for backend development. If you wish to use the front end container for development instead, you need to update `.devcontainer/devcontainer.json` with the following setting:
+
+```
+"service": "frontend"
+```
 
 ### Local development
 
