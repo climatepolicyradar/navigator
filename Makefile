@@ -3,7 +3,6 @@ git_hooks:
 	cd backend/; poetry run pre-commit install --install-hooks
 
 poetry_environment:
-	cd backend/; poetry config virtualenvs.create false
 	cd backend/; poetry install
 
 start_containers:
