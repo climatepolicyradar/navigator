@@ -42,6 +42,7 @@ services:
     build:
       context: frontend
       dockerfile: Dockerfile
+    command: npm run start
     stdin_open: true
     volumes:
       - './frontend:/app:cached'

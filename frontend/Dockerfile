@@ -9,8 +9,6 @@ RUN npm install
 WORKDIR /app
 ADD . /app
 
-EXPOSE 8000
-EXPOSE 35729
+RUN npm build
 
-ENTRYPOINT ["/bin/bash", "/app/run.sh"]
-CMD ["start"]
+EXPOSE 8000
