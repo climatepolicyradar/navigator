@@ -37,6 +37,17 @@ build: start_containers
 	sleep 5;
 	# Run migrations
 	make migrations_docker
-	
 
-	
+stop:
+	docker-compose stop
+
+test_frontend:
+	set -e
+	docker-compose run frontend test
+
+test_backend:
+	docker-compose run backend pytest
+
+test:
+	make test_backend
+	make test_frontend
