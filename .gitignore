@@ -1,5 +1,9 @@
+#temporary
+/frontend-old
+
 # Node dependencies
 /frontend/node_modules
+/frontend-old/node_modules
 
 # next.js
 /frontend/.next/
