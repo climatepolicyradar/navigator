@@ -3,7 +3,10 @@ name: run-tests
 on: 
   push:
     branches:
-      - feat-141-automatic-unit-tests
+      - main
+  pull_request:
+    branches:
+      - main
 
 jobs:
   test:
@@ -11,7 +14,7 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Build the stack
+      - name: Build docker-compose stack using .env.example
         run: cp .env.example .env && docker-compose up -d
       - name: Run backend tests
         run: make test_backend
