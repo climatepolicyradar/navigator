@@ -1,0 +1,17 @@
+name: run-tests
+
+on: 
+  push:
+    branches:
+      - feat-141-automatic-unit-tests
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build the stack
+        run: cp .env.example .env && docker-compose up -d
+      - name: Run backend tests
+        run: make test_backend
