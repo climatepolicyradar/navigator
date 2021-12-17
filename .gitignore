@@ -1,5 +1,13 @@
+#temporary
+/frontend-old
+
 # Node dependencies
 /frontend/node_modules
+/frontend-old/node_modules
+
+#front end testing
+/frontend/cypress/screenshots
+/frontend/cypress/videos
 
 # next.js
 /frontend/.next/
