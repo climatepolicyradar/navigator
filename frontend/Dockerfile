@@ -1,14 +1,11 @@
 FROM node:12
 
-ADD package.json /package.json
-
-ENV NODE_PATH=/node_modules
-ENV PATH=$PATH:/node_modules/.bin
-RUN npm install
-
 WORKDIR /app
-ADD . /app
+COPY . /app
 
-RUN npm build
+RUN npm install
+RUN npm run build
 
 EXPOSE 8000
+
+CMD [ "npm", "run", "start" ]
