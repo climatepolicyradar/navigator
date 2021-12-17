@@ -17,7 +17,12 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2
-      - name: Build docker-compose stack using .env.example
-        run: cp .env.example .env && make build
-      - name: Run backend tests
-        run: make test_backend
+      # - name: Build docker-compose stack using .env.example
+      #   run: cp .env.example .env && make build
+      # - name: Run backend tests
+      #   run: make test_backend
+      - name: Run e2e testing with Cypress
+        uses: cypress-io/github-action@v2
+        with:
+          build: cd frontend && npm run build
+          start: cd frontend && npm start
