@@ -23,6 +23,7 @@ jobs:
       #   run: make test_backend
       - name: Run e2e testing with Cypress
         uses: cypress-io/github-action@v2
+        working-directory: ./frontend
         with:
-          build: cd frontend && npm run build
-          start: cd frontend && npm start
+          build: npm run build
+          start: npm start
