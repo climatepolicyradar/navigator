@@ -12,6 +12,7 @@
     "e2e:headless": "start-server-and-test start http://localhost:3000 cypress:headless"
   },
   "dependencies": {
+    "axios": "^0.24.0",
     "babel-loader": "^7.1.5",
     "next": "latest",
     "react": "^17.0.2",
