@@ -42,9 +42,8 @@ stop:
 	docker-compose stop
 
 test_frontend:
-	set -e
-	docker-compose run frontend test
-
+	cd frontend && docker-compose -f docker-compose-cypress.yml up --exit-code-from cypress
+	
 test_backend:
 	docker-compose run backend pytest
 
