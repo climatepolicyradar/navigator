@@ -48,3 +48,10 @@ input[type='number'],
 textarea {
   @apply rounded border border-gray-200 text-lg;
 }
+
+.form-row {
+  @apply my-4;
+  label {
+    @apply font-bold block;
+  }
+}
