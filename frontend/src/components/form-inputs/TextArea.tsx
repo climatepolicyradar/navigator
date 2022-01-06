@@ -7,19 +7,30 @@ interface TextAreaProps {
   label: string;
   type: string;
   classes?: string;
+  required?: boolean;
 }
 
-const TextArea = ({ label, classes = '', ...props }: TextAreaProps) => {
+const TextArea = ({
+  label,
+  required = false,
+  classes = '',
+  ...props
+}: TextAreaProps) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input>. We can use field meta to show an error
   // message if the field is invalid and it has been touched (i.e. visited)
   const [field, meta] = useField(props);
 
   return (
-    <>
-      <label htmlFor={props.id || props.name}>{label}</label>
+    <div className={`${classes}`}>
+      <label htmlFor={props.id || props.name}>
+        {label}
+        {required ? <strong className="text-red-500"> *</strong> : null}
+      </label>
       <textarea
-        className={`p-2 text-lg border border-gray-300 rounded w-full appearance-none ${classes}`}
+        className={`${
+          meta.touched && meta.error ? 'border-red-500' : 'border-gray-300'
+        }`}
         type={props.type}
         {...field}
         {...props}
@@ -27,7 +38,7 @@ const TextArea = ({ label, classes = '', ...props }: TextAreaProps) => {
       {meta.touched && meta.error ? (
         <div className="error">{meta.error}</div>
       ) : null}
-    </>
+    </div>
   );
 };
 

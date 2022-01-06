@@ -6,36 +6,39 @@ interface SelectProps {
   name: string;
   label: string;
   children: React.ReactNode;
-  onChange?(e: any): void;
+  classes?: string;
+  required?: boolean;
 }
 
-const Select = React.forwardRef(
-  (
-    { label, children, onChange = () => {}, ...props }: SelectProps,
-    ref: any
-  ) => {
-    const [field, meta] = useField(props);
-    return (
-      <div>
-        <label htmlFor={props.id || props.name}>{label}</label>
-        <select
-          {...field}
-          {...props}
-          onChange={onChange}
-          ref={ref}
-          className="border border-gray-300 rounded p-2 text-lg"
-        >
-          {children}
-        </select>
+const Select = ({
+  label,
+  children,
+  required = false,
+  classes = '',
+  ...props
+}: SelectProps) => {
+  const [field, meta] = useField(props);
+  return (
+    <div className={`${classes}`}>
+      <label htmlFor={props.id || props.name}>
+        {label}
+        {required ? <strong className="text-red-500"> *</strong> : null}
+      </label>
+      <select
+        {...field}
+        {...props}
+        className={`${
+          meta.touched && meta.error ? 'border-red-500' : 'border-gray-300'
+        }`}
+      >
+        {children}
+      </select>
 
-        {meta.touched && meta.error ? (
-          <div className="error">{meta.error}</div>
-        ) : null}
-      </div>
-    );
-  }
-);
-
-Select.displayName = 'Select';
+      {meta.touched && meta.error ? (
+        <div className="error text-red-500 mt-1">{meta.error}</div>
+      ) : null}
+    </div>
+  );
+};
 
 export default Select;

@@ -45,12 +45,13 @@ h4 {
 }
 input[type='text'],
 input[type='number'],
-textarea {
-  @apply rounded border border-gray-200 text-lg;
+textarea,
+select {
+  @apply p-2 rounded border text-lg w-full;
 }
 
 .form-row {
-  @apply my-4;
+  @apply my-8;
   label {
     @apply font-bold block;
   }
