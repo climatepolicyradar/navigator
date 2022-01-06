@@ -19,6 +19,7 @@ def document_upload(
     current_user=Depends(get_current_active_user),
     s3_client=Depends(get_s3_client),
 ):
+    """Upload a document to the queue bucket."""
 
     file_path = Path(file.filename)
     if file_path.suffix.lower() not in (".pdf", ".html", ".htm"):

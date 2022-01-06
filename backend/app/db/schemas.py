@@ -1,7 +1,7 @@
 import typing as t
 import datetime
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel, HttpUrl, conint
 
 
 class UserBase(BaseModel):
@@ -52,9 +52,9 @@ class DocumentBase(BaseModel):
     language_id: int
     source_url: t.Optional[HttpUrl]
     s3_url: HttpUrl
-    year: int
-    month: t.Optional[int] = 1
-    day: t.Optional[int] = 1
+    year: conint(ge=1900, le=datetime.datetime.now().year)
+    month: t.Optional[conint(ge=1, le=12)] = 1
+    day: t.Optional[conint(ge=1, le=31)] = 1
 
     class Config:
         orm_mode = True
@@ -68,9 +68,9 @@ class DocumentCreate(DocumentBase):
 class ActionBase(BaseModel):
     name: str
     description: t.Optional[str]
-    year: int
-    month: t.Optional[int] = 1
-    day: t.Optional[int] = 1
+    year: conint(ge=1900, le=datetime.datetime.now().year)
+    month: t.Optional[conint(ge=1, le=12)] = 1
+    day: t.Optional[conint(ge=1, le=31)] = 1
     geography_id: int
     type_id: int
     source_id: int

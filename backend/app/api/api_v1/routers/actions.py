@@ -23,6 +23,7 @@ async def action_create(
     s3_client=Depends(get_s3_client),
     current_user=Depends(get_current_active_user),
 ) -> ActionBase:
+    """Add an action and its associated documents to the databases."""
 
     # Data validation - check that year is in the past, and all external URLs provided point to valid PDFs.
     action_date = datetime(action.year, action.month, action.day)
