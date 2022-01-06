@@ -6,9 +6,10 @@ interface CheckboxProps {
   name: string;
   label: string;
   children: React.ReactNode;
+  required?: boolean;
 }
 
-const Checkbox = ({ children, ...props }: CheckboxProps) => {
+const Checkbox = ({ children, required = false, ...props }: CheckboxProps) => {
   // React treats radios and checkbox inputs differently other input types, select, and textarea.
   // Formik does this too! When you specify `type` to useField(), it will
   // return the correct bag of props for you -- a `checked` prop will be included
