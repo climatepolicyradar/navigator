@@ -25,17 +25,17 @@ def document_upload(
 
     uploaded_filename = f"user-{current_user.id}-time-{datetime.now().strftime('%Y%m%d%H%M%S')}-{file.filename}"
 
-    document_url = s3_client.upload_fileobj(
-        fileobj=file.file, bucket="document-queue", object_name=uploaded_filename
+    s3_document = s3_client.upload_fileobj(
+        fileobj=file.file, bucket="cpr-document-queue", key=uploaded_filename
     )
 
     # If the above function returns False, then the upload has failed.
-    if not document_url:
+    if not s3_document:
         raise HTTPException(
             500,
             "Internal Server Error: upload failed.",
         )
 
     return {
-        "url": document_url,
+        "url": s3_document.url,
     }
