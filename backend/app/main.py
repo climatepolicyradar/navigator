@@ -22,7 +22,7 @@ async def db_session_middleware(request: Request, call_next):
     return response
 
 
-@app.get("/api/v1")
+@app.get("/api/v1", include_in_schema=False)
 async def root():
     return {"message": "Hello World"}
 
@@ -31,12 +31,12 @@ async def root():
 app.include_router(
     users_router,
     prefix="/api/v1",
-    tags=["users"],
+    tags=["Users"],
     dependencies=[Depends(get_current_active_user)],
 )
-app.include_router(documents_router, prefix="/api/v1")
-app.include_router(actions_router, prefix="/api/v1")
-app.include_router(auth_router, prefix="/api", tags=["auth"])
+app.include_router(auth_router, prefix="/api", tags=["Authentication"])
+app.include_router(actions_router, prefix="/api/v1", tags=["Actions"])
+app.include_router(documents_router, prefix="/api/v1", tags=["Documents"])
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)
