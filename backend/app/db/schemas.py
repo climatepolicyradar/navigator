@@ -81,5 +81,5 @@ class ActionBase(BaseModel):
 
 
 class ActionCreate(ActionBase):
-    source_json: dict
+    source_json: t.Optional[dict] = None
     mod_date: datetime.date

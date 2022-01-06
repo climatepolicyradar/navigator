@@ -65,8 +65,6 @@ async def action_create(
         geography_id=action.geography_id,
         type_id=action.type_id,
         source_id=action.source_id,
-        # TODO: do we want to store other aspects of the request here?
-        source_json=request.headers,
         # Modification date is set to date of document submission
         mod_date=datetime.now().date(),
         documents=action.documents,
