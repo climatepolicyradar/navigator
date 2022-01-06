@@ -7,13 +7,12 @@ from app.core.auth import get_current_active_user
 from app.db.session import get_db
 from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
 from app.db.crud import create_action, create_document
-from app.aws.clients import S3Client, S3Document
+from app.core.aws import get_s3_client, S3Document
 from app.log import get_logger
 
 logger = get_logger(__name__)
 
 actions_router = r = APIRouter()
-s3_client = S3Client()
 
 
 @r.post("/action", response_model=ActionBase)
@@ -21,6 +20,7 @@ async def action_create(
     request: Request,
     action: ActionBase,
     db=Depends(get_db),
+    s3_client=Depends(get_s3_client),
     current_user=Depends(get_current_active_user),
 ) -> ActionBase:
 

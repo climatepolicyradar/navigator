@@ -1,14 +1,64 @@
-import pytest
+import typing as t
+import os
+
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from fastapi.testclient import TestClient
-import typing as t
+import pytest
 
 from app.core import config, security
+from app.core.aws import S3Document, get_s3_client
 from app.db.session import Base, get_db
 from app.db import models
 from app.main import app
+
+
+@pytest.fixture
+def test_s3_client():
+    class S3Client:
+        """Helper class to connect to S3 and perform actions on buckets and documents."""
+
+        def upload_fileobj(
+            self, fileobj: t.BinaryIO, bucket: str, key: str
+        ) -> t.Union[S3Document, bool]:
+
+            return S3Document(bucket, os.getenv("AWS_REGION"), key)
+
+        def upload_file(
+            self, file_name: str, bucket: str, key: t.Optional[str] = None
+        ) -> t.Union[S3Document, bool]:
+
+            return S3Document(bucket, os.getenv("AWS_REGION"), key)
+
+        def copy_document(
+            self,
+            s3_document: S3Document,
+            new_bucket: str,
+            new_key: t.Optional[str] = None,
+        ) -> S3Document:
+
+            return S3Document(new_bucket, os.getenv("AWS_REGION"), new_key)
+
+        def delete_document(self, s3_document: S3Document) -> None:
+            """Delete a document.
+
+            Args:
+                s3_document (S3Document): document to delete.
+            """
+
+            return
+
+        def move_document(
+            self,
+            s3_document: S3Document,
+            new_bucket: str,
+            new_key: t.Optional[str] = None,
+        ) -> S3Document:
+
+            return S3Document(new_bucket, os.getenv("AWS_REGION"), new_key)
+
+    yield S3Client()
 
 
 def get_test_db_url() -> str:
@@ -30,9 +80,7 @@ def test_db():
     trans = connection.begin()
 
     # Run a parent transaction that can roll back all changes
-    test_session_maker = sessionmaker(
-        autocommit=False, autoflush=False, bind=engine
-    )
+    test_session_maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     test_session = test_session_maker()
     test_session.begin_nested()
 
@@ -74,7 +122,7 @@ def create_test_db():
 
 
 @pytest.fixture
-def client(test_db):
+def client(test_db, test_s3_client):
     """
     Get a TestClient instance that reads/write to the test database.
     """
@@ -82,7 +130,11 @@ def client(test_db):
     def get_test_db():
         yield test_db
 
+    def get_test_s3_client():
+        yield test_s3_client
+
     app.dependency_overrides[get_db] = get_test_db
+    app.dependency_overrides[get_s3_client] = get_test_s3_client
 
     yield TestClient(app)
 

@@ -1,13 +1,13 @@
 from datetime import datetime
+from pathlib import Path
 
 from fastapi import APIRouter, Request, Depends, File, UploadFile, HTTPException
 
 from app.core.auth import get_current_active_user
-from app.aws.clients import S3Client
+from app.core.aws import get_s3_client
 
 
 documents_router = r = APIRouter()
-s3_client = S3Client()
 
 
 @r.post(
@@ -17,13 +17,14 @@ def document_upload(
     request: Request,
     file: UploadFile = File(...),
     current_user=Depends(get_current_active_user),
+    s3_client=Depends(get_s3_client),
 ):
 
-    file_extension = file.filename.split(".")[-1]
-    if file_extension.lower() not in ("pdf", "html", "htm"):
+    file_path = Path(file.filename)
+    if file_path.suffix.lower() not in (".pdf", ".html", ".htm"):
         raise HTTPException(415, "Unsupported Media Type: must be PDF or HTML.")
 
-    uploaded_filename = f"user-{current_user.id}-time-{datetime.now().strftime('%Y%m%d%H%M%S')}-{file.filename}"
+    uploaded_filename = f"user-{current_user.id}-time-{datetime.now().strftime('%Y%m%d%H%M%S')}-{file_path.name}"
 
     s3_document = s3_client.upload_fileobj(
         fileobj=file.file, bucket="cpr-document-queue", key=uploaded_filename
