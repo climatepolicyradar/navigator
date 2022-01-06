@@ -32,14 +32,6 @@ const AddAction = () => {
     setDays(Array.from(Array(totalDays).keys()));
   };
 
-  // const postData = async (req: string, data): Promise<any> => {
-  //   return await axios.post(req).then((response) => {
-  //     return response.statusText == 'OK'
-  //       ? response.data
-  //       : Promise.reject(Error('Unsuccessful response'));
-  //   });
-  // };
-
   const submitForm = async (values, resetForm) => {
     if (values.month.length === 0) {
       values.month = null;
@@ -88,12 +80,12 @@ const AddAction = () => {
             <div className="form-row">
               <TextArea label="Description" name="description" type="text" />
             </div>
-            <div className="form-row flex items-start">
+            <div className="form-row md:flex items-start">
               <Field
                 as={Select}
                 label="Year"
                 name="year"
-                classes="w-1/3 mr-4"
+                classes="md:w-1/3 md:mr-4"
                 required
                 onChange={(e) => {
                   setFieldValue('year', e.target.value);
@@ -111,7 +103,7 @@ const AddAction = () => {
                 as={Select}
                 label="Month"
                 name="month"
-                classes="w-1/3 mr-4"
+                classes="md:w-1/3 md:mr-4"
                 onChange={(e) => {
                   setFieldValue('month', e.target.value);
                   handleDateChange(e);
@@ -124,7 +116,7 @@ const AddAction = () => {
                   </option>
                 ))}
               </Field>
-              <Field as={Select} label="Day" name="day" classes="w-1/3">
+              <Field as={Select} label="Day" name="day" classes="md:w-1/3">
                 <option>Choose</option>
                 {days.map((day, index) => (
                   <option key={index} value={day + 1}>
@@ -133,7 +125,7 @@ const AddAction = () => {
                 ))}
               </Field>
             </div>
-            <div className="form-row flex">
+            <div className="form-row md:flex">
               <Field
                 as={Select}
                 label="Geography/Country"
