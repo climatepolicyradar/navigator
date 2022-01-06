@@ -1,5 +1,7 @@
 # Climate Policy Radar Navigator
 
+![backend and frontend tests](https://github.com/climatepolicyradar/navigator/actions/workflows/test.yml/badge.svg)
+
 ## Development
 
 The only dependencies for this project should be docker and docker-compose.
