@@ -6,9 +6,10 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from fastapi.testclient import TestClient
 import pytest
+from moto import mock_s3
 
 from app.core import config, security
-from app.core.aws import S3Document, get_s3_client
+from app.core.aws import get_s3_client, S3Client
 from app.db.session import Base, get_db
 from app.db import models
 from app.main import app
@@ -16,49 +17,24 @@ from app.main import app
 
 @pytest.fixture
 def test_s3_client():
-    class S3Client:
-        """Helper class to connect to S3 and perform actions on buckets and documents."""
+    bucket_names = ("cpr-document-queue", "cpr-document-store")
 
-        def upload_fileobj(
-            self, fileobj: t.BinaryIO, bucket: str, key: str
-        ) -> t.Union[S3Document, bool]:
+    with mock_s3():
+        s3_client = S3Client()
+        for bucket in bucket_names:
+            s3_client.client.create_bucket(
+                Bucket=bucket,
+                CreateBucketConfiguration={
+                    "LocationConstraint": os.getenv("AWS_REGION")
+                },
+            )
 
-            return S3Document(bucket, os.getenv("AWS_REGION"), key)
+        # Test document in queue for action submission
+        s3_client.client.put_object(
+            Bucket="cpr-document-queue", Key="test_document.pdf", Body=bytes(1024)
+        )
 
-        def upload_file(
-            self, file_name: str, bucket: str, key: t.Optional[str] = None
-        ) -> t.Union[S3Document, bool]:
-
-            return S3Document(bucket, os.getenv("AWS_REGION"), key)
-
-        def copy_document(
-            self,
-            s3_document: S3Document,
-            new_bucket: str,
-            new_key: t.Optional[str] = None,
-        ) -> S3Document:
-
-            return S3Document(new_bucket, os.getenv("AWS_REGION"), new_key)
-
-        def delete_document(self, s3_document: S3Document) -> None:
-            """Delete a document.
-
-            Args:
-                s3_document (S3Document): document to delete.
-            """
-
-            return
-
-        def move_document(
-            self,
-            s3_document: S3Document,
-            new_bucket: str,
-            new_key: t.Optional[str] = None,
-        ) -> S3Document:
-
-            return S3Document(new_bucket, os.getenv("AWS_REGION"), new_key)
-
-    yield S3Client()
+        yield s3_client
 
 
 def get_test_db_url() -> str:

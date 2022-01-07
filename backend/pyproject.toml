@@ -24,6 +24,7 @@ boto3 = "^1.20.25"
 
 [tool.poetry.dev-dependencies]
 pre-commit = "2.15.0"
+moto = {extras = ["s3"], version = "^2.3.0"}
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
