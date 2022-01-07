@@ -34,7 +34,7 @@ dev_install:
 
 build: start_containers
 	# Hack to wait for postgres container to be up before running alembic migrations
-	sleep 5;
+	sleep 10;
 	# Run migrations
 	make migrations_docker
 
