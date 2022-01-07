@@ -64,9 +64,7 @@ class MetadataValue(Base):
         nullable=False,
     )
 
-    metadata_type_id = sa.Column(
-        "metadata_type_id", sa.INTEGER(), autoincrement=False, nullable=False
-    )
+    metadata_type_id = sa.Column(sa.INTEGER(), autoincrement=False, nullable=False)
     value_name = sa.Column(sa.VARCHAR(length=255), autoincrement=False, nullable=False)
 
     value_description = sa.Column(
