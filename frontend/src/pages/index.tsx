@@ -1,7 +1,5 @@
 import Link from 'next/link';
-import Button from '../components/Button';
 import Layout from '../components/Layout';
-import axios from 'axios';
 import AddAction from '../components/forms/AddAction';
 
 const IndexPage = () => {
