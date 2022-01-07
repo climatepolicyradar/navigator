@@ -16,8 +16,16 @@ from app.main import app
 
 
 @pytest.fixture
-def test_s3_client():
-    bucket_names = ("cpr-document-queue", "cpr-document-store")
+def s3_document_bucket_names() -> dict:
+    return {
+        "queue": "cpr-document-queue",
+        "store": "cpr-document-store",
+    }
+
+
+@pytest.fixture
+def test_s3_client(s3_document_bucket_names):
+    bucket_names = s3_document_bucket_names.values()
 
     with mock_s3():
         s3_client = S3Client()
@@ -31,7 +39,9 @@ def test_s3_client():
 
         # Test document in queue for action submission
         s3_client.client.put_object(
-            Bucket="cpr-document-queue", Key="test_document.pdf", Body=bytes(1024)
+            Bucket=s3_document_bucket_names["queue"],
+            Key="test_document.pdf",
+            Body=bytes(1024),
         )
 
         yield s3_client
