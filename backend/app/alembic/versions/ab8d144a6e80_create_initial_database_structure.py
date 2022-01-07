@@ -45,7 +45,7 @@ def create_table(model: Base, *args, **kwargs):
 
     columns = []
 
-    for k, v in model.__dict__:
+    for k, v in model.__dict__.items():
         if not k.startswith("_") and isinstance(v, sa.Column):
             column = v
             column.name = k
