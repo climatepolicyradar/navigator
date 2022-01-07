@@ -35,7 +35,7 @@ def downgrade():
     op.drop_table("passage_type")
 
 
-def create_table(model: Base, *args):
+def create_table(model: Base, *args, **kwargs):
     """Create a table from an Alembic declarative model and any extra arguments.
 
     Args:
@@ -51,11 +51,7 @@ def create_table(model: Base, *args):
             column.name = k
             columns.append(column)
 
-    op.create_table(
-        model.__tablename__,
-        *columns,
-        *args,
-    )
+    op.create_table(model.__tablename__, *columns, *args, **kwargs)
 
 
 def upgrade():
