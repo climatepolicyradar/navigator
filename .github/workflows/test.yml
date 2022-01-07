@@ -1,0 +1,23 @@
+name: run-tests
+
+on: 
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker-compose stack using .env.example
+        run: cp .env.example .env && make build
+      - name: Run backend tests
+        run: make test_backend
+      - name: Run frontend tests
+        run: make test_frontend
