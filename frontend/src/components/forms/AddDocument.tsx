@@ -79,7 +79,9 @@ const AddDocuments = ({
                 is: (file) => {
                   return file === undefined;
                 },
-                then: Yup.string().required(),
+                then: Yup.string().required(
+                  'Please either select a file or enter a file URL'
+                ),
               })
             ),
             file: Yup.lazy(() =>
@@ -87,7 +89,9 @@ const AddDocuments = ({
                 is: (source_url) => {
                   return source_url === undefined;
                 },
-                then: Yup.string().required(),
+                then: Yup.string().required(
+                  'Please either select a file or enter a file URL'
+                ),
               })
             ),
           },
