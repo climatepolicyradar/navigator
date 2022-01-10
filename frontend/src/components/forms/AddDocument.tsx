@@ -34,7 +34,7 @@ const AddDocuments = ({
     name: '',
     language_id: '',
     source_url: '',
-    s3_url: '',
+    s3_url: null,
     year: year,
     month: month,
     day: day,
@@ -69,17 +69,38 @@ const AddDocuments = ({
       <h2>Add a document to this action</h2>
       <Formik
         initialValues={initialValues}
-        validationSchema={Yup.object({
-          name: Yup.string().required('Required'),
-          language_id: Yup.string().required('Please select a language'),
-        })}
+        validationSchema={Yup.object(
+          {
+            name: Yup.string().required('Required'),
+            year: Yup.string().required('Please select a year'),
+            language_id: Yup.string().required('Please select a language'),
+            source_url: Yup.lazy(() =>
+              Yup.string().when('file', {
+                is: (file) => {
+                  return file === undefined;
+                },
+                then: Yup.string().required(),
+              })
+            ),
+            file: Yup.lazy(() =>
+              Yup.string().when('source_url', {
+                is: (source_url) => {
+                  return source_url === undefined;
+                },
+                then: Yup.string().required(),
+              })
+            ),
+          },
+          ['file', 'source_url']
+        )}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           submitDocument(values, resetForm);
         }}
         enableReinitialize
       >
-        {({ values, handleSubmit, isSubmitting, setFieldValue }) => (
+        {({ values, errors, handleSubmit, isSubmitting, setFieldValue }) => (
           <Form>
+            {console.log(errors)}
             <div className="form-row">
               <TextInput
                 label="Document name"
@@ -100,7 +121,12 @@ const AddDocuments = ({
               <TextInput label="Enter URL" name="source_url" type="text" /> or
             </div>
             <div className="form-row">
-              <Field label="Select file" name="file" type="file" />
+              <Field
+                label="Select file"
+                name="file"
+                accept=".pdf"
+                type="file"
+              />
             </div>
             <div className="form-row md:flex items-start">
               <Field
