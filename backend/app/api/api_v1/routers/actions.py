@@ -76,10 +76,12 @@ async def action_create(
         # Move document to cpr-document-store bucket
         if document.s3_url:
             s3_document = S3Document.from_url(document.s3_url)
-            moved_document = s3_client.move_document(
+            moved_document_url = s3_client.move_document(
                 s3_document,
                 "cpr-document-store",
-            )
+            ).url
+        else:
+            moved_document_url = None
 
         # Create document in database
         document_create = DocumentCreate(
@@ -87,7 +89,7 @@ async def action_create(
             name=document.name,
             language_id=document.language_id,
             source_url=document.source_url,
-            s3_url=moved_document.url,
+            s3_url=moved_document_url,
             year=action.year,
             month=action.month,
             day=action.day,
