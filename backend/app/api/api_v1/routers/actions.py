@@ -49,9 +49,8 @@ async def action_create(
     if invalid_urls:
         raise HTTPException(
             400,
-            details="Invalid document URLs provided. URLs must have `content-type` or HTML or PDF. Check the `invalid-urls` header for details.",
             headers={
-                "invalid-urls": invalid_urls,
+                "invalid-urls": ", ".join(invalid_urls),
                 "failed-reason": f"Document URLs {', '.join(invalid_urls)} don't direct to either HTML or PDF documents. Please update or remove the URLs for these given documents.",
             },
         )
