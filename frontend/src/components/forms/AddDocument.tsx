@@ -1,4 +1,5 @@
-import { Form, Formik, Field, connect } from 'formik';
+import { useState, useEffect } from 'react';
+import { Form, Formik, Field, connect, validateYupSchema } from 'formik';
 import * as Yup from 'yup';
 import { postData } from '../../api';
 import { months } from '../../constants/timedate';
@@ -6,6 +7,8 @@ import { Document } from '../../interfaces';
 import Button from '../buttons/Button';
 import TextInput from '../form-inputs/TextInput';
 import Select from '../form-inputs/Select';
+import LoaderOverlay from '../LoaderOverlay';
+import { fakePromise } from '../../helpers';
 
 interface AddDocumentsProps {
   setPopupActive(): void;
@@ -21,7 +24,9 @@ const AddDocuments = ({
   yearSelections,
   ...props
 }) => {
-  let { formik } = props;
+  const [processing, setProcessing] = useState(false);
+
+  let { formik, year, month, day } = props;
   let {
     values: { documents },
   } = formik;
@@ -30,20 +35,23 @@ const AddDocuments = ({
     language_id: '',
     source_url: '',
     s3_url: '',
-    year: '',
-    month: '',
-    day: '',
+    year: year,
+    month: month,
+    day: day,
     file: '',
   };
 
   const submitDocument = async (values, resetForm) => {
     let req = 'document';
+    setProcessing(true);
     // await postData(req, values.file);
+    await fakePromise(2000, 'done');
     console.log(values);
     // below lines will execute after api request fulfilled sucessfully
     addDocumentToAction(values);
-    resetForm();
     setPopupActive(false);
+    setProcessing(false);
+    resetForm();
   };
 
   const addDocumentToAction = (document: Document) => {
@@ -51,7 +59,13 @@ const AddDocuments = ({
   };
 
   return (
-    <div>
+    <div className="relative mt-8">
+      {processing ? (
+        <>
+          <div className="inset-0 fixed"></div>
+          <LoaderOverlay />
+        </>
+      ) : null}
       <h2>Add a document to this action</h2>
       <Formik
         initialValues={initialValues}
@@ -62,6 +76,7 @@ const AddDocuments = ({
         onSubmit={(values, { setSubmitting, resetForm }) => {
           submitDocument(values, resetForm);
         }}
+        enableReinitialize
       >
         {({ values, handleSubmit, isSubmitting, setFieldValue }) => (
           <Form>
