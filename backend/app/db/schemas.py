@@ -51,7 +51,7 @@ class DocumentBase(BaseModel):
     name: str
     language_id: int
     source_url: t.Optional[HttpUrl]
-    s3_url: HttpUrl
+    s3_url: t.Optional[HttpUrl]
     year: conint(ge=1900, le=datetime.datetime.now().year)
     month: t.Optional[conint(ge=1, le=12)] = 1
     day: t.Optional[conint(ge=1, le=31)] = 1
