@@ -11,8 +11,11 @@ import Overlay from '../Overlay';
 import Popup from '../modals/Popup';
 import AddDocument from './AddDocument';
 import { Document, Action } from '../../interfaces';
+import LoaderOverlay from '../LoaderOverlay';
+import { fakePromise } from '../../helpers';
 
 const AddAction = () => {
+  const [processing, setProcessing] = useState(false);
   const initialValues = {
     source_id: '',
     name: '',
@@ -32,12 +35,12 @@ const AddAction = () => {
   const yearSelections = yearRange();
 
   const handleDateChange = (e) => {
-    console.log(daysInMonth(e.target.value, 2022));
     const totalDays = daysInMonth(e.target.value, 2022);
     setDays(Array.from(Array(totalDays).keys()));
   };
 
   const submitForm = async (values, resetForm) => {
+    setProcessing(true);
     if (values.month.length === 0) {
       values.month = null;
     }
@@ -47,7 +50,9 @@ const AddAction = () => {
     let req = 'action';
     console.log(values);
     resetForm();
-    return await postData(req, values);
+    //return await postData(req, values);
+    await fakePromise(2000, 'done');
+    setProcessing(false);
   };
 
   useEffect(() => {
@@ -55,6 +60,11 @@ const AddAction = () => {
   }, []);
   return (
     <>
+      {processing ? (
+        <>
+          <LoaderOverlay />
+        </>
+      ) : null}
       <Overlay
         active={popupActive}
         onClick={() => {
@@ -66,17 +76,21 @@ const AddAction = () => {
         <Formik
           initialValues={initialValues}
           validationSchema={Yup.object({
-            source_id: Yup.string().required('Please select a source'),
-            name: Yup.string().required('Required'),
-            year: Yup.string().required('Please select a year'),
-            geography_id: Yup.string().required('Please select a geography'),
-            type_id: Yup.string().required('Please select an action type'),
+            source_id: Yup.string().required('Please select a source.'),
+            name: Yup.string().required('Required.'),
+            year: Yup.string().required('Please select a year.'),
+            geography_id: Yup.string().required('Please select a geography.'),
+            type_id: Yup.string().required('Please select an action type.'),
+            documents: Yup.array().min(
+              1,
+              'You must add at least one document.'
+            ),
           })}
           onSubmit={(values, { setSubmitting, resetForm }) => {
             submitForm(values, resetForm);
           }}
         >
-          {({ values, handleSubmit, isSubmitting, setFieldValue }) => (
+          {({ values, errors, handleSubmit, isSubmitting, setFieldValue }) => (
             <>
               <Popup
                 active={popupActive}
@@ -89,6 +103,9 @@ const AddAction = () => {
                   days={days}
                   handleDateChange={handleDateChange}
                   yearSelections={yearSelections}
+                  year={values.year}
+                  month={values.month}
+                  day={values.day}
                 />
               </Popup>
               <Form className="lg:w-1/2">
@@ -190,12 +207,23 @@ const AddAction = () => {
                 <div className="form-row">
                   <h2>Documents</h2>
                   <div className="mt-4">
+                    {errors.documents ? (
+                      <p className="text-red-500 mb-4">{errors.documents}</p>
+                    ) : null}
+
                     {values.documents.length > 0 ? (
-                      values.documents.map((document, index) => (
-                        <p key={index}>{document.name}</p>
-                      ))
+                      <ol
+                        className="mb-4 list-decimal list-inside text-left"
+                        role="list"
+                      >
+                        {values.documents.map((document, index) => (
+                          <li key={index} className="my-2">
+                            <span className="">{document.name}</span>
+                          </li>
+                        ))}
+                      </ol>
                     ) : (
-                      <p className="pb-4">No documents added.</p>
+                      <p className="mb-4">No documents added.</p>
                     )}
                   </div>
                   <Button

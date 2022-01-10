@@ -1,0 +1,59 @@
+.ring {
+  stroke: #fff;
+  stroke-width: 2.8;
+  /* change for interesting effect */
+  fill: none;
+}
+
+.ring.filled {
+  fill: #fff;
+}
+
+.radar-line {
+  stroke: #207ae4;
+}
+
+.blip {
+  stroke: #207ae4;
+  stroke-width: 0.65;
+  fill: #fff;
+  cursor: pointer;
+}
+
+.blip:hover {
+  stroke: #207ae4;
+}
+
+.blip.filled {
+  fill: #207ae4;
+}
+
+.blip.filled:hover {
+  fill: #207ae4;
+}
+
+.scan {
+  fill: #207ae4;
+  stroke-width: 2;
+  stroke: #fff;
+}
+
+.scan-fade {
+  pointer-events: none;
+  stroke-width: 2;
+  stroke: #fff;
+}
+
+.cover,
+.radar-line {
+  animation: 4s linear infinite spin;
+}
+
+@keyframes spin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}

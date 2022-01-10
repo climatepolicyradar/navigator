@@ -56,3 +56,10 @@ select {
     @apply font-bold block;
   }
 }
+
+// radar loader
+.radar {
+  transform: rotate(-70deg);
+  width: 25%;
+  height: 14em;
+}
