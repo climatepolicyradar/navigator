@@ -182,7 +182,6 @@ const AddAction = () => {
                     as={Select}
                     label="Geography/Country"
                     name="geography_id"
-                    classes="mr-4"
                     required
                   >
                     <option>Choose a geography</option>
