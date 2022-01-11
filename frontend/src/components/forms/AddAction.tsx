@@ -10,11 +10,25 @@ import { getData, postData } from '../../api';
 import Overlay from '../Overlay';
 import Popup from '../modals/Popup';
 import AddDocument from './AddDocument';
-import { Document, Action } from '../../interfaces';
+import {
+  Document,
+  Action,
+  Geography,
+  Language,
+  ActionType,
+  Source,
+} from '../../interfaces';
 import LoaderOverlay from '../LoaderOverlay';
 import { fakePromise } from '../../helpers';
 
-const AddAction = () => {
+interface AddActionProps {
+  geographies: Geography[];
+  languages: Language[];
+  action_types: ActionType[];
+  sources: Source[];
+}
+
+const AddAction = ({ geographies, languages, actionTypes, sources }) => {
   const [processing, setProcessing] = useState(false);
   const initialValues = {
     source_id: '',
@@ -50,14 +64,13 @@ const AddAction = () => {
     let req = 'action';
     console.log(values);
     resetForm();
-    //return await postData(req, values);
-    await fakePromise(2000, 'done');
+    await postData(req, values);
+    // await fakePromise(2000, 'done');
     setProcessing(false);
   };
 
   useEffect(() => {
     setDays(Array.from(Array(31).keys()));
-    getData('geographies');
   }, []);
   return (
     <>
@@ -107,15 +120,18 @@ const AddAction = () => {
                   year={values.year}
                   month={values.month}
                   day={values.day}
+                  languages={languages}
                 />
               </Popup>
               <Form className="lg:w-1/2">
                 <div className="form-row">
                   <Field as={Select} label="Source" name="source_id" required>
                     <option>Choose a source</option>
-                    {/* TODO - get sources from API when it's ready */}
-                    <option value="1">CCLW</option>
-                    <option value="2">CPD</option>
+                    {sources.map((source, index) => (
+                      <option key={`source${index}`} value={source.id}>
+                        {source.name}
+                      </option>
+                    ))}
                   </Field>
                 </div>
                 <div className="form-row">
@@ -186,9 +202,15 @@ const AddAction = () => {
                     required
                   >
                     <option>Choose a geography</option>
-                    {/* TODO - get geographies from API when it's ready */}
-                    <option value="1">United Kingdom</option>
-                    <option value="2">United States</option>
+                    {/* TODO - implement input box with suggestions as in prototype */}
+                    {geographies.map((geo: Geography) => (
+                      <option
+                        key={`geo${geo.geography_id}`}
+                        value={geo.geography_id}
+                      >
+                        {geo.english_shortname}
+                      </option>
+                    ))}
                   </Field>
                 </div>
                 <div className="form-row">
@@ -199,9 +221,14 @@ const AddAction = () => {
                     required
                   >
                     <option>Choose an action type</option>
-                    {/* TODO - get action types from API when it's ready */}
-                    <option value="1">Policy</option>
-                    <option value="2">Law</option>
+                    {actionTypes.map((type: ActionType) => (
+                      <option
+                        key={`type${type.action_type_id}`}
+                        value={type.action_type_id}
+                      >
+                        {type.type_name}
+                      </option>
+                    ))}
                   </Field>
                 </div>
                 <div className="form-row">

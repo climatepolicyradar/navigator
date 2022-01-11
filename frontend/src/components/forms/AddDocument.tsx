@@ -3,7 +3,7 @@ import { Form, Formik, Field, connect, validateYupSchema } from 'formik';
 import * as Yup from 'yup';
 import { getData, postData } from '../../api';
 import { months } from '../../constants/timedate';
-import { Document } from '../../interfaces';
+import { Document, Language } from '../../interfaces';
 import Button from '../buttons/Button';
 import TextInput from '../form-inputs/TextInput';
 import Select from '../form-inputs/Select';
@@ -15,6 +15,7 @@ interface AddDocumentsProps {
   days: number;
   handleDateChange(): void;
   yearSelections: number[];
+  languages: Language[];
 }
 
 const AddDocuments = ({
@@ -22,6 +23,7 @@ const AddDocuments = ({
   days,
   handleDateChange,
   yearSelections,
+  languages,
   ...props
 }) => {
   const [processing, setProcessing] = useState(false);
@@ -44,9 +46,9 @@ const AddDocuments = ({
   const submitDocument = async (values, resetForm) => {
     let req = 'document';
     setProcessing(true);
-    // await postData(req, values.file);
-    await fakePromise(2000, 'done');
-    console.log(values);
+    await postData(req, values.file);
+    // await fakePromise(2000, 'done');
+
     // below lines will execute after api request fulfilled sucessfully
     addDocumentToAction(values);
     setPopupActive(false);
@@ -57,10 +59,6 @@ const AddDocuments = ({
   const addDocumentToAction = (document: Document) => {
     documents.push(document);
   };
-
-  useEffect(() => {
-    getData('geographies');
-  }, []);
 
   return (
     <div className="relative mt-8">
@@ -106,7 +104,6 @@ const AddDocuments = ({
       >
         {({ values, errors, handleSubmit, isSubmitting, setFieldValue }) => (
           <Form>
-            {console.log(errors)}
             <div className="form-row">
               <TextInput
                 label="Document name"
@@ -118,9 +115,14 @@ const AddDocuments = ({
             <div className="form-row">
               <Field as={Select} label="Language" name="language_id" required>
                 <option>Choose a language</option>
-                {/* TODO - get languages from API when it's ready */}
-                <option value="1">English</option>
-                <option value="2">French</option>
+                {languages.map((language: Language) => (
+                  <option
+                    key={`language${language.language_id}`}
+                    value={language.language_id}
+                  >
+                    {language.name}
+                  </option>
+                ))}
               </Field>
             </div>
             <div className="form-row">
