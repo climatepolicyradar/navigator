@@ -6,7 +6,7 @@ import TextInput from '../form-inputs/TextInput';
 import TextArea from '../form-inputs/TextArea';
 import { months, yearRange, daysInMonth } from '../../constants/timedate';
 import Select from '../form-inputs/Select';
-import { postData } from '../../api';
+import { getData, postData } from '../../api';
 import Overlay from '../Overlay';
 import Popup from '../modals/Popup';
 import AddDocument from './AddDocument';
@@ -57,6 +57,7 @@ const AddAction = () => {
 
   useEffect(() => {
     setDays(Array.from(Array(31).keys()));
+    getData('geographies');
   }, []);
   return (
     <>
