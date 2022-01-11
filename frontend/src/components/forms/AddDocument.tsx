@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, Formik, Field, connect, validateYupSchema } from 'formik';
 import * as Yup from 'yup';
-import { postData } from '../../api';
+import { getData, postData } from '../../api';
 import { months } from '../../constants/timedate';
 import { Document } from '../../interfaces';
 import Button from '../buttons/Button';
@@ -58,6 +58,10 @@ const AddDocuments = ({
     documents.push(document);
   };
 
+  useEffect(() => {
+    getData('geographies');
+  }, []);
+
   return (
     <div className="relative mt-8">
       {processing ? (
@@ -80,7 +84,7 @@ const AddDocuments = ({
                   return file === undefined;
                 },
                 then: Yup.string().required(
-                  'Please either select a file or enter a file URL'
+                  'Please either enter a file URL or select a file.'
                 ),
               })
             ),
@@ -89,9 +93,7 @@ const AddDocuments = ({
                 is: (source_url) => {
                   return source_url === undefined;
                 },
-                then: Yup.string().required(
-                  'Please either select a file or enter a file URL'
-                ),
+                then: Yup.string().required(),
               })
             ),
           },
@@ -122,7 +124,8 @@ const AddDocuments = ({
               </Field>
             </div>
             <div className="form-row">
-              <TextInput label="Enter URL" name="source_url" type="text" /> or
+              <TextInput label="Enter URL" name="source_url" type="text" />
+              <p className="mt-4">or</p>
             </div>
             <div className="form-row">
               <Field
