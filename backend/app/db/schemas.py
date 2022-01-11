@@ -1,5 +1,7 @@
-from pydantic import BaseModel
 import typing as t
+import datetime
+
+from pydantic import BaseModel, HttpUrl, conint
 
 
 class UserBase(BaseModel):
@@ -43,3 +45,41 @@ class Token(BaseModel):
 class TokenData(BaseModel):
     email: str = None
     permissions: str = "user"
+
+
+class DocumentBase(BaseModel):
+    name: str
+    language_id: int
+    source_url: t.Optional[HttpUrl]
+    s3_url: t.Optional[HttpUrl]
+    year: conint(ge=1900, le=datetime.datetime.now().year)
+    month: t.Optional[conint(ge=1, le=12)] = 1
+    day: t.Optional[conint(ge=1, le=31)] = 1
+
+    class Config:
+        orm_mode = True
+
+
+class DocumentCreate(DocumentBase):
+    action_id: int
+    document_mod_date: datetime.date
+
+
+class ActionBase(BaseModel):
+    name: str
+    description: t.Optional[str]
+    year: conint(ge=1900, le=datetime.datetime.now().year)
+    month: t.Optional[conint(ge=1, le=12)] = 1
+    day: t.Optional[conint(ge=1, le=31)] = 1
+    geography_id: int
+    type_id: int
+    source_id: int
+    documents: t.List[DocumentBase]
+
+    class Config:
+        orm_mode = True
+
+
+class ActionCreate(ActionBase):
+    source_json: t.Optional[dict] = None
+    mod_date: datetime.date
