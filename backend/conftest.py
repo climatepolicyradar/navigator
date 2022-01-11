@@ -1,14 +1,50 @@
-import pytest
+import typing as t
+import os
+
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database, drop_database
 from fastapi.testclient import TestClient
-import typing as t
+import pytest
+from moto import mock_s3
 
 from app.core import config, security
+from app.core.aws import get_s3_client, S3Client
 from app.db.session import Base, get_db
 from app.db import models
 from app.main import app
+
+
+@pytest.fixture
+def s3_document_bucket_names() -> dict:
+    return {
+        "queue": "cpr-document-queue",
+        "store": "cpr-document-store",
+    }
+
+
+@pytest.fixture
+def test_s3_client(s3_document_bucket_names):
+    bucket_names = s3_document_bucket_names.values()
+
+    with mock_s3():
+        s3_client = S3Client()
+        for bucket in bucket_names:
+            s3_client.client.create_bucket(
+                Bucket=bucket,
+                CreateBucketConfiguration={
+                    "LocationConstraint": os.getenv("AWS_REGION")
+                },
+            )
+
+        # Test document in queue for action submission
+        s3_client.client.put_object(
+            Bucket=s3_document_bucket_names["queue"],
+            Key="test_document.pdf",
+            Body=bytes(1024),
+        )
+
+        yield s3_client
 
 
 def get_test_db_url() -> str:
@@ -30,9 +66,7 @@ def test_db():
     trans = connection.begin()
 
     # Run a parent transaction that can roll back all changes
-    test_session_maker = sessionmaker(
-        autocommit=False, autoflush=False, bind=engine
-    )
+    test_session_maker = sessionmaker(autocommit=False, autoflush=False, bind=engine)
     test_session = test_session_maker()
     test_session.begin_nested()
 
@@ -74,7 +108,7 @@ def create_test_db():
 
 
 @pytest.fixture
-def client(test_db):
+def client(test_db, test_s3_client):
     """
     Get a TestClient instance that reads/write to the test database.
     """
@@ -82,7 +116,11 @@ def client(test_db):
     def get_test_db():
         yield test_db
 
+    def get_test_s3_client():
+        yield test_s3_client
+
     app.dependency_overrides[get_db] = get_test_db
+    app.dependency_overrides[get_s3_client] = get_test_s3_client
 
     yield TestClient(app)
 

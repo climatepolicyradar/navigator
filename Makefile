@@ -37,6 +37,16 @@ build: start_containers
 	sleep 5;
 	# Run migrations
 	make migrations_docker
-	
 
+stop:
+	docker-compose stop
+
+test_frontend:
+	cd frontend && docker-compose -f docker-compose-cypress.yml up --exit-code-from cypress
 	
+test_backend:
+	docker-compose run backend pytest
+
+test:
+	make test_backend
+	make test_frontend
