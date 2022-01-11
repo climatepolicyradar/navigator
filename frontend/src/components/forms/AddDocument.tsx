@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Form, Formik, Field, connect, validateYupSchema } from 'formik';
 import * as Yup from 'yup';
-import { getData, postData } from '../../api';
+import { getData, postData, postFile } from '../../api';
 import { months } from '../../constants/timedate';
 import { Document, Language } from '../../interfaces';
 import Button from '../buttons/Button';
@@ -27,6 +27,7 @@ const AddDocuments = ({
   ...props
 }) => {
   const [processing, setProcessing] = useState(false);
+  const [fileobj, setFileObj] = useState(null);
 
   let { formik, year, month, day } = props;
   let {
@@ -45,8 +46,14 @@ const AddDocuments = ({
 
   const submitDocument = async (values, resetForm) => {
     let req = 'document';
+    // console.log(fileobj);
+    let formData = new FormData();
+    formData.append('file', fileobj);
+    // for (var key of data.entries()) {
+    //   console.log(key[1]);
+    // }
     setProcessing(true);
-    await postData(req, values.file);
+    await postFile(req, formData);
     // await fakePromise(2000, 'done');
 
     // below lines will execute after api request fulfilled sucessfully
@@ -135,6 +142,11 @@ const AddDocuments = ({
                 name="file"
                 accept=".pdf"
                 type="file"
+                onChange={(event) => {
+                  setFieldValue('file', event.currentTarget.value);
+                  // console.log(event.currentTarget.files[0]);
+                  setFileObj(event.currentTarget.files[0]);
+                }}
               />
             </div>
             <div className="form-row md:flex items-start">

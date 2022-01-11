@@ -39,7 +39,17 @@ const AddAction = ({ geographies, languages, actionTypes, sources }) => {
     day: '',
     geography_id: '',
     type_id: '',
-    documents: [],
+    documents: [
+      // {
+      //   name: 'Test document',
+      //   language_id: 1,
+      //   source_url: 'http://google.com',
+      //   s3_url: null,
+      //   year: 2022,
+      //   month: 1,
+      //   day: 1,
+      // },
+    ],
   };
 
   const [formValues, setFormValues] = useState(initialValues);
@@ -55,14 +65,14 @@ const AddAction = ({ geographies, languages, actionTypes, sources }) => {
 
   const submitForm = async (values, resetForm) => {
     setProcessing(true);
+    // unable to send null values for month and day, need to find a way to do so
     if (values.month.length === 0) {
-      values.month = null;
+      values.month = 1;
     }
     if (values.day.length === 0) {
-      values.day = null;
+      values.day = 1;
     }
     let req = 'action';
-    console.log(values);
     resetForm();
     await postData(req, values);
     // await fakePromise(2000, 'done');
@@ -104,7 +114,14 @@ const AddAction = ({ geographies, languages, actionTypes, sources }) => {
             submitForm(values, resetForm);
           }}
         >
-          {({ values, errors, handleSubmit, isSubmitting, setFieldValue }) => (
+          {({
+            values,
+            errors,
+            touched,
+            handleSubmit,
+            isSubmitting,
+            setFieldValue,
+          }) => (
             <>
               <Popup
                 active={popupActive}
@@ -128,7 +145,7 @@ const AddAction = ({ geographies, languages, actionTypes, sources }) => {
                   <Field as={Select} label="Source" name="source_id" required>
                     <option>Choose a source</option>
                     {sources.map((source, index) => (
-                      <option key={`source${index}`} value={source.id}>
+                      <option key={`source${index}`} value={source.source_id}>
                         {source.name}
                       </option>
                     ))}
@@ -234,7 +251,7 @@ const AddAction = ({ geographies, languages, actionTypes, sources }) => {
                 <div className="form-row">
                   <h2>Documents</h2>
                   <div className="mt-4">
-                    {errors.documents ? (
+                    {errors.documents && touched.documents ? (
                       <p className="text-red-500 mb-4">{errors.documents}</p>
                     ) : null}
 
