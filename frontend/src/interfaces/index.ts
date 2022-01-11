@@ -4,6 +4,8 @@
 //
 // import { User } from 'path/to/interfaces';
 
+import { SassString } from 'sass';
+
 export type User = {
   id: number;
   name: string;
@@ -29,4 +31,31 @@ export interface Action {
   geography_id: string;
   type_id: string;
   documents: Document[];
+}
+
+export interface Geography {
+  country_code: string;
+  english_shortname: string;
+  french_shortname: string;
+  geography_id: number;
+}
+
+export interface Language {
+  language_id: number;
+  language_code: string;
+  part1_code: null;
+  part2_code: null;
+  name: string;
+}
+
+export interface ActionType {
+  action_type_id: number;
+  action_parent_type_id: number;
+  type_name: string;
+  type_description: string;
+}
+
+export interface Source {
+  source_id: number;
+  name: string;
 }
