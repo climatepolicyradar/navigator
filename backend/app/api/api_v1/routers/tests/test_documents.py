@@ -2,7 +2,7 @@ def test_post_document(
     client, user_token_headers, test_s3_client, s3_document_bucket_names
 ):
 
-    test_valid_filename = "./app/api/api_v1/routers/tests/data/cclw-1053-abcf8dbe8b944a58923880fc75111088.pdf"
+    test_valid_filename = "./app/api/api_v1/routers/tests/data/cclw-1618-884b7d6efcf448ff92d27f37ff22cb65.pdf"
 
     with open(test_valid_filename, "rb") as f:
         response = client.post(
