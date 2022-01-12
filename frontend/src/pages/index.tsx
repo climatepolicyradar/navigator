@@ -24,7 +24,7 @@ const IndexPage = () => {
       getData('sources'),
     ]);
     setGeographies(geos);
-    setLanguages(filterLanguages(langs));
+    setLanguages(langs);
     setActionTypes(actionTypes);
     setSources(sources);
   };
