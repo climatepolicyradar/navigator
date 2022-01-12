@@ -1,12 +1,17 @@
 describe('Geographies api testing', () => {
   let token;
   it('authenticates the user', () => {
-    cy.request(
-      'POST',
-      'http://localhost:8000/api/token/',
-      'grant_type=&username=user%40navigator.com&password=password&scope=&client_id=test&client_secret=super_secret'
-    ).as('authRequest');
-    cy.get('@geographyRequest').then((response) => {
+    cy.visit('http://localhost:3000');
+    cy.request({
+      method: 'POST',
+      url: 'http://localhost:8000/api/token/',
+      form: true,
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+      },
+      body: 'grant_type=&username=user%40navigator.com&password=password&scope=&client_id=test&client_secret=super_secret',
+    }).as('authRequest');
+    cy.get('@authRequest').then((response) => {
       expect(response.status).to.eq(200);
       token = response;
     });

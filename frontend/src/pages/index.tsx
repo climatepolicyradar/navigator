@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import Layout from '../components/Layout';
 import AddAction from '../components/forms/AddAction';
-import { getData } from '../api';
+import { getAuth, getData } from '../api';
 
 const IndexPage = () => {
   const [geographies, setGeographies] = useState([]);
@@ -13,9 +13,10 @@ const IndexPage = () => {
   const filterLanguages = (langs) => {
     return langs.filter((lang) => lang.part1_code !== null);
   };
-  // const authenticate = async () => {
-  //   // return await getAuth();
-  // };
+  const authenticate = async () => {
+    await getAuth();
+    fetchAll();
+  };
   const fetchAll = async () => {
     const [geos, langs, actionTypes, sources] = await Promise.all([
       getData('geographies'),
@@ -29,7 +30,8 @@ const IndexPage = () => {
     setSources(sources);
   };
   useEffect(() => {
-    fetchAll();
+    authenticate();
+    // fetchAll();
   }, []);
   return (
     <Layout title="Home | Submit new policy">

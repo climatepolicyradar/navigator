@@ -174,7 +174,7 @@ const AddDocuments = ({
                 required
                 onChange={(e) => {
                   setFieldValue('year', e.target.value);
-                  handleDateChange(e);
+                  handleDateChange(e, values);
                 }}
               >
                 <option>Choose</option>
@@ -191,7 +191,7 @@ const AddDocuments = ({
                 classes="md:w-1/3 md:mr-4"
                 onChange={(e) => {
                   setFieldValue('month', e.target.value);
-                  handleDateChange(e);
+                  handleDateChange(e, values);
                 }}
               >
                 <option>Choose</option>
