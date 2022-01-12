@@ -24,11 +24,16 @@ import { fakePromise } from '../../helpers';
 interface AddActionProps {
   geographies: Geography[];
   languages: Language[];
-  action_types: ActionType[];
+  actionTypes: ActionType[];
   sources: Source[];
 }
 
-const AddAction = ({ geographies, languages, actionTypes, sources }) => {
+const AddAction = ({
+  geographies,
+  languages,
+  actionTypes,
+  sources,
+}: AddActionProps) => {
   const [processing, setProcessing] = useState(false);
   const initialValues = {
     source_id: '',
@@ -39,20 +44,9 @@ const AddAction = ({ geographies, languages, actionTypes, sources }) => {
     day: '',
     geography_id: '',
     type_id: '',
-    documents: [
-      // {
-      //   name: 'Test document',
-      //   language_id: 1,
-      //   source_url: 'http://google.com',
-      //   s3_url: null,
-      //   year: 2022,
-      //   month: 1,
-      //   day: 1,
-      // },
-    ],
+    documents: [],
   };
 
-  const [formValues, setFormValues] = useState(initialValues);
   const [days, setDays] = useState([]);
   const [popupActive, setPopupActive] = useState(false);
 
@@ -63,19 +57,40 @@ const AddAction = ({ geographies, languages, actionTypes, sources }) => {
     setDays(Array.from(Array(totalDays).keys()));
   };
 
-  const submitForm = async (values, resetForm) => {
-    setProcessing(true);
-    // unable to send null values for month and day, need to find a way to do so
+  const processValues = (values) => {
+    // React complains when using null values in form fields, so must do all of the below
+    // to convert empty values to 1 or null before sending to api
+
+    // unable to send null values for month and day, generates backend error
     if (values.month.length === 0) {
       values.month = 1;
     }
     if (values.day.length === 0) {
       values.day = 1;
     }
+    values.documents.forEach((document) => {
+      if (document.month.length === 0) {
+        document.month = 1;
+      }
+      if (document.day.length === 0) {
+        document.day = 1;
+      }
+      // need to send null values instead of empty strings otherwise generates backend error
+      if (document.source_url.length === 0) {
+        document.source_url = null;
+      }
+      if (document.s3_url.length === 0) {
+        document.s3_url = null;
+      }
+    });
+  };
+
+  const submitForm = async (values, resetForm) => {
+    setProcessing(true);
+    processValues(values);
     let req = 'action';
     resetForm();
     await postData(req, values);
-    // await fakePromise(2000, 'done');
     setProcessing(false);
   };
 

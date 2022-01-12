@@ -37,7 +37,7 @@ const AddDocuments = ({
     name: '',
     language_id: '',
     source_url: '',
-    s3_url: null,
+    s3_url: '',
     year: year,
     month: month,
     day: day,
@@ -45,26 +45,30 @@ const AddDocuments = ({
   };
 
   const submitDocument = async (values, resetForm) => {
-    let req = 'document';
-    // console.log(fileobj);
+    setProcessing(true);
+
+    if (!fileobj) {
+      closePopup(values, resetForm);
+      return;
+    }
+
+    const req = 'document';
     let formData = new FormData();
     formData.append('file', fileobj);
-    // for (var key of data.entries()) {
-    //   console.log(key[1]);
-    // }
-    setProcessing(true);
-    await postFile(req, formData);
-    // await fakePromise(2000, 'done');
-
-    // below lines will execute after api request fulfilled sucessfully
-    addDocumentToAction(values);
-    setPopupActive(false);
-    setProcessing(false);
-    resetForm();
+    const response = await postFile(req, formData);
+    values.s3_url = response.url;
+    closePopup(values, resetForm);
   };
 
   const addDocumentToAction = (document: Document) => {
     documents.push(document);
+  };
+
+  const closePopup = (values, resetForm) => {
+    addDocumentToAction(values);
+    setPopupActive(false);
+    setProcessing(false);
+    resetForm();
   };
 
   return (
