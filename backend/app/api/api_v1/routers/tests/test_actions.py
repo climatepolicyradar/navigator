@@ -46,9 +46,18 @@ def test_post_action(
     assert len(store_bucket_contents) == 1
     assert store_bucket_contents[0].get("Key") == "test_document.pdf"
 
-    # DB contains one action, with the name 'test action'
+    # Action table contains one action, with the name 'test action'
     assert len(test_db.query(models.Action).all()) == 1
     assert test_db.query(models.Action).all()[0].name == "test action"
+
+    # Document table contains a document with the correct properties
+    assert test_db.query(models.Document).all()[0].name == "test document 1"
+    assert test_db.query(models.Document).all()[0].source_url is None
+    assert test_db.query(models.Document).all()[0].language_id == 1
+    assert (
+        test_db.query(models.Document).all()[0].s3_url
+        == f"https://{s3_document_bucket_names['store']}.s3.eu-west-2.amazonaws.com/test_document.pdf"
+    )
 
     # API should be able to take null values for month and year, for both documents and actions, and for `s3_url`.
     response = client.post(
