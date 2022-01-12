@@ -48,3 +48,52 @@ def test_post_action(
     # DB contains one action, with the name 'test action'
     assert len(test_db.query(models.Action).all()) == 1
     assert test_db.query(models.Action).all()[0].name == "test action"
+
+    # API should be able to take null values for month and year, for both documents and actions, and for `s3_url`.
+    response = client.post(
+        "/api/v1/action",
+        json={
+            "source_id": 1,
+            "name": "test action",
+            "year": 2008,
+            "month": None,
+            "day": None,
+            "geography_id": 1,
+            "type_id": 1,
+            "documents": [
+                {
+                    "name": "test document 1",
+                    "language_id": 1,
+                    "source_url": "https://google.co.uk/",
+                    "s3_url": None,
+                    "year": 2009,
+                    "month": None,
+                    "day": None,
+                }
+            ],
+        },
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "source_id": 1,
+        "name": "test action",
+        "description": None,
+        "year": 2008,
+        "month": 1,
+        "day": 1,
+        "geography_id": 1,
+        "type_id": 1,
+        "documents": [
+            {
+                "name": "test document 1",
+                "language_id": 1,
+                "source_url": "https://google.co.uk/",
+                "s3_url": None,
+                "year": 2009,
+                "month": 1,
+                "day": 1,
+            }
+        ],
+    }
