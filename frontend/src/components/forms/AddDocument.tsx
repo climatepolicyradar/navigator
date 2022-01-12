@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
-import { Form, Formik, Field, connect, validateYupSchema } from 'formik';
+import { Form, Formik, Field, connect } from 'formik';
 import * as Yup from 'yup';
-import { getData, postData, postFile } from '../../api';
+import { postFile } from '../../api';
 import { months } from '../../constants/timedate';
 import { Document, Language } from '../../interfaces';
 import Button from '../buttons/Button';
@@ -137,8 +137,13 @@ const AddDocuments = ({
               </Field>
             </div>
             <div className="form-row">
-              <TextInput label="Enter URL" name="source_url" type="text" />
-              <p className="mt-4">or</p>
+              <TextInput
+                label="Enter URL"
+                name="source_url"
+                type="text"
+                placeholder="http://example.com/document.pdf"
+              />
+              <p className="mt-8">or</p>
             </div>
             <div className="form-row">
               <Field
@@ -148,10 +153,10 @@ const AddDocuments = ({
                 type="file"
                 onChange={(event) => {
                   setFieldValue('file', event.currentTarget.value);
-                  // console.log(event.currentTarget.files[0]);
                   setFileObj(event.currentTarget.files[0]);
                 }}
               />
+              <div className="text-sm text-gray-400 mt-1">150Mb maximum</div>
             </div>
             <div className="form-row md:flex items-start">
               <Field

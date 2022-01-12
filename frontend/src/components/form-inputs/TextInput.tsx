@@ -7,9 +7,15 @@ interface TextInputProps {
   label: string;
   type: string;
   required?: boolean;
+  placeholder?: string;
 }
 
-const TextInput = ({ label, required = false, ...props }: TextInputProps) => {
+const TextInput = ({
+  label,
+  required = false,
+  placeholder = '',
+  ...props
+}: TextInputProps) => {
   // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
   // which we can spread on <input>. We can use field meta to show an error
   // message if the field is invalid and it has been touched (i.e. visited)
@@ -26,6 +32,7 @@ const TextInput = ({ label, required = false, ...props }: TextInputProps) => {
           meta.touched && meta.error ? 'border-red-500' : 'border-gray-300'
         }`}
         type={props.type}
+        placeholder={placeholder}
         {...field}
         {...props}
       />
