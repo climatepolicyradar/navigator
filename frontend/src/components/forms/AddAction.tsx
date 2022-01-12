@@ -165,6 +165,7 @@ const AddAction = ({
                   month={values.month}
                   day={values.day}
                   languages={languages}
+                  active={popupActive}
                 />
               </Popup>
               <Form className="lg:w-1/2">
@@ -300,9 +301,11 @@ const AddAction = ({
                     )}
                   </div>
                   <Button
+                    id="cy-add-doc-modal"
                     type="submit"
                     onClick={(e) => {
                       e.preventDefault();
+                      window.scrollTo(0, 0);
                       setPopupActive(true);
                     }}
                   >

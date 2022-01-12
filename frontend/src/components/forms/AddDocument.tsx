@@ -16,6 +16,7 @@ interface AddDocumentsProps {
   handleDateChange(): void;
   yearSelections: number[];
   languages: Language[];
+  active: boolean;
 }
 
 const AddDocuments = ({
@@ -24,6 +25,7 @@ const AddDocuments = ({
   handleDateChange,
   yearSelections,
   languages,
+  active,
   ...props
 }) => {
   const [processing, setProcessing] = useState(false);
@@ -72,7 +74,10 @@ const AddDocuments = ({
   };
 
   return (
-    <div className="relative mt-8">
+    <div
+      id="cy-add-document-form"
+      className={`relative mt-8 ${active ? 'is-active' : ''}`}
+    >
       {processing ? (
         <>
           <div className="inset-0 fixed"></div>
@@ -151,7 +156,9 @@ const AddDocuments = ({
                 name="file"
                 accept=".pdf"
                 type="file"
+                className="w-full"
                 onChange={(event) => {
+                  console.log(event.currentTarget.files[0]);
                   setFieldValue('file', event.currentTarget.value);
                   setFileObj(event.currentTarget.files[0]);
                 }}
@@ -204,7 +211,19 @@ const AddDocuments = ({
               </Field>
             </div>
             <div className="form-row">
-              <Button type="submit">Add</Button>
+              <Button
+                id="cy-close-add-document-form"
+                color="clear"
+                extraClasses="mb-4 md:mb-0 md:mr-2"
+                onClick={() => {
+                  setPopupActive(false);
+                }}
+              >
+                Cancel
+              </Button>{' '}
+              <Button id="cy-submit-add-document-form" type="submit">
+                Add
+              </Button>
             </div>
           </Form>
         )}

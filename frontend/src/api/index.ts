@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const token =
-  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQG5hdmlnYXRvci5jb20iLCJwZXJtaXNzaW9ucyI6ImFkbWluIiwiZXhwIjoxNjQyMDAxNTE1fQ.N_dQvhR7dP8r72D-CLCU5itKzkXk_sJgmXyzzUCXH3U';
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQG5hdmlnYXRvci5jb20iLCJwZXJtaXNzaW9ucyI6ImFkbWluIiwiZXhwIjoxNjQyMDIwNzg0fQ.700hWpoUCMQYzlRATQ3xR3DOptdBWQxoSBkw54kT94U';
 
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,

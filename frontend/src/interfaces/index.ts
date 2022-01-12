@@ -4,8 +4,6 @@
 //
 // import { User } from 'path/to/interfaces';
 
-import { SassString } from 'sass';
-
 export type User = {
   id: number;
   name: string;
