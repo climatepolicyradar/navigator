@@ -35,6 +35,8 @@ const AddAction = ({
   sources,
 }: AddActionProps) => {
   const [processing, setProcessing] = useState(false);
+  const [days, setDays] = useState([]);
+  const [popupActive, setPopupActive] = useState(false);
   const initialValues = {
     source_id: '',
     name: '',
@@ -47,13 +49,23 @@ const AddAction = ({
     documents: [],
   };
 
-  const [days, setDays] = useState([]);
-  const [popupActive, setPopupActive] = useState(false);
-
   const yearSelections = yearRange();
 
-  const handleDateChange = (e) => {
-    const totalDays = daysInMonth(e.target.value, 2022);
+  const handleDateChange = (e, values) => {
+    const today = new Date();
+    const thisYear = today.getFullYear();
+    let year = values.year ? values.year : thisYear;
+    let month = values.month ? values.month : 1;
+
+    if (e.target.name === 'year') {
+      year = e.target.value;
+    }
+    if (e.target.name === 'month') {
+      month = e.target.value;
+    }
+    // change available days in month
+    const totalDays = daysInMonth(month, year);
+    console.log(month, year);
     setDays(Array.from(Array(totalDays).keys()));
   };
 
@@ -190,10 +202,12 @@ const AddAction = ({
                     required
                     onChange={(e) => {
                       setFieldValue('year', e.target.value);
-                      handleDateChange(e);
+                      handleDateChange(e, values);
                     }}
                   >
-                    <option>Choose</option>
+                    <option value="" disabled>
+                      Choose
+                    </option>
                     {yearSelections.map((year, index) => (
                       <option key={index} value={year}>
                         {year}
@@ -207,10 +221,10 @@ const AddAction = ({
                     classes="md:w-1/3 md:mr-4"
                     onChange={(e) => {
                       setFieldValue('month', e.target.value);
-                      handleDateChange(e);
+                      handleDateChange(e, values);
                     }}
                   >
-                    <option>Choose</option>
+                    <option value="">Choose</option>
                     {months.map((month, index) => (
                       <option key={index} value={index + 1}>
                         {month}
@@ -218,7 +232,7 @@ const AddAction = ({
                     ))}
                   </Field>
                   <Field as={Select} label="Day" name="day" classes="md:w-1/3">
-                    <option>Choose</option>
+                    <option value="">Choose</option>
                     {days.map((day, index) => (
                       <option key={index} value={day + 1}>
                         {day + 1}
