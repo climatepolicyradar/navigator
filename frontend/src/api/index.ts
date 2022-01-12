@@ -1,11 +1,13 @@
 import axios from 'axios';
 
+const token =
+  'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQG5hdmlnYXRvci5jb20iLCJwZXJtaXNzaW9ucyI6ImFkbWluIiwiZXhwIjoxNjQyMDAxNTE1fQ.N_dQvhR7dP8r72D-CLCU5itKzkXk_sJgmXyzzUCXH3U';
+
 const api = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   responseType: 'json',
   headers: {
-    Authorization:
-      'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQG5hdmlnYXRvci5jb20iLCJwZXJtaXNzaW9ucyI6ImFkbWluIiwiZXhwIjoxNjQxOTM3ODU4fQ.w29_aKrXf_tKGblAx30MYr1Pwu1wMWfIpPTjov2xCOc',
+    Authorization: `Bearer ${token}`,
     'Content-Type': 'application/json',
   },
 });
@@ -21,8 +23,7 @@ const fileapi = axios.create({
   baseURL: process.env.NEXT_PUBLIC_API_URL,
   responseType: 'json',
   headers: {
-    Authorization:
-      'Bearer eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ1c2VyQG5hdmlnYXRvci5jb20iLCJwZXJtaXNzaW9ucyI6ImFkbWluIiwiZXhwIjoxNjQxOTM3ODU4fQ.w29_aKrXf_tKGblAx30MYr1Pwu1wMWfIpPTjov2xCOc',
+    Authorization: `Bearer ${token}`,
     'Content-Type': 'multipart/form-data',
   },
 });
