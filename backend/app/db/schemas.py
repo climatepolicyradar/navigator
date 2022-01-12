@@ -1,7 +1,7 @@
 import typing as t
 import datetime
 
-from pydantic import BaseModel, HttpUrl, conint
+from pydantic import BaseModel, HttpUrl, conint, validator
 
 
 class UserBase(BaseModel):
@@ -53,11 +53,16 @@ class DocumentBase(BaseModel):
     source_url: t.Optional[HttpUrl]
     s3_url: t.Optional[HttpUrl]
     year: conint(ge=1900, le=datetime.datetime.now().year)
-    month: t.Optional[conint(ge=1, le=12)] = 1
-    day: t.Optional[conint(ge=1, le=31)] = 1
+    month: t.Optional[conint(ge=1, le=12)]
+    day: t.Optional[conint(ge=1, le=31)]
+
+    @validator("month", "day")
+    def set_date(cls, val):
+        return val or 1
 
     class Config:
         orm_mode = True
+        validate_assignment = True
 
 
 class DocumentCreate(DocumentBase):
@@ -69,15 +74,20 @@ class ActionBase(BaseModel):
     name: str
     description: t.Optional[str]
     year: conint(ge=1900, le=datetime.datetime.now().year)
-    month: t.Optional[conint(ge=1, le=12)] = 1
-    day: t.Optional[conint(ge=1, le=31)] = 1
+    month: t.Optional[conint(ge=1, le=12)]
+    day: t.Optional[conint(ge=1, le=31)]
     geography_id: int
     type_id: int
     source_id: int
     documents: t.List[DocumentBase]
 
+    @validator("month", "day")
+    def set_date(cls, val):
+        return val or 1
+
     class Config:
         orm_mode = True
+        validate_assignment = True
 
 
 class ActionCreate(ActionBase):

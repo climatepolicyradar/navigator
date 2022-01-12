@@ -146,7 +146,9 @@ class S3Client:
 
         self.delete_document(s3_document)
 
-        return S3Document(new_bucket, os.getenv("AWS_REGION"), new_key)
+        return S3Document(
+            new_bucket, os.getenv("AWS_REGION"), new_key or s3_document.key
+        )
 
 
 def get_s3_client():

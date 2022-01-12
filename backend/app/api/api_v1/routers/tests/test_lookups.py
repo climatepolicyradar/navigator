@@ -19,4 +19,6 @@ def test_get_lookups(client, user_token_headers, test_db):
         db_data = test_db.query(table).all()
 
         assert response.status_code == 200
-        assert len(response.json()) == len(db_data)
+        if path != "languages":
+            # We filter languages to only those with a value for `part1_code`
+            assert len(response.json()) == len(db_data)
