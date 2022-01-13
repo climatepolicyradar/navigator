@@ -1,26 +1,32 @@
 /// <reference types="cypress" />
 
-context('SubmitDocument', () => {
-  // beforeEach(() => {
-  //   cy.visit('http://localhost:3000');
-  // });
+describe('Submit Action form', () => {
+  it('should load all lookups', () => {
+    cy.intercept('GET', 'sources', { fixture: 'sources' }).as('getSources');
+    cy.intercept('GET', 'geographies', { fixture: 'geographies' }).as(
+      'getGeographies'
+    );
+    cy.intercept('GET', 'action_types', { fixture: 'action-types' }).as(
+      'getActionTypes'
+    );
+    cy.intercept('GET', 'languages', { fixture: 'languages' }).as(
+      'getLanguages'
+    );
+    cy.visit('http://localhost:3000/');
+    cy.wait('@getSources');
+    cy.wait('@getGeographies');
+    cy.wait('@getActionTypes');
+    cy.wait('@getLanguages');
+
+    cy.get('[data-cy="selectSource"] option').should('have.length', 2);
+    cy.get('[data-cy="selectGeographies"] option').should('have.length', 11);
+    cy.get('[data-cy="selectActionType"] option').should('have.length', 3);
+    cy.get('[data-cy="selectLanguages"] option').should('have.length', 11);
+  });
 
   it('Should open the Add Document modal window', () => {
     cy.visit('http://localhost:3000');
-    cy.get('#cy-add-doc-modal').click();
-    cy.get('#cy-add-document-form').should('have.class', 'is-active');
-  });
-  it('Should return errors because form fields are all empty', () => {
-    cy.get('#cy-submit-add-document-form').click();
-
-    //   cy.get('#cy-add-document-form input[name=name]')
-    //     .next('.error')
-    //     .should('contain', 'Required');
-    cy.get('.error').should('have.length', 4);
-  });
-
-  it('Should close the Add Document modal window', () => {
-    cy.get('#cy-close-add-document-form').click();
-    cy.get('#cy-add-document-form').should('not.have.class', 'is-active');
+    cy.get('[data-cy="add-doc-modal"]').click();
+    cy.get('[data-cy="add-document-form"]').should('have.class', 'is-active');
   });
 });

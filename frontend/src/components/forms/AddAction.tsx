@@ -170,7 +170,13 @@ const AddAction = ({
               </Popup>
               <Form className="lg:w-1/2">
                 <div className="form-row">
-                  <Field as={Select} label="Source" name="source_id" required>
+                  <Field
+                    as={Select}
+                    data-cy="selectSource"
+                    label="Source"
+                    name="source_id"
+                    required
+                  >
                     <option>Choose a source</option>
                     {sources.map((source, index) => (
                       <option key={`source${index}`} value={source.source_id}>
@@ -243,6 +249,7 @@ const AddAction = ({
                 </div>
                 <div className="form-row">
                   <Field
+                    data-cy="selectGeographies"
                     as={Select}
                     label="Geography/Country"
                     name="geography_id"
@@ -262,6 +269,7 @@ const AddAction = ({
                 </div>
                 <div className="form-row">
                   <Field
+                    data-cy="selectActionType"
                     as={Select}
                     label="Action type"
                     name="type_id"
@@ -287,6 +295,7 @@ const AddAction = ({
 
                     {values.documents.length > 0 ? (
                       <ol
+                        data-cy="document-list"
                         className="mb-4 list-decimal list-inside text-left"
                         role="list"
                       >
@@ -301,7 +310,7 @@ const AddAction = ({
                     )}
                   </div>
                   <Button
-                    id="cy-add-doc-modal"
+                    data-cy="add-doc-modal"
                     type="submit"
                     onClick={(e) => {
                       e.preventDefault();

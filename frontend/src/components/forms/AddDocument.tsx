@@ -75,7 +75,7 @@ const AddDocuments = ({
 
   return (
     <div
-      id="cy-add-document-form"
+      data-cy="add-document-form"
       className={`relative mt-8 ${active ? 'is-active' : ''}`}
     >
       {processing ? (
@@ -129,7 +129,13 @@ const AddDocuments = ({
               />
             </div>
             <div className="form-row">
-              <Field as={Select} label="Language" name="language_id" required>
+              <Field
+                as={Select}
+                data-cy="selectLanguages"
+                label="Language"
+                name="language_id"
+                required
+              >
                 <option>Choose a language</option>
                 {languages.map((language: Language) => (
                   <option
@@ -212,7 +218,7 @@ const AddDocuments = ({
             </div>
             <div className="form-row">
               <Button
-                id="cy-close-add-document-form"
+                data-cy="close-add-document-form"
                 color="clear"
                 extraClasses="mb-4 md:mb-0 md:mr-2"
                 onClick={() => {
@@ -221,7 +227,7 @@ const AddDocuments = ({
               >
                 Cancel
               </Button>{' '}
-              <Button id="cy-submit-add-document-form" type="submit">
+              <Button data-cy="submit-add-document-form" type="submit">
                 Add
               </Button>
             </div>

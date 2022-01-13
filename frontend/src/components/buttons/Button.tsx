@@ -8,6 +8,7 @@ interface ButtonProps {
   color?: 'dark' | 'light' | 'clear';
   id?: string;
   extraClasses?: string;
+  'data-cy'?: string;
 }
 
 const Button = ({
@@ -18,6 +19,7 @@ const Button = ({
   color = 'light',
   id = '',
   extraClasses = '',
+  ...props
 }: ButtonProps) => {
   let colorClasses = 'bg-gray-800 text-white border border-gray-800';
   switch (color) {
@@ -34,6 +36,7 @@ const Button = ({
       type={type}
       disabled={disabled}
       id={id}
+      data-cy={props['data-cy']}
       className={`${colorClasses} px-4 py-2 rounded w-full md:w-auto md:px-8 pointer-events-auto ${extraClasses}`}
     >
       {children}
