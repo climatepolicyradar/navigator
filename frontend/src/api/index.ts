@@ -19,6 +19,7 @@ export const getAuth = async () => {
     )
     .then((response) => {
       token = response.data.access_token;
+      window.localStorage.setItem('jwt', response.data.access_token);
       return response.statusText == 'OK'
         ? response.data
         : Promise.reject(Error('Unsuccessful response'));
@@ -32,7 +33,7 @@ export const postFile = async (req: string, data): Promise<any> => {
     url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
     data,
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
       'Content-Type': 'multipart/form-data',
     },
   }).then((response) => {
@@ -48,7 +49,7 @@ export const postData = async (req: string, data): Promise<any> => {
     url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
     data,
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
       'Content-Type': 'application/json',
     },
   }).then((response) => {
@@ -63,7 +64,7 @@ export const getData = async (req: string): Promise<any> => {
     method: 'GET',
     url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
     headers: {
-      Authorization: `Bearer ${token}`,
+      Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
       'Content-Type': 'application/json',
     },
   }).then((response) => {

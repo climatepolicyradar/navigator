@@ -13,6 +13,7 @@ module.exports = {
       white: colors.white,
       gray: colors.gray,
       red: colors.rose,
+      green: colors.green,
       semiTransWhite: 'rgba(255, 255, 255, 0.85)',
     },
     container: {

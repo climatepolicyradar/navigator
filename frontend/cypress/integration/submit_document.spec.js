@@ -14,20 +14,10 @@ describe('SubmitDocument', () => {
   });
 
   it('Should close popup and add to documents list when all required fields are completed and Add button is clicked', () => {
-    cy.intercept('POST', 'document', { fixture: 'document' }).as(
-      'postDocument'
-    );
-    cy.get('[data-cy="add-document-form"] input[name=name]').type(
-      'Name of document'
-    );
-    cy.get('[data-cy="add-document-form"] select[name=language_id]').select(
-      '193'
-    );
-    cy.get('[data-cy="add-document-form"]  input[type="file"]').attachFile(
-      'somefile.pdf'
-    );
-    cy.get('[data-cy="add-document-form"] select[name=year]').select('2020');
-    cy.get('[data-cy="submit-add-document-form"]').click();
+    // cy.intercept('POST', 'document', { fixture: 'document' }).as(
+    //   'postDocument'
+    // );
+    cy.submit_pdf_file();
     cy.get('[data-cy="add-document-form"]').should(
       'not.have.class',
       'is-active'

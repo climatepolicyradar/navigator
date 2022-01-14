@@ -14,24 +14,37 @@ const IndexPage = () => {
     return langs.filter((lang) => lang.part1_code !== null);
   };
   const authenticate = async () => {
+    console.log('authenticating');
     await getAuth();
     fetchAll();
   };
-  const fetchAll = async () => {
-    const [geos, langs, actionTypes, sources] = await Promise.all([
+  const fetchAll = () => {
+    Promise.all([
       getData('geographies'),
       getData('languages'),
       getData('action_types'),
       getData('sources'),
-    ]);
-    setGeographies(geos);
-    setLanguages(langs);
-    setActionTypes(actionTypes);
-    setSources(sources);
+    ])
+      .then((values) => {
+        const [geos, langs, actionTypes, sources] = values;
+        setGeographies(geos);
+        setLanguages(langs);
+        setActionTypes(actionTypes);
+        setSources(sources);
+      })
+      .catch((err) => {
+        console.log(err);
+        authenticate();
+      });
   };
   useEffect(() => {
+    const token = window.localStorage.getItem('jwt');
+    if (token) {
+      fetchAll();
+      return;
+    }
+    // for now automatically authenticate a user
     authenticate();
-    // fetchAll();
   }, []);
   return (
     <Layout title="Home | Submit new policy">

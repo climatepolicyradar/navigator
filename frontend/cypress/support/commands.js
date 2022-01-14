@@ -25,3 +25,39 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import 'cypress-file-upload';
+
+Cypress.Commands.add('login', () => {
+  cy.request({
+    method: 'POST',
+    url: 'http://localhost:8000/api/token',
+    headers: {
+      'Content-Type': 'application/x-www-form-urlencoded',
+    },
+    body: {
+      grant_type: '',
+      username: 'user@navigator.com',
+      password: 'password',
+      scope: '',
+      client_id: 'test',
+      client_secret: 'super_secret',
+    },
+  }).then((resp) => {
+    window.localStorage.setItem('jwt', resp.body.access_token);
+  });
+});
+
+Cypress.Commands.add('submit_pdf_file', () => {
+  cy.intercept('POST', 'document', { fixture: 'document' }).as('postDocument');
+
+  cy.get('[data-cy="add-document-form"] input[name=name]').type(
+    'Name of document'
+  );
+  cy.get('[data-cy="add-document-form"] select[name=language_id]').select(
+    '193'
+  );
+  cy.get('[data-cy="add-document-form"]  input[type="file"]').attachFile(
+    'somefile.pdf'
+  );
+  cy.get('[data-cy="add-document-form"] select[name=year]').select('2020');
+  cy.get('[data-cy="submit-add-document-form"]').click();
+});

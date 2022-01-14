@@ -35,6 +35,7 @@ const AddAction = ({
   sources,
 }: AddActionProps) => {
   const [processing, setProcessing] = useState(false);
+  const [message, setMessage] = useState('');
   const [days, setDays] = useState([]);
   const [popupActive, setPopupActive] = useState(false);
   const initialValues = {
@@ -65,7 +66,6 @@ const AddAction = ({
     }
     // change available days in month
     const totalDays = daysInMonth(month, year);
-    console.log(month, year);
     setDays(Array.from(Array(totalDays).keys()));
   };
 
@@ -104,6 +104,7 @@ const AddAction = ({
     resetForm();
     await postData(req, values);
     setProcessing(false);
+    setMessage('Success!');
   };
 
   useEffect(() => {
@@ -124,6 +125,12 @@ const AddAction = ({
       />
       <div>
         <h1>Submit new action</h1>
+        {message.length > 0 && (
+          <p cy-data="message" className="font-bold text-green-500">
+            {message}
+          </p>
+        )}
+
         <Formik
           initialValues={initialValues}
           validationSchema={Yup.object({
@@ -168,7 +175,10 @@ const AddAction = ({
                   active={popupActive}
                 />
               </Popup>
-              <Form className="lg:w-1/2">
+              <Form
+                data-cy="add-action-form"
+                className="lg:w-1/2 pointer-events-auto"
+              >
                 <div className="form-row">
                   <Field
                     as={Select}
@@ -290,7 +300,9 @@ const AddAction = ({
                   <h2>Documents</h2>
                   <div className="mt-4">
                     {errors.documents && touched.documents ? (
-                      <p className="text-red-500 mb-4">{errors.documents}</p>
+                      <p className="error text-red-500 mb-4">
+                        {errors.documents}
+                      </p>
                     ) : null}
 
                     {values.documents.length > 0 ? (
@@ -322,7 +334,12 @@ const AddAction = ({
                   </Button>
                 </div>
                 <div className="my-4 flex border-t pt-8 mt-10 border-gray-300">
-                  <Button type="submit" color="dark" disabled={isSubmitting}>
+                  <Button
+                    data-cy="submit-add-action-form"
+                    type="submit"
+                    color="dark"
+                    disabled={isSubmitting}
+                  >
                     Submit
                   </Button>
                 </div>
