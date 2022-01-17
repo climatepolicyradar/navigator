@@ -2,21 +2,7 @@
 
 describe('Submit Action form', () => {
   it('should load all lookups', () => {
-    cy.intercept('GET', 'sources', { fixture: 'sources' }).as('getSources');
-    cy.intercept('GET', 'geographies', { fixture: 'geographies' }).as(
-      'getGeographies'
-    );
-    cy.intercept('GET', 'action_types', { fixture: 'action-types' }).as(
-      'getActionTypes'
-    );
-    cy.intercept('GET', 'languages', { fixture: 'languages' }).as(
-      'getLanguages'
-    );
-    cy.visit('http://localhost:3000/');
-    cy.wait('@getSources');
-    cy.wait('@getGeographies');
-    cy.wait('@getActionTypes');
-    cy.wait('@getLanguages');
+    cy.get_lookups();
 
     cy.get('[data-cy="selectSource"] option').should('have.length', 2);
     cy.get('[data-cy="selectGeographies"] option').should('have.length', 11);
@@ -38,7 +24,7 @@ describe('Submit Action form', () => {
 
   it('should fill out form and display success message on submit', () => {
     cy.intercept('POST', 'action', { fixture: 'action' }).as('postAction');
-    cy.visit('http://localhost:3000');
+    cy.get_lookups();
     cy.get('[data-cy="add-action-form"] select[name=source_id]').select('1');
     cy.get('[data-cy="add-action-form"] input[name=name]').type(
       'Name of action'

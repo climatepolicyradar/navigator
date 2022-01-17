@@ -10,9 +10,6 @@ describe('SubmitDocument', () => {
   });
 
   it('Should close popup and add to documents list when all required fields are completed and Add button is clicked', () => {
-    // cy.intercept('POST', 'document', { fixture: 'document' }).as(
-    //   'postDocument'
-    // );
     cy.submit_pdf_file();
     cy.get('[data-cy="add-document-form"]').should(
       'not.have.class',

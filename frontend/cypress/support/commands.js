@@ -61,3 +61,19 @@ Cypress.Commands.add('submit_pdf_file', () => {
   cy.get('[data-cy="add-document-form"] select[name=year]').select('2020');
   cy.get('[data-cy="submit-add-document-form"]').click();
 });
+
+Cypress.Commands.add('get_lookups', () => {
+  cy.intercept('GET', 'sources', { fixture: 'sources' }).as('getSources');
+  cy.intercept('GET', 'geographies', { fixture: 'geographies' }).as(
+    'getGeographies'
+  );
+  cy.intercept('GET', 'action_types', { fixture: 'action-types' }).as(
+    'getActionTypes'
+  );
+  cy.intercept('GET', 'languages', { fixture: 'languages' }).as('getLanguages');
+  cy.visit('http://localhost:3000/');
+  cy.wait('@getSources');
+  cy.wait('@getGeographies');
+  cy.wait('@getActionTypes');
+  cy.wait('@getLanguages');
+});
