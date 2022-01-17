@@ -48,7 +48,7 @@ const AddDocuments = ({
 
   const submitDocument = async (values, resetForm) => {
     setProcessing(true);
-
+    window.scrollTo(0, 0);
     if (!fileobj) {
       closePopup(values, resetForm);
       return;
@@ -87,32 +87,29 @@ const AddDocuments = ({
       <h2>Add a document to this action</h2>
       <Formik
         initialValues={initialValues}
-        validationSchema={Yup.object(
-          {
-            name: Yup.string().required('Required'),
-            year: Yup.string().required('Please select a year'),
-            language_id: Yup.string().required('Please select a language'),
-            source_url: Yup.lazy(() =>
-              Yup.string().when('file', {
-                is: (file) => {
-                  return file === undefined;
-                },
-                then: Yup.string().required(
-                  'Please either enter a file URL or select a file.'
-                ),
-              })
-            ),
-            file: Yup.lazy(() =>
-              Yup.string().when('source_url', {
-                is: (source_url) => {
-                  return source_url === undefined;
-                },
-                then: Yup.string().required(),
-              })
-            ),
-          }
-          // ['file', 'source_url']
-        )}
+        validationSchema={Yup.object({
+          name: Yup.string().required('Required'),
+          year: Yup.string().required('Please select a year'),
+          language_id: Yup.string().required('Please select a language'),
+          source_url: Yup.lazy(() =>
+            Yup.string().when('file', {
+              is: (file) => {
+                return file === undefined;
+              },
+              then: Yup.string().required(
+                'Please either enter a file URL or select a file.'
+              ),
+            })
+          ),
+          file: Yup.lazy(() =>
+            Yup.string().when('source_url', {
+              is: (source_url) => {
+                return source_url === undefined;
+              },
+              then: Yup.string().required(),
+            })
+          ),
+        })}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           submitDocument(values, resetForm);
         }}

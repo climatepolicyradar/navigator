@@ -68,6 +68,9 @@ select {
 
 .button {
   box-shadow: 0 0 32px #1f93ff6f;
+  &.clear {
+    box-shadow: none;
+  }
 }
 
 .form-row {

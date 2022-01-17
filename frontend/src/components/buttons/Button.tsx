@@ -25,10 +25,12 @@ const Button = ({
     'bg-indigo-600 text-white border border-indigo-600 hover:bg-white hover:border-white hover:text-indigo-600';
   switch (color) {
     case 'light':
-      colorClasses = 'bg-blue-500 border border-blue-500 text-white';
+      colorClasses =
+        'bg-blue-500 border border-blue-500 text-white hover:bg-white hover:border-white hover:text-indigo-600';
       break;
     case 'clear':
-      colorClasses = 'bg-white border border-indigo-600 text-indigo-600';
+      colorClasses =
+        'clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100';
       break;
   }
   return (

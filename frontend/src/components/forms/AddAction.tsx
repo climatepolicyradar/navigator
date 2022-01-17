@@ -101,11 +101,15 @@ const AddAction = ({
     setProcessing(true);
     processValues(values);
     let req = 'action';
-    resetForm();
+    resetForm({
+      values: initialValues,
+    });
+    //TODO: might want to use try/catch to handle errors?
     await postData(req, values);
     window.scrollTo(0, 0);
+
     setProcessing(false);
-    setMessage('Success!');
+    setMessage('Action successfully added!');
   };
 
   useEffect(() => {
@@ -130,7 +134,10 @@ const AddAction = ({
           to an action.
         </p>
         {message.length > 0 && (
-          <p data-cy="message" className="font-bold text-green-500">
+          <p
+            data-cy="message"
+            className="mt-4 font-bold text-xl text-green-500"
+          >
             {message}
           </p>
         )}
