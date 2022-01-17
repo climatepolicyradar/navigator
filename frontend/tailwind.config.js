@@ -31,6 +31,13 @@ module.exports = {
         400: '#7cb4fa',
         500: '#1f93ff',
       },
+      yellow: {
+        100: '#fefaf1',
+        200: '#fcf5e1',
+        300: '#faeac3',
+        400: '#f6e0a8',
+        500: '#f1cb73',
+      },
     },
     container: {
       center: true,

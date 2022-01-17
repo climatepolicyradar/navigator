@@ -7,7 +7,7 @@ const Banner = ({ heading }: BannerProps) => {
     <div className="banner">
       <div className="banner-inner container pt-32 pb-12 md:pt-36 md:pb-20">
         <Pill text={heading} />
-        <h1 className="mt-8 text-white">Submit New Action</h1>
+        <h2 className="mt-8 text-white">Submit New Action</h2>
       </div>
     </div>
   );
