@@ -110,8 +110,8 @@ const AddDocuments = ({
                 then: Yup.string().required(),
               })
             ),
-          },
-          ['file', 'source_url']
+          }
+          // ['file', 'source_url']
         )}
         onSubmit={(values, { setSubmitting, resetForm }) => {
           submitDocument(values, resetForm);
