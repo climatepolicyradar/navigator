@@ -9,7 +9,6 @@ services:
     # share the current folder as volume to avoid copying
     working_dir: /e2e
     network_mode: 'host'
-    command: 'npm install --save-dev cypress-file-upload'
     volumes:
       - $PWD/:/e2e
 
