@@ -1,6 +1,7 @@
 describe('SubmitDocument', () => {
   beforeEach(() => {
     cy.visit('http://localhost:3000');
+    cy.get_lookups();
     cy.get('[data-cy="add-doc-modal"]').click();
   });
 
