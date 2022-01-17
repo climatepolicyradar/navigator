@@ -4,10 +4,6 @@ describe('SubmitDocument', () => {
     cy.get('[data-cy="add-doc-modal"]').click();
   });
 
-  //before
-  //after
-  //afterEach
-
   it('Should return errors when clicking Add because required form fields are empty', () => {
     cy.get('[data-cy="submit-add-document-form"]').click();
     cy.get('.error').should('have.length', 4);
