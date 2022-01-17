@@ -124,8 +124,11 @@ const AddAction = ({
           setPopupActive(false);
         }}
       />
-      <div>
-        <h1>Submit new action</h1>
+      <div className="text-lg">
+        <p className="font-bold text-indigo-600 text-xl">
+          Add a new action using the form below. Multiple documents can be added
+          to an action.
+        </p>
         {message.length > 0 && (
           <p data-cy="message" className="font-bold text-green-500">
             {message}
@@ -178,7 +181,7 @@ const AddAction = ({
               </Popup>
               <Form
                 data-cy="add-action-form"
-                className="lg:w-1/2 pointer-events-auto"
+                className="lg:w-2/3 pointer-events-auto"
               >
                 <div className="form-row">
                   <Field
@@ -236,7 +239,7 @@ const AddAction = ({
                     as={Select}
                     label="Month"
                     name="month"
-                    classes="md:w-1/3 md:mr-4"
+                    classes="md:w-1/3 md:mr-4 mt-2 md:mt-0"
                     onChange={(e) => {
                       setFieldValue('month', e.target.value);
                       handleDateChange(e, values);
@@ -249,7 +252,12 @@ const AddAction = ({
                       </option>
                     ))}
                   </Field>
-                  <Field as={Select} label="Day" name="day" classes="md:w-1/3">
+                  <Field
+                    as={Select}
+                    label="Day"
+                    name="day"
+                    classes="md:w-1/3 mt-2 md:mt-0"
+                  >
                     <option value="">Choose</option>
                     {days.map((day, index) => (
                       <option key={index} value={day + 1}>
@@ -341,7 +349,7 @@ const AddAction = ({
                     color="dark"
                     disabled={isSubmitting}
                   >
-                    Submit
+                    Submit Action
                   </Button>
                 </div>
               </Form>
