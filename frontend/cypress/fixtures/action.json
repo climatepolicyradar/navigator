@@ -1,0 +1,21 @@
+{
+  "name": "Name of action",
+  "description": "Description",
+  "year": 2022,
+  "month": 12,
+  "day": 31,
+  "geography_id": 1,
+  "type_id": 1,
+  "source_id": 1,
+  "documents": [
+    {
+      "name": "Name of document",
+      "language_id": 1,
+      "source_url": null,
+      "s3_url": "https://cpr-document-store.s3.eu-west-2.amazonaws.com/user-1-time-20220114101338-somefile.pdf",
+      "year": 2022,
+      "month": 12,
+      "day": 31
+    }
+  ]
+}

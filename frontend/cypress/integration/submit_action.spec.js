@@ -37,6 +37,7 @@ describe('Submit Action form', () => {
   });
 
   it('should fill out form and display success message on submit', () => {
+    cy.intercept('POST', 'action', { fixture: 'action' }).as('postAction');
     cy.visit('http://localhost:3000');
     cy.get('[data-cy="add-action-form"] select[name=source_id]').select('1');
     cy.get('[data-cy="add-action-form"] input[name=name]').type(
@@ -50,7 +51,9 @@ describe('Submit Action form', () => {
     cy.submit_pdf_file();
 
     cy.get('[data-cy="submit-add-action-form"]').click();
-
+    cy.wait('@postAction');
+    // should scroll to top and success message is visible
     cy.get('[data-cy="message"]').should('contain', 'Success!');
+    cy.window().its('scrollY').should('equal', 0);
   });
 });

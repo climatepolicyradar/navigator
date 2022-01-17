@@ -91,7 +91,7 @@ const AddAction = ({
       if (document.source_url.length === 0) {
         document.source_url = null;
       }
-      if (document.s3_url.length === 0) {
+      if (document.s3_url?.length === 0) {
         document.s3_url = null;
       }
     });
@@ -103,6 +103,7 @@ const AddAction = ({
     let req = 'action';
     resetForm();
     await postData(req, values);
+    window.scrollTo(0, 0);
     setProcessing(false);
     setMessage('Success!');
   };
@@ -126,7 +127,7 @@ const AddAction = ({
       <div>
         <h1>Submit new action</h1>
         {message.length > 0 && (
-          <p cy-data="message" className="font-bold text-green-500">
+          <p data-cy="message" className="font-bold text-green-500">
             {message}
           </p>
         )}
