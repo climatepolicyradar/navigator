@@ -39,7 +39,7 @@ describe('Submit Action form', () => {
     cy.get('[data-cy="submit-add-action-form"]').click();
     cy.wait('@postAction');
     // should scroll to top and success message is visible
-    cy.get('[data-cy="message"]').should('contain', 'Success!');
+    cy.get('[data-cy="message"]').should('be.visible');
     cy.window().its('scrollY').should('equal', 0);
   });
 });

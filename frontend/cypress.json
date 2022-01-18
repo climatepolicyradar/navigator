@@ -4,5 +4,6 @@
     "**/2-advanced-examples/*.js"
   ],
   "viewportWidth": 1000,
-  "viewportHeight": 700
+  "viewportHeight": 700,
+  "defaultCommandTimeout": 6000
 }
