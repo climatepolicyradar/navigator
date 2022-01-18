@@ -24,7 +24,7 @@ const Header = () => {
       } w-full top-0 left-0 transition duration-300 z-10`}
     >
       <div className="container my-4">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start">
           <span className={`${fixed ? 'text-indigo-600' : 'text-white'}`}>
             <Link href="/">
               <a>
