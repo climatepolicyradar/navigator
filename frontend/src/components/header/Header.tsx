@@ -18,6 +18,7 @@ const Header = () => {
   }, []);
   return (
     <header
+      data-cy="header"
       ref={headerRef}
       className={`${
         fixed ? 'fixed bg-sky' : 'absolute bg-transparent'
@@ -32,7 +33,7 @@ const Header = () => {
               </a>
             </Link>
           </span>
-          <div className="flex items-start">
+          <div data-cy="product-name" className="flex items-start">
             <h1
               className={`${
                 fixed
@@ -42,7 +43,10 @@ const Header = () => {
             >
               Navigator
             </h1>
-            <span className="bg-yellow-500 ml-2 mt-2 text-xs text-indigo-600 px-1 rounded">
+            <span
+              data-cy="alpha"
+              className="bg-yellow-500 ml-2 mt-2 text-xs text-indigo-600 px-1 rounded"
+            >
               alpha
             </span>
           </div>

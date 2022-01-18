@@ -77,3 +77,11 @@ Cypress.Commands.add('get_lookups', () => {
   cy.wait('@getActionTypes');
   cy.wait('@getLanguages');
 });
+
+Cypress.Commands.add('check_mobile_width', () => {
+  // smallest mobile width (320) including a scrollbar (335)
+  cy.viewport(335, 600);
+  // should scroll horizontally if elements too wide
+  cy.scrollTo(1000, 0);
+  cy.window().its('scrollX').should('equal', 0);
+});
