@@ -2,5 +2,64 @@
 @tailwind components;
 @tailwind utilities;
 
+@font-face {
+  font-family: 'Neue Haas Grotesk Display';
+  src: url('/fonts/5549031/5e356b56-25c1-43ac-9524-44e597eb7172.woff2')
+      format('woff2'),
+    url('/fonts/5549031/bb63728c-a742-41fb-929f-64692e41d2e7.woff')
+      format('woff');
+  /* font-display: swap; */
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Neue Haas Grotesk Display';
+  src: url('/fonts/5548986/4746c4e5-3355-4f8f-8395-3f7abfcbf4b8.woff2')
+      format('woff2'),
+    url('/fonts/5548986/0058324c-ca31-42b1-bf5b-b9d9025c1a9c.woff')
+      format('woff');
+  /* font-display: swap; */
+  font-weight: 500;
+}
+
 body {
+  font-family: 'Neue Haas Grotesk Display';
+}
+h1,
+h2,
+h3,
+h4 {
+  font-weight: 500;
+}
+h1 {
+  @apply text-3xl;
+}
+h2 {
+  @apply text-2xl;
+}
+h3 {
+  @apply text-xl;
+}
+h4 {
+  @apply text-lg;
+}
+input[type='text'],
+input[type='number'],
+textarea,
+select {
+  @apply p-2 rounded border text-lg w-full;
+}
+
+.form-row {
+  @apply my-8;
+  label {
+    @apply font-bold block;
+  }
+}
+
+// radar loader
+.radar {
+  transform: rotate(-70deg);
+  width: 25%;
+  height: 14em;
 }

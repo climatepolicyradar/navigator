@@ -72,7 +72,7 @@ async def action_create(
 
     db_action = create_action(db, action_create)
 
-    for document in action.documents:
+    for idx, document in enumerate(action.documents):
         # Move document to cpr-document-store bucket
         if document.s3_url:
             s3_document = S3Document.from_url(document.s3_url)
@@ -90,13 +90,14 @@ async def action_create(
             language_id=document.language_id,
             source_url=document.source_url,
             s3_url=moved_document_url,
-            year=action.year,
-            month=action.month,
-            day=action.day,
+            year=document.year,
+            month=document.month,
+            day=document.day,
             # Modification date is set to date of document submission
             document_mod_date=datetime.now().date(),
         )
 
         create_document(db, document_create)
+        action.documents[idx] = document_create
 
     return action

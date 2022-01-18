@@ -1,0 +1,62 @@
+[
+  {
+    "geography_id": 1,
+    "country_code": "AFG",
+    "english_shortname": "Afghanistan",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 2,
+    "country_code": "ALB",
+    "english_shortname": "Albania",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 3,
+    "country_code": "DZA",
+    "english_shortname": "Algeria",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 4,
+    "country_code": "AND",
+    "english_shortname": "Andorra",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 5,
+    "country_code": "AGO",
+    "english_shortname": "Angola",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 6,
+    "country_code": "ATG",
+    "english_shortname": "Antigua and Barbuda",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 7,
+    "country_code": "ARG",
+    "english_shortname": "Argentina",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 8,
+    "country_code": "ARM",
+    "english_shortname": "Armenia",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 9,
+    "country_code": "AUS",
+    "english_shortname": "Australia",
+    "french_shortname": null
+  },
+  {
+    "geography_id": 10,
+    "country_code": "AUT",
+    "english_shortname": "Austria",
+    "french_shortname": null
+  }
+]

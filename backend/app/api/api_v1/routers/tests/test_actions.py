@@ -1,4 +1,5 @@
 from app.db import models
+import datetime
 
 
 def test_post_action(
@@ -45,6 +46,122 @@ def test_post_action(
     assert len(store_bucket_contents) == 1
     assert store_bucket_contents[0].get("Key") == "test_document.pdf"
 
-    # DB contains one action, with the name 'test action'
+    # Action table contains one action, with the name 'test action'
     assert len(test_db.query(models.Action).all()) == 1
     assert test_db.query(models.Action).all()[0].name == "test action"
+
+    # Document table contains a document with the correct properties
+    assert test_db.query(models.Document).all()[0].name == "test document 1"
+    assert test_db.query(models.Document).all()[0].source_url is None
+    assert test_db.query(models.Document).all()[0].language_id == 1
+    assert (
+        test_db.query(models.Document).all()[0].s3_url
+        == f"https://{s3_document_bucket_names['store']}.s3.eu-west-2.amazonaws.com/test_document.pdf"
+    )
+
+    # API should be able to take null values for month and year, for both documents and actions, and for `s3_url`.
+    response = client.post(
+        "/api/v1/action",
+        json={
+            "source_id": 1,
+            "name": "test action",
+            "year": 2008,
+            "month": None,
+            "day": None,
+            "geography_id": 1,
+            "type_id": 1,
+            "documents": [
+                {
+                    "name": "test document 1",
+                    "language_id": 1,
+                    "source_url": "https://google.co.uk/",
+                    "s3_url": None,
+                    "year": 2009,
+                    "month": None,
+                    "day": None,
+                }
+            ],
+        },
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "source_id": 1,
+        "name": "test action",
+        "description": None,
+        "year": 2008,
+        "month": 1,
+        "day": 1,
+        "geography_id": 1,
+        "type_id": 1,
+        "documents": [
+            {
+                "name": "test document 1",
+                "language_id": 1,
+                "source_url": "https://google.co.uk/",
+                "s3_url": None,
+                "year": 2009,
+                "month": 1,
+                "day": 1,
+            }
+        ],
+    }
+
+    # API should return 400 when user provides `source_url` that doesn't have MIME type pdf or HTML
+    response = client.post(
+        "/api/v1/action",
+        json={
+            "source_id": 1,
+            "name": "test action",
+            "year": 2008,
+            "month": None,
+            "day": None,
+            "geography_id": 1,
+            "type_id": 1,
+            "documents": [
+                {
+                    "name": "test document 1",
+                    "language_id": 1,
+                    "source_url": "https://raw.githubusercontent.com/climatepolicyradar/navigator/dev/backend/app/api/api_v1/routers/tests/data/empty_img.png",
+                    "s3_url": None,
+                    "year": 2009,
+                    "month": None,
+                    "day": None,
+                }
+            ],
+        },
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 400
+
+    # Providing an action date in the future should raise a 400
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+
+    response = client.post(
+        "/api/v1/action",
+        json={
+            "source_id": 1,
+            "name": "test action",
+            "year": tomorrow.year,
+            "month": tomorrow.month,
+            "day": tomorrow.day,
+            "geography_id": 1,
+            "type_id": 1,
+            "documents": [
+                {
+                    "name": "test document 1",
+                    "language_id": 1,
+                    "source_url": "https://raw.githubusercontent.com/climatepolicyradar/navigator/dev/backend/app/api/api_v1/routers/tests/data/empty_img.png",
+                    "s3_url": None,
+                    "year": 2009,
+                    "month": None,
+                    "day": None,
+                }
+            ],
+        },
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 400

@@ -42,7 +42,11 @@ def lookup_languages(
     current_user=Depends(get_current_active_user),
 ):
     """Get list of languages and associated metadata."""
-    return table_to_json(table=models.Language, db=db)
+    return [
+        item
+        for item in table_to_json(table=models.Language, db=db)
+        if item["part1_code"] is not None
+    ]
 
 
 @r.get(

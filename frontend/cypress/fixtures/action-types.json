@@ -1,0 +1,14 @@
+[
+  {
+    "action_type_id": 1,
+    "action_parent_type_id": null,
+    "type_name": "Policy",
+    "type_description": null
+  },
+  {
+    "action_type_id": 2,
+    "action_parent_type_id": null,
+    "type_name": "Law",
+    "type_description": null
+  }
+]
