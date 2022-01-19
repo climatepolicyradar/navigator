@@ -2,6 +2,8 @@
 @tailwind components;
 @tailwind utilities;
 
+@import 'mixins';
+
 @font-face {
   font-family: 'Neue Haas Grotesk Display';
   src: url('/fonts/5549031/5e356b56-25c1-43ac-9524-44e597eb7172.woff2')
@@ -23,37 +25,61 @@
 }
 
 body {
+  @apply text-indigo-500;
+  @include light-gradient;
   font-family: 'Neue Haas Grotesk Display';
 }
 h1,
 h2,
 h3,
-h4 {
-  font-weight: 500;
+h4,
+h5,
+h6 {
+  @apply text-indigo-600;
 }
 h1 {
-  @apply text-3xl;
+  @apply text-h1 font-medium leading-none;
 }
 h2 {
-  @apply text-2xl;
+  @apply text-h2 leading-tight;
 }
 h3 {
-  @apply text-xl;
+  @apply text-h3;
 }
 h4 {
-  @apply text-lg;
+  @apply text-h4 font-medium;
+}
+h5 {
+  @apply text-h5;
+}
+h6 {
+  @apply text-h6 font-semibold;
 }
 input[type='text'],
 input[type='number'],
 textarea,
 select {
-  @apply p-2 rounded border text-lg w-full;
+  @apply p-3 rounded-lg text-lg w-full bg-indigo-100;
 }
 
 .form-row {
   @apply my-8;
-  label {
-    @apply font-bold block;
+}
+
+select {
+  appearance: none;
+  position: relative;
+  background-image: url(/images/down-arrow.svg);
+  background-repeat: no-repeat;
+  background-position-y: 16px;
+  background-position-x: calc(100% - 8px);
+  background-size: 16px 16px;
+}
+
+.button {
+  box-shadow: 0 0 32px #1f93ff6f;
+  &.clear {
+    box-shadow: none;
   }
 }
 
@@ -62,4 +88,8 @@ select {
   transform: rotate(-70deg);
   width: 25%;
   height: 14em;
+}
+
+.banner {
+  @include dark-gradient;
 }

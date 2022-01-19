@@ -21,13 +21,16 @@ const Button = ({
   extraClasses = '',
   ...props
 }: ButtonProps) => {
-  let colorClasses = 'bg-gray-800 text-white border border-gray-800';
+  let colorClasses =
+    'bg-indigo-600 text-white border border-indigo-600 hover:bg-white hover:border-white hover:text-indigo-600';
   switch (color) {
     case 'light':
-      colorClasses = 'bg-gray-300 border border-gray-300';
+      colorClasses =
+        'bg-blue-500 border border-blue-500 text-white hover:bg-white hover:border-white hover:text-indigo-600';
       break;
     case 'clear':
-      colorClasses = 'bg-white border border-gray-500';
+      colorClasses =
+        'clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100';
       break;
   }
   return (
@@ -37,7 +40,7 @@ const Button = ({
       disabled={disabled}
       id={id}
       data-cy={props['data-cy']}
-      className={`${colorClasses} px-4 py-2 rounded w-full md:w-auto md:px-8 pointer-events-auto ${extraClasses}`}
+      className={`${colorClasses} button transition duration-300 px-4 py-2 rounded-3xl w-full md:w-auto md:px-8 pointer-events-auto ${extraClasses}`}
     >
       {children}
     </button>

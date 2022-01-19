@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import Layout from '../components/Layout';
+import Layout from '../components/layouts/Main';
 import AddAction from '../components/forms/AddAction';
 import { getAuth, getData } from '../api';
 
@@ -47,7 +47,7 @@ const IndexPage = () => {
     authenticate();
   }, []);
   return (
-    <Layout title="Home | Submit new policy">
+    <Layout title="Home | Submit new action" heading="Admin">
       <section>
         <div className="container py-4">
           <AddAction

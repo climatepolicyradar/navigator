@@ -20,7 +20,7 @@ const Select = ({
   const [field, meta] = useField(props);
   return (
     <div className={`${classes}`}>
-      <label htmlFor={props.id || props.name}>
+      <label htmlFor={props.id || props.name} className="text-indigo-600">
         {label}
         {required ? <strong className="text-red-500"> *</strong> : null}
       </label>
