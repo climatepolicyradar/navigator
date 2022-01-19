@@ -12,6 +12,7 @@ describe('Header', () => {
     cy.get('[data-cy="alpha"]').should('be.visible');
   });
   it('Header should become fixed to top on scroll', () => {
+    cy.wait(2000);
     cy.scrollTo(0, 100);
     cy.get('[data-cy="header"]').should('have.class', 'fixed');
   });
