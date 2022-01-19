@@ -129,7 +129,7 @@ const AddAction = ({
         }}
       />
       <div className="text-lg">
-        <p className="font-bold text-indigo-600 text-xl">
+        <p className="text-indigo-600 text-xl">
           Add a new action using the form below. Multiple documents can be added
           to an action.
         </p>
@@ -313,7 +313,7 @@ const AddAction = ({
                   </Field>
                 </div>
                 <div className="form-row">
-                  <h2>Documents</h2>
+                  <h3>Documents</h3>
                   <div className="mt-4">
                     {errors.documents && touched.documents ? (
                       <p className="error text-red-500 mb-4">

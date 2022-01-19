@@ -32,38 +32,38 @@ body {
 h1,
 h2,
 h3,
-h4 {
-  @apply text-indigo-600 font-bold;
+h4,
+h5,
+h6 {
+  @apply text-indigo-600;
 }
 h1 {
-  @apply text-3xl;
-  @screen md {
-    @apply text-5xl;
-  }
+  @apply text-h1 font-medium leading-none;
 }
 h2 {
-  @apply text-2xl;
-  @screen md {
-    @apply text-4xl;
-  }
+  @apply text-h2 leading-tight;
 }
 h3 {
-  @apply text-xl;
-  @screen md {
-    @apply text-3xl;
-  }
+  @apply text-h3;
 }
 h4 {
-  @apply text-lg;
-  @screen md {
-    @apply text-2xl;
-  }
+  @apply text-h4 font-medium;
+}
+h5 {
+  @apply text-h5;
+}
+h6 {
+  @apply text-h6 font-semibold;
 }
 input[type='text'],
 input[type='number'],
 textarea,
 select {
   @apply p-3 rounded-lg text-lg w-full bg-indigo-100;
+}
+
+.form-row {
+  @apply my-8;
 }
 
 select {
@@ -80,13 +80,6 @@ select {
   box-shadow: 0 0 32px #1f93ff6f;
   &.clear {
     box-shadow: none;
-  }
-}
-
-.form-row {
-  @apply my-8;
-  label {
-    @apply font-bold block;
   }
 }
 

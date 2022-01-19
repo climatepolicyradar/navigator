@@ -43,7 +43,16 @@ module.exports = {
       center: true,
       padding: '1rem',
     },
-    extend: {},
+    extend: {
+      fontSize: {
+        h1: '64px',
+        h2: '36px',
+        h3: '24px',
+        h4: '21px',
+        h5: '18px',
+        h6: '16px',
+      },
+    },
   },
   plugins: [],
 };

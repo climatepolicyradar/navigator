@@ -37,15 +37,15 @@ const Header = () => {
             <h1
               className={`${
                 fixed
-                  ? 'text-indigo-600 text-2xl md:text-4xl'
-                  : 'text-white text-2xl md:text-5xl'
-              } ml-6 md:ml-8 text-white tracking-wider leading-none transition-all duration-300`}
+                  ? 'text-indigo-600 text-2xl md:text-3xl lg:text-4xl'
+                  : 'text-white text-2xl md:text-3xl lg:text-h1 lg:mt-4'
+              } ml-6 md:ml-8 text-white leading-none transition-all duration-300`}
             >
               Navigator
             </h1>
             <span
               data-cy="alpha"
-              className="bg-yellow-500 ml-2 mt-2 text-xs text-indigo-600 px-1 rounded"
+              className="bg-yellow-500 ml-2 text-xs text-indigo-600 px-1 rounded md:mt-2 lg:mt-4"
             >
               alpha
             </span>
