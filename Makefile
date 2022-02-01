@@ -42,7 +42,7 @@ stop:
 	docker-compose stop
 
 test_frontend:
-	cd frontend && docker-compose -f docker-compose-cypress.yml up --exit-code-from cypress
+	cd frontend && npm install cypress-file-upload && docker-compose -f docker-compose-cypress.yml up --exit-code-from cypress
 	
 test_backend:
 	docker-compose run backend pytest

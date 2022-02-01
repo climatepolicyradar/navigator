@@ -1,6 +1,7 @@
 import os
 
 from fastapi import FastAPI, Depends
+from fastapi.middleware.cors import CORSMiddleware
 from starlette.requests import Request
 import uvicorn
 
@@ -15,6 +16,15 @@ from app.core.auth import get_current_active_user
 
 
 app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
+
+# Add CORS middleware to allow cross origin requests from any port
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 @app.middleware("http")
