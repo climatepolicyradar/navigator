@@ -44,12 +44,30 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NODE_ENV: development
+    command: npm run dev
     ports:
       - 3000:3000
     stdin_open: true
     environment:
       NODE_ENV: development
-
+    volumes:
+      - ./frontend:/opt/node_app/app
+      # bind-mounting these two files in will let you add packages during development without rebuilding.
+      # Add the dependency inside the container with:
+      #
+      # docker-compose exec -w /app frontend npm install --save <package name>
+      # docker-compose exec -w /app frontend npm install --save-dev <package name>
+      #
+      # and then nextjs will restart. Your changes will last until you "docker-compose down" and will
+      # be saved on host for next build.
+      - ./frontend/package.json:/opt/node_app/package.json
+      - ./frontend/package-lock.json:/opt/node_app/package-lock.json
+      # this is a workaround to prevent host node_modules from accidentally getting mounted in container
+      # in case you want to use node/npm both outside container for test/lint etc. and also inside container
+      # this will overwrite the default node_modules dir in container so it won't conflict with our
+      # /app/node_modules location.
+      - ./notused:/opt/node_app/app/node_modules
 
 volumes:
   db-data:
