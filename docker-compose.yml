@@ -39,6 +39,7 @@ services:
       - "postgres"
 
   frontend:
+    user: node
     build:
       context: ./frontend
       dockerfile: Dockerfile
@@ -56,8 +57,8 @@ services:
       # bind-mounting these two files in will let you add packages during development without rebuilding.
       # Add the dependency inside the container with:
       #
-      # docker-compose exec -w /app frontend npm install --save <package name>
-      # docker-compose exec -w /app frontend npm install --save-dev <package name>
+      # docker-compose exec -w /opt/node_app frontend npm install --save <package name>
+      # docker-compose exec -w /opt/node_app frontend npm install --save-dev <package name>
       #
       # and then nextjs will restart. Your changes will last until you "docker-compose down" and will
       # be saved on host for next build.
