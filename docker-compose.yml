@@ -39,7 +39,7 @@ services:
       - "postgres"
 
   frontend:
-    user: node
+#    user: node
     build:
       context: ./frontend
       dockerfile: Dockerfile

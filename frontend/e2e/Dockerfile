@@ -1,9 +1,7 @@
 FROM cypress/included:9.4.1
 
-WORKDIR /e2e
+WORKDIR /opt
+RUN npm install cypress-file-upload
+WORKDIR /opt/e2e
 
-COPY package.json .
-COPY package-lock.json .
-
-RUN npm ci
 RUN npx cypress verify

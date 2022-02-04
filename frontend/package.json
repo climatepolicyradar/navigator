@@ -6,10 +6,6 @@
     "start": "next start",
     "type-check": "tsc",
     "lint": "next lint",
-    "cypress": "e2e/cypress open",
-    "cypress:headless": "e2e/cypress run",
-    "e2e": "start-server-and-test start http://localhost:3000 e2e/cypress",
-    "e2e:headless": "start-server-and-test start http://localhost:3000 cypress:headless",
     "add": "docker-compose exec -w /opt/node_app frontend npm install -S",
     "add-dev": "docker-compose exec -w /opt/node_app frontend npm install -D",
     "remove": "docker-compose exec -w /opt/node_app frontend npm uninstall"
