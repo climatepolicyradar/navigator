@@ -68,8 +68,9 @@ The frontend should now use live-reload, and changes to code outside will restar
 To install packages in the running container, and also have it reflect on your host's package*.json:
 
 ```
-docker-compose exec -w /opt/node_app frontend npm install --save <package name>
-docker-compose exec -w /opt/node_app frontend npm install --save-dev <package name>
+npm run add <package name>
+npm run add-dev <package name>
+npm run remove <package name>
 ```
 
 ### Local development

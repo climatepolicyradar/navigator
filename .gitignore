@@ -6,8 +6,9 @@
 /frontend-old/node_modules
 
 #front end testing
-/frontend/cypress/screenshots
-/frontend/cypress/videos
+/frontend/e2e/cypress/screenshots
+/frontend/e2e/cypress/videos
+/frontend/e2e/node_modules/
 
 # next.js
 /frontend/.next/
