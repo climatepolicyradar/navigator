@@ -53,6 +53,26 @@ and prompt to open the project in the container. Note that it is configured for 
 "service": "frontend"
 ```
 
+### Development using docker
+
+This section is new, and might supercede some of the sections following it.
+
+Run the stack with
+
+```
+docker-compose up
+```
+
+The frontend should now use live-reload, and changes to code outside will restart NextJS inside the container.
+
+To install packages in the running container, and also have it reflect on your host's package*.json:
+
+```
+npm run add <package name>
+npm run add-dev <package name>
+npm run remove <package name>
+```
+
 ### Local development
 
 For development on your local machine not using containers
