@@ -8,7 +8,7 @@ npm install
 npm test
 ```
 
-# Docker-based development
+## Docker-based development
 
 ```
 docker-compose run frontend test
