@@ -1,0 +1,30 @@
+# definitions for docker-based development
+
+start_containers:
+	# Build and run containers
+	docker-compose up -d
+
+migrations_docker:
+	# Run database migrations when using docker for development
+	docker-compose run --rm backend alembic upgrade head
+	# Create initial data in database
+	docker-compose run --rm backend python3 app/initial_data.py
+
+build: start_containers
+	# Hack to wait for postgres container to be up before running alembic migrations
+	sleep 5;
+	# Run migrations
+	make migrations_docker
+
+stop:
+	docker-compose stop
+
+test_frontend:
+	cd frontend/e2e && docker-compose up --exit-code-from cypress
+
+test_backend:
+	docker-compose run backend pytest
+
+test:
+	make test_backend
+	make test_frontend
