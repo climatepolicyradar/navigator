@@ -41,7 +41,7 @@ def upgrade():
 
     # Get iso-630-3 codes from extracted file
     lang_df = pd.read_csv(
-        "app/alembic/versions/lookups/language-iso-639-3.txt",
+        "alembic/versions/lookups/language-iso-639-3.txt",
         sep="\t",
         usecols=["Id", "Part1", "Part2B", "Ref_Name"],
     )
@@ -75,7 +75,7 @@ def upgrade():
     # Get iso-3166 country codes. This file contains the standard iso-3166 codes + additional country codes for
     # regions that are missing - e.g. sub-saharan africa
     geography_df = pd.read_csv(
-        "app/alembic/versions/lookups/geography-iso-3166.csv", usecols=["Iso", "Name"]
+        "alembic/versions/lookups/geography-iso-3166.csv", usecols=["Iso", "Name"]
     )
     # Rename columns to match the column names in the database table
     geography_df.rename(
