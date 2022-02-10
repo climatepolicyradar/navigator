@@ -20,15 +20,16 @@ def upgrade():
     op.create_table(
         "user",
         sa.Column("id", sa.Integer, primary_key=True),
-        sa.Column("email", sa.String(50), nullable=False),
-        sa.Column("first_name", sa.String(100)),
-        sa.Column("last_name", sa.String(100)),
-        sa.Column("address", sa.String(100)),
-        sa.Column("hashed_password", sa.String(100), nullable=False),
+        sa.Column("email", sa.String, nullable=False),
+        sa.Column("first_name", sa.String),
+        sa.Column("last_name", sa.String),
+        sa.Column("hashed_password", sa.String, nullable=False),
         sa.Column("is_active", sa.Boolean, nullable=False),
         sa.Column("is_superuser", sa.Boolean, nullable=False),
     )
+    op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
 
 
 def downgrade():
+    op.drop_index(op.f('ix_user_email'), table_name='user')
     op.drop_table("user")
