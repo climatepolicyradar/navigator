@@ -6,6 +6,17 @@ def test_post_action(
     client, user_token_headers, test_s3_client, s3_document_bucket_names, test_db
 ):
 
+    # ensure geography_id 1
+    test_db.add(models.Geography(country_code='foo', english_shortname='foo'))
+    # ensure action_type_id 1
+    test_db.add(models.ActionType(type_name='foo'))
+    # ensure source_id 1
+    test_db.add(models.Source(name='foo'))
+    # ensure language_id 1
+    test_db.add(models.Language(language_code='foo'))
+
+    test_db.flush()
+
     response = client.post(
         "/api/v1/action",
         json={
