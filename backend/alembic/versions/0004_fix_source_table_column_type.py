@@ -1,7 +1,7 @@
 """fix source table column type
 
-Revision ID: 87634be1fc8a
-Revises: 9ef4aeb8094f
+Revision ID: 0004
+Revises: 0003
 Create Date: 2022-01-10 02:47:12.512491-08:00
 
 """
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision = "87634be1fc8a"
-down_revision = "9ef4aeb8094f"
+revision = "0004"
+down_revision = "0003"
 branch_labels = None
 depends_on = None
 

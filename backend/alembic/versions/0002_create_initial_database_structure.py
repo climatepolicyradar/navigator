@@ -1,7 +1,7 @@
 """Create initial database structure
 
-Revision ID: ab8d144a6e80
-Revises: 91979b40eb38
+Revision ID: 0002
+Revises: 0001
 Create Date: 2021-12-16 10:00:46.986445-08:00
 
 """
@@ -10,8 +10,8 @@ import sqlalchemy as sa
 from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
-revision = "ab8d144a6e80"
-down_revision = "91979b40eb38"
+revision = "0002"
+down_revision = "0001"
 branch_labels = None
 depends_on = None
 

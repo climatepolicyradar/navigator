@@ -1,4 +1,5 @@
 import os
+import logging
 from logging.config import fileConfig
 
 from alembic import context
@@ -6,6 +7,8 @@ from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
 from app.db.models import Base
+
+logger = logging.getLogger(__name__)
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
@@ -29,6 +32,26 @@ target_metadata = Base.metadata
 
 def get_url():
     return os.getenv("DATABASE_URL")
+
+
+def generate_incremental_revision_id(
+    context, revision, directives
+) -> None:
+    if getattr(context.config.cmd_opts, "autogenerate", False):
+        script = directives[0]
+        # current version
+        cur_rev = max(
+            [int(rev) for rev in context.get_current_heads()], default=0
+        )
+        # force new version
+        script.rev_id = "{:04d}".format(cur_rev + 1)
+        if script.upgrade_ops.is_empty():
+            directives[:] = []
+            logger.info("No changes in schema detected.")
+        elif not script.message:
+            directives[:] = []
+            logger.info("Message not provided - can not create revision.")
+            logger.info("Run script with -m MESSAGE or --message MESSAGE")
 
 
 def run_migrations_offline():
@@ -68,7 +91,9 @@ def run_migrations_online():
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
+            connection=connection,
+            target_metadata=target_metadata,
+            process_revision_directives=generate_incremental_revision_id,
         )
 
         with context.begin_transaction():

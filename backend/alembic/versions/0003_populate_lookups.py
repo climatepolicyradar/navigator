@@ -1,7 +1,7 @@
 """Populate lookups
 
-Revision ID: 9ef4aeb8094f
-Revises: ab8d144a6e80
+Revision ID: 0003
+Revises: 0002
 Create Date: 2022-01-05 06:00:34.120168-08:00
 
 """
@@ -11,8 +11,8 @@ import pandas as pd
 
 
 # revision identifiers, used by Alembic.
-revision = "9ef4aeb8094f"
-down_revision = "ab8d144a6e80"
+revision = "0003"
+down_revision = "0002"
 branch_labels = None
 depends_on = None
 
