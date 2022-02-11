@@ -4,7 +4,8 @@
 import argparse
 from pathlib import Path
 
-from extract import DocumentEmbeddedTextExtractor, DocumentTextExtractorException
+from extract.extract import DocumentEmbeddedTextExtractor
+from extract.exceptions import DocumentTextExtractorException
 
 
 def process_document():

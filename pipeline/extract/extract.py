@@ -1,91 +1,54 @@
 """Module to extract embedded text in a PDF document using a PDF parser
 """
 
-import json
+import os
 from pathlib import Path
-from typing import Optional, List
-from dataclasses import dataclass
-from tempfile import TemporaryFile
+from tempfile import NamedTemporaryFile
 import subprocess
 from xml.etree import ElementTree
+from xml.etree.ElementTree import Element
+
+from .document import Document, TextBlock, BlockCoordinates
+from .exceptions import DocumentTextExtractorException
+
+SEPARATOR = " "
 
 
-class DocumentTextExtractorException(Exception):
-    pass
-
-
-@dataclass
-class TextBlock:
-    """Represents an individual text block on a page"""
-
-    text: str
-    text_block_id: str
-    page_id: str
-
-
-@dataclass
-class Document:
-    """Represents text blocks in a document"""
-
-    text_blocks: List[TextBlock] = None
-    filename: str = None
+# TODO Nest textblocks inside pages
+# TODO Add dimensions of each page (currently only stores the dimensions of the final page)
+# TODO Get files from a named s3 bucket
+# TODO Put output files in a named s3 bucket
+# TODO Add method to Document to create a document from json
 
 
 class DocumentTextExtractor:
     """Base class for extracting text from a document"""
 
-    def __init__(
-        self,
-        pdf_filepath: Path,
-        output_path: Optional[Path] = None,
-        output_textfile: bool = True,
-        output_json: bool = True,
-    ):
-        self._pdf_filepath = pdf_filepath
-        self._output_path = output_path
-        self._output_textfile = output_textfile
-        self._output_json = output_json
-
-        # Attribute storing document structure following call to self.extract() method
-        self._doc = Document()
-
-        self._SEPARATOR = " "
-
-    def extract(self):
+    def extract(self, pdf_filepath: Path):
         """Extract text from the given document"""
-        return self._doc
 
-    def save_json(self, json_filepath: Path):
-        """Save the document contents to json"""
-
-        with open(json_filepath, "wt") as f:
-            json.dump(self._doc, f, indent=2)
-
-    def to_string(self):
-        """Return the document contents as a string"""
-        doc_text = ""
-        for text_block in self._doc.text_blocks:
-            doc_text = doc_text + self._SEPARATOR + text_block.text.strip() + "\n"
-
-        return doc_text
-
-    def save_text(self, text_filepath: Path):
-        """Save the document contents to a text file"""
-
-        with open(text_filepath, "wt") as f:
-            f.write(self.to_string())
+        raise NotImplementedError
 
 
 class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
     """Extracts embedded text stored in a pdf document using the pdfalto pdf parser"""
 
-    def __init__(self, pdfalto_path: Path, **kwargs):
+    def __init__(self, pdfalto_path: Path = None, **kwargs):
         # Call constructor on base class
         super().__init__(**kwargs)
 
+        pdfalto_path = (
+            pdfalto_path if pdfalto_path else Path(os.environ.get("PDFALTO_PATH", None))
+        )
+
+        if pdfalto_path is None:
+            raise DocumentTextExtractorException(
+                "Path to pdfalto not specified in constructor or PDFALTO_PATH environment variable."
+            )
+
         self._pdfalto_path = pdfalto_path
 
-    def _pdf_to_xml(self):
+    def _pdf_to_xml(self, pdf_filepath: Path) -> ElementTree:
         """Use pdfalto to parse the pdf file as an alto XML document and return it as an ElementTree"""
 
         if not self._pdfalto_path.exists():
@@ -95,31 +58,55 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         try:
             # Create a temporary file to store the xml output from pdfalto
-            with TemporaryFile() as xml_f:
+            with NamedTemporaryFile() as xml_f:
                 pdfalto_args = [
-                    self._pdfalto_path,
+                    str(self._pdfalto_path),
                     "-noImage",
                     "-outline",
                     "-readingOrder",
-                    self._pdf_filepath,
+                    str(pdf_filepath),
                     xml_f.name,
                 ]
 
                 subprocess.run(pdfalto_args, check=True)
 
-            return ElementTree.parse(xml_f.name).getroot()
+                return ElementTree.parse(xml_f.name).getroot()
 
         except subprocess.CalledProcessError:
             raise DocumentTextExtractorException("Exception occurred calling pdfalto.")
 
-    def _parse_alto_xml(self, pdf_xml: ElementTree):
+    def _get_text_block_coords(self, text_block: Element):
+        tb_x = float(text_block.attrib.get("HPOS", 0))
+        tb_y = float(text_block.attrib.get("VPOS", 0))
+        tb_h = float(text_block.attrib.get("HEIGHT", 0))
+        tb_w = float(text_block.attrib.get("WIDTH", 0))
+
+        x1, y1 = tb_x, tb_y
+        x2, y2 = tb_x + tb_w, tb_y
+        x3, y3 = tb_x, tb_y + tb_h
+        x4, y4 = tb_x + tb_w, tb_y + tb_h
+
+        return (
+            BlockCoordinates(x1, y1),
+            BlockCoordinates(x2, y2),
+            BlockCoordinates(x3, y3),
+            BlockCoordinates(x4, y4),
+        )
+
+    def _get_page_dimensions(self, page: Element):
+        w = float(page.attrib.get("WIDTH", 0))
+        h = float(page.attrib.get("HEIGHT", 0))
+
+        return w, h
+
+    def _parse_alto_xml(self, pdf_xml: ElementTree, pdf_filename: Path) -> Document:
         """Parses the alto xml document and returns document structure"""
 
         # Define the alto namespace used in the document
         xml_namespace = {"alto": "http://www.loc.gov/standards/alto/ns-v3#"}
 
         # Get the pages in the document
-        pages = pdf_xml.findall("alto:Layout/altoPage", xml_namespace)
+        pages = pdf_xml.findall("alto:Layout/alto:Page", xml_namespace)
 
         SEP = " "
 
@@ -129,6 +116,8 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         for page in pages:
             # Get the page id
             page_id = page.attrib.get("ID", None)
+            # Get page dimensions
+            page_dimensions = self._get_page_dimensions(page)
             # Iterate through page text blocks
             for text_block in page.findall(
                 "alto:PrintSpace/alto:TextBlock", xml_namespace
@@ -138,6 +127,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
                 text_block_lines = []
                 # Iterate through the lines in the text block and merge lines into a single string
                 for text_line in text_block.getchildren():
+                    text_block_coords = self._get_text_block_coords(text_block)
                     text_line_content = ""
                     for text in text_line.getchildren():
                         text_line_content = (
@@ -151,7 +141,14 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
                             text="".join(text_block_lines).strip(),
                             text_block_id=text_block_id,
                             page_id=page_id,
+                            coords=text_block_coords,
                         )
                     )
 
-        return Document(text_blocks, self._pdf_filename)
+        return Document(text_blocks, pdf_filename, page_dimensions)
+
+    def extract(self, pdf_filepath: Path) -> Document:
+        pdf_alto_xml = self._pdf_to_xml(pdf_filepath)
+        doc = self._parse_alto_xml(pdf_alto_xml, pdf_filepath.name)
+
+        return doc

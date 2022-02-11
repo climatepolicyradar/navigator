@@ -1,0 +1,2 @@
+class DocumentTextExtractorException(Exception):
+    pass
