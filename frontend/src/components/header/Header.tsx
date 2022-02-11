@@ -1,6 +1,7 @@
 import { useEffect, useState, useRef } from 'react';
 import Logo from '../Logo';
 import Link from 'next/link';
+import ProductName from '../ProductName';
 
 const Header = () => {
   const [fixed, setFixed] = useState(false);
@@ -25,31 +26,32 @@ const Header = () => {
       } w-full top-0 left-0 transition duration-300 z-10`}
     >
       <div className="container my-4">
-        <div className="flex items-start">
+        <div className="flex items-start justify-between">
           <span className={`${fixed ? 'text-indigo-600' : 'text-white'}`}>
-            <Link href="/">
+            <Link href="http://climatepolicyradar.org">
               <a>
                 <Logo fixed={fixed} />
               </a>
             </Link>
           </span>
-          <div data-cy="product-name" className="flex items-start">
-            <h1
-              className={`${
-                fixed
-                  ? 'text-indigo-600 text-2xl md:text-3xl lg:text-4xl'
-                  : 'text-white text-2xl md:text-3xl lg:text-h1 lg:mt-4'
-              } ml-6 md:ml-8 text-white leading-none transition-all duration-300`}
-            >
-              Navigator
-            </h1>
-            <span
-              data-cy="alpha"
-              className="bg-yellow-500 ml-2 text-xs text-indigo-600 px-1 rounded md:mt-2 lg:mt-4"
-            >
-              alpha
-            </span>
+          <div className="hidden md:block">
+            <ProductName fixed={fixed} />
           </div>
+          <div>
+            <button>
+              <img
+                className={`${
+                  fixed ? 'w-3/4' : 'w-full'
+                } transtion-all duration-300`}
+                src="/images/user.svg"
+                alt="My account"
+              />
+            </button>
+          </div>
+        </div>
+        {/* Mobile only */}
+        <div className="md:hidden">
+          <ProductName fixed={fixed} />
         </div>
       </div>
     </header>

@@ -15,11 +15,6 @@ const Close = ({ onClick, size = '20' }: CloseProps) => {
         width: `${size}px`,
       }}
     >
-      {/* <img 
-        src="/images/close.svg" 
-        alt="Close icon"
-        className="page-close"
-     /> */}
       <CloseIcon />
     </button>
   );

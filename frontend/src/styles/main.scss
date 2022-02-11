@@ -38,10 +38,10 @@ h6 {
   @apply text-indigo-600;
 }
 h1 {
-  @apply text-h1 font-medium leading-none;
+  @apply text-h1 font-medium;
 }
 h2 {
-  @apply text-h2 leading-tight;
+  @apply text-h2;
 }
 h3 {
   @apply text-h3;
@@ -92,4 +92,28 @@ select {
 
 .banner {
   @include dark-gradient;
+  &:before {
+    content: '';
+    width: 2000px;
+    height: 2000px;
+    position: absolute;
+    top: 0;
+    left: -25%;
+    background-image: url(/images/arc-bg.png);
+    @screen md {
+      top: 360px;
+      left: 50%;
+    }
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }
