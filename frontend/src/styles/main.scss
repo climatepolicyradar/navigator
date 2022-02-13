@@ -92,19 +92,22 @@ select {
 
 .banner {
   @include dark-gradient;
-  &:before {
-    content: '';
-    width: 2000px;
-    height: 2000px;
-    position: absolute;
-    top: 0;
-    left: -25%;
-    background-image: url(/images/arc-bg.png);
-    overflow: hidden;
+  &--full {
     position: relative;
-    @screen md {
-      top: 360px;
-      left: 50%;
+    &:before {
+      content: '';
+      width: 2000px;
+      height: 2000px;
+      position: absolute;
+      top: 0;
+      left: -25%;
+      background-image: url(/images/arc-bg.png);
+      overflow: hidden;
+
+      @screen md {
+        top: 360px;
+        left: 50%;
+      }
     }
   }
 }
