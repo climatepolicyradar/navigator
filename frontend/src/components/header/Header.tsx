@@ -11,7 +11,7 @@ const Header = () => {
   useEffect(() => {
     document.addEventListener('scroll', function (e) {
       if (window.scrollY > 70) {
-        setFixed(true);
+        setFixed(false);
       } else {
         setFixed(false);
       }
