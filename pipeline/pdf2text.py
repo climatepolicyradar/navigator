@@ -1,4 +1,6 @@
-"""Extracts text from a batch of pdf documents
+"""CLI which extracts text from pdf documents in a directory.
+
+Implements a cli which will extract the text contained in a set of pdf files in a directory.
 """
 
 import argparse
@@ -8,42 +10,51 @@ from extract.extract import DocumentEmbeddedTextExtractor
 from extract.exceptions import DocumentTextExtractorException
 
 
-def process_document():
-    pass
+def process(pdf_dir: Path, out_dir: Path, save_json: bool, save_text: bool):
+    """Extracts text from text in a directory containing pdf files.
 
+    Iterates through files with a .pdf extension in a given directory,
+    and processes those files to extract text. Produces a .json and/or
+    .txt file containing extracted text and associated positional data.
 
-def process_batch(pdf_url: Path, out_url: Path, save_json: bool, save_text: bool):
+    Args@
+        pdf_dir: Path to input pdf files
+        out_dir: Path to destination directory to write output files
+        save_json: If True will save a json file for each pdf containing extracted text
+        save_text: If True will save a text file for each pdf containing extracted text
+    """
+
     extractor = DocumentEmbeddedTextExtractor()
 
-    for pdf_file in pdf_url.glob("*.pdf"):
+    for pdf_file in pdf_dir.glob("*.pdf"):
         # Extract embedded text in pdf file
         pdf_doc = extractor.extract(pdf_file)
 
         save_filename = Path(pdf_doc.filename).stem
         if save_json:
-            out_json_filepath = out_url / f"{save_filename}.json"
+            out_json_filepath = out_dir / f"{save_filename}.json"
             pdf_doc.save_json(out_json_filepath)
         if save_text:
-            out_text_filepath = out_url / f"{save_filename}.txt"
+            out_text_filepath = out_dir / f"{save_filename}.txt"
             pdf_doc.save_text(out_text_filepath)
 
 
 def configure_args():
-    # TODO Add extractor type -> embedded, ocr and pass in appropriate class
+    """Configure command line arguments for the cli"""
 
     parser = argparse.ArgumentParser(
         prog="pdf2text",
-        description="Extracts text from a directory or s3 bucket containing pdf documents.",
+        description="Extracts text from a directory containing pdf documents.",
     )
     parser.add_argument(
-        "pdf_url",
+        "pdf_dir",
         type=str,
-        help="Path to directory or url to s3 bucket containing pdf files",
+        help="Path to directory containing pdf files to process",
     )
     parser.add_argument(
-        "out_url",
+        "out_dir",
         type=str,
-        help="Path to directory or url to s3 bucket to store extracted text",
+        help="Path to directory to store output files",
     )
     parser.add_argument(
         "--json",
@@ -67,17 +78,22 @@ def configure_args():
 
 
 def cli():
+    """Main entry point for the cli"""
+
+    # Configure and parse command line arguments
     args = configure_args()
 
-    pdf_url = Path(args.pdf_url)
-    out_url = Path(args.out_url)
+    pdf_dir = Path(args.pdf_dir)
+    out_dir = Path(args.out_dir)
 
-    if not pdf_url.exists():
+    # Check that the input/output directories exist and raise error if not
+    if not pdf_dir.exists():
         raise DocumentTextExtractorException("Path to input pdf docuents is invalid")
-    if not out_url.exists():
+    if not out_dir.exists():
         raise DocumentTextExtractorException("Output path is invalid")
 
-    process_batch(pdf_url, out_url, args.json, args.text),
+    # Process the files in the directory
+    process(pdf_dir, out_dir, args.json, args.text),
 
 
 if __name__ == "__main__":

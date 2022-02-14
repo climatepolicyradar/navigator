@@ -1,4 +1,31 @@
-"""Defines data classes storing the state of a document and text in that document
+"""Defines data classes storing the state of a document and text in that document.
+
+Provides classes which represent a document, the text it contains and positional information
+of that text.
+
+    Typical usage example:
+
+    pdf_filename = "pdffile.pdf"
+
+    text_blocks = [
+        TextBlock(
+            text="The first paragraph in the document",
+            text_block_id="tb-1",
+            page_id="page-1",
+            coords=(
+                BlockCoordinates(0, 0),
+                BlockCoordinates(10, 0),
+                BlockCoordinates(0, 20),
+                BlockCoordinates(10, 20),
+            )
+        )
+    ]
+
+    doc = Document(
+        text_blocks=text_blocks,
+        filename="pdf_filename",
+        dimensions=(500, 1000)
+    )
 """
 
 import json
@@ -19,7 +46,17 @@ class BlockCoordinates:
 
 @dataclass
 class TextBlock:
-    """Represents an individual text block on a page"""
+    """Represents an individual text block on a page.
+
+    Stores the text and positional information for a single
+    text block extracted from a document.
+
+    Attributes:
+        text: Text contained in the text block
+        text_block_id: Unique identifier for the text block
+        page_id: Unique identifier for the page that the text block is contained in
+        coords: Coordinates of each of the four corners of a rectangular text block.
+    """
 
     text: str  # Text in text block
     text_block_id: str  # Unique identifier of text block
@@ -34,7 +71,16 @@ class TextBlock:
 
 @dataclass
 class Document:
-    """Represents text blocks in a document"""
+    """Represents all text blocks contained in a document.
+
+    Stores all of the text blocks that are contained in a document and the dimensions
+    of the document.
+
+    Attributes:
+        text_blocks: List of text blocks contained in the document
+        filename: Name of the pdf file
+        dimensions: the size of a single page in the document
+    """
 
     text_blocks: List[TextBlock] = None  # List of textblocks in the document
     filename: str = None  # Name of the pdf file that this document relates to
