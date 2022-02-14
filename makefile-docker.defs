@@ -23,7 +23,7 @@ test_frontend:
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
 
 test_backend:
-	docker-compose run backend pytest
+	docker-compose run --rm backend pytest
 
 test:
 	make test_backend
