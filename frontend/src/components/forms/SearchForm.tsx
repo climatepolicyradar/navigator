@@ -14,12 +14,8 @@ const SearchForm = () => {
   const onChange = (e) => {
     setTerm(e.currentTarget.value);
   };
-  // useEffect(() => {
-  //   console.log(windowSize);
-  // }, [windowSize.width]);
   return (
     <form>
-      {console.log(windowSize)}
       <p className="sm:hidden mt-4 text-center text-white">
         Search for something, e.g. 'carbon taxes'.
       </p>
