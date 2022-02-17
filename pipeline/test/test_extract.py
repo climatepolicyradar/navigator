@@ -1,7 +1,14 @@
 import os
 import json
+from pathlib import Path
 import pytest
 from extract.document import Document, TextBlock, BlockCoordinates, SEPARATOR
+from extract.extract import DocumentEmbeddedTextExtractor
+
+
+@pytest.fixture
+def test_pdf_path():
+    return Path(__file__).parent / "data/cclw-1318-d7f66920a18e4ddf94c83cf21fa2bcfa.pdf"
 
 
 @pytest.fixture
@@ -77,3 +84,13 @@ def test_document_save_text(document, tmpdir):
 def test_document_from_json(tmp_path):
     with pytest.raises(NotImplementedError):
         _ = Document.from_json(tmp_path / "test.json")
+
+
+def test_embedded_text_extractor(test_pdf_path):
+    text_extractor = DocumentEmbeddedTextExtractor()
+    doc = text_extractor.extract(test_pdf_path)
+
+    assert doc
+    assert isinstance(doc, Document)
+    assert doc.text_blocks
+    assert doc.filename == test_pdf_path.name
