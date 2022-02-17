@@ -4,6 +4,13 @@ The pdf2text cli allows you to automatically extract the text from a set of pdf 
 
 ## Using the docker image
 
+### Prerequisites
+
+To clone the pdfalto Github repo, you need a machine that's configured to connect to Github via SSH. To set this up follow these steps from the Github docs:
+
+1. [Generate an SSH key and add it to the SSH agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
+2. [Add the SSH key to your Github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
+
 ### 1. Add ssh private key to agent
 First, add your ssh private key to the ssh agent:
 
