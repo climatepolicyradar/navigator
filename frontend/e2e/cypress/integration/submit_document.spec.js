@@ -1,6 +1,6 @@
 describe('SubmitDocument', () => {
   beforeEach(() => {
-    cy.visit('http://localhost:3000');
+    cy.visit('http://localhost:3000/add-action');
     cy.get_lookups();
     cy.get('[data-cy="add-doc-modal"]').click();
   });

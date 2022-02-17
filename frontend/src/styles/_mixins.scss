@@ -6,6 +6,7 @@
     rgba(7, 29, 73, 1) 45%,
     rgba(22, 134, 238, 1) 100%
   );
+  background-repeat: no-repeat;
 }
 
 @mixin light-gradient() {
@@ -15,4 +16,5 @@
     rgba(235, 242, 255, 1) 0%,
     rgba(255, 255, 255, 1) 35%
   );
+  background-repeat: no-repeat;
 }

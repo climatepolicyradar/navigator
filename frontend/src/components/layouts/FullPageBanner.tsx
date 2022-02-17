@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import Header from '../header/Header';
-import Banner from '../banner/Main';
+import Banner from '../banner/FullHeight';
 
 type Props = {
   children?: ReactNode;

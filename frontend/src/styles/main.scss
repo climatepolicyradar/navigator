@@ -38,10 +38,10 @@ h6 {
   @apply text-indigo-600;
 }
 h1 {
-  @apply text-h1 font-medium leading-none;
+  @apply text-h1 font-medium;
 }
 h2 {
-  @apply text-h2 leading-tight;
+  @apply text-h2;
 }
 h3 {
   @apply text-h3;
@@ -92,4 +92,53 @@ select {
 
 .banner {
   @include dark-gradient;
+  &--full {
+    position: relative;
+    &:before {
+      content: '';
+      width: 2000px;
+      height: 2000px;
+      position: absolute;
+      top: 0;
+      left: -25%;
+      background-image: url(/images/arc-bg.png);
+      overflow: hidden;
+
+      @screen md {
+        top: 360px;
+        left: 50%;
+      }
+    }
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* clears the 'X' in search input from Internet Explorer */
+input[type='search']::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+input[type='search']::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* clears the 'X' search input from Chrome */
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-results-button,
+input[type='search']::-webkit-search-results-decoration {
+  display: none;
 }

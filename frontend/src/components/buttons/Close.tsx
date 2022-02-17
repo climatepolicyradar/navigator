@@ -10,16 +10,12 @@ const Close = ({ onClick, size = '20' }: CloseProps) => {
     <button
       className="focus:outline-none pointer-events-auto"
       onClick={onClick}
+      type="button"
       style={{
         height: `${size}px`,
         width: `${size}px`,
       }}
     >
-      {/* <img 
-        src="/images/close.svg" 
-        alt="Close icon"
-        className="page-close"
-     /> */}
       <CloseIcon />
     </button>
   );

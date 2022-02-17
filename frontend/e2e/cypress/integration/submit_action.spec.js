@@ -11,13 +11,13 @@ describe('Submit Action form', () => {
   });
 
   it('Should show errors when any required fields are not filled out', () => {
-    cy.visit('http://localhost:3000');
+    cy.visit('http://localhost:3000/add-action');
     cy.get('[data-cy="submit-add-action-form"]').click();
     cy.get('.error').should('have.length', 6);
   });
 
   it('Should open the Add Document modal window', () => {
-    cy.visit('http://localhost:3000');
+    cy.visit('http://localhost:3000/add-action');
     cy.get('[data-cy="add-doc-modal"]').click();
     cy.get('[data-cy="add-document-form"]').should('have.class', 'is-active');
   });
