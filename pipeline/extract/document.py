@@ -107,6 +107,6 @@ class Document:
             f.write(self.to_string())
 
     @classmethod
-    def from_json(json_filepath: Path):
+    def from_json(cls, json_filepath: Path):
         """Create a new Document instance from a given json file"""
         raise NotImplementedError
