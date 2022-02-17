@@ -26,8 +26,7 @@ When building the docker image, you must make sure that Docker is configured to 
 Use the following command to run the pdf2text cli:
 
 ```
-docker run -v /path/to/pdf/files:/pdf-in -v /path/to/output/directory:/pdf-out \
-navigator_pipeline python /app/pdf2text.py /pdf-in /pdf-out --json --text
+docker run -v /path/to/pdf/files:/pdf-in -v /path/to/output/directory:/pdf-out navigator_pipeline python /app/pdf2text.py /pdf-in /pdf-out --json --text
 ```
 
 where:
