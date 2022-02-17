@@ -1,8 +1,8 @@
-from sqlalchemy import BigInteger, SmallInteger
 import sqlalchemy as sa
+from sqlalchemy import BigInteger, SmallInteger, UniqueConstraint
 from sqlalchemy.dialects import postgresql
 
-from .session import Base
+from app.db.session import Base
 
 
 class User(Base):
@@ -180,6 +180,7 @@ class Action(Base):
         nullable=True,
     )
     action_source_id = sa.Column(BigInteger, sa.ForeignKey(Source.source_id), nullable=False)
+    UniqueConstraint(name, action_date, geography_id, action_type_id, action_source_id)
 
 
 class ActionMetadata(Base):

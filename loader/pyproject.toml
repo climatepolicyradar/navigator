@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "loader"
+version = "0.1.0"
+description = "Loads data into backend"
+authors = ["CPR tech <tech@climatepolicyradar.org>"]
+license = "MIT"
+
+[tool.poetry.dependencies]
+python = "^3.9"
+pandas = "^1.4.1"
+requests = "^2.27.1"
+
+[tool.poetry.dev-dependencies]
+python-dotenv = "^0.19.2"
+csvkit = "^1.0.6"
+pytest = "^7.0.1"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

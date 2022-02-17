@@ -7,24 +7,26 @@ from app.db.session import SessionLocal
 import os
 
 
-def init() -> None:
+def create_superuser(email, password):
     db = SessionLocal()
-
-    superuser_email = os.environ.get("SUPERUSER_EMAIL", "")
-    superuser_pw = os.environ.get("SUPERUSER_PASSWORD", "")
 
     create_user(
         db,
         UserCreate(
-            email=superuser_email,
-            password=superuser_pw,
+            email=email,
+            password=password,
             is_active=True,
             is_superuser=True,
         ),
     )
 
 
+def init() -> None:
+    create_superuser(os.getenv("SUPERUSER_EMAIL"), os.getenv("SUPERUSER_PASSWORD"))
+    create_superuser(os.getenv("MACHINE_USER_LOADER_EMAIL"), os.getenv("MACHINE_USER_LOADER_PASSWORD"))
+
+
 if __name__ == "__main__":
-    print("Creating superuser")
+    print("Creating initial data")
     init()
-    print("Superuser created")
+    print("Done creating initial data")

@@ -1,0 +1,17 @@
+version: '3.7'
+services:
+
+  backend:
+    environment:
+      PYTHONDONTWRITEBYTECODE: 0
+    volumes:
+      - ./backend:/app/:ro
+    ports:
+      - 8888:8888
+
+  loader:
+    environment:
+      PYTHONDONTWRITEBYTECODE: 0
+    volumes:
+      - ./loader:/app/:ro
+
