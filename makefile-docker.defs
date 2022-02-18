@@ -31,7 +31,7 @@ test:
 
 # pipeline
 build_pipeline:
-	cd pipeline && DOCKER_BUILDKIT=1 docker build --ssh default -t navigator_pipeline .
+	cd pipeline && eval $(ssh-agent) && DOCKER_BUILDKIT=1 docker build --ssh default -t navigator_pipeline .
 
 test_pipeline:
 	docker run navigator_pipeline python -m pytest
