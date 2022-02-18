@@ -13,7 +13,15 @@ RUN --mount=type=ssh cd pdfalto && git submodule update --init --recursive
 RUN cd pdfalto && cmake .
 RUN cd pdfalto && make
 
+RUN pip install --upgrade pip
+RUN pip install "poetry==1.1.8"
+
+
 # Copy files to image
 COPY . .
+
+# Install python dependencies using poetry
+RUN poetry config virtualenvs.create false
+RUN poetry install
 
 ENV PDFALTO_PATH=/app/pdfalto/pdfalto
