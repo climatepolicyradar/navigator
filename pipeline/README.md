@@ -11,6 +11,8 @@ To clone the pdfalto Github repo, you need a machine that's configured to connec
 1. [Generate an SSH key and add it to the SSH agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
 2. [Add the SSH key to your Github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
 
+On Ubuntu you may need to start the SSH agent using `eval $(ssh-agent)`.
+
 ### 1. Add ssh private key to agent
 First, add your ssh private key to the ssh agent:
 
