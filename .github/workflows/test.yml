@@ -41,6 +41,6 @@ jobs:
       - name: Build pipeline
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: cd pipeline && eval $(ssh-agent) && DOCKER_BUILDKIT=1 docker build --ssh default -t navigator_pipeline .
+        run: make build_pipeline
       - name: Test pipeline
         run: make test_pipeline
