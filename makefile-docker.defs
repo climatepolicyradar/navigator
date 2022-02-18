@@ -28,3 +28,11 @@ test_backend:
 test:
 	make test_backend
 	make test_frontend
+
+# pipeline
+build_pipeline:
+	cd pipeline && DOCKER_BUILDKIT=1 docker build --ssh default -t navigator_pipeline .
+
+test_pipeline:
+	docker run navigator_pipeline python -m pytest
+
