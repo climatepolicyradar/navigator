@@ -11,26 +11,26 @@ on:
       - dev
 
 jobs:
-  # test:
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #     - uses: actions/checkout@v2
-  #     - name: Build docker-compose stack using .env.example
-  #       run: cp .env.example .env && make build
-  #     - name: verify backend is up
-  #       run: curl http://localhost:8000/api/docs
-  #     - name: Run backend tests
-  #       run: make test_backend
-  #     - name: docker
-  #       run: |
-  #         docker-compose logs
-  #         docker-compose ps
-  #         docker ps -a
-  #         ls -la
-  #     - name: verify frontend is up
-  #       run: curl http://localhost:3000
-  #     - name: Run frontend tests
-  #       run: make test_frontend
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker-compose stack using .env.example
+        run: cp .env.example .env && make build
+      - name: verify backend is up
+        run: curl http://localhost:8000/api/docs
+      - name: Run backend tests
+        run: make test_backend
+      - name: docker
+        run: |
+          docker-compose logs
+          docker-compose ps
+          docker ps -a
+          ls -la
+      - name: verify frontend is up
+        run: curl http://localhost:3000
+      - name: Run frontend tests
+        run: make test_frontend
   test_pipeline:
     runs-on: ubuntu-latest
     steps:
