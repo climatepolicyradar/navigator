@@ -9,8 +9,8 @@ RUN apt update && \
 RUN mkdir ~/.ssh
 RUN ssh-keyscan -H github.com >> ~/.ssh/known_hosts
 RUN git clone https://github.com/kermitt2/pdfalto.git
+# Set submodule URL to HTTPs to avoid need for SSH setup when run on a server
 RUN cd pdfalto && git submodule set-url xpdf-4.03 https://github.com/kermitt2/xpdf-4.03.git && git submodule update --init --recursive
-# RUN --mount=type=ssh cd pdfalto && git submodule update --init --recursive
 RUN cd pdfalto && cmake .
 RUN cd pdfalto && make
 
