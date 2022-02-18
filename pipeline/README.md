@@ -4,27 +4,11 @@ The pdf2text cli allows you to automatically extract the text from a set of pdf 
 
 ## Using the docker image
 
-### Prerequisites
+### 1. Building the docker image
 
-To clone the pdfalto Github repo, you need a machine that's configured to connect to Github via SSH. To set this up follow these steps from the Github docs:
+`docker build -t navigator_pipeline .`
 
-1. [Generate an SSH key and add it to the SSH agent](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent)
-2. [Add the SSH key to your Github account](https://docs.github.com/en/authentication/connecting-to-github-with-ssh/adding-a-new-ssh-key-to-your-github-account)
-
-On Ubuntu you may need to start the SSH agent using `eval $(ssh-agent)`.
-
-### 1. Add ssh private key to agent
-First, add your ssh private key to the ssh agent:
-
-`ssh-add`
-
-### 2. Building the docker image
-When building the docker image, you must make sure that Docker is configured to use the new [BuildKit](https://docs.docker.com/develop/develop-images/build_enhancements/). This is to enable you to use [ssh to clone the pdfalto git repo](https://docs.docker.com/develop/develop-images/build_enhancements/#using-ssh-to-access-private-data-in-builds).
-
-
-`DOCKER_BUILDKIT=1 docker build --ssh default -t navigator_pipeline .`
-
-### 3. Running the cli
+### 2. Running the cli
 Use the following command to run the pdf2text cli:
 
 ```
