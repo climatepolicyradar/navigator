@@ -34,16 +34,12 @@ jobs:
   test_pipeline:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - name: Setup SSH Keys and known_hosts
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: 
-          ssh-agent -a $SSH_AUTH_SOCK > /dev/null
-          ssh-add - <<< "${{ secrets.SSH_PRIVATE_KEY }}"
+      - uses: webfactory/ssh-agent@v0.5.4
+        with:
+            ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}      
       - name: Build pipeline
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: make build_pipeline
+        run: cd pipeline && eval $(ssh-agent) && DOCKER_BUILDKIT=1 docker build --ssh default -t navigator_pipeline .
       - name: Test pipeline
         run: make test_pipeline
