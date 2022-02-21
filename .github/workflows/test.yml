@@ -31,3 +31,13 @@ jobs:
         run: curl http://localhost:3000
       - name: Run frontend tests
         run: make test_frontend
+  test_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build pipeline
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: make build_pipeline
+      - name: Test pipeline
+        run: make test_pipeline
