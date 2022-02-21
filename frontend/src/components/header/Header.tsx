@@ -28,7 +28,7 @@ const Header = () => {
       <div className="container my-4">
         <div className="flex items-start justify-between">
           <span className={`${fixed ? 'text-indigo-600' : 'text-white'}`}>
-            <Link href="http://climatepolicyradar.org">
+            <Link href="https://climatepolicyradar.org">
               <a>
                 <Logo fixed={fixed} />
               </a>
@@ -38,7 +38,7 @@ const Header = () => {
             <ProductName fixed={fixed} />
           </div>
           <div>
-            <button>
+            <button data-cy="user-icon">
               <img
                 className={`${
                   fixed ? 'w-3/4' : 'w-full'
