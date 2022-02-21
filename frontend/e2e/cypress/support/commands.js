@@ -85,3 +85,27 @@ Cypress.Commands.add('check_mobile_width', () => {
   cy.scrollTo(1000, 0);
   cy.window().its('scrollX').should('equal', 0);
 });
+
+Cypress.Commands.add('is_not_in_viewport', (element) => {
+  cy.get(element).then(($el) => {
+    const bottom = Cypress.$(cy.state('window')).height();
+    const rect = $el[0].getBoundingClientRect();
+
+    expect(rect.top).to.be.greaterThan(bottom);
+    expect(rect.bottom).to.be.greaterThan(bottom);
+    expect(rect.top).to.be.greaterThan(bottom);
+    expect(rect.bottom).to.be.greaterThan(bottom);
+  });
+});
+
+Cypress.Commands.add('is_in_viewport', (element) => {
+  cy.get(element).then(($el) => {
+    const bottom = Cypress.$(cy.state('window')).height();
+    const rect = $el[0].getBoundingClientRect();
+
+    expect(rect.top).not.to.be.greaterThan(bottom);
+    expect(rect.bottom).not.to.be.greaterThan(bottom);
+    expect(rect.top).not.to.be.greaterThan(bottom);
+    expect(rect.bottom).not.to.be.greaterThan(bottom);
+  });
+});
