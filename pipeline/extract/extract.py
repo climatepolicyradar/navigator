@@ -27,9 +27,9 @@ from tempfile import NamedTemporaryFile
 import subprocess
 from xml.etree import ElementTree
 from xml.etree.ElementTree import Element
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
-from .document import Document, TextBlock, BlockCoordinates
+from .document import Document, Page, TextBlock
 from .exceptions import DocumentTextExtractorException
 
 
@@ -117,20 +117,18 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         except subprocess.CalledProcessError:
             raise DocumentTextExtractorException("Exception occurred calling pdfalto.")
 
-    def _get_text_block_coords(
-        self, text_block: Element
-    ) -> Tuple[BlockCoordinates, BlockCoordinates, BlockCoordinates, BlockCoordinates]:
+    def _get_text_block_coords(self, text_block: Element) -> List[Tuple[float]]:
         """Get the coordinates of a text block element.
 
         Fetches the x, y, width and height coordinates from an alto xml text block element
-        and returns as a tuple of BlockCoordinates.
+        and returns as a list of x, y pairs.
 
         Args:
             text_block: Element representing a text block in the XML tree
 
         Returns:
-            A four element tuple containing the coordinate of each of the four corners of a
-            rectangular text block.
+            A list of four elements, where each element is a tuple containing the coordinate
+            of each of the four corners of a rectangular text block.
         """
 
         tb_x = float(text_block.attrib.get("HPOS", 0))
@@ -143,12 +141,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         x3, y3 = tb_x, tb_y + tb_h
         x4, y4 = tb_x + tb_w, tb_y + tb_h
 
-        return (
-            BlockCoordinates(x1, y1),
-            BlockCoordinates(x2, y2),
-            BlockCoordinates(x3, y3),
-            BlockCoordinates(x4, y4),
-        )
+        return [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]
 
     def _get_page_dimensions(self, page: Element):
         """Gets the dimensions of a page."""
@@ -180,14 +173,17 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         SEP = " "
 
-        text_blocks = []
+        document_pages = []
 
         # Iterate through each page and process the text blocks that they contain
-        for page in pages:
+        for page_ix, page in enumerate(pages):
             # Get the page id
-            page_id = page.attrib.get("ID", None)
+            page_id = page_ix + 1
             # Get page dimensions
             page_dimensions = self._get_page_dimensions(page)
+
+            page_text_blocks = []
+
             # Iterate through page text blocks
             for text_block in page.findall(
                 "alto:PrintSpace/alto:TextBlock", xml_namespace
@@ -198,24 +194,23 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
                 # Iterate through the lines in the text block and merge lines into a single string
                 for text_line in text_block.getchildren():
                     text_block_coords = self._get_text_block_coords(text_block)
-                    text_line_content = ""
+                    text_line_content = []
                     for text in text_line.getchildren():
-                        text_line_content = (
-                            text_line_content + SEP + text.attrib.get("CONTENT", "")
-                        )
-                    text_block_lines.append(text_line_content)
+                        text_line_content.append(text.attrib.get("CONTENT", ""))
+                    text_block_lines.append(SEP.join(text_line_content))
 
                 if len(text_block_lines) > 0:
-                    text_blocks.append(
+                    page_text_blocks.append(
                         TextBlock(
-                            text="".join(text_block_lines).strip(),
+                            text=text_block_lines,
                             text_block_id=text_block_id,
-                            page_id=page_id,
                             coords=text_block_coords,
                         )
                     )
 
-        return Document(text_blocks, pdf_filename, page_dimensions)
+            document_pages.append(Page(page_text_blocks, page_dimensions, page_id))
+
+        return Document(document_pages, pdf_filename)
 
     def extract(self, pdf_filepath: Path) -> Document:
         """Extracts the text from a given pdf file and returns document structure.
