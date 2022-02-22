@@ -134,7 +134,7 @@ export function SearchIcon({
       id="Layer_1"
       fill={color}
       style={{ width: `${width}px`, height: `${height}px` }}
-      enable-background="new 0 0 512.392 512.392"
+      enableBackground="new 0 0 512.392 512.392"
       viewBox="0 0 512.392 512.392"
       xmlns="http://www.w3.org/2000/svg"
     >

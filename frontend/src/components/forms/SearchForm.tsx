@@ -3,12 +3,15 @@ import Close from '../buttons/Close';
 import SearchButton from '../buttons/SearchButton';
 import { SearchIcon } from '../Icons';
 import useWindowResize from '../hooks/useWindowResize';
-import { useTranslation } from 'react-i18next';
 
-const SearchForm = () => {
+interface SearchFormProps {
+  placeholder: string;
+  buttonText: string;
+}
+
+const SearchForm = ({ placeholder, buttonText }: SearchFormProps) => {
   const [term, setTerm] = useState('');
   const windowSize = useWindowResize();
-  const { t, i18n } = useTranslation();
   const onClick = (e) => {
     e.preventDefault();
     setTerm('');
@@ -18,9 +21,7 @@ const SearchForm = () => {
   };
   return (
     <form data-cy="search-form">
-      <p className="sm:hidden mt-4 text-center text-white">
-        Search for something, e.g. 'carbon taxes'.
-      </p>
+      <p className="sm:hidden mt-4 text-center text-white">{placeholder}</p>
       <div className="mt-4 md:mt-16 relative">
         <div className="absolute top-0 left-0 ml-4 mt-3 text-indigo-400 z-20">
           <SearchIcon height="35" width="40" />
@@ -30,11 +31,7 @@ const SearchForm = () => {
           data-cy="search-input"
           className="md:text-xl w-full mx-2 text-indigo-600 appearance-none bg-white py-4 pl-12 pr-28 md:pl-16 md:pr-40 rounded-full flex rounded-full relative z-10"
           type="search"
-          placeholder={`${
-            windowSize.width > 540
-              ? "Search for something, e.g. 'carbon taxes'"
-              : ''
-          }`}
+          placeholder={`${windowSize.width > 540 ? placeholder : ''}`}
           value={term}
           onChange={onChange}
         />
@@ -47,7 +44,7 @@ const SearchForm = () => {
           </div>
         )}
         <div className="absolute top-0 right-0 md:mr-1 h-full flex items-center justify-end z-10">
-          <SearchButton>GO</SearchButton>
+          <SearchButton>{buttonText}</SearchButton>
         </div>
       </div>
     </form>

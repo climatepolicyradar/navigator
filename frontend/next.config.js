@@ -1,9 +1,6 @@
 module.exports = {
-  experimental: {
-    concurrentFeatures: true,
-  },
   i18n: {
-    locales: ['en', 'de'],
+    locales: ['en', 'fr'],
     defaultLocale: 'en',
   },
 };

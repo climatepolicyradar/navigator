@@ -1,0 +1,10 @@
+{
+  "title": "Recherche de lois et de politiques",
+  "dashboard": {
+    "panel1": "Documents",
+    "panel2": "Juridictions",
+    "panel3": "Nouveaux Documents"
+  },
+  "searchPlaceholder": "Rechercher quelque chose, par ex. 'taxe carbone'",
+  "searchButtonText": "Va"
+}
