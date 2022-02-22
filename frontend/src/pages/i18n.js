@@ -28,6 +28,7 @@ i18n
       order: ['path'],
       lookupFromPathIndex: 0,
     },
+    react: { wait: true, useSuspense: false },
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default
     },
