@@ -17,8 +17,7 @@ const SearchForm = () => {
     setTerm(e.currentTarget.value);
   };
   return (
-    <form>
-      <div>{t('description.part2')}</div>
+    <form data-cy="search-form">
       <p className="sm:hidden mt-4 text-center text-white">
         Search for something, e.g. 'carbon taxes'.
       </p>
@@ -28,6 +27,7 @@ const SearchForm = () => {
         </div>
 
         <input
+          data-cy="search-input"
           className="md:text-xl w-full mx-2 text-indigo-600 appearance-none bg-white py-4 pl-12 pr-28 md:pl-16 md:pr-40 rounded-full flex rounded-full relative z-10"
           type="search"
           placeholder={`${
@@ -39,7 +39,10 @@ const SearchForm = () => {
           onChange={onChange}
         />
         {term.length > 0 && (
-          <div className="flex items-center mx-2 text-indigo-500 shrink-0 absolute top-0 right-0 mr-16 pr-1 md:mr-28 z-20 h-full items-center">
+          <div
+            data-cy="search-clear-button"
+            className="flex items-center mx-2 text-indigo-500 shrink-0 absolute top-0 right-0 mr-16 pr-1 md:mr-28 z-20 h-full items-center"
+          >
             <Close onClick={onClick} size="30" />
           </div>
         )}
