@@ -44,8 +44,6 @@ def add_missing_dates(policies: DataFrame):
     2007, Clean Air Conservation Act (No. 10615),South Korea (KOR)
     """
 
-    dt.date(1900, 1, 1)
-
     for mapping in mappings:
         policies.loc[
             (policies['country_code'] == mapping['country_code']) & (
