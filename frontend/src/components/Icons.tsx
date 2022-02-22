@@ -114,7 +114,7 @@ export function AddIcon({ width, height, color = 'currentColor' }: IconProps) {
       id="bold"
       style={{ width: `${width}px`, height: `${height}px` }}
       fill={color}
-      enable-background="new 0 0 24 24"
+      enableBackground="new 0 0 24 24"
       viewBox="0 0 24 24"
       xmlns="http://www.w3.org/2000/svg"
     >

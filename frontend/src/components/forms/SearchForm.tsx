@@ -3,10 +3,12 @@ import Close from '../buttons/Close';
 import SearchButton from '../buttons/SearchButton';
 import { SearchIcon } from '../Icons';
 import useWindowResize from '../hooks/useWindowResize';
+import { useTranslation } from 'react-i18next';
 
 const SearchForm = () => {
   const [term, setTerm] = useState('');
   const windowSize = useWindowResize();
+  const { t, i18n } = useTranslation();
   const onClick = (e) => {
     e.preventDefault();
     setTerm('');
@@ -16,6 +18,7 @@ const SearchForm = () => {
   };
   return (
     <form>
+      <div>{t('description.part2')}</div>
       <p className="sm:hidden mt-4 text-center text-white">
         Search for something, e.g. 'carbon taxes'.
       </p>

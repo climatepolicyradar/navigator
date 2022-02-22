@@ -1,6 +1,8 @@
 import Layout from '../components/layouts/FullPageBanner';
 import Dashboard from '../components/Dashboard';
 import SearchForm from '../components/forms/SearchForm';
+// import i18n (needs to be bundled ;))
+import './i18n';
 
 const IndexPage = () => {
   return (
