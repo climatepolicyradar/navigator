@@ -8,8 +8,8 @@ from fastapi.testclient import TestClient
 import pytest
 from moto import mock_s3
 
+from navigator.core.aws import get_s3_client, S3Client
 from app.core import config, security
-from app.core.aws import get_s3_client, S3Client
 from app.db.session import Base, get_db
 from app.db import models
 from app.main import app

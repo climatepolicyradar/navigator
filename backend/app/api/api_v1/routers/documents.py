@@ -3,8 +3,8 @@ from pathlib import Path
 
 from fastapi import APIRouter, Request, Depends, File, UploadFile, HTTPException
 
+from navigator.core.aws import get_s3_client
 from app.core.auth import get_current_active_user
-from app.core.aws import get_s3_client
 
 
 documents_router = r = APIRouter()

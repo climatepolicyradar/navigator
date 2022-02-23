@@ -7,8 +7,8 @@ from app.core.auth import get_current_active_user
 from app.db.session import get_db
 from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
 from app.db.crud import create_action, create_document
-from app.core.aws import get_s3_client, S3Document
-from app.log import get_logger
+from navigator.core.aws import get_s3_client, S3Document
+from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
 
