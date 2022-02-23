@@ -1,0 +1,11 @@
+{
+  "summary": "Add a document to this action French",
+  "form": {
+    "documentName": "Document name",
+    "language": "Language",
+    "languageDefault": "Choose a language",
+    "url": "Enter URL",
+    "or": "or",
+    "maxMb": "150Mb maximum"
+  }
+}

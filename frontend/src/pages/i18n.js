@@ -25,9 +25,10 @@ i18n
     ns: ['common'],
     defaultNS: ['common'],
     detection: {
-      order: ['path'],
+      order: ['path', 'navigator'],
       lookupFromPathIndex: 0,
     },
+    supportedLngs: ['en', 'fr'],
     react: { wait: true, useSuspense: false },
     interpolation: {
       escapeValue: false, // not needed for react as it escapes by default

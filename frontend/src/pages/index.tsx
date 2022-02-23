@@ -6,10 +6,11 @@ import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../components/LoaderOverlay';
 
 const IndexPage = () => {
-  const { t, i18n, ready } = useTranslation('search-start');
+  const { t, i18n, ready } = useTranslation('searchStart');
 
   return (
     <>
+      {console.log(i18n)}
       {!ready ? (
         <LoaderOverlay />
       ) : (
