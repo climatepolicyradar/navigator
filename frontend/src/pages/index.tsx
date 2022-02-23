@@ -1,16 +1,17 @@
 import Layout from '../components/layouts/FullPageBanner';
 import Dashboard from '../components/Dashboard';
 import SearchForm from '../components/forms/SearchForm';
-// import i18n (needs to be bundled ;))
 import './i18n';
 import { useTranslation } from 'react-i18next';
+import LoaderOverlay from '../components/LoaderOverlay';
 
 const IndexPage = () => {
-  const { t, i18n } = useTranslation('search-start');
+  const { t, i18n, ready } = useTranslation('search-start');
+
   return (
     <>
-      {!i18n.store.data.hasOwnProperty('en') ? (
-        <div>Loading...</div>
+      {!ready ? (
+        <LoaderOverlay />
       ) : (
         <Layout title={`Navigator | ${t('title')}`} heading={t('title')}>
           <div className="absolute top-0 left-0 w-full z-10 mt-52 md:mt-44 ">
