@@ -33,8 +33,6 @@ from pathlib import Path
 from typing import List, Tuple, Optional
 from dataclasses import dataclass, asdict
 
-SEPARATOR = " "
-
 
 @dataclass
 class TextBlock:

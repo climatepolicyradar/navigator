@@ -58,9 +58,6 @@ from .exceptions import DocumentTextExtractorException
 from .utils import split_pdf
 
 
-SEPARATOR = " "
-
-
 class DocumentTextExtractor:
     """Base class for extracting text from a document."""
 
