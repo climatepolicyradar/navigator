@@ -72,6 +72,7 @@ def get_urls(dataframe, policy_id=None, sep=';', sub_sep=None, url_sep=','):
                 doc['doc_url'] = u
                 doc['description'] = description
                 doc["events"] = dataframe["events"]
+                doc["policy_type"] = dataframe["policy_type"]
                 docs.append(doc)
     return docs
 

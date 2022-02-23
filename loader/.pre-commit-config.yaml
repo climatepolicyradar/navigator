@@ -19,4 +19,4 @@ repos:
     hooks:
       - id: pydocstyle
 
-# TODO isort, bandit, safety,
+# TODO isort, bandit, safety, mypy

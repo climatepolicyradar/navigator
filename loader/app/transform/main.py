@@ -1,14 +1,11 @@
 import pandas as pd
 from pandas import DataFrame
 
-from app.model import IngestData
 from app.transform.datafixes import add_missing_dates
 from app.transform.util import get_urls, extract_date
 
 
-def transform(data: IngestData) -> DataFrame:
-    cclw_policy_fe_df = data.policies_fe
-
+def transform(cclw_policy_fe_df: DataFrame) -> DataFrame:
     # Drop entries with no policy document list
     cclw_policy_fe_df.dropna(subset=['document_list'], inplace=True)
 
@@ -16,16 +13,7 @@ def transform(data: IngestData) -> DataFrame:
     for d_ix, d in cclw_policy_fe_df.iterrows():
         all_docs += get_urls(d, sep=';', sub_sep='|')
 
-    cclw_doc_urls = pd.DataFrame(all_docs)
-
-    # Merge policy and document datasets
-    policies = pd.merge(
-        data.policies,
-        cclw_doc_urls,
-        left_on=['country_code', 'policy_name'],
-        right_on=['country_code', 'policy_name'],
-        how='left'
-    )
+    policies = pd.DataFrame(all_docs)
 
     # Drop nulls
     policies.dropna(subset=['doc_url'], inplace=True)
