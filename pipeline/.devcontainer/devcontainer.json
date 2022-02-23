@@ -1,0 +1,7 @@
+{
+    "name": "pipeline",
+    "dockerFile": "../Dockerfile",
+    "context": "../..",
+    "shutdownAction": "none",
+    "extensions": ["ms-python.python", "github.vscode-pull-request-github"]
+  }

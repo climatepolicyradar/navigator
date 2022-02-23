@@ -5,8 +5,12 @@ The pdf2text cli allows you to automatically extract the text from a set of pdf 
 ## Using the docker image
 
 ### 1. Building the docker image
+The build context when building the docker image should be the parent directory of `pipeline`. This is so that common python packages can be copied to the image.
 
-`docker build -t navigator_pipeline .`
+```
+cd navigator
+docker build -f pipeline/Dockerfile -t navigator_pipeline .
+```
 
 ### 2. Running the cli
 Use the following command to run the pdf2text cli:
