@@ -120,11 +120,12 @@ def test_document_from_json(tmp_path):
         _ = Document.from_json(tmp_path / "test.json")
 
 
-def test_embedded_text_extractor(test_pdf_path):
+def test_embedded_text_extractor(test_pdf_path, tmp_path):
     """Test to check that text can be extracted from a test pdf file"""
 
+    xml_path = tmp_path / "test.xml"
     text_extractor = DocumentEmbeddedTextExtractor()
-    doc = text_extractor.extract(test_pdf_path)
+    doc = text_extractor.extract(test_pdf_path, xml_path)
 
     # Check that the filename matches the filename of the pdf
     assert doc.filename == test_pdf_path.name
