@@ -2,10 +2,11 @@
 name = "pipeline"
 version = "0.1.0"
 description = ""
-authors = ["Your Name <you@example.com>"]
+authors = ["Chris Ballard <chris@climatepolicyradar.org>"]
 
 [tool.poetry.dependencies]
 python = "^3.8"
+navigator = {path = "../common", develop = true }
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"
