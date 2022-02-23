@@ -27,10 +27,12 @@ def process(pdf_dir: Path, out_dir: Path, save_json: bool, save_text: bool):
     extractor = DocumentEmbeddedTextExtractor()
 
     for pdf_file in pdf_dir.glob("*.pdf"):
-        # Extract embedded text in pdf file
-        pdf_doc = extractor.extract(pdf_file)
+        data_out_path = out_dir / f"{Path(pdf_file).stem}.xml"
 
+        # Extract embedded text in pdf file
+        pdf_doc = extractor.extract(pdf_file, data_out_path)
         save_filename = Path(pdf_doc.filename).stem
+
         if save_json:
             out_json_filepath = out_dir / f"{save_filename}.json"
             pdf_doc.save_json(out_json_filepath)

@@ -138,7 +138,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
                 "-outline",
                 "-readingOrder",
                 str(pdf_filepath),
-                output_path.name,
+                output_path,
             ]
 
             subprocess.run(pdfalto_args, check=True)
