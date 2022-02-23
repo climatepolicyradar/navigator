@@ -7,15 +7,15 @@ DEFAULT_POLICY_DATE = dt.date(1900, 1, 1)
 
 
 def clean_url(url):
-    """Remove additional date strings which are erroneously present in some of the CCLW urls"""
+    """Remove additional date strings which are erroneously present in some of the CCLW urls."""
 
-    url = re.sub('\([0-9]+\-[a-zA-Z]{3,}\-[0-9]+\)', '', url)
+    url = re.sub(r'([0-9]+-[a-zA-Z]{3,}-[0-9]+)', '', url)
 
     return url
 
 
 def split_and_merge_urls(doc_urls, sep):
-    """Splits a given string of urls, and returns a list of matching urls.
+    """Split a given string of urls, and returns a list of matching urls.
 
     Merges cases where the comma is included in the url and not as a separator.
 

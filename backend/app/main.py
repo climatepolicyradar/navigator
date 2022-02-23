@@ -57,13 +57,11 @@ app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
 
 
 class MissingEnvironmentVariableError(Exception):
-    pass
+    """Exception for missing environment variables"""
 
 
 def assert_environment_variables():
-    """
-    Check that all required environment variables exist.
-    """
+    """Check that all required environment variables exist."""
     required_env_vars = (
         "POSTGRES_USER",
         "POSTGRES_PASSWORD",
@@ -85,7 +83,7 @@ def assert_environment_variables():
 
 @app.exception_handler(IntegrityError)
 async def integrityerror_handler(request: Request, exc: Exception):
-    """A generic exception handler.
+    """Handle IntegrityError exceptions.
 
     TODO map specific errors.
     """

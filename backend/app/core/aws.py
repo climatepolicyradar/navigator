@@ -1,8 +1,7 @@
-import os
-import typing as t
-import re
-
 import boto3
+import os
+import re
+import typing as t
 from botocore.exceptions import ClientError
 
 from app.log import get_logger
@@ -11,6 +10,8 @@ logger = get_logger(__name__)
 
 
 class S3Document:
+    """A class representing an S3 document."""
+
     def __init__(self, bucket_name: str, region: str, key: str):
         self.bucket_name = bucket_name
         self.region = region
@@ -18,6 +19,7 @@ class S3Document:
 
     @property
     def url(self):
+        """Returns the URL for this S3 document."""
         return f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{self.key}"
 
     @classmethod
@@ -46,7 +48,7 @@ class S3Client:
         )
 
     def upload_fileobj(
-        self, fileobj: t.BinaryIO, bucket: str, key: str
+            self, fileobj: t.BinaryIO, bucket: str, key: str
     ) -> t.Union[S3Document, bool]:
         """Upload a file object to an S3 bucket.
 
@@ -68,7 +70,7 @@ class S3Client:
         return S3Document(bucket, os.getenv("AWS_REGION"), key)
 
     def upload_file(
-        self, file_name: str, bucket: str, key: t.Optional[str] = None
+            self, file_name: str, bucket: str, key: t.Optional[str] = None
     ) -> t.Union[S3Document, bool]:
         """Upload a file to an S3 bucket by providing its filename.
 
@@ -95,7 +97,7 @@ class S3Client:
         return S3Document(bucket, os.getenv("AWS_REGION"), key)
 
     def copy_document(
-        self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
+            self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
     ) -> S3Document:
         """Copy a document from one bucket and key to another bucket, and optionally a new key.
 
@@ -128,7 +130,7 @@ class S3Client:
         self.client.delete_object(Bucket=s3_document.bucket_name, Key=s3_document.key)
 
     def move_document(
-        self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
+            self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
     ) -> S3Document:
         """Move a document from one bucket and key to another bucket, and optionally a new key.
 

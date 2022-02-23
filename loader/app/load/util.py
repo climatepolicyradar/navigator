@@ -63,13 +63,13 @@ def post_action(action_payload):
 
 
 def policy_repr(policy):
-    """Returns a string representation of a policy dataframe row.
+    """Return a string representation of a policy dataframe row.
 
     Matches the unique constraint on the backend:
     'name', 'action_date', 'geography_id', 'action_type_id', 'action_source_id' (the latter always 1 for alpha)
 
     :param policy:
-    :return:
+    :return: a string representation
     """
     return "name=[%s], date=[%s], country=[%s], type=[%s]" % (
         policy['policy_name'], policy['policy_date'], policy['country_code'], policy["policy_type"])

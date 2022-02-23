@@ -1,8 +1,5 @@
-"""
-An data module which knows where and how to get action URLs (e.g. CSVs of URLs).
-These URLs are then passed onto a downloader which will fetch the actions.
-"""
 from os import PathLike
+
 import pandas as pd
 
 from app.model import IngestData
@@ -33,7 +30,7 @@ doc_column_map = {
     'Language': 'document_language',
 }
 
-targets_column_map ={
+targets_column_map = {
     'Id': 'target_id',
     'Legislation ids': 'policy_id',
     'Target type': 'target_type',
@@ -50,15 +47,13 @@ targets_column_map ={
 
 
 def extract(data_dir: PathLike) -> IngestData:
-    """
-    Loads a related collection of CCLW CSVs, and does initial transformation:
-    - rename some columns
-    - drop entries without URLs
+    """Load a related collection of CCLW CSVs.
+
+    Also rename. some columns.
 
     :return: CSV data
     """
     
-
     # the backend CSV is normalised
     cclw_policy_df = pd.read_csv(
         data_dir / 'cclw' / '2022-02' / 'legislations-16_02_2022.csv',

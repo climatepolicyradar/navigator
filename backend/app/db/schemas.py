@@ -4,7 +4,7 @@ import typing as t
 from pydantic import BaseModel, HttpUrl, conint, validator
 
 
-class UserBase(BaseModel):
+class UserBase(BaseModel):  # noqa: D101
     email: str
     is_active: bool = True
     is_superuser: bool = False
@@ -12,42 +12,42 @@ class UserBase(BaseModel):
     last_name: str = None
 
 
-class UserOut(UserBase):
+class UserOut(UserBase):  # noqa: D101
     pass
 
 
-class UserCreate(UserBase):
+class UserCreate(UserBase):  # noqa: D101
     password: str
 
-    class Config:
+    class Config:  # noqa: D106
         orm_mode = True
 
 
-class UserEdit(UserBase):
+class UserEdit(UserBase):  # noqa: D101
     password: t.Optional[str] = None
 
-    class Config:
+    class Config:  # noqa: D106
         orm_mode = True
 
 
-class User(UserBase):
+class User(UserBase):  # noqa: D101
     id: int
 
-    class Config:
+    class Config:  # noqa: D106
         orm_mode = True
 
 
-class Token(BaseModel):
+class Token(BaseModel):  # noqa: D101
     access_token: str
     token_type: str
 
 
-class TokenData(BaseModel):
+class TokenData(BaseModel):  # noqa: D101
     email: str = None
     permissions: str = "user"
 
 
-class DocumentBase(BaseModel):
+class DocumentBase(BaseModel):  # noqa: D101, D106
     name: str
     language_id: int
     source_url: t.Optional[HttpUrl]
@@ -57,20 +57,20 @@ class DocumentBase(BaseModel):
     day: t.Optional[conint(ge=1, le=31)]
 
     @validator("month", "day")
-    def set_date(cls, val):
+    def set_date(cls, val):  # noqa: D102
         return val or 1
 
-    class Config:
+    class Config:  # noqa: D106
         orm_mode = True
         validate_assignment = True
 
 
-class DocumentCreate(DocumentBase):
+class DocumentCreate(DocumentBase):  # noqa: D101
     action_id: int
     document_mod_date: datetime.date
 
 
-class ActionBase(BaseModel):
+class ActionBase(BaseModel):  # noqa: D101
     name: str
     description: t.Optional[str]
     year: conint(ge=1900, le=datetime.datetime.now().year)
@@ -82,14 +82,14 @@ class ActionBase(BaseModel):
     documents: t.List[DocumentBase]
 
     @validator("month", "day")
-    def set_date(cls, val):
+    def set_date(cls, val):  # noqa: D102
         return val or 1
 
-    class Config:
+    class Config:  # noqa: D106
         orm_mode = True
         validate_assignment = True
 
 
-class ActionCreate(ActionBase):
+class ActionCreate(ActionBase):  # noqa: D101
     source_json: t.Optional[dict] = None
     mod_date: datetime.date
