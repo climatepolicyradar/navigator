@@ -1,6 +1,7 @@
 from typing import List
 import os
 from pathlib import Path
+
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
 
@@ -10,7 +11,13 @@ def split_pdf(pdf_path: str, max_pages_per_split: int, output_dir: str) -> List[
     0 representing the order of the split in the original PDF, and 100 representing the
     value of the `max_pages_per_split` argument.
 
-    Returns a list paths of the files created by this method.
+    Args:
+        pdf_path: path to original PDF.
+        max_pages_per_split: maximum pages per split. The last split PDF may have fewer pages than this.
+        output_dir: directory to output smaller PDFs to.
+
+    Returns:
+        A list paths to the files created by this method.
     """
     input_pdf = PdfFileReader(open(pdf_path, "rb"))
     pages_range = range(input_pdf.numPages)

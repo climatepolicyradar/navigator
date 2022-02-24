@@ -281,8 +281,8 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         # Number of pages to limit each PDF to whether scanned or not scanned.
         # These values are used to split a PDF if the API returns a "File exceeds page limit" error.
-        self.API_MAX_PAGES = 100
-        self.API_SCANNED_MAX_PAGES = 50
+        self.API_MAX_PAGES = 75
+        self.API_SCANNED_MAX_PAGES = 35
 
     @staticmethod
     def _load_credentials(credentials_path: str) -> ExecutionContext:
@@ -506,9 +506,12 @@ class AdobeAPIExtractor(DocumentTextExtractor):
                 continue
 
             # Increment page_id and reset block_counter if starting new page.
-            if el["Page"] != page_id:
-                page_id += 1
+            # Elements sometimes don't have page numbers, so in these cases we assume
+            # the page hasn't changed.
+            if el.get("Page", page_id) != page_id:
                 block_counter = 1
+
+            page_id = el.get("Page", page_id)
 
             # Only consider blocks that aren't in one of the types to exclude, and contain text.
             if not any(
@@ -544,7 +547,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
     def pdf_to_data(
         self, pdf_filepath: Path, output_path: Path, output_folder_pdf_splits: Path
-    ):
+    ) -> List[Path]:
         """
         Sends document at `pdf_filepath` to the Adobe Extract API. Stores the data from the API in the `output_path` folder.
 
@@ -556,6 +559,9 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             pdf_filepath: file path to a PDF.
             output_path: folder path to store the PDF Extract API results in.
             output_folder_pdf_splits: folder path to store the split PDFs.
+
+        Returns:
+            List of paths to JSON files (pathlib.Path objects).
         """
         try:
             extract_pdf_operation = ExtractPDFOperation.create_new()
@@ -585,46 +591,49 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             result: FileRef = extract_pdf_operation.execute(self._execution_context)
             shutil.unpack_archive(result._file_path, output_path)
 
+            return [output_path / "structuredData.json"]
+
         except (ServiceApiException, ServiceUsageException, SdkException) as e:
             if (
                 isinstance(e, ServiceApiException)
                 and e.message
                 == "DISQUALIFIED - File not suitable for content extraction: File exceeds page limit"
             ):
-                split_paths = split_pdf(
-                    pdf_filepath, self.API_MAX_PAGES, output_folder_pdf_splits
-                )
-                logging.info(
-                    f"Failed due to 'file exceeds page limit error'. Retrying with PDF split into {len(split_paths)} separate PDFs with max page size {self.API_MAX_PAGES}."
-                )
-                for pdf_path in split_paths:
-                    self.pdf_to_data(
-                        pdf_filepath=pdf_path,
-                        output_path=output_path,
-                        output_folder_pdf_splits=output_folder_pdf_splits,
-                    )
+                split_page_limit = self.API_MAX_PAGES
 
             elif (
                 isinstance(e, ServiceApiException)
                 and e.message
                 == "DISQUALIFIED - File not suitable for content extraction: Scanned file exceeds page limit"
             ):
-                split_paths = split_pdf(
-                    pdf_filepath, self.API_SCANNED_MAX_PAGES, output_folder_pdf_splits
-                )
-                logging.info(
-                    f"Failed due to 'file exceeds page limit error'. Retrying with PDF split into {len(split_paths)} separate PDFs with max page size {self.API_SCANNED_MAX_PAGES}."
-                )
-                for pdf_path in split_paths:
-                    self.pdf_to_data(
-                        pdf_filepath=pdf_path,
-                        output_path=output_path,
-                        output_folder_pdf_splits=output_folder_pdf_splits,
-                    )
 
-            logging.exception(
-                f"Exception encountered while executing operation for {pdf_filepath}"
+                split_page_limit = self.API_SCANNED_MAX_PAGES
+
+            else:
+                logging.exception(
+                    f"Exception encountered while executing operation for {pdf_filepath}"
+                )
+
+            split_paths = split_pdf(
+                pdf_filepath, split_page_limit, output_folder_pdf_splits
             )
+            logging.info(
+                f"Failed due to 'file exceeds page limit error'. Retrying with PDF split into {len(split_paths)} separate PDFs with max page size {split_page_limit}."
+            )
+            json_paths = []
+            for idx, pdf_path in enumerate(split_paths):
+                split_output_dir = output_path / f"{pdf_filepath.stem}_{idx}"
+                os.mkdir(split_output_dir)
+
+                json_path = self.pdf_to_data(
+                    pdf_filepath=pdf_path,
+                    output_path=split_output_dir,
+                    output_folder_pdf_splits=output_folder_pdf_splits,
+                )
+
+                json_paths += json_path
+
+            return json_paths
 
     def extract(
         self, pdf_filepath: Path, data_output_path: Path, output_folder_pdf_splits: Path
@@ -640,15 +649,25 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             An instance of a Document containing the document structure and text.
         """
 
-        self.pdf_to_data(
+        # In order to handle the case where documents have been split for processing,
+        # the resulting pages of each split document are joined into a new Document
+        # object which is returned.
+
+        json_paths = self.pdf_to_data(
             pdf_filepath=pdf_filepath,
             output_path=data_output_path,
             output_folder_pdf_splits=output_folder_pdf_splits,
         )
 
-        doc = self.data_to_document(
-            data_path=data_output_path / "structuredData.json",
-            pdf_filename=pdf_filepath.name,
-        )
+        pages = []
+        for _path in json_paths:
+            temp_doc = self.data_to_document(
+                data_path=_path, pdf_filename=pdf_filepath.name
+            )
 
-        return doc
+            pages += temp_doc.pages
+
+        return Document(
+            pages=pages,
+            filename=pdf_filepath.name,
+        )
