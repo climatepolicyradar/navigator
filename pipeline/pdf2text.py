@@ -7,6 +7,7 @@ import argparse
 from pathlib import Path
 import tempfile
 from collections import namedtuple
+from typing import TextIO
 
 from tqdm import tqdm
 
@@ -86,6 +87,55 @@ def get_pdf_files(pdf_path: str, use_s3: bool = False) -> Path:
             yield pdf_file, pdf_file.name
 
 
+def upload_extract_files(
+    out_path: str, save_filename: str, out_json_file: TextIO, out_text_file: TextIO
+):
+    """Upload the extracted json and text files to an s3 bucket.
+
+    Uploads the json and text extract files to an s3 bucket. save_filename is used as the
+    root filename for these files to make sure that they have the same name as the file processed.
+    For example, if extracting `document.pdf`, the json and text extract files will be called
+    `document.json` and `document.txt` respectively.
+
+    Args:
+        out_path (str): path to bucket and folders to upload files to in format
+            [bucket]/[folder]/[folder]/...
+        save_filename (str): name of file being processed
+        out_json_file (TextIO): file like object for temporary output json file
+        out_text_file (TextIO): file like object for temporary output text file
+    """
+
+    out_path_components = split_s3_path(
+        out_path, include_bucket=True, include_filename=False
+    )
+
+    s3_client = S3Client()
+
+    # Create keys for uploaded files
+    s3_json_key = (
+        f"{out_path_components.folders}/{save_filename}.json"
+        if out_path_components.folders
+        else f"{save_filename}.json"
+    )
+    s3_text_key = (
+        f"{out_path_components.folders}/{save_filename}.txt"
+        if out_path_components.folders
+        else f"{save_filename}.txt"
+    )
+
+    # Upload the files
+    s3_client.upload_file(
+        out_json_file.name, out_path_components.bucket, key=s3_json_key
+    )
+    s3_client.upload_file(
+        out_text_file.name, out_path_components.bucket, key=s3_text_key
+    )
+
+    # Close the temp files to ensure they're deleted afterwards
+    out_json_file.close()
+    out_text_file.close()
+
+
 def process(pdf_path: str, out_path: str, use_s3: bool = False):
     """Extracts text from text in a directory containing pdf files.
 
@@ -113,10 +163,6 @@ def process(pdf_path: str, out_path: str, use_s3: bool = False):
         save_filename = Path(source_pdf_filename).stem
 
         if use_s3:
-            out_path_components = split_s3_path(
-                out_path, include_bucket=True, include_filename=False
-            )
-
             out_json_file = tempfile.NamedTemporaryFile(
                 prefix="navigator_", suffix=".json"
             )
@@ -135,31 +181,7 @@ def process(pdf_path: str, out_path: str, use_s3: bool = False):
 
         # If we're using s3, upload the document to the given bucket/folder
         if use_s3:
-            s3_client = S3Client()
-
-            # Create keys for uploaded files
-            s3_json_key = (
-                f"{out_path_components.folders}/{save_filename}.json"
-                if out_path_components.folders
-                else f"{save_filename}.json"
-            )
-            s3_text_key = (
-                f"{out_path_components.folders}/{save_filename}.txt"
-                if out_path_components.folders
-                else f"{save_filename}.txt"
-            )
-
-            # Upload the files
-            s3_client.upload_file(
-                out_json_filepath, out_path_components.bucket, key=s3_json_key
-            )
-            s3_client.upload_file(
-                out_text_filepath, out_path_components.bucket, key=s3_text_key
-            )
-
-            # Close the temp files to ensure they're deleted afterwards
-            out_json_file.close()
-            out_text_file.close()
+            upload_extract_files(out_path, save_filename, out_json_file, out_text_file)
 
 
 def configure_args():
