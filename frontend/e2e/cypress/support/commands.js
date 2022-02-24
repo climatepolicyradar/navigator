@@ -79,7 +79,9 @@ Cypress.Commands.add('get_lookups', () => {
 });
 
 Cypress.Commands.add('check_mobile_width', () => {
-  // smallest mobile width (320) including a scrollbar (335)
+  // This ensures page content is not too wide for screen size
+
+  // Smallest mobile width (320) including a scrollbar (335)
   cy.viewport(335, 600);
   // should scroll horizontally if elements too wide
   cy.scrollTo(1000, 0);
@@ -108,4 +110,18 @@ Cypress.Commands.add('is_in_viewport', (element) => {
     expect(rect.top).not.to.be.greaterThan(bottom);
     expect(rect.bottom).not.to.be.greaterThan(bottom);
   });
+});
+
+Cypress.Commands.add('check_localisation', (page = '') => {
+  cy.visit(`http://localhost:3000/${page}`);
+  cy.get('[data-cy="banner-title"] span')
+    .invoke('text')
+    .then((titleEnglish) => {
+      cy.visit(`http://localhost:3000/fr/${page}`);
+      cy.get('[data-cy="banner-title"] span')
+        .invoke('text')
+        .should((titleFrench) => {
+          expect(titleFrench).not.to.eq(titleEnglish);
+        });
+    });
 });
