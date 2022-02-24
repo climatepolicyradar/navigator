@@ -1906,6 +1906,11 @@
   "resolved" "https://registry.npmjs.org/csstype/-/csstype-3.0.10.tgz"
   "version" "3.0.10"
 
+"cypress-pseudo-localization@^1.0.0":
+  "integrity" "sha512-9v7JJ7IfyKpFeL4EmYdXAfoVAogcVe+knKnhCU8kJv7pvPnimEz16R+Wh07OqkXUoP/MGewodg/DrSe+uBCruQ=="
+  "resolved" "https://registry.npmjs.org/cypress-pseudo-localization/-/cypress-pseudo-localization-1.0.0.tgz"
+  "version" "1.0.0"
+
 "damerau-levenshtein@^1.0.7":
   "integrity" "sha512-VvdQIPGdWP0SqFXghj79Wf/5LArmreyMsGLa6FG6iC4t3j7j5s71TrwWmT/4akbDQIqjfACkLZmjXhA7g2oUZw=="
   "resolved" "https://registry.npmjs.org/damerau-levenshtein/-/damerau-levenshtein-1.0.7.tgz"

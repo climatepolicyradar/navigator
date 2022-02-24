@@ -13,6 +13,7 @@
   "dependencies": {
     "axios": "^0.24.0",
     "babel-loader": "^7.1.5",
+    "cypress-pseudo-localization": "^1.0.0",
     "formik": "^2.2.9",
     "i18next": "^21.6.11",
     "i18next-browser-languagedetector": "^6.1.3",
