@@ -54,11 +54,14 @@ class TextBlock:
     coords: List[Tuple[float, float]]  # Coordinates of text block
     type: Optional[str] = None  # Type of text block
     path: Optional[List[str]] = None  # Path of text block. Similar to DOM tree in HTML.
+    custom_attributes: Optional[
+        dict
+    ] = None  # Any attributes returned by the parser that can be used for post-processing.
 
     def to_string(self) -> str:
         """Returns the lines in a text block as a string with the lines separated by spaces."""
 
-        return " ".join(self.text)
+        return " ".join([line.strip() for line in self.text])
 
 
 @dataclass
