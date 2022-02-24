@@ -1,11 +1,11 @@
-from sqlalchemy import BigInteger, SmallInteger
 import sqlalchemy as sa
+from sqlalchemy import BigInteger, SmallInteger, UniqueConstraint
 from sqlalchemy.dialects import postgresql
 
-from .session import Base
+from app.db.session import Base
 
 
-class User(Base):
+class User(Base):  # noqa: D101
     __tablename__ = "user"
 
     id = sa.Column(sa.Integer, primary_key=True)
@@ -17,7 +17,7 @@ class User(Base):
     is_superuser = sa.Column(sa.Boolean, default=False, nullable=False)
 
 
-class PassageType(Base):
+class PassageType(Base):  # noqa: D101
     __tablename__ = "passage_type"
 
     passage_type_id = sa.Column(
@@ -30,7 +30,7 @@ class PassageType(Base):
     name = sa.Column(sa.VARCHAR(length=255), autoincrement=False, nullable=False)
 
 
-class MetadataType(Base):
+class MetadataType(Base):  # noqa: D101
     __tablename__ = "metadata_type"
 
     metadata_type_id = sa.Column(
@@ -52,7 +52,7 @@ class MetadataType(Base):
     )
 
 
-class MetadataValue(Base):
+class MetadataValue(Base):  # noqa: D101
     __tablename__ = "metadata_value"
 
     metadata_value_id = sa.Column(
@@ -75,7 +75,7 @@ class MetadataValue(Base):
     )
 
 
-class MetadataValueKeywords(Base):
+class MetadataValueKeywords(Base):  # noqa: D101
     __tablename__ = "metadata_value_keywords"
 
     metadata_keyword_id = sa.Column(
@@ -86,7 +86,7 @@ class MetadataValueKeywords(Base):
     keyword = sa.Column(sa.VARCHAR(length=255), autoincrement=False, nullable=False)
 
 
-class Language(Base):
+class Language(Base):  # noqa: D101
     __tablename__ = "language"
 
     language_id = sa.Column(
@@ -98,7 +98,7 @@ class Language(Base):
     name = sa.Column(sa.VARCHAR(length=128), autoincrement=False, nullable=True)
 
 
-class Geography(Base):
+class Geography(Base):  # noqa: D101
     __tablename__ = "geography"
 
     geography_id = sa.Column(
@@ -121,7 +121,7 @@ class Geography(Base):
     )
 
 
-class Source(Base):
+class Source(Base):  # noqa: D101
     __tablename__ = "source"
 
     source_id = sa.Column(
@@ -134,7 +134,7 @@ class Source(Base):
     name = sa.Column(sa.String(128), autoincrement=False, nullable=False)
 
 
-class ActionType(Base):
+class ActionType(Base):  # noqa: D101
     __tablename__ = "action_type"
 
     action_type_id = sa.Column(
@@ -154,7 +154,7 @@ class ActionType(Base):
     )
 
 
-class Action(Base):
+class Action(Base):  # noqa: D101
     __tablename__ = "action"
 
     action_id = sa.Column(
@@ -180,9 +180,10 @@ class Action(Base):
         nullable=True,
     )
     action_source_id = sa.Column(BigInteger, sa.ForeignKey(Source.source_id), nullable=False)
+    UniqueConstraint(name, action_date, geography_id, action_type_id, action_source_id)
 
 
-class ActionMetadata(Base):
+class ActionMetadata(Base):  # noqa: D101
     __tablename__ = "action_metadata"
 
     action_metadata_id = sa.Column(
@@ -192,7 +193,7 @@ class ActionMetadata(Base):
     metadata_value_id = sa.Column(sa.INTEGER(), sa.ForeignKey(MetadataValue.metadata_value_id), nullable=False)
 
 
-class ActionSourceMetadata(Base):
+class ActionSourceMetadata(Base):  # noqa: D101
     __tablename__ = "action_source_metadata"
 
     action_source_metadata_id = sa.Column(
@@ -206,7 +207,7 @@ class ActionSourceMetadata(Base):
     action_id = sa.Column(sa.INTEGER(), sa.ForeignKey(Action.action_id), nullable=False)
 
 
-class Document(Base):
+class Document(Base):  # noqa: D101
     __tablename__ = "document"
 
     document_id = sa.Column(
@@ -227,7 +228,7 @@ class Document(Base):
     )
 
 
-class Passage(Base):
+class Passage(Base):  # noqa: D101
     __tablename__ = "passage"
 
     passage_id = sa.Column(
@@ -241,7 +242,7 @@ class Passage(Base):
     text = sa.Column(sa.TEXT(), autoincrement=False, nullable=False)
 
 
-class PassageMetadata(Base):
+class PassageMetadata(Base):  # noqa: D101
     __tablename__ = "passage_metadata"
 
     passage_id = sa.Column(

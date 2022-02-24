@@ -1,8 +1,7 @@
-import os
 import logging
-from logging.config import fileConfig
-
+import os
 from alembic import context
+from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
@@ -24,6 +23,7 @@ fileConfig(config.config_file_name)
 # target_metadata = mymodel.Base.metadata
 target_metadata = Base.metadata
 
+
 # other values from the config, defined by the needs of env.py,
 # can be acquired:
 # my_important_option = config.get_main_option("my_important_option")
@@ -35,7 +35,7 @@ def get_url():
 
 
 def generate_incremental_revision_id(
-    context, revision, directives
+        context, revision, directives
 ) -> None:
     if getattr(context.config.cmd_opts, "autogenerate", False):
         script = directives[0]
@@ -56,6 +56,7 @@ def generate_incremental_revision_id(
 
 def run_migrations_offline():
     """Run migrations in 'offline' mode.
+
     This configures the context with just a URL
     and not an Engine, though an Engine is acceptable
     here as well.  By skipping the Engine creation
@@ -78,6 +79,7 @@ def run_migrations_offline():
 
 def run_migrations_online():
     """Run migrations in 'online' mode.
+    
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """

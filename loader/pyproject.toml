@@ -1,33 +1,21 @@
 [tool.poetry]
-name = "navigator"
+name = "loader"
 version = "0.1.0"
-description = ""
-authors = ["chrisaballard <chris@climatepolicyradar.org>", "kalyandutia <kalyan@climatepolicyradar.org>", "paulahightower <paula@climatepolicyradar.org>"]
+description = "Loads data into backend"
+authors = ["CPR tech <tech@climatepolicyradar.org>"]
+license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
-alembic = "^1.7.6"
-Authlib = "^0.15.5"
-bcrypt = "^3.2.0"
-boto3 = "^1.21.2"
-fastapi = "^0.74.0"
-httpx = "^0.22.0"
-itsdangerous = "^2.1.0"
+python = "^3.9"
 pandas = "^1.4.1"
-passlib = "^1.7.4"
-psycopg2-binary = "^2.9.3"
-PyJWT = "^2.3.0"
-python-multipart = "^0.0.5"
-SQLAlchemy = "^1.4.31"
-SQLAlchemy-Utils = "^0.38.2"
-uvicorn = "^0.17.5"
+requests = "^2.27.1"
 
 [tool.poetry.dev-dependencies]
-moto = { version = "^3.0.3", extras = ["s3"] }
-pre-commit = "^2.17.0"
 python-dotenv = "^0.19.2"
+csvkit = "^1.0.6"
 pytest = "^7.0.1"
 pydocstyle = { version = "^6.1.1", extras = ["pydocstyle[toml]"] }
+pre-commit = "^2.17.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
