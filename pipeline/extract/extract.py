@@ -29,6 +29,7 @@ from xml.etree.ElementTree import Element
 import re
 import shutil
 from collections import defaultdict
+import json
 from typing import Optional, Tuple, List
 
 from adobe.pdfservices.operation.auth.credentials import Credentials
@@ -62,19 +63,17 @@ class DocumentTextExtractor:
     """Base class for extracting text from a document."""
 
     def pdf_to_data(self, pdf_filepath: Path, output_path: Path, **kwargs):
-        """Extract information from the given document and save the results to an output path."""
+        """Extracts information from the given document and save the results to an output path."""
         raise NotImplementedError
 
     def data_to_document(self, data_path: Optional[Path] = None, **kwargs) -> Document:
+        """Converts data outputted by `pdf_to_data` into a `Document` object."""
         raise NotImplementedError
 
-    def extract(self, pdf_filepath: Path, data_output_path: Path):
-        """Extract text from the given document"""
+    def extract(self, pdf_filepath: Path, data_output_path: Path, **kwargs):
+        """Extracts text from the given document"""
 
-        self.pdf_to_data(pdf_filepath, data_output_path)
-        document = self.data_to_document(data_output_path)
-
-        return document
+        raise NotImplementedError
 
 
 class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
@@ -257,6 +256,14 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
 class AdobeAPIExtractor(DocumentTextExtractor):
     def __init__(self, credentials_path: str, **kwargs):
+        """
+        Extracts text from a PDF document using the Adobe PDF extract API. Also saves interim results, so API calls
+        don't need to be re-run.
+
+        Args:
+            credentials_path: the path to the JSON file containing Adobe PDF services API credentials. A `private.key`
+            file must also exist in the same folder.
+        """
         super().__init__(**kwargs)
         self._elements_exclude = [
             "Aside",
@@ -270,13 +277,23 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         # Maximum clockwise or anti-clockwise rotation a text element can have, otherwise it's excluded from the parsing results.
         self._max_rotation_degrees = 20
 
-        self._execution_context = self._setup_credentials(credentials_path)
+        self._execution_context = self._load_credentials(credentials_path)
 
-        # Number of pages to limit each PDF to whether scanned or not scanned
+        # Number of pages to limit each PDF to whether scanned or not scanned.
+        # These values are used to split a PDF if the API returns a "File exceeds page limit" error.
         self.API_MAX_PAGES = 100
         self.API_SCANNED_MAX_PAGES = 50
 
-    def _setup_credentials(credentials_path: str) -> ExecutionContext:
+    @staticmethod
+    def _load_credentials(credentials_path: str) -> ExecutionContext:
+        """Load credentials given the path to a credentials JSON file.
+
+        Args:
+            credentials_path: path to credentials JSON file.
+
+        Returns:
+            ExecutionContext: context used to run API calls using the PDF services SDK.
+        """
         credentials = (
             Credentials.service_account_credentials_builder()
             .from_file(credentials_path)
@@ -286,9 +303,19 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         # Create an ExecutionContext using credentials and create a new operation instance.
         return ExecutionContext.create(credentials)
 
+        """Flatten out 'Kids' elements which refer to PDF structure."""
+
     @staticmethod
     def _flatten_data(data: dict) -> dict:
-        """Flatten out 'Kids' elements which refer to PDF structure."""
+        """Adobe data contains Kids elements which aim to encode sub-elements of an element.
+        This method flattens all Kids elements out in the returned Adobe JSON as they are unreliable.
+
+        Args:
+            data (_type_): JSON data returned by the Adobe Extract API.
+
+        Returns:
+            dict: flattened JSON data
+        """
         new_data = {k: v for k, v in data.items() if k != "elements"}
         new_data["elements"] = []
 
@@ -310,14 +337,14 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         return new_data
 
     @staticmethod
-    def _get_lines(char_bounds) -> List[Tuple[float, float]]:
-        """Get and merge lines.
+    def _get_lines(char_bounds: List[List[float]]) -> List[Tuple[float, float]]:
+        """Detects lines given a set of character bounds.
 
         Args:
-            char_bounds (_type_): _description_
+            char_bounds: a list of character bounds. Each bound is in the form `x0,y0,x1,y1`.
 
         Returns:
-            _type_: _description_
+            lines: list of [ymin, ymax] coordinates for each line with no overlaps, in ascending order.
         """
 
         # Get lines as ymin and ymax coordinates of each character bounds
@@ -336,19 +363,42 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         return merged
 
     @staticmethod
-    def _get_line_number_of_char_bound(char_bound, lines):
+    def _get_line_number_of_char_bound(
+        char_bound: List[float], lines: List[Tuple[float, float]]
+    ):
+        """Returns the index of a line given a character bound.
+
+        Args:
+            char_bound: in the form [x0, y0, x1, y1].
+            lines: returned by `_get_lines`.
+
+        Returns:
+            _type_: _description_
+        """
         in_line_bool_array = [
             char_bound[1] >= line[0] and char_bound[3] <= line[1] for line in lines
         ]
         line_number_list = [idx for idx, val in enumerate(in_line_bool_array) if val]
 
         if len(line_number_list) != 1:
-            raise Exception
+            logging.warning(
+                "Method _get_line_number_of_char_bound found that a character was a member of zero or multiple lines. This will likely lead to an incorrect parsing result."
+            )
 
         return line_number_list[0]
 
-    def _element_to_text_block(self, el: dict, block_id: str) -> TextBlock:
-        char_bounds = el["CharBounds"]
+    def _element_to_text_block(self, element: dict, text_block_id: str) -> TextBlock:
+        """
+        Convert an element in the Adobe PDF Extract output JSON's `elements` into a `TextBlock`.
+
+        Args:
+            element: dictionary from `data['elements']`, where data is the JSON returned by the Adobe API.
+            text_block_id: ID to give the text block
+
+        Returns:
+            TextBlock
+        """
+        char_bounds = element["CharBounds"]
         merged_lines = self._get_lines(char_bounds)
         chars_in_lines_idxs = [
             self._get_line_number_of_char_bound(char_bound, merged_lines)
@@ -361,19 +411,35 @@ class AdobeAPIExtractor(DocumentTextExtractor):
                 for i in range(1, len(chars_in_lines_idxs))
                 if chars_in_lines_idxs[i] != chars_in_lines_idxs[i - 1]
             ]
-            + [len(el["Text"])]
+            + [len(element["Text"])]
         )
         text_by_line = [
-            el["Text"][line_change_idxs[idx] : line_change_idxs[idx + 1]].strip()
+            element["Text"][line_change_idxs[idx] : line_change_idxs[idx + 1]]
             for idx in range(len(line_change_idxs) - 1)
         ]
 
+        # Store custom attributes for StyleSpans which are nested under another element, e.g subscripts or underlines.
+        # Also change their path to the path of their parent element to make them easier to merge later.
+        # Type is left as StyleSpan.
+        if (
+            self._structure_path(element["Path"], remove_numbers=True)[-1]
+            == "StyleSpan"
+            and element.get("attributes")
+            and element.get("Text")
+        ):
+            custom_attributes = element.get("attributes")
+            path = self._structure_path(element["Path"], remove_numbers=False)[:-1]
+        else:
+            custom_attributes = None
+            path = self._structure_path(element["Path"], remove_numbers=False)
+
         return TextBlock(
             text=text_by_line,
-            text_block_id=block_id,
-            coords=self._convert_coordinate_axis(el["Bounds"], el["Page"]),
-            type=self._structure_path(el["Path"], remove_numbers=True)[-1],
-            path=self._structure_path(el["Path"], remove_numbers=False),
+            text_block_id=text_block_id,
+            coords=self._convert_coordinate_axis(element["Bounds"], element["Page"]),
+            type=self._structure_path(element["Path"], remove_numbers=True)[-1],
+            path=path,
+            custom_attributes=custom_attributes,
         )
 
     def _convert_coordinate_axis(
@@ -382,7 +448,6 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         """Convert coordinates so that the origin is at top left, rather than bottom left output by Adobe.
 
         Args:
-            data: JSON data output by Adobe API.
             coords: list of coordinates output by Adobe: [x0, y0, x1, y1] with origin at bottom left.
             page_number: number of page output by Adobe. Indexed at 0.
         """
@@ -396,7 +461,12 @@ class AdobeAPIExtractor(DocumentTextExtractor):
     def _structure_path(path: str, remove_numbers: bool = True) -> List[str]:
         """
         Convert a PDF path into a list.
-        E.g. '//Document/Aside[3]/P[2]' becomes['Document', 'Aside', 'P'].
+        E.g. '//Document/Aside[3]/P[2]' becomes ['Document', 'Aside', 'P'].
+
+        Args:
+            path: PDF path, string
+            remove_numbers: if True, numbers in brackets are removed from the path as in the
+            example above. If False, numbers are left in.
         """
 
         path_split = path[2:].split("/")
@@ -406,21 +476,27 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         else:
             return [re.sub(r"\[\d+\]", "", i) for i in path_split]
 
-    @staticmethod
-    def _index_of(val, in_list):
-        try:
-            return in_list.index(val)
-        except ValueError:
-            return None
+    def data_to_document(self, data_path: Path, pdf_filename: str) -> Document:
+        """
+        Converts an Adobe Extract API JSON into a Document object.
 
-    def _convert_data(self, data: dict, filename: str) -> Document:
+        Args:
+            data_path: path to JSON file outputted by Adobe API.
+            pdf_filename: name or identifier for PDF - stored as an attribute in the returned `Document` object.
+
+        Returns:
+            Document
+        """
+        with open(data_path, "r") as f:
+            data = json.load(f)
+
         page_id = 0
         block_counter = 1
         text_blocks_by_page = defaultdict(list)
         self._current_data = self._flatten_data(data)
 
         for el in self._current_data["elements"]:
-            # Ignore rotated text elements
+            # Ignore rotated text elements.
             element_rotation = el.get("Rotation", 0)
             if (
                 self._max_rotation_degrees
@@ -429,29 +505,22 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             ):
                 continue
 
-            # Ignore superscript
-            if el.get("attributes", {}).get("TextPosition") == "Sup":
-                continue
-
-            # TODO: handle subscript
-
+            # Increment page_id and reset block_counter if starting new page.
             if el["Page"] != page_id:
                 page_id += 1
                 block_counter = 1
 
+            # Only consider blocks that aren't in one of the types to exclude, and contain text.
             if not any(
                 [e in self._structure_path(el["Path"]) for e in self._elements_exclude]
-            ):
+            ) and el.get("Text"):
                 block_id = f"p{page_id}_b{block_counter}"
-
-                # Ignore blocks without any text which haven't already been excluded by type
-                if "Text" in el:
-                    text_blocks_by_page[page_id].append(
-                        self._element_to_text_block(el, block_id)
-                    )
-
+                text_blocks_by_page[page_id].append(
+                    self._element_to_text_block(el, block_id)
+                )
                 block_counter += 1
 
+        # Create pages from `text_blocks_by_page`, and a Document from these pages.
         pages = []
 
         for page_id, page_text_blocks in text_blocks_by_page.items():
@@ -468,25 +537,26 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         document = Document(
             pages=pages,
-            filename=filename,
+            filename=pdf_filename,
         )
 
         return document
 
-    def pdf_to_adobe_zip(self, pdf_filepath: Path):
+    def pdf_to_data(
+        self, pdf_filepath: Path, output_path: Path, output_folder_pdf_splits: Path
+    ):
         """
-        Parse doc and save parsing results to ./output folder.
+        Sends document at `pdf_filepath` to the Adobe Extract API. Stores the data from the API in the `output_path` folder.
+
+        The Adobe Extract API has a variable page limit which is difficult to predict. To handle long PDFs this method
+        splits a PDF into equal sized smaller PDFs and runs each through separately. These smaller PDFs are stored in
+        `output_folder_pdf_splits`.
+
+        Args:
+            pdf_filepath: file path to a PDF.
+            output_path: folder path to store the PDF Extract API results in.
+            output_folder_pdf_splits: folder path to store the split PDFs.
         """
-
-        input_name = Path(pdf_filepath).name
-        output_path = f"./adobe-full-output/{input_name}"
-        zip_output_path = f"{output_path}.zip"
-
-        folder_path_for_splits = Path(pdf_filepath).parent
-
-        if not os.path.exists(folder_path_for_splits):
-            os.mkdir(folder_path_for_splits)
-
         try:
             extract_pdf_operation = ExtractPDFOperation.create_new()
 
@@ -512,15 +582,8 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             )
             extract_pdf_operation.set_options(extract_pdf_options)
 
-            # Execute the operation.
             result: FileRef = extract_pdf_operation.execute(self._execution_context)
-
-            # Save the result to the specified location.
-            result.save_as(zip_output_path)
-
-            # Unzip zip file and remove it
-            shutil.unpack_archive(zip_output_path, output_path)
-            os.remove(zip_output_path)
+            shutil.unpack_archive(result._file_path, output_path)
 
         except (ServiceApiException, ServiceUsageException, SdkException) as e:
             if (
@@ -529,13 +592,17 @@ class AdobeAPIExtractor(DocumentTextExtractor):
                 == "DISQUALIFIED - File not suitable for content extraction: File exceeds page limit"
             ):
                 split_paths = split_pdf(
-                    pdf_filepath, self.API_MAX_PAGES, folder_path_for_splits
+                    pdf_filepath, self.API_MAX_PAGES, output_folder_pdf_splits
                 )
                 logging.info(
                     f"Failed due to 'file exceeds page limit error'. Retrying with PDF split into {len(split_paths)} separate PDFs with max page size {self.API_MAX_PAGES}."
                 )
-                for p in split_paths:
-                    self.pdf_to_adobe_zip(p, folder_path_for_splits)
+                for pdf_path in split_paths:
+                    self.pdf_to_data(
+                        pdf_filepath=pdf_path,
+                        output_path=output_path,
+                        output_folder_pdf_splits=output_folder_pdf_splits,
+                    )
 
             elif (
                 isinstance(e, ServiceApiException)
@@ -543,24 +610,45 @@ class AdobeAPIExtractor(DocumentTextExtractor):
                 == "DISQUALIFIED - File not suitable for content extraction: Scanned file exceeds page limit"
             ):
                 split_paths = split_pdf(
-                    pdf_filepath, self.API_SCANNED_MAX_PAGES, folder_path_for_splits
+                    pdf_filepath, self.API_SCANNED_MAX_PAGES, output_folder_pdf_splits
                 )
                 logging.info(
                     f"Failed due to 'file exceeds page limit error'. Retrying with PDF split into {len(split_paths)} separate PDFs with max page size {self.API_SCANNED_MAX_PAGES}."
                 )
-                for p in split_paths:
-                    self.pdf_to_adobe_zip(p, folder_path_for_splits)
+                for pdf_path in split_paths:
+                    self.pdf_to_data(
+                        pdf_filepath=pdf_path,
+                        output_path=output_path,
+                        output_folder_pdf_splits=output_folder_pdf_splits,
+                    )
 
             logging.exception(
                 f"Exception encountered while executing operation for {pdf_filepath}"
             )
 
-    def extract(self, pdf_filepath: Path) -> Document:
+    def extract(
+        self, pdf_filepath: Path, data_output_path: Path, output_folder_pdf_splits: Path
+    ) -> Document:
         """Extracts the text from a given pdf file and returns document structure.
 
         Args:
-            pdf_filepath: /path/to/pdf/file to process
+            pdf_filepath: /path/to/pdf/file to process.
+            data_output_path: folder to output Adobe Extract API data to.
+            output_folder_pdf_splits: folder to store PDF splits. See `pdf_to_data` method.
 
         Returns:
             An instance of a Document containing the document structure and text.
         """
+
+        self.pdf_to_data(
+            pdf_filepath=pdf_filepath,
+            output_path=data_output_path,
+            output_folder_pdf_splits=output_folder_pdf_splits,
+        )
+
+        doc = self.data_to_document(
+            data_path=data_output_path / "structuredData.json",
+            pdf_filename=pdf_filepath.name,
+        )
+
+        return doc
