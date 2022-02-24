@@ -150,6 +150,51 @@ class S3Client:
             new_bucket, os.getenv("AWS_REGION"), new_key or s3_document.key
         )
 
+    def list_files(self, bucket: str) -> t.Union[S3Document, bool]:
+        """Yields the documents contained in a bucket on S3
+
+        Args:
+            bucket (str): name of the bucket in which the files will be listed.
+
+        Returns:
+            False if the operation was unsuccessful.
+
+        Yields:
+            S3Document: representing each document.
+        """
+
+        # TODO: the response may not contain all files in the bucket, handle through MaxKeys
+        # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.list_objects_v2
+
+        try:
+            response = self.client.list_objects_v2(Bucket=bucket)
+
+            for s3_file in response.get("Contents", []):
+                yield S3Document(bucket, os.getenv("AWS_REGION"), s3_file["Key"])
+
+        except ClientError as e:
+            logger.error(e)
+
+            return False
+
+    def download_file(self, s3_document: S3Document):
+        """Downloads a file from S3"""
+
+        # TODO make sure that response body is in the right format for pdf processing
+        # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_object
+
+        try:
+            response = self.client.get_object(
+                Bucket=s3_document.bucket_name, Key=s3_document.key
+            )
+
+            return response["Body"]
+
+        except ClientError as e:
+            logger.error(e)
+
+            return False
+
 
 def get_s3_client():
     return S3Client()
