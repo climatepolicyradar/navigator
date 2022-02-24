@@ -74,11 +74,13 @@ def get_pdf_files(pdf_path: str, use_s3: bool = False) -> Path:
             ):
                 object_response = s3_client.download_file(s3_document)
 
-                # TODO temp files will only be deleted when file-like object is closed - not currently handled
                 temp_f = tempfile.NamedTemporaryFile(prefix="navigator_", suffix=".pdf")
                 temp_f.write(object_response.read())
 
                 yield Path(temp_f.name), s3_document_path_components.filename
+
+                # Close the temporary file after it has been processed - this will ensure it is deleted
+                temp_f.close()
     else:
         for pdf_file in Path(pdf_path).glob("*.pdf"):
             yield pdf_file, pdf_file.name
