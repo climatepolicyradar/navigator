@@ -169,8 +169,8 @@ class Action(Base):  # noqa: D101
         autoincrement=False,
         nullable=True,
     )
-    name = sa.Column(sa.VARCHAR(length=255), autoincrement=False, nullable=False)
-    description = sa.Column(sa.VARCHAR(length=2048), autoincrement=False, nullable=True)
+    name = sa.Column(sa.Text, nullable=False)
+    description = sa.Column(sa.Text, nullable=True)
     action_date = sa.Column(sa.DATE(), autoincrement=False, nullable=False)
     geography_id = sa.Column(SmallInteger, sa.ForeignKey(Geography.geography_id), nullable=False)
     action_type_id = sa.Column(sa.Integer, sa.ForeignKey(ActionType.action_type_id), nullable=False)

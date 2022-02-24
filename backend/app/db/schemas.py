@@ -49,7 +49,7 @@ class TokenData(BaseModel):  # noqa: D101
 
 class DocumentBase(BaseModel):  # noqa: D101, D106
     name: str
-    language_id: int
+    language_id: t.Optional[int]
     source_url: t.Optional[HttpUrl]
     s3_url: t.Optional[HttpUrl]
     year: conint(ge=1900, le=datetime.datetime.now().year)

@@ -1,13 +1,16 @@
-import requests
 from datetime import datetime
-from fastapi import APIRouter, Request, Depends, HTTPException
+from typing import List
 
-from app.core.auth import get_current_active_user
-from app.db.session import get_db
-from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
-from app.db.crud import create_action, create_document
+import requests
+from fastapi import APIRouter, Request, Depends, HTTPException
 from navigator.core.aws import get_s3_client, S3Document
 from navigator.core.log import get_logger
+from sqlalchemy.exc import IntegrityError
+
+from app.core.auth import get_current_active_user
+from app.db.crud import create_action, create_document
+from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
+from app.db.session import get_db
 
 logger = get_logger(__name__)
 
@@ -16,11 +19,11 @@ actions_router = r = APIRouter()
 
 @r.post("/action", response_model=ActionBase)
 async def action_create(
-    request: Request,
-    action: ActionBase,
-    db=Depends(get_db),
-    s3_client=Depends(get_s3_client),
-    current_user=Depends(get_current_active_user),
+        request: Request,
+        action: ActionBase,
+        db=Depends(get_db),
+        s3_client=Depends(get_s3_client),
+        current_user=Depends(get_current_active_user),
 ) -> ActionBase:
     """Add an action and its associated documents to the databases."""
 
@@ -32,26 +35,16 @@ async def action_create(
             detail="The date of the action provided is in the future, and should be in the past.",
         )
 
-    invalid_urls = []
-
-    for document in action.documents:
-        if document.source_url:
-            response = requests.head(document.source_url, allow_redirects=True)
-            if all(
-                [
-                    c not in response.headers.get("content-type")
-                    for c in ("application/pdf", "text/html")
-                ]
-            ):
-                invalid_urls.append(document.source_url)
+    invalid_urls = await check_document_validity(action)
 
     if invalid_urls:
         raise HTTPException(
             400,
             headers={
                 "invalid-urls": ", ".join(invalid_urls),
-                "failed-reason": f"Document URLs {', '.join(invalid_urls)} don't direct to either HTML or PDF documents. Please update or remove the URLs for these given documents.",
+                "failed-reason": "A document has an unsupported mimetype",
             },
+            detail="A document has an unsupported mimetype"
         )
 
     # Add action and related documents to database.
@@ -72,7 +65,11 @@ async def action_create(
     try:
         db_action = create_action(db, action_create)
     except Exception as e:
-        logger.error(e)
+        if isinstance(e, IntegrityError):
+            raise HTTPException(
+                409,
+                detail="This item already exists"
+            )
         raise e
 
     for idx, document in enumerate(action.documents):
@@ -104,3 +101,45 @@ async def action_create(
         action.documents[idx] = document_create
 
     return action
+
+
+async def check_document_validity(action) -> List[str]:
+    invalid_urls = []
+    for document in action.documents:
+        if document.source_url:
+            try:
+                response = requests.head(document.source_url, allow_redirects=True)
+                if all(
+                        [
+                            c not in response.headers.get("content-type")
+                            for c in ("application/pdf", "text/html")
+                        ]
+                ):
+                    invalid_urls.append(document.source_url)
+            except requests.exceptions.SSLError:
+                # we do not want to download insecurely
+                invalid_urls.append(document.source_url)
+            except requests.exceptions.ConnectionError:
+                # not sure if this is worth retrying, as there's probably nothing listening on the other side
+                invalid_urls.append(document.source_url)
+    return invalid_urls
+
+
+# TODO retry the document requests:
+"""
+import requests
+from requests.adapters import HTTPAdapter
+from requests.packages.urllib3.util.retry import Retry
+
+s = requests.Session()
+retries = Retry(
+    total=10,
+    read=10,
+    connect=10,
+    backoff_factor=1,  # 1 second, so the successive sleeps will be 0.5, 1, 2, 4, 8, 16, 32, 64, 128, 256.
+    status_forcelist=[ 429, 500, 502, 503, 504 ],
+    allowed_methods=False)
+adapter = HTTPAdapter(max_retries=retries)
+s.mount('https://', adapter)
+s.mount('http://', adapter)
+"""

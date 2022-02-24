@@ -43,7 +43,7 @@ def get_data_dir():
     if data_dir:
         data_dir = Path(data_dir).resolve()
     else:
-        data_dir = Path(__file__).cwd() / '..' / 'data'
+        data_dir = Path(__file__).parent.resolve() / '..' / 'data'
     return data_dir
 
 
@@ -73,3 +73,6 @@ if __name__ == "__main__":
         load_dotenv("../../.env.local")
 
     main()
+    # lang = None
+    # x = get_language_id((lang or "eng").lower())
+    # print(x)

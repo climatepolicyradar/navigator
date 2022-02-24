@@ -1,6 +1,5 @@
-import datetime as dt
-
-from pandas import DataFrame
+from datetime import datetime
+from typing import Dict, Tuple, Optional
 
 mappings = [
     {
@@ -30,8 +29,17 @@ mappings = [
     },
 ]
 
+mapping: Dict[Tuple[str, str], int] = {
+    ("BGD", "Bangladesh National Action Plan (NAP) for Reducing Short Lived Climate Pollutants (SLCPs)"): 2018,
+    ("ETH", "Climate Resilient Transport Sector Strategy"): 2017,
+    ("ETH", "Climate Resilience Strategy: Water and Energy"): 2015,
+    ("PAN",
+     "Law no 6 of 3 February 1997 on the regulatory and institutional framework of the public electricity service"): 1997,
+    ("KOR", "Clean Air Conservation Act (No. 10615)"): 2007,
+}
 
-def add_missing_dates(policies: DataFrame):
+
+def get_missing_date(policy_name: str, country_code: str) -> Optional[datetime]:
     """Add missing dates to dataset.
 
     These actions don't have events, and Danny provided some dates:
@@ -43,8 +51,8 @@ def add_missing_dates(policies: DataFrame):
     1997, Law no 6 of 3 February 1997 on the regulatory and institutional framework of the public electricity service,Panama (PAN)
     2007, Clean Air Conservation Act (No. 10615),South Korea (KOR)
     """
-
-    for mapping in mappings:
-        policies.loc[
-            (policies['country_code'] == mapping['country_code']) & (
-                    policies['policy_name'] == mapping['policy_name'])] = dt.date(mapping['year'], 1, 1)
+    key = (country_code, policy_name)
+    year = mapping.get(key)
+    if not year:
+        return None
+    return datetime(year, 1, 1)
