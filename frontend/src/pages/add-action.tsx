@@ -12,7 +12,7 @@ const AddActionPage = () => {
   const [actionTypes, setActionTypes] = useState([]);
   const [sources, setSources] = useState([]);
 
-  const { t, i18n, ready } = useTranslation(['addAction', 'common']);
+  const { t, i18n, ready } = useTranslation('addAction');
 
   const filterLanguages = (langs) => {
     return langs.filter((lang) => lang.part1_code !== null);
@@ -56,7 +56,10 @@ const AddActionPage = () => {
       {!ready ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Navigator | ${t('title')}`} heading={t('title')}>
+        <Layout
+          title={`Navigator | ${t('Add Action')}`}
+          heading={t('Add Action')}
+        >
           <section>
             <div className="container py-4">
               <AddAction

@@ -116,7 +116,7 @@ const AddAction = ({
     window.scrollTo(0, 0);
 
     setProcessing(false);
-    setMessage(t('form.success'));
+    setMessage(t('form.Action successfully added!'));
   };
 
   useEffect(() => {
@@ -138,7 +138,11 @@ const AddAction = ({
       />
       {ready && (
         <div className="text-lg">
-          <p className="text-indigo-600 text-xl">{t('summary')}</p>
+          <p className="text-indigo-600 text-xl">
+            {t(
+              'Add a new action using the form below. Multiple documents can be added to an action.'
+            )}
+          </p>
           {message.length > 0 && (
             <p
               data-cy="message"
@@ -152,19 +156,23 @@ const AddAction = ({
             initialValues={initialValues}
             validationSchema={Yup.object({
               source_id: Yup.string().required(
-                t('addAction.source', { ns: 'formErrors' })
+                t('addAction.Please select a source.', { ns: 'formErrors' })
               ),
-              name: Yup.string().required(t('required', { ns: 'formErrors' })),
-              year: Yup.string().required(t('year', { ns: 'formErrors' })),
+              name: Yup.string().required(t('Required', { ns: 'formErrors' })),
+              year: Yup.string().required(t('Year', { ns: 'formErrors' })),
               geography_id: Yup.string().required(
-                t('addAction.geography', { ns: 'formErrors' })
+                t('addAction.Please select a geography.', { ns: 'formErrors' })
               ),
               type_id: Yup.string().required(
-                t('addAction.actionType', { ns: 'formErrors' })
+                t('addAction.Please select an action type.', {
+                  ns: 'formErrors',
+                })
               ),
               documents: Yup.array().min(
                 1,
-                t('addAction.document', { ns: 'formErrors' })
+                t('addAction.You must add at least one document.', {
+                  ns: 'formErrors',
+                })
               ),
             })}
             onSubmit={(values, { setSubmitting, resetForm }) => {
@@ -206,11 +214,11 @@ const AddAction = ({
                     <Field
                       as={Select}
                       data-cy="selectSource"
-                      label={t('form.source')}
+                      label={t('form.Source')}
                       name="source_id"
                       required
                     >
-                      <option>{t('form.sourceDefault')}</option>
+                      <option>{t('form.Choose a source')}</option>
                       {sources.map((source, index) => (
                         <option key={`source${index}`} value={source.source_id}>
                           {source.name}
@@ -220,7 +228,7 @@ const AddAction = ({
                   </div>
                   <div className="form-row">
                     <TextInput
-                      label={t('form.actionName')}
+                      label={t('form.Action name')}
                       name="name"
                       type="text"
                       required
@@ -228,7 +236,7 @@ const AddAction = ({
                   </div>
                   <div className="form-row">
                     <TextArea
-                      label={t('form.description')}
+                      label={t('form.Description')}
                       name="description"
                       type="text"
                     />
@@ -236,7 +244,7 @@ const AddAction = ({
                   <div className="form-row md:flex items-start">
                     <Field
                       as={Select}
-                      label={t('year', { ns: 'common' })}
+                      label={t('Year', { ns: 'common' })}
                       name="year"
                       classes="md:w-1/3 md:mr-4"
                       required
@@ -246,7 +254,7 @@ const AddAction = ({
                       }}
                     >
                       <option value="" disabled>
-                        {t('choose', { ns: 'common' })}
+                        {t('Choose', { ns: 'common' })}
                       </option>
                       {yearSelections.map((year, index) => (
                         <option key={index} value={year}>
@@ -256,15 +264,15 @@ const AddAction = ({
                     </Field>
                     <Field
                       as={Select}
-                      label="Month"
-                      name={t('month', { ns: 'common' })}
+                      label={t('Month', { ns: 'common' })}
+                      name="month"
                       classes="md:w-1/3 md:mr-4 mt-2 md:mt-0"
                       onChange={(e) => {
                         setFieldValue('month', e.target.value);
                         handleDateChange(e, values);
                       }}
                     >
-                      <option value="">{t('choose', { ns: 'common' })}</option>
+                      <option value="">{t('Choose', { ns: 'common' })}</option>
                       {months.map((month, index) => (
                         <option key={index} value={index + 1}>
                           {month}
@@ -273,11 +281,11 @@ const AddAction = ({
                     </Field>
                     <Field
                       as={Select}
-                      label="Day"
-                      name={t('day', { ns: 'common' })}
+                      label={t('Day', { ns: 'common' })}
+                      name="day"
                       classes="md:w-1/3 mt-2 md:mt-0"
                     >
-                      <option value="">{t('choose', { ns: 'common' })}</option>
+                      <option value="">{t('Choose', { ns: 'common' })}</option>
                       {days.map((day, index) => (
                         <option key={index} value={day + 1}>
                           {day + 1}
@@ -289,11 +297,11 @@ const AddAction = ({
                     <Field
                       data-cy="selectGeographies"
                       as={Select}
-                      label={t('form.geography')}
+                      label={t('form.Geography/Country')}
                       name="geography_id"
                       required
                     >
-                      <option>{t('form.geographyDefault')}</option>
+                      <option>{t('form.Choose a geography')}</option>
                       {/* TODO - implement input box with suggestions as in prototype */}
                       {geographies.map((geo: Geography) => (
                         <option
@@ -309,11 +317,11 @@ const AddAction = ({
                     <Field
                       data-cy="selectActionType"
                       as={Select}
-                      label={t('form.actionType')}
+                      label={t('form.Action type')}
                       name="type_id"
                       required
                     >
-                      <option>{t('form.actionTypeDefault')}</option>
+                      <option>{t('form.Choose an action type')}</option>
                       {actionTypes.map((type: ActionType) => (
                         <option
                           key={`type${type.action_type_id}`}
@@ -325,7 +333,7 @@ const AddAction = ({
                     </Field>
                   </div>
                   <div className="form-row">
-                    <h3>{t('form.documents')}</h3>
+                    <h3>{t('form.Documents')}</h3>
                     <div className="mt-4">
                       {errors.documents && touched.documents ? (
                         <p className="error text-red-500 mb-4">
@@ -346,7 +354,7 @@ const AddAction = ({
                           ))}
                         </ol>
                       ) : (
-                        <p className="mb-4">{t('form.noDocuments')}</p>
+                        <p className="mb-4">{t('form.No documents added.')}</p>
                       )}
                     </div>
                     <Button
@@ -358,7 +366,7 @@ const AddAction = ({
                         setPopupActive(true);
                       }}
                     >
-                      {t('form.addDocument')}
+                      {t('form.Add Document')}
                     </Button>
                   </div>
                   <div className="my-4 flex border-t pt-8 mt-10 border-gray-300">
@@ -368,7 +376,7 @@ const AddAction = ({
                       color="dark"
                       disabled={isSubmitting}
                     >
-                      {t('form.submit')}
+                      {t('form.Submit Action')}
                     </Button>
                   </div>
                 </Form>

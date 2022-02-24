@@ -1,15 +1,15 @@
 {
-  "required": "Requis",
-  "year": "Please select a year",
+  "Required": "Requis",
+  "Please select a year": "Please select a year",
 
   "addAction": {
-    "source": "Please select a source.",
-    "geography": "Please select a geography.",
-    "actionType": "Please select an action type.",
-    "document": "You must add at least one document."
+    "Please select a source.": "Please select a source.",
+    "Please select a geography.": "Please select a geography.",
+    "Please select an action type.": "Please select an action type.",
+    "You must add at least one document.": "You must add at least one document."
   },
   "addDocument": {
-    "language": "Please select a language.",
-    "file": "Please either enter a file URL or select a file."
+    "Please select a language.": "Please select a language.",
+    "Please either enter a file URL or select a file.": "Please either enter a file URL or select a file."
   }
 }

@@ -1,23 +1,19 @@
 {
-  "title": "Add Action",
-  "summary": "French Add a new action using the form below. Multiple documents can be added to an action.",
+  "Add Action": "Ajouter une action",
+  "Add a new action using the form below. Multiple documents can be added to an action.": "Add a new action using the form below. Multiple documents can be added to an action.",
   "form": {
-    "source": "Source",
-    "sourceDefault": "Choose a source",
-    "actionName": "Action name",
-    "description": "Description",
-    "geography": "Geography/Country",
-    "geographyDefault": "Choose a geography",
-    "actionType": "Action type",
-    "documents": "Documents",
-    "noDocuments": "No documents added.",
-    "addDocument": "Add a document",
-    "documentName": "Document name",
-    "language": "Language",
-    "url": "Enter URL",
-    "or": "or",
-    "maxMb": "150Mb maximum",
-    "submit": "Submit Action",
-    "success": "Action successfully added!"
+    "Source": "Source",
+    "Choose a source": "Choose a source",
+    "Action name": "Action name",
+    "Description": "Description",
+    "Geography/Country": "Geography/Country",
+    "Choose a geography": "Choose a geography",
+    "Action type": "Action type",
+    "Choose an action type": "Choose an action type",
+    "Documents": "Documents",
+    "Add Document": "Add Document",
+    "No documents added.": "No documents added.",
+    "Submit Action": "Submit Action",
+    "Action successfully added!": "Action successfully added!"
   }
 }

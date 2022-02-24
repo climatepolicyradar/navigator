@@ -1,19 +1,19 @@
 {
-  "title": "Add Action",
-  "summary": "Add a new action using the form below. Multiple documents can be added to an action.",
+  "Add Action": "Add Action",
+  "Add a new action using the form below. Multiple documents can be added to an action.": "Add a new action using the form below. Multiple documents can be added to an action.",
   "form": {
-    "source": "Source",
-    "sourceDefault": "Choose a source",
-    "actionName": "Action name",
-    "description": "Description",
-    "geography": "Geography/Country",
-    "geographyDefault": "Choose a geography",
-    "actionType": "Action type",
-    "actionTypeDefault": "Choose an action type",
-    "documents": "Documents",
-    "addDocument": "Add Document",
-    "noDocuments": "No documents added.",
-    "submit": "Submit Action",
-    "success": "Action successfully added!"
+    "Source": "Source",
+    "Choose a source": "Choose a source",
+    "Action name": "Action name",
+    "Description": "Description",
+    "Geography/Country": "Geography/Country",
+    "Choose a geography": "Choose a geography",
+    "Action type": "Action type",
+    "Choose an action type": "Choose an action type",
+    "Documents": "Documents",
+    "Add Document": "Add Document",
+    "No documents added.": "No documents added.",
+    "Submit Action": "Submit Action",
+    "Action successfully added!": "Action successfully added!"
   }
 }

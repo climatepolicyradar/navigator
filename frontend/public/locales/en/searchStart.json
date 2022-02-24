@@ -1,10 +1,10 @@
 {
-  "title": "Law and Policy Search",
+  "Law and Policy Search": "Law and Policy Search",
   "dashboard": {
-    "panel1": "Documents",
-    "panel2": "Jurisdictions",
-    "panel3": "New documents"
+    "Documents": "Documents",
+    "Jurisdictions": "Jurisdictions",
+    "New Documents": "New Documents"
   },
-  "searchPlaceholder": "Search for something, e.g. 'carbon taxes'",
-  "searchButtonText": "Go"
+  "Search for something, e.g. 'carbon taxes'": "Search for something, e.g. 'carbon taxes'",
+  "Go": "Go"
 }
