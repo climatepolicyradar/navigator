@@ -4,6 +4,7 @@ import re
 
 import boto3
 from botocore.exceptions import ClientError
+from botocore.response import StreamingBody
 
 from .log import get_logger
 
@@ -150,11 +151,12 @@ class S3Client:
             new_bucket, os.getenv("AWS_REGION"), new_key or s3_document.key
         )
 
-    def list_files(self, bucket: str) -> t.Union[S3Document, bool]:
+    def list_files(self, bucket: str, max_keys=1000) -> t.Union[S3Document, bool]:
         """Yields the documents contained in a bucket on S3
 
         Args:
             bucket (str): name of the bucket in which the files will be listed.
+            max_keys (int): maximum number of files to return in a single call
 
         Returns:
             False if the operation was unsuccessful.
@@ -163,25 +165,40 @@ class S3Client:
             S3Document: representing each document.
         """
 
-        # TODO: the response may not contain all files in the bucket, handle through MaxKeys
-        # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.list_objects_v2
-
+        is_truncated = True
+        next_continuation_token = None
         try:
-            response = self.client.list_objects_v2(Bucket=bucket)
+            while is_truncated:
+                # Include a continuation token in the arguments to boto3 list_objects_v2
+                # if we want to continue listing files from the last call
 
-            for s3_file in response.get("Contents", []):
-                yield S3Document(bucket, os.getenv("AWS_REGION"), s3_file["Key"])
+                kwargs = {"Bucket": bucket, "MaxKeys": max_keys}
+                if next_continuation_token:
+                    kwargs["ContinuationToken"] = next_continuation_token
+
+                response = self.client.list_objects_v2(**kwargs)
+
+                for s3_file in response.get("Contents", []):
+                    yield S3Document(bucket, os.getenv("AWS_REGION"), s3_file["Key"])
+
+                # Find out whether request was truncated and get continuation token
+                is_truncated = response.get("IsTruncated", False)
+                next_continuation_token = response.get("NextContinuationToken", None)
 
         except ClientError as e:
             logger.error(e)
 
             return False
 
-    def download_file(self, s3_document: S3Document):
-        """Downloads a file from S3"""
+    def download_file(self, s3_document: S3Document) -> StreamingBody:
+        """Downloads a file from S3
 
-        # TODO make sure that response body is in the right format for pdf processing
-        # https://boto3.amazonaws.com/v1/documentation/api/latest/reference/services/s3.html#S3.Client.get_object
+        Args:
+            s3_document (S3Document): s3 document to retrieve
+
+        Returns:
+            Streaming file object
+        """
 
         try:
             response = self.client.get_object(
