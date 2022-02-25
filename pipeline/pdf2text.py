@@ -6,7 +6,7 @@ Implements a cli which will extract the text contained in a set of pdf files in 
 import argparse
 from pathlib import Path
 
-from extract.extract import DocumentEmbeddedTextExtractor
+from extract.extract import DocumentEmbeddedTextExtractor, AdobeAPIExtractor
 from extract.exceptions import DocumentTextExtractorException
 
 
@@ -26,11 +26,26 @@ def process(
         save_text: If True will save a text file for each pdf containing extracted text
     """
 
-    extractor = DocumentEmbeddedTextExtractor()
+    adobe_extractor = AdobeAPIExtractor(
+        credentials_path="./pdfservices-credentials.json"
+    )
+    embedded_extractor = DocumentEmbeddedTextExtractor()
 
     for pdf_filepath in pdf_dir.glob("*.pdf"):
         # Extract embedded text in pdf file and save intermediate file to `data_dir`.
-        pdf_doc = extractor.extract(pdf_filepath=pdf_filepath, data_output_dir=data_dir)
+        try:
+            pdf_doc = adobe_extractor.extract(
+                pdf_filepath=pdf_filepath,
+                data_output_dir=data_dir,
+                output_folder_pdf_splits="/temp",
+            )
+        except Exception as e:
+            print(
+                f"Adobe extractor failed with error {e}. Falling back to embedded text extractor."
+            )
+            pdf_doc = embedded_extractor.extract(
+                pdf_filepath=pdf_filepath, data_output_dir=data_dir
+            )
 
         # Save Document as text and JSON to `out_dir`.
         save_filename = Path(pdf_doc.filename).stem

@@ -62,7 +62,7 @@ from .utils import split_pdf
 class DocumentTextExtractor:
     """Base class for extracting text from a document."""
 
-    def pdf_to_data(self, pdf_filepath: Path, output_path: Path, **kwargs):
+    def pdf_to_data(self, pdf_filepath: Path, output_dir: Path, **kwargs):
         """Extracts information from the given document and save the results to an output path."""
         raise NotImplementedError
 
@@ -247,6 +247,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         Args:
             pdf_filepath: /path/to/pdf/file to process
+            data_output_dir: path to directory to output intermediate XML file produced by pdfalto.
 
         Returns:
             An instance of a Document containing the document structure and text.
@@ -315,7 +316,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         This method flattens all Kids elements out in the returned Adobe JSON as they are unreliable.
 
         Args:
-            data (_type_): JSON data returned by the Adobe Extract API.
+            data (dict): JSON data returned by the Adobe Extract API.
 
         Returns:
             dict: flattened JSON data
@@ -550,10 +551,10 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         return document
 
     def pdf_to_data(
-        self, pdf_filepath: Path, output_path: Path, output_folder_pdf_splits: Path
+        self, pdf_filepath: Path, output_dir: Path, output_folder_pdf_splits: Path
     ) -> List[Path]:
         """
-        Sends document at `pdf_filepath` to the Adobe Extract API. Stores the data from the API in the `output_path` folder.
+        Sends document at `pdf_filepath` to the Adobe Extract API. Stores the data from the API in the `output_dir` folder.
 
         The Adobe Extract API has a variable page limit which is difficult to predict. To handle long PDFs this method
         splits a PDF into equal sized smaller PDFs and runs each through separately. These smaller PDFs are stored in
@@ -561,7 +562,8 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         Args:
             pdf_filepath: file path to a PDF.
-            output_path: folder path to store the PDF Extract API results in.
+            output_dir: folder path to store the PDF Extract API results in. These results are
+            stored in a subfolder with the same name as the PDF.
             output_folder_pdf_splits: folder path to store the split PDFs.
 
         Returns:
@@ -591,13 +593,22 @@ class AdobeAPIExtractor(DocumentTextExtractor):
                 .build()
             )
             extract_pdf_operation.set_options(extract_pdf_options)
-
             result: FileRef = extract_pdf_operation.execute(self._execution_context)
-            shutil.unpack_archive(result._file_path, output_path)
 
-            return [output_path / "structuredData.json"]
+            output_dir = output_dir / pdf_filepath.stem
+            os.mkdir(output_dir)
+            shutil.unpack_archive(result._file_path, output_dir)
+
+            return [output_dir / "structuredData.json"]
 
         except (ServiceApiException, ServiceUsageException, SdkException) as e:
+            if (
+                isinstance(e, ServiceApiException)
+                and e.message
+                == "BAD_PDF - Unable to extract content. File is corrupted, malformed or an empty PDF"
+            ):
+                raise (e)
+
             if (
                 isinstance(e, ServiceApiException)
                 and e.message
@@ -626,12 +637,12 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             )
             json_paths = []
             for idx, pdf_path in enumerate(split_paths):
-                split_output_dir = output_path / f"{pdf_filepath.stem}_{idx}"
+                split_output_dir = output_dir / f"{pdf_filepath.stem}_{idx}"
                 os.mkdir(split_output_dir)
 
                 json_path = self.pdf_to_data(
                     pdf_filepath=pdf_path,
-                    output_path=split_output_dir,
+                    output_dir=split_output_dir,
                     output_folder_pdf_splits=output_folder_pdf_splits,
                 )
 
@@ -659,7 +670,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         json_paths = self.pdf_to_data(
             pdf_filepath=pdf_filepath,
-            output_path=data_output_dir,
+            output_dir=data_output_dir,
             output_folder_pdf_splits=output_folder_pdf_splits,
         )
 
