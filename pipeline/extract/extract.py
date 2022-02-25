@@ -252,7 +252,8 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
             An instance of a Document containing the document structure and text.
         """
         self.pdf_to_data(pdf_filepath, data_output_dir)
-        doc = self.data_to_document(data_output_dir, pdf_filepath.name)
+        xml_path = data_output_dir / f"{pdf_filepath.stem}.xml"
+        doc = self.data_to_document(xml_path, pdf_filepath.name)
 
         return doc
 
