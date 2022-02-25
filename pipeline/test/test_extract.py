@@ -193,8 +193,8 @@ def test_adobe_text_extractor(test_pdf_path, tmp_path):
 
         # Check that files have been successfully unzipped and stored and that split_dir is empty
         assert os.listdir(data_output_dir) == [test_pdf_path.stem]
-        assert os.listdir(data_output_dir / test_pdf_path.stem) == [
-            "structuredData.json",
+        assert sorted(os.listdir(data_output_dir / test_pdf_path.stem)) == [
             "figures",
+            "structuredData.json",
         ]
         assert os.listdir(split_dir) == []
