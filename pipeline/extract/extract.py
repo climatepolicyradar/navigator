@@ -70,7 +70,7 @@ class DocumentTextExtractor:
         """Converts data outputted by `pdf_to_data` into a `Document` object."""
         raise NotImplementedError
 
-    def extract(self, pdf_filepath: Path, data_output_path: Path, **kwargs):
+    def extract(self, pdf_filepath: Path, data_output_dir: Path, **kwargs):
         """Extracts text from the given document"""
 
         raise NotImplementedError
@@ -109,13 +109,14 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         self._pdfalto_path = pdfalto_path
 
-    def pdf_to_data(self, pdf_filepath: Path, output_path: Path):
+    def pdf_to_data(self, pdf_filepath: Path, output_dir: Path):
         """Convert a pdf file to xml using the alto xml schema.
 
         Use pdfalto to parse the pdf file as an alto XML document and save it to `output_path`.
 
         Args:
             pdf_filepath: Path to pdf file to process
+            output_dir: Path to export XML file to. The file will have the same name as the PDF, with an XML extension.
 
         Raises:
             DocumentTextExtractorException: An error occurred calling pdfalto.
@@ -126,6 +127,8 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
                 "Path to pdfalto executable does not exist."
             )
 
+        xml_output_path = output_dir / f"{pdf_filepath.stem}.xml"
+
         try:
             # Create a temporary file to store the xml output from pdfalto
             pdfalto_args = [
@@ -134,7 +137,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
                 "-outline",
                 "-readingOrder",
                 str(pdf_filepath),
-                output_path,
+                xml_output_path,
             ]
 
             subprocess.run(pdfalto_args, check=True)
@@ -239,7 +242,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         return Document(document_pages, pdf_filename)
 
-    def extract(self, pdf_filepath: Path, data_output_path: Path) -> Document:
+    def extract(self, pdf_filepath: Path, data_output_dir: Path) -> Document:
         """Extracts the text from a given pdf file and returns document structure.
 
         Args:
@@ -248,8 +251,8 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         Returns:
             An instance of a Document containing the document structure and text.
         """
-        self.pdf_to_data(pdf_filepath, data_output_path)
-        doc = self.data_to_document(data_output_path, pdf_filepath.name)
+        self.pdf_to_data(pdf_filepath, data_output_dir)
+        doc = self.data_to_document(data_output_dir, pdf_filepath.name)
 
         return doc
 
@@ -636,13 +639,13 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             return json_paths
 
     def extract(
-        self, pdf_filepath: Path, data_output_path: Path, output_folder_pdf_splits: Path
+        self, pdf_filepath: Path, data_output_dir: Path, output_folder_pdf_splits: Path
     ) -> Document:
         """Extracts the text from a given pdf file and returns document structure.
 
         Args:
             pdf_filepath: /path/to/pdf/file to process.
-            data_output_path: folder to output Adobe Extract API data to.
+            data_output_dir: folder to output Adobe Extract API data to.
             output_folder_pdf_splits: folder to store PDF splits. See `pdf_to_data` method.
 
         Returns:
@@ -655,7 +658,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         json_paths = self.pdf_to_data(
             pdf_filepath=pdf_filepath,
-            output_path=data_output_path,
+            output_path=data_output_dir,
             output_folder_pdf_splits=output_folder_pdf_splits,
         )
 

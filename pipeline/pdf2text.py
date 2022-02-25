@@ -10,7 +10,9 @@ from extract.extract import DocumentEmbeddedTextExtractor
 from extract.exceptions import DocumentTextExtractorException
 
 
-def process(pdf_dir: Path, out_dir: Path, save_json: bool, save_text: bool):
+def process(
+    pdf_dir: Path, data_dir: Path, out_dir: Path, save_json: bool, save_text: bool
+):
     """Extracts text from text in a directory containing pdf files.
 
     Iterates through files with a .pdf extension in a given directory,
@@ -26,11 +28,11 @@ def process(pdf_dir: Path, out_dir: Path, save_json: bool, save_text: bool):
 
     extractor = DocumentEmbeddedTextExtractor()
 
-    for pdf_file in pdf_dir.glob("*.pdf"):
-        data_out_path = out_dir / f"{Path(pdf_file).stem}.xml"
+    for pdf_filepath in pdf_dir.glob("*.pdf"):
+        # Extract embedded text in pdf file and save intermediate file to `data_dir`.
+        pdf_doc = extractor.extract(pdf_filepath=pdf_filepath, data_output_dir=data_dir)
 
-        # Extract embedded text in pdf file
-        pdf_doc = extractor.extract(pdf_file, data_out_path)
+        # Save Document as text and JSON to `out_dir`.
         save_filename = Path(pdf_doc.filename).stem
 
         if save_json:
@@ -52,6 +54,11 @@ def configure_args():
         "pdf_dir",
         type=str,
         help="Path to directory containing pdf files to process",
+    )
+    parser.add_argument(
+        "data_dir",
+        type=str,
+        help="Path to directory to store intermediate files",
     )
     parser.add_argument(
         "out_dir",
@@ -86,16 +93,19 @@ def cli():
     args = configure_args()
 
     pdf_dir = Path(args.pdf_dir)
+    data_dir = Path(args.data_dir)
     out_dir = Path(args.out_dir)
 
     # Check that the input/output directories exist and raise error if not
     if not pdf_dir.exists():
         raise DocumentTextExtractorException("Path to input pdf docuents is invalid")
+    if not data_dir.exists():
+        raise DocumentTextExtractorException("Data path is invalid")
     if not out_dir.exists():
         raise DocumentTextExtractorException("Output path is invalid")
 
     # Process the files in the directory
-    process(pdf_dir, out_dir, args.json, args.text),
+    process(pdf_dir, data_dir, out_dir, args.json, args.text),
 
 
 if __name__ == "__main__":
