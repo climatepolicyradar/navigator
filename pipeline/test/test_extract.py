@@ -64,6 +64,9 @@ def test_document_save_json(document, tmpdir):
                             "paragraph 1 line 3",
                         ],
                         "text_block_id": "p1_b1",
+                        "path": None,
+                        "type": None,
+                        "custom_attributes": None,
                     },
                     {
                         "coords": [[1, 1], [1, 2], [2, 2], [2, 1]],
@@ -73,6 +76,9 @@ def test_document_save_json(document, tmpdir):
                             "paragraph 2 line 3",
                         ],
                         "text_block_id": "p1_b2",
+                        "path": None,
+                        "type": None,
+                        "custom_attributes": None,
                     },
                 ],
             }
@@ -123,9 +129,9 @@ def test_document_from_json(tmp_path):
 def test_embedded_text_extractor(test_pdf_path, tmp_path):
     """Test to check that text can be extracted from a test pdf file"""
 
-    xml_path = tmp_path / "test.xml"
+    data_output_dir = tmp_path
     text_extractor = DocumentEmbeddedTextExtractor()
-    doc = text_extractor.extract(test_pdf_path, xml_path)
+    doc = text_extractor.extract(test_pdf_path, data_output_dir)
 
     # Check that the filename matches the filename of the pdf
     assert doc.filename == test_pdf_path.name
