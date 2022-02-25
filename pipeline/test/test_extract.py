@@ -1,9 +1,13 @@
 import os
 import json
 from pathlib import Path
+from unittest import mock
+
 import pytest
+from adobe.pdfservices.operation.io.file_ref import FileRef
+
 from extract.document import Document, Page, TextBlock
-from extract.extract import DocumentEmbeddedTextExtractor
+from extract.extract import DocumentEmbeddedTextExtractor, AdobeAPIExtractor
 
 
 @pytest.fixture
@@ -146,3 +150,51 @@ def test_embedded_text_extractor(test_pdf_path, tmp_path):
     assert len(doc.pages[0].text_blocks[0].coords) >= 4
     assert type(doc.pages[0].text_blocks[0].coords[0]) == tuple
     assert type(doc.pages[0].text_blocks[0].coords[0][0]) == float
+
+
+def get_sample_adobe_fileref(*args, **kwargs):
+    return FileRef.create_from_local_file(
+        Path(__file__).parent / "sample_adobe_output.zip"
+    )
+
+
+def test_adobe_text_extractor(test_pdf_path, tmp_path):
+    with mock.patch.object(
+        AdobeAPIExtractor, "_get_adobe_api_result", new=get_sample_adobe_fileref
+    ):
+        data_output_dir = tmp_path / "data"
+        split_dir = tmp_path / "splits"
+        os.mkdir(data_output_dir)
+        os.mkdir(split_dir)
+
+        text_extractor = AdobeAPIExtractor(credentials_path="fake/path")
+        doc = text_extractor.extract(
+            test_pdf_path,
+            data_output_dir=data_output_dir,
+            output_folder_pdf_splits=split_dir,
+        )
+
+        assert doc.filename == test_pdf_path.name
+
+        # The returned document can have up to 8 pages (the number of pages in the original PDF).
+        # Pages with no parsed content (e.g. all figures) won't be added to the document.
+        assert len(doc.pages) <= 8
+
+        # Every page in the Adobe output should have text blocks, as pages are only created if there are text blocks
+        assert all([len(page.text_blocks) > 0 for page in doc.pages])
+
+        # Check that text blocks all have paths and types
+        assert all(
+            [text_block.path for page in doc.pages for text_block in page.text_blocks]
+        )
+        assert all(
+            [text_block.type for page in doc.pages for text_block in page.text_blocks]
+        )
+
+        # Check that files have been successfully unzipped and stored and that split_dir is empty
+        assert os.listdir(data_output_dir) == [test_pdf_path.stem]
+        assert os.listdir(data_output_dir / test_pdf_path.stem) == [
+            "structuredData.json",
+            "figures",
+        ]
+        assert os.listdir(split_dir) == []

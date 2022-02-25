@@ -282,7 +282,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         # Maximum clockwise or anti-clockwise rotation a text element can have, otherwise it's excluded from the parsing results.
         self._max_rotation_degrees = 20
 
-        self._execution_context = self._load_credentials(credentials_path)
+        self._credentials_path = credentials_path
 
         # Number of pages to limit each PDF to whether scanned or not scanned.
         # These values are used to split a PDF if the API returns a "File exceeds page limit" error.
@@ -307,8 +307,6 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         # Create an ExecutionContext using credentials and create a new operation instance.
         return ExecutionContext.create(credentials)
-
-        """Flatten out 'Kids' elements which refer to PDF structure."""
 
     @staticmethod
     def _flatten_data(data: dict) -> dict:
@@ -550,6 +548,47 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         return document
 
+    def _get_adobe_api_result(
+        self,
+        pdf_filepath: Path,
+    ) -> FileRef:
+        """Make a call to the Adobe PDF Extract API using the PDF services SDK.
+
+        Args:
+            pdf_filepath: path to a PDF
+
+        Returns:
+            FileRef representing ZIP file returned by API.
+        """
+        _execution_context = self._load_credentials(self._credentials_path)
+
+        extract_pdf_operation = ExtractPDFOperation.create_new()
+
+        source = FileRef.create_from_local_file(pdf_filepath)
+        extract_pdf_operation.set_input(source)
+
+        # Build ExtractPDF options and set them into the operation
+        extract_pdf_options: ExtractPDFOptions = (
+            ExtractPDFOptions.builder()
+            .with_elements_to_extract(
+                [ExtractElementType.TEXT, ExtractElementType.TABLES]
+            )
+            .with_elements_to_extract_renditions(
+                [
+                    ExtractRenditionsElementType.TABLES,
+                    ExtractRenditionsElementType.FIGURES,
+                ]
+            )
+            .with_include_styling_info(True)
+            .with_get_char_info(True)
+            .with_table_structure_format(TableStructureType.CSV)
+            .build()
+        )
+        extract_pdf_operation.set_options(extract_pdf_options)
+        result = extract_pdf_operation.execute(_execution_context)
+
+        return result
+
     def pdf_to_data(
         self, pdf_filepath: Path, output_dir: Path, output_folder_pdf_splits: Path
     ) -> List[Path]:
@@ -570,31 +609,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             List of paths to JSON files (pathlib.Path objects).
         """
         try:
-            extract_pdf_operation = ExtractPDFOperation.create_new()
-
-            source = FileRef.create_from_local_file(pdf_filepath)
-            extract_pdf_operation.set_input(source)
-
-            # Build ExtractPDF options and set them into the operation
-            extract_pdf_options: ExtractPDFOptions = (
-                ExtractPDFOptions.builder()
-                .with_elements_to_extract(
-                    [ExtractElementType.TEXT, ExtractElementType.TABLES]
-                )
-                .with_elements_to_extract_renditions(
-                    [
-                        ExtractRenditionsElementType.TABLES,
-                        ExtractRenditionsElementType.FIGURES,
-                    ]
-                )
-                .with_include_styling_info(True)
-                .with_get_char_info(True)
-                .with_table_structure_format(TableStructureType.CSV)
-                .build()
-            )
-            extract_pdf_operation.set_options(extract_pdf_options)
-            result: FileRef = extract_pdf_operation.execute(self._execution_context)
-
+            result = self._get_adobe_api_result(pdf_filepath)
             output_dir = output_dir / pdf_filepath.stem
             os.mkdir(output_dir)
             shutil.unpack_archive(result._file_path, output_dir)
