@@ -5,9 +5,11 @@ from unittest import mock
 
 import pytest
 from adobe.pdfservices.operation.io.file_ref import FileRef
+from PyPDF2 import PdfFileReader
 
 from extract.document import Document, Page, TextBlock
 from extract.extract import DocumentEmbeddedTextExtractor, AdobeAPIExtractor
+from extract.utils import split_pdf
 
 
 @pytest.fixture
@@ -198,3 +200,28 @@ def test_adobe_text_extractor(test_pdf_path, tmp_path):
             "structuredData.json",
         ]
         assert os.listdir(split_dir) == []
+
+
+def test_split_pdf(test_pdf_path, tmpdir):
+    # PDF in test path has 6 pages.
+    max_pages_per_split = 4
+    orig_file_stem = Path(test_pdf_path).stem
+
+    split_pdf(test_pdf_path, max_pages_per_split=max_pages_per_split, output_dir=tmpdir)
+
+    target_filenames = [
+        f"{orig_file_stem}_split_0_maxpages_{max_pages_per_split}.pdf",
+        f"{orig_file_stem}_split_1_maxpages_{max_pages_per_split}.pdf",
+    ]
+    target_filepaths = [os.path.join(tmpdir, filename) for filename in target_filenames]
+
+    # Test that correct number of files are in tmpdir.
+    assert len(os.listdir(tmpdir)) == 2
+
+    # Test that filenames are correct.
+    assert sorted(os.listdir(tmpdir)) == target_filenames
+
+    # First split page should have 4 pages, second should have 2 pages.
+    assert [
+        PdfFileReader(open(_pdf_path, "rb")).numPages for _pdf_path in target_filepaths
+    ] == [4, 2]
