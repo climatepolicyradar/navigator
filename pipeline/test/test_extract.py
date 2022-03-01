@@ -14,10 +14,17 @@ from extract.utils import split_pdf
 
 
 @pytest.fixture
-def test_pdf_path():
+def test_pdf_path() -> Path:
     """Return path to test pdf"""
 
     return Path(__file__).parent / "data/cclw-1318-d7f66920a18e4ddf94c83cf21fa2bcfa.pdf"
+
+
+@pytest.fixture
+def test_pdf_no_pages(test_pdf_path) -> int:
+    """Number of pages in test PDF"""
+
+    return PdfFileReader(open(test_pdf_path, "rb")).numPages
 
 
 @pytest.fixture
@@ -181,7 +188,7 @@ def test_adobe_text_extractor(test_pdf_path, tmp_path):
 
         # The returned document can have up to 8 pages (the number of pages in the original PDF).
         # Pages with no parsed content (e.g. all figures) won't be added to the document.
-        assert len(doc.pages) <= 8
+        assert len(doc.pages) == 8
 
         # Every page in the Adobe output should have text blocks, as pages are only created if there are text blocks
         assert all([len(page.text_blocks) > 0 for page in doc.pages])
@@ -203,11 +210,12 @@ def test_adobe_text_extractor(test_pdf_path, tmp_path):
         assert os.listdir(split_dir) == []
 
 
-def mock_get_adobe_api_result_raise_exception(self, pdf_filepath: Path):
+def mock_get_adobe_api_result_raise_exception(
+    self, pdf_filepath: Path, test_pdf_no_pages
+):
     PAGE_LIMIT = 6
-    pdf_n_pages = PdfFileReader(open(pdf_filepath, "rb")).numPages
 
-    if pdf_n_pages > PAGE_LIMIT:
+    if test_pdf_no_pages > PAGE_LIMIT:
         raise ServiceApiException(
             message="DISQUALIFIED - File not suitable for content extraction: File exceeds page limit",
             request_tracking_id="arbitrary",
@@ -216,11 +224,15 @@ def mock_get_adobe_api_result_raise_exception(self, pdf_filepath: Path):
         return get_sample_adobe_fileref()
 
 
-def test_adobe_text_extractor_with_pdf_split(test_pdf_path, tmp_path):
+def test_adobe_text_extractor_with_pdf_split(
+    test_pdf_path, tmp_path, test_pdf_no_pages
+):
     with mock.patch.object(
         AdobeAPIExtractor,
         "_get_adobe_api_result",
-        new=mock_get_adobe_api_result_raise_exception,
+        new=lambda self, x: mock_get_adobe_api_result_raise_exception(
+            self, x, test_pdf_no_pages
+        ),
     ):
         data_output_dir = tmp_path / "data"
         split_dir = tmp_path / "splits"
