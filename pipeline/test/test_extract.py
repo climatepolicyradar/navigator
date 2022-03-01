@@ -5,6 +5,7 @@ from unittest import mock
 
 import pytest
 from adobe.pdfservices.operation.io.file_ref import FileRef
+from adobe.pdfservices.operation.exception.exceptions import ServiceApiException
 from PyPDF2 import PdfFileReader
 
 from extract.document import Document, Page, TextBlock
@@ -200,6 +201,46 @@ def test_adobe_text_extractor(test_pdf_path, tmp_path):
             "structuredData.json",
         ]
         assert os.listdir(split_dir) == []
+
+
+def mock_get_adobe_api_result_raise_exception(self, pdf_filepath: Path):
+    PAGE_LIMIT = 6
+    pdf_n_pages = PdfFileReader(open(pdf_filepath, "rb")).numPages
+
+    if pdf_n_pages > PAGE_LIMIT:
+        raise ServiceApiException(
+            message="DISQUALIFIED - File not suitable for content extraction: File exceeds page limit",
+            request_tracking_id="arbitrary",
+        )
+    else:
+        return get_sample_adobe_fileref()
+
+
+def test_adobe_text_extractor_with_pdf_split(test_pdf_path, tmp_path):
+    with mock.patch.object(
+        AdobeAPIExtractor,
+        "_get_adobe_api_result",
+        new=mock_get_adobe_api_result_raise_exception,
+    ):
+        data_output_dir = tmp_path / "data"
+        split_dir = tmp_path / "splits"
+        os.mkdir(data_output_dir)
+        os.mkdir(split_dir)
+
+        text_extractor = AdobeAPIExtractor(credentials_path="fake/path")
+        # Set API max pages limit to 5 - this means the extractor should split the 8 page input PDF into 5 and 3 page PDFs.
+        text_extractor.API_MAX_PAGES = 5
+        doc = text_extractor.extract(
+            test_pdf_path,
+            data_output_dir=data_output_dir,
+            output_folder_pdf_splits=split_dir,
+        )
+
+        # Note the returned documents will just be two instances of the same document because of the way that the mocking is set up.
+        # We know the document in test_pdf_path has 8 pages so can still test for that.
+        assert isinstance(doc, Document)
+        assert len(doc.pages) == 8
+        assert doc.filename == test_pdf_path.name
 
 
 def test_split_pdf(test_pdf_path, tmpdir):
