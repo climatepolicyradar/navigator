@@ -151,12 +151,18 @@ class S3Client:
             new_bucket, os.getenv("AWS_REGION"), new_key or s3_document.key
         )
 
-    def list_files(self, bucket: str, max_keys=1000) -> t.Union[S3Document, bool]:
+    def list_files(
+        self, bucket: str, max_keys=1000
+    ) -> t.Union[t.Generator[S3Document, None, None], bool]:
         """Yields the documents contained in a bucket on S3
+
+        Calls the s3 list_objects_v2 function to return all the keys in a given s3 bucket.
+        The argument max_keys can be used to control how many keys are returned in each
+        call made to s3. This function will always yield all keys in the bucket.
 
         Args:
             bucket (str): name of the bucket in which the files will be listed.
-            max_keys (int): maximum number of files to return in a single call
+            max_keys (int): maximum number of s3 keys to return on each request made to s3.
 
         Returns:
             False if the operation was unsuccessful.
