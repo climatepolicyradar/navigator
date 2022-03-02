@@ -1,11 +1,12 @@
-import typing as t
 import datetime
+import typing as t
 
 from fastapi import HTTPException, status
 from sqlalchemy.orm import Session
+from sqlalchemy.sql import exists
 
-from . import models, schemas
 from app.core.security import get_password_hash
+from . import models, schemas
 
 
 def get_user(db: Session, user_id: int):
@@ -71,7 +72,6 @@ def create_document(
     db: Session,
     document: schemas.DocumentCreate,
 ) -> models.Document:
-
     db_document = models.Document(
         action_id=document.action_id,
         name=document.name,
@@ -93,7 +93,6 @@ def create_action(
     db: Session,
     action: schemas.ActionCreate,
 ) -> models.Action:
-
     db_action = models.Action(
         action_source_json=action.source_json,
         name=action.name,
@@ -110,3 +109,21 @@ def create_action(
     db.refresh(db_action)
 
     return db_action
+
+
+def is_action_exists(
+    db: Session,
+    action: schemas.ActionBase,
+) -> bool:
+    """Returns an action by its unique constraint."""
+
+    return db.query(
+        exists().where(
+            models.Action.name == action.name,
+            models.Action.action_date
+            == datetime.date(action.year, action.month, action.day),
+            models.Action.geography_id == action.geography_id,
+            models.Action.action_type_id == action.type_id,
+            models.Action.action_source_id == action.source_id,
+        )
+    ).scalar()

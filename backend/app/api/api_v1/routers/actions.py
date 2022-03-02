@@ -8,7 +8,7 @@ from navigator.core.log import get_logger
 from sqlalchemy.exc import IntegrityError
 
 from app.core.auth import get_current_active_user
-from app.db.crud import create_action, create_document
+from app.db.crud import create_action, create_document, is_action_exists
 from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
 from app.db.session import get_db
 
@@ -35,19 +35,6 @@ async def action_create(
             detail="The date of the action provided is in the future, and should be in the past.",
         )
 
-    invalid_urls = await check_document_validity(action)
-
-    if invalid_urls:
-        raise HTTPException(
-            400,
-            headers={
-                "invalid-urls": ", ".join(invalid_urls),
-                "failed-reason": "A document has an unsupported mimetype",
-            },
-            detail="A document has an unsupported mimetype"
-        )
-
-    # Add action and related documents to database.
     action_create = ActionCreate(
         name=action.name,
         description=action.description,
@@ -62,14 +49,28 @@ async def action_create(
         documents=action.documents,
     )
 
+    # optimisation: check if action exists first
+    if is_action_exists(db, action_create):
+        raise HTTPException(409, detail="This action already exists")
+
+    invalid_urls = await check_document_validity(action)
+
+    if invalid_urls:
+        raise HTTPException(
+            400,
+            headers={
+                "invalid-urls": ", ".join(invalid_urls),
+                "failed-reason": "A document has an unsupported mimetype",
+            },
+            detail="A document has an unsupported mimetype",
+        )
+
+    # Add action and related documents to database.
     try:
         db_action = create_action(db, action_create)
     except Exception as e:
         if isinstance(e, IntegrityError):
-            raise HTTPException(
-                409,
-                detail="This item already exists"
-            )
+            raise HTTPException(409, detail="This item already exists")
         raise e
 
     for idx, document in enumerate(action.documents):
@@ -108,6 +109,9 @@ async def check_document_validity(action) -> List[str]:
     for document in action.documents:
         if document.source_url:
             try:
+                logger.debug(
+                    f"Checking document validity for action, name={action.name}, url={document.source_url}"
+                )
                 response = requests.head(document.source_url, allow_redirects=True)
                 if all(
                         [
@@ -115,6 +119,9 @@ async def check_document_validity(action) -> List[str]:
                             for c in ("application/pdf", "text/html")
                         ]
                 ):
+                    logger.warning(
+                        f"Found invalid document for action, name={action.name}, url={document.source_url}"
+                    )
                     invalid_urls.append(document.source_url)
             except requests.exceptions.SSLError:
                 # we do not want to download insecurely
