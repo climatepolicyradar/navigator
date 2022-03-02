@@ -30,10 +30,8 @@ of that text.
 
 import json
 from pathlib import Path
-from typing import List, Tuple
+from typing import List, Tuple, Optional
 from dataclasses import dataclass, asdict
-
-SEPARATOR = " "
 
 
 @dataclass
@@ -47,17 +45,23 @@ class TextBlock:
         text: List of text lines contained in the text block
         text_block_id: Unique identifier for the text block
         coords: List of coordinates of the vertices defining the boundary of the text block.
-           Each coordinate is a tuple in the format (x, y)
+           Each coordinate is a tuple in the format (x, y). (0, 0) is at the top left corner of
+           the page, and the positive x- and y- directions are right and down.
     """
 
     text: List[str]  # Text in text block as a list of text lines
     text_block_id: str  # Unique identifier of text block
     coords: List[Tuple[float, float]]  # Coordinates of text block
+    type: Optional[str] = None  # Type of text block
+    path: Optional[List[str]] = None  # Path of text block. Similar to DOM tree in HTML.
+    custom_attributes: Optional[
+        dict
+    ] = None  # Any attributes returned by the parser that can be used for post-processing.
 
     def to_string(self) -> str:
         """Returns the lines in a text block as a string with the lines separated by spaces."""
 
-        return " ".join(self.text)
+        return " ".join([line.strip() for line in self.text])
 
 
 @dataclass
@@ -71,7 +75,7 @@ class Page:
        text_blocks: List of text blocks contained in the document
        dimensions: The dimensions of the page as a tuple in the format (x, y).
           where x is horizontal and y is vertical dimension.
-       page_id: Unique id of the page, e.g. page number
+       page_id: Unique id of the page, e.g. page number starting at 0.
     """
 
     text_blocks: List[TextBlock]

@@ -1,3 +1,7 @@
+# Adobe PDF services keys
+pdfservices-credentials.json
+private.key
+
 #temporary
 /frontend-old
 
@@ -160,7 +164,8 @@ dmypy.json
 .vscode/*
 
 # Ignore vscode development contain config files
-.devcontainer/*
+**/.devcontainer/*
+**/devcontainer.json
 
 # Mac OS files
 .DS_Store

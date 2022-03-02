@@ -7,12 +7,16 @@ import argparse
 from pathlib import Path
 import tempfile
 from collections import namedtuple
-from typing import TextIO
+from typing import TextIO, Generator, Tuple
 
+
+# def process(
+#    pdf_dir: Path, data_dir: Path, out_dir: Path, save_json: bool, save_text: bool
+# ):
 from tqdm import tqdm
 
 from navigator.core.aws import S3Client
-from extract.extract import DocumentEmbeddedTextExtractor
+from extract.extract import DocumentEmbeddedTextExtractor, AdobeAPIExtractor
 from extract.exceptions import DocumentTextExtractorException
 
 
@@ -45,7 +49,9 @@ def split_s3_path(s3_path: str, include_bucket=True, include_filename=True):
     return S3PathComponents(bucket, folders, filename, extension)
 
 
-def get_pdf_files(pdf_path: str, use_s3: bool = False) -> Path:
+def get_pdf_files(
+    pdf_path: str, use_s3: bool = False
+) -> Generator[Tuple[Path, str], None, None]:
     """Retrieve files from an s3 bucket/folder, or local directory
 
     Yields paths to pdf files to be processed. The files are either retrieved from a bucket/folder on S3,
@@ -136,20 +142,24 @@ def upload_extract_files(
     out_text_file.close()
 
 
-def process(pdf_path: str, out_path: str, use_s3: bool = False):
+def process(pdf_path: str, data_dir: Path, out_path: str, use_s3: bool = False):
     """Extracts text from text in a directory containing pdf files.
 
-    Iterates through files with a .pdf extension in a given directory,
+    Iterates through files with a .pdf extension in a given directory or s3 bucket/folder,
     and processes those files to extract text. Produces a .json and/or
     .txt file containing extracted text and associated positional data.
 
     Args:
-        pdf_dir (str): Path to input pdf files
-        out_dir (str): Path to destination directory to write output files
+        pdf_path (str): Either a path to a local directory or an s3 bucket/folders containing input pdf files
+        data_dir (Path): Path to local directory to write output intermediate extract files
+        out_path (str): Either a path to a local directory or an bucket/folders to upload files to in format
         use_s3 (bool): if True, will treat pdf_path as an s3 bucket path, otherwise as a path on the local file system.
     """
 
-    extractor = DocumentEmbeddedTextExtractor()
+    adobe_extractor = AdobeAPIExtractor(
+        credentials_path="./pdfservices-credentials.json"
+    )
+    embedded_extractor = DocumentEmbeddedTextExtractor()
 
     pdf_file_iterator = tqdm(
         get_pdf_files(pdf_path, use_s3), desc="Documents processed", unit="file"
@@ -157,8 +167,22 @@ def process(pdf_path: str, out_path: str, use_s3: bool = False):
     for pdf_file, source_pdf_filename in pdf_file_iterator:
         pdf_file_iterator.set_description(desc=f"Processing {source_pdf_filename}")
 
-        # Extract embedded text in pdf file
-        pdf_doc = extractor.extract(pdf_file)
+        pdf_name = Path(source_pdf_filename).stem
+
+        try:
+            pdf_doc = adobe_extractor.extract(
+                pdf_filepath=pdf_file,
+                pdf_name=pdf_name,
+                data_output_dir=data_dir,
+                output_folder_pdf_splits="/temp",
+            )
+        except Exception as e:
+            print(
+                f"Adobe extractor failed with error {e}. Falling back to embedded text extractor."
+            )
+            pdf_doc = embedded_extractor.extract(
+                pdf_filepath=pdf_file, pdf_name=pdf_name, data_output_dir=data_dir
+            )
 
         save_filename = Path(source_pdf_filename).stem
 
@@ -197,6 +221,11 @@ def configure_args():
         help="Path to directory or name of s3 bucket and subfolders containing pdf files to process",
     )
     parser.add_argument(
+        "data_dir",
+        type=str,
+        help="Path to directory to store intermediate files",
+    )
+    parser.add_argument(
         "out_path",
         type=str,
         help="Path to directory or name of s3 bucket and subfolders to store output files",
@@ -220,16 +249,19 @@ def cli():
     args = configure_args()
 
     pdf_path = Path(args.pdf_path)
+    data_dir = Path(args.data_dir)
     out_path = Path(args.out_path)
 
     # Check that the input/output directories exist and raise error if not
     if not pdf_path.exists() and not args.s3:
         raise DocumentTextExtractorException("Path to input pdf docuents is invalid")
+    if not data_dir.exists():
+        raise DocumentTextExtractorException("Data path is invalid")
     if not out_path.exists() and not args.s3:
         raise DocumentTextExtractorException("Output path is invalid")
 
     # Process the files in the directory
-    process(pdf_path, out_path, args.s3),
+    process(pdf_path, data_dir, out_path, args.s3),
 
 
 if __name__ == "__main__":
