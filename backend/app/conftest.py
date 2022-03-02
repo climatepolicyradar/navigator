@@ -1,17 +1,18 @@
 import os
-import pytest
 import typing as t
+
+import pytest
 from fastapi.testclient import TestClient
 from moto import mock_s3
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database, drop_database
 
-from navigator.core.aws import get_s3_client, S3Client
 from app.core import config, security
-from app.db.session import Base, get_db
 from app.db import models
+from app.db.session import Base, get_db
 from app.main import app
+from navigator.core.aws import get_s3_client, S3Client
 
 
 @pytest.fixture
@@ -51,7 +52,28 @@ def get_test_db_url() -> str:
 
 
 @pytest.fixture
-def test_db():
+def create_test_db():
+    """Create a test database and use it for the whole test session."""
+
+    test_db_url = get_test_db_url()
+
+    # Create the test database
+    assert not database_exists(
+        test_db_url
+    ), "Test database already exists. Aborting tests."
+    create_database(test_db_url)
+    test_engine = create_engine(test_db_url)
+    Base.metadata.create_all(test_engine)
+
+    # Run the tests
+    yield
+
+    # Drop the test database
+    drop_database(test_db_url)
+
+
+@pytest.fixture
+def test_db(create_test_db):
     """Provide a test DB.
 
     Modify the db session to automatically roll back after each test.
@@ -82,27 +104,6 @@ def test_db():
     test_session.close()
     trans.rollback()
     connection.close()
-
-
-@pytest.fixture(scope="session", autouse=True)
-def create_test_db():
-    """Create a test database and use it for the whole test session."""
-
-    test_db_url = get_test_db_url()
-
-    # Create the test database
-    assert not database_exists(
-        test_db_url
-    ), "Test database already exists. Aborting tests."
-    create_database(test_db_url)
-    test_engine = create_engine(test_db_url)
-    Base.metadata.create_all(test_engine)
-
-    # Run the tests
-    yield
-
-    # Drop the test database
-    drop_database(test_db_url)
 
 
 @pytest.fixture

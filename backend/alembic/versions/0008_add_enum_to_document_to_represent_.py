@@ -21,7 +21,7 @@ document_invalid_reason = postgresql.ENUM(
     "net_read_error",
     "net_connection_error",
     "net_too_many_redirects",
-    name="document_invalid_reason",
+    name="documentinvalidreason",
 )
 
 
@@ -39,7 +39,7 @@ def upgrade():
                 "net_read_error",
                 "net_connection_error",
                 "net_too_many_redirects",
-                name="document_invalid_reason",
+                name="documentinvalidreason",
             ),
             nullable=True,
         ),

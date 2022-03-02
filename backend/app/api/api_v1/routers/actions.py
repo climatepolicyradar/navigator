@@ -1,17 +1,18 @@
 import ssl
 from datetime import datetime
+from sqlite3 import IntegrityError
+from typing import Optional
 
 import httpx
 from fastapi import APIRouter, Request, Depends, HTTPException
-from navigator.core.aws import get_s3_client, S3Document
-from navigator.core.log import get_logger
-from sqlalchemy.exc import IntegrityError
 
 from app.core.auth import get_current_active_user
 from app.db.crud import create_action, create_document, is_action_exists
 from app.db.models import DocumentInvalidReason
 from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
 from app.db.session import get_db
+from navigator.core.aws import get_s3_client, S3Document
+from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
 actions_router = r = APIRouter()
@@ -58,7 +59,9 @@ async def action_create(
         db_action = create_action(db, action_create)
     except Exception as e:
         if isinstance(e, IntegrityError):
-            raise HTTPException(409, detail="This item already exists")
+            raise HTTPException(
+                409, detail=f"Database integrity error, underlying={e.orig}"
+            )
         raise e
 
     for idx, document in enumerate(action.documents):
@@ -87,7 +90,19 @@ async def action_create(
             is_valid=False,  # will be set by assign_document_validity
         )
 
-        await assign_document_validity(action, document_create)
+        document_create.is_valid = True
+        if document_create.source_url:
+            logger.debug(
+                f"Checking document validity for action, name={action.name}, url={document.source_url}"
+            )
+            # TODO do we need to check s3_url?
+            invalid_reason = await get_document_validity(document_create.source_url)
+            if invalid_reason:
+                document_create.is_valid = False
+                document_create.invalid_reason = invalid_reason
+                logger.warning(
+                    f"Invalid document, action name={action.name}, reason={invalid_reason} url={document.source_url}"
+                )
 
         create_document(db, document_create)
         action.documents[idx] = document_create
@@ -100,51 +115,23 @@ transport = httpx.AsyncHTTPTransport(retries=3)
 supported_content_types = ["application/pdf", "text/html"]
 
 
-async def assign_document_validity(action: ActionBase, document: DocumentCreate):
-    if document.source_url:
-        try:
-            logger.debug(
-                f"Checking document validity for action, name={action.name}, url={document.source_url}"
-            )
-            logger.handlers[0].flush()
-            async with httpx.AsyncClient(transport=transport, timeout=10) as client:
-                response = await client.head(document.source_url, follow_redirects=True)
-                content_type = response.headers.get("content-type")
-                if content_type not in supported_content_types:
-                    logger.warning(
-                        f"Invalid document, unsupported content type, action name={action.name}, url={document.source_url}"
-                    )
-                    logger.handlers[0].flush()
-                    document.is_valid = False
-                    document.invalid_reason = (
-                        DocumentInvalidReason.unsupported_content_type
-                    )
-                else:
-                    document.is_valid = True
+async def get_document_validity(source_url: str) -> Optional[DocumentInvalidReason]:
+    try:
+        async with httpx.AsyncClient(transport=transport, timeout=10) as client:
+            response = await client.head(source_url, follow_redirects=True)
+            content_type = response.headers.get("content-type")
+            if content_type not in supported_content_types:
+                return DocumentInvalidReason.unsupported_content_type
+            else:
+                return None  # no reason needed
 
-        except (ssl.SSLCertVerificationError, ssl.SSLError):
-            # we do not want to download insecurely
-            logger.warning(
-                f"Invalid document, SSL error, action name={action.name}, url={document.source_url}"
-            )
-            document.is_valid = False
-            document.invalid_reason = DocumentInvalidReason.net_ssl_error
-        except (httpx.ConnectError, httpx.ConnectTimeout):
-            # not sure if this is worth retrying, as there's probably nothing listening on the other side
-            logger.warning(
-                f"Invalid document, connection error, action name={action.name}, url={document.source_url}"
-            )
-            document.is_valid = False
-            document.invalid_reason = DocumentInvalidReason.net_connection_error
-        except (httpx.ReadError, httpx.ReadTimeout):
-            logger.warning(
-                f"Invalid document, read error, action name={action.name}, url={document.source_url}"
-            )
-            document.is_valid = False
-            document.invalid_reason = DocumentInvalidReason.net_read_error
-        except httpx.TooManyRedirects:
-            logger.warning(
-                f"Invalid document, too many redirects, action name={action.name}, url={document.source_url}"
-            )
-            document.is_valid = False
-            document.invalid_reason = DocumentInvalidReason.net_too_many_redirects
+    except (ssl.SSLCertVerificationError, ssl.SSLError):
+        # we do not want to download insecurely
+        return DocumentInvalidReason.net_ssl_error
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        # not sure if this is worth retrying, as there's probably nothing listening on the other side
+        return DocumentInvalidReason.net_connection_error
+    except (httpx.ReadError, httpx.ReadTimeout):
+        return DocumentInvalidReason.net_read_error
+    except httpx.TooManyRedirects:
+        return DocumentInvalidReason.net_too_many_redirects

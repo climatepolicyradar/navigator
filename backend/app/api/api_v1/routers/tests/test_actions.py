@@ -1,8 +1,10 @@
 import datetime
+from unittest.mock import patch
 
 import pytest
 
 from app.db import models
+from app.db.models import DocumentInvalidReason
 
 
 @pytest.fixture
@@ -19,7 +21,9 @@ def ensure_lookups(test_db):
     test_db.flush()
 
 
+@patch("app.api.api_v1.routers.actions.get_document_validity")
 def test_post_action(
+    mock_get_document_validity,
     client,
     user_token_headers,
     test_s3_client,
@@ -79,10 +83,18 @@ def test_post_action(
         test_db.query(models.Document).all()[0].s3_url
         == f"https://{s3_document_bucket_names['store']}.s3.eu-west-2.amazonaws.com/test_document.pdf"
     )
+    assert test_db.query(models.Document).all()[0].is_valid
+    assert test_db.query(models.Document).all()[0].invalid_reason is None
+    mock_get_document_validity.assert_not_called()
 
 
-def test_x(client, user_token_headers):
+@patch("app.api.api_v1.routers.actions.get_document_validity")
+def test_null_values(
+    mock_get_document_validity, client, user_token_headers, test_db, ensure_lookups
+):
     # API should be able to take null values for month and year, for both documents and actions, and for `s3_url`.
+    mock_get_document_validity.return_value = None
+
     response = client.post(
         "/api/v1/action",
         json={
@@ -97,7 +109,7 @@ def test_x(client, user_token_headers):
                 {
                     "name": "test document 1",
                     "language_id": 1,
-                    "source_url": "https://google.co.uk/",
+                    "source_url": "https://valid.com/",
                     "s3_url": None,
                     "year": 2009,
                     "month": None,
@@ -122,7 +134,7 @@ def test_x(client, user_token_headers):
             {
                 "name": "test document 1",
                 "language_id": 1,
-                "source_url": "https://google.co.uk/",
+                "source_url": "https://valid.com/",
                 "s3_url": None,
                 "year": 2009,
                 "month": 1,
@@ -131,7 +143,20 @@ def test_x(client, user_token_headers):
         ],
     }
 
-    # API should return 400 when user provides `source_url` that doesn't have MIME type pdf or HTML
+    assert test_db.query(models.Document).all()[0].is_valid
+    assert test_db.query(models.Document).all()[0].invalid_reason is None
+    mock_get_document_validity.assert_called_once_with("https://valid.com/")
+
+
+@patch("app.api.api_v1.routers.actions.get_document_validity")
+def test_unsupported_mime_type(
+    mock_get_document_validity, client, user_token_headers, test_db, ensure_lookups
+):
+    # API should return 200 but mark doc as invalid when user provides `source_url`
+    # that doesn't have MIME type pdf or HTML
+    mock_get_document_validity.return_value = (
+        DocumentInvalidReason.unsupported_content_type
+    )
     response = client.post(
         "/api/v1/action",
         json={
@@ -146,7 +171,7 @@ def test_x(client, user_token_headers):
                 {
                     "name": "test document 1",
                     "language_id": 1,
-                    "source_url": "https://raw.githubusercontent.com/climatepolicyradar/navigator/dev/backend/app/api/api_v1/routers/tests/data/empty_img.png",
+                    "source_url": "https://invalid.com",
                     "s3_url": None,
                     "year": 2009,
                     "month": None,
@@ -157,8 +182,38 @@ def test_x(client, user_token_headers):
         headers=user_token_headers,
     )
 
-    assert response.status_code == 400
+    assert response.status_code == 200
+    assert response.json() == {
+        "source_id": 1,
+        "name": "test action",
+        "description": None,
+        "year": 2008,
+        "month": 1,
+        "day": 1,
+        "geography_id": 1,
+        "type_id": 1,
+        "documents": [
+            {
+                "name": "test document 1",
+                "language_id": 1,
+                "source_url": "https://invalid.com",
+                "s3_url": None,
+                "year": 2009,
+                "month": 1,
+                "day": 1,
+            }
+        ],
+    }
 
+    assert not test_db.query(models.Document).all()[0].is_valid
+    assert (
+        test_db.query(models.Document).all()[0].invalid_reason
+        == DocumentInvalidReason.unsupported_content_type
+    )
+    mock_get_document_validity.assert_called_once_with("https://invalid.com")
+
+
+def test_future_action(client, user_token_headers, test_db, ensure_lookups):
     # Providing an action date in the future should raise a 400
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 
@@ -188,3 +243,32 @@ def test_x(client, user_token_headers):
     )
 
     assert response.status_code == 400
+
+
+def test_duplicate_actions(client, user_token_headers, test_db, ensure_lookups):
+    payload = {
+        "source_id": 1,
+        "name": "test action",
+        "year": 2008,
+        "month": 1,
+        "day": 1,
+        "geography_id": 1,
+        "type_id": 1,
+        "documents": [],
+    }
+
+    response = client.post(
+        "/api/v1/action",
+        json=payload,
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 200
+
+    response = client.post(
+        "/api/v1/action",
+        json=payload,
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 409
