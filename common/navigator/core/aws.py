@@ -1,8 +1,7 @@
-import os
-import typing as t
-import re
-
 import boto3
+import os
+import re
+import typing as t
 from botocore.exceptions import ClientError
 from botocore.response import StreamingBody
 
@@ -12,6 +11,8 @@ logger = get_logger(__name__)
 
 
 class S3Document:
+    """A class representing an S3 document."""
+
     def __init__(self, bucket_name: str, region: str, key: str):
         self.bucket_name = bucket_name
         self.region = region
@@ -19,6 +20,7 @@ class S3Document:
 
     @property
     def url(self):
+        """Returns the URL for this S3 document."""
         return f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{self.key}"
 
     @classmethod

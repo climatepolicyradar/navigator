@@ -6,6 +6,7 @@ from app.core import config
 
 engine = create_engine(
     config.SQLALCHEMY_DATABASE_URI,
+    pool_pre_ping=True,
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
@@ -43,3 +44,17 @@ def get_db():
         yield db
     finally:
         db.close()
+
+# https://fastapi.tiangolo.com/advanced/async-sql-databases/
+# async def get_session() -> AsyncSession:
+#     async with async_session() as session:
+#         yield session
+#         await session.commit()
+#
+# class DB(AsyncSession):
+#     def __new__(cls,db:AsyncSession = Depends(get_session)):
+#         return db
+#
+# # in the route:
+# @app.post("/my-route/")
+# async def do_something(db: DB = Depends()): ...

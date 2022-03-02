@@ -9,6 +9,8 @@ import TextInput from '../form-inputs/TextInput';
 import Select from '../form-inputs/Select';
 import LoaderOverlay from '../LoaderOverlay';
 import { fakePromise } from '../../helpers';
+import '../../pages/i18n';
+import { useTranslation } from 'react-i18next';
 
 interface AddDocumentsProps {
   setPopupActive(): void;
@@ -45,6 +47,12 @@ const AddDocuments = ({
     day: day,
     file: '',
   };
+
+  const { t, i18n, ready } = useTranslation([
+    'addDocument',
+    'formErrors',
+    'common',
+  ]);
 
   const submitDocument = async (values, resetForm) => {
     setProcessing(true);
@@ -84,20 +92,27 @@ const AddDocuments = ({
           <LoaderOverlay />
         </>
       ) : null}
-      <h2>Add a document to this action</h2>
+      <h2>{t('Add a document to this action')}</h2>
       <Formik
         initialValues={initialValues}
         validationSchema={Yup.object({
-          name: Yup.string().required('Required'),
-          year: Yup.string().required('Please select a year'),
-          language_id: Yup.string().required('Please select a language'),
+          name: Yup.string().required(t('Required', { ns: 'formErrors' })),
+          year: Yup.string().required(
+            t('Please select a year', { ns: 'formErrors' })
+          ),
+          language_id: Yup.string().required(
+            t('addDocument.Please select a language.', { ns: 'formErrors' })
+          ),
           source_url: Yup.lazy(() =>
             Yup.string().when('file', {
               is: (file) => {
                 return file === undefined;
               },
               then: Yup.string().required(
-                'Please either enter a file URL or select a file.'
+                t(
+                  'addDocument.Please either enter a file URL or select a file.',
+                  { ns: 'formErrors' }
+                )
               ),
             })
           ),
@@ -119,7 +134,7 @@ const AddDocuments = ({
           <Form>
             <div className="form-row">
               <TextInput
-                label="Document name"
+                label={t('form.Document name')}
                 name="name"
                 type="text"
                 required
@@ -129,11 +144,11 @@ const AddDocuments = ({
               <Field
                 as={Select}
                 data-cy="selectLanguages"
-                label="Language"
+                label={t('form.Language')}
                 name="language_id"
                 required
               >
-                <option>Choose a language</option>
+                <option>{t('form.Choose a language')}</option>
                 {languages.map((language: Language) => (
                   <option
                     key={`language${language.language_id}`}
@@ -146,12 +161,12 @@ const AddDocuments = ({
             </div>
             <div className="form-row">
               <TextInput
-                label="Enter URL"
+                label={t('form.Enter URL')}
                 name="source_url"
                 type="text"
                 placeholder="http://example.com/document.pdf"
               />
-              <p className="mt-8">or</p>
+              <p className="mt-8">{t('form.or')}</p>
             </div>
             <div className="form-row">
               <Field
@@ -166,12 +181,14 @@ const AddDocuments = ({
                   setFileObj(event.currentTarget.files[0]);
                 }}
               />
-              <div className="text-sm text-gray-400 mt-1">150Mb maximum</div>
+              <div className="text-sm text-gray-400 mt-1">
+                150Mb {t('form.maximum')}
+              </div>
             </div>
             <div className="form-row md:flex items-start">
               <Field
                 as={Select}
-                label="Year"
+                label={t('Year', { ns: 'common' })}
                 name="year"
                 classes="md:w-1/3 md:mr-4"
                 required
@@ -180,7 +197,7 @@ const AddDocuments = ({
                   handleDateChange(e, values);
                 }}
               >
-                <option>Choose</option>
+                <option>{t('Choose', { ns: 'common' })}</option>
                 {yearSelections.map((year, index) => (
                   <option key={index} value={year}>
                     {year}
@@ -189,7 +206,7 @@ const AddDocuments = ({
               </Field>
               <Field
                 as={Select}
-                label="Month"
+                label={t('Month', { ns: 'common' })}
                 name="month"
                 classes="md:w-1/3 md:mr-4"
                 onChange={(e) => {
@@ -197,15 +214,20 @@ const AddDocuments = ({
                   handleDateChange(e, values);
                 }}
               >
-                <option>Choose</option>
+                <option>{t('Choose', { ns: 'common' })}</option>
                 {months.map((month, index) => (
                   <option key={index} value={index + 1}>
                     {month}
                   </option>
                 ))}
               </Field>
-              <Field as={Select} label="Day" name="day" classes="md:w-1/3">
-                <option>Choose</option>
+              <Field
+                as={Select}
+                label={t('Day', { ns: 'common' })}
+                name="day"
+                classes="md:w-1/3"
+              >
+                <option>{t('Choose', { ns: 'common' })}</option>
                 {days.map((day, index) => (
                   <option key={index} value={day + 1}>
                     {day + 1}
@@ -222,10 +244,10 @@ const AddDocuments = ({
                   setPopupActive(false);
                 }}
               >
-                Cancel
+                {t('Cancel', { ns: 'common' })}
               </Button>{' '}
               <Button data-cy="submit-add-document-form" type="submit">
-                Add
+                {t('Add', { ns: 'common' })}
               </Button>
             </div>
           </Form>

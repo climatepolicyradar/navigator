@@ -1,12 +1,11 @@
-import typing as t
 import os
-
+import pytest
+import typing as t
+from fastapi.testclient import TestClient
+from moto import mock_s3
 from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database, drop_database
-from fastapi.testclient import TestClient
-import pytest
-from moto import mock_s3
 
 from navigator.core.aws import get_s3_client, S3Client
 from app.core import config, security
@@ -53,7 +52,8 @@ def get_test_db_url() -> str:
 
 @pytest.fixture
 def test_db():
-    """
+    """Provide a test DB.
+
     Modify the db session to automatically roll back after each test.
     This is to avoid tests affecting the database state of other tests.
     """
@@ -86,9 +86,7 @@ def test_db():
 
 @pytest.fixture(scope="session", autouse=True)
 def create_test_db():
-    """
-    Create a test database and use it for the whole test session.
-    """
+    """Create a test database and use it for the whole test session."""
 
     test_db_url = get_test_db_url()
 
@@ -109,9 +107,7 @@ def create_test_db():
 
 @pytest.fixture
 def client(test_db, test_s3_client):
-    """
-    Get a TestClient instance that reads/write to the test database.
-    """
+    """Get a TestClient instance that reads/write to the test database."""
 
     def get_test_db():
         yield test_db
@@ -131,17 +127,13 @@ def test_password() -> str:
 
 
 def get_password_hash() -> str:
-    """
-    Password hashing can be expensive so a mock will be much faster
-    """
+    """Password hashing can be expensive so a mock will be much faster"""
     return "supersecrethash"
 
 
 @pytest.fixture
 def test_user(test_db) -> models.User:
-    """
-    Make a test user in the database
-    """
+    """Make a test user in the database"""
 
     user = models.User(
         email="fake@email.com",
@@ -155,9 +147,7 @@ def test_user(test_db) -> models.User:
 
 @pytest.fixture
 def test_superuser(test_db) -> models.User:
-    """
-    Superuser for testing
-    """
+    """Superuser for testing"""
 
     user = models.User(
         email="fakeadmin@email.com",

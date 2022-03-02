@@ -1,11 +1,10 @@
 import logging
 import os
 import pathlib
-from subprocess import check_output, STDOUT
-from typing import Any, cast
-
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
+from subprocess import check_output, STDOUT
+from typing import Any, cast
 
 _incomparable_lines = {
     "    AS integer"  # this gets made in models, but not integrations
@@ -17,7 +16,7 @@ logger = logging.getLogger(__name__)
 cwd = pathlib.Path(__file__).resolve().parents[3]
 
 
-class PytestHelpers:
+class PytestHelpers:  # noqa: D101
     def __init__(self, engine: Engine):
         self.engine = engine
 
@@ -102,6 +101,7 @@ class PytestHelpers:
         self.execute("CREATE SCHEMA public")
 
     def add_alembic(self) -> None:
+        """Add alembic migration table to test DB."""
         self.execute(
             """
             CREATE TABLE IF NOT EXISTS alembic_version (
@@ -113,8 +113,7 @@ class PytestHelpers:
 
 
 def clean_tables(session, exclude, sqlalchemy_base):
-    """Clean (aka: truncate) table.  SQLAlchemy models listed in exclude will
-    be skipped."""
+    """Clean (aka: truncate) table.  SQLAlchemy models listed in exclude will be skipped."""
     non_static_tables = [
         t
         for t in reversed(sqlalchemy_base.metadata.sorted_tables)

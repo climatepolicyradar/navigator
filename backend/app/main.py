@@ -1,19 +1,22 @@
 import os
-
+import uvicorn
 from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy.exc import IntegrityError
 from starlette.requests import Request
-import uvicorn
+from starlette.responses import JSONResponse
 
-from app.api.api_v1.routers.users import users_router
+from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.documents import documents_router
-from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.lookups import lookups_router
+from app.api.api_v1.routers.users import users_router
 from app.core import config
-from app.db.session import SessionLocal
 from app.core.auth import get_current_active_user
+from app.db.session import SessionLocal
+from navigator.core.log import get_logger
 
+logger = get_logger(__name__)
 
 app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
 
@@ -54,13 +57,11 @@ app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
 
 
 class MissingEnvironmentVariableError(Exception):
-    pass
+    """Exception for missing environment variables"""
 
 
 def assert_environment_variables():
-    """
-    Check that all required environment variables exist.
-    """
+    """Check that all required environment variables exist."""
     required_env_vars = (
         "POSTGRES_USER",
         "POSTGRES_PASSWORD",
@@ -78,6 +79,26 @@ def assert_environment_variables():
         raise MissingEnvironmentVariableError(
             f"Environment variable(s) {', '.join(missing_env_vars)} do(es) not exist."
         )
+
+
+@app.exception_handler(IntegrityError)
+async def integrityerror_handler(request: Request, exc: Exception):
+    """Handle IntegrityError exceptions.
+
+    TODO map specific errors.
+    """
+    msg = str(exc)
+    if hasattr(exc, "message"):
+        msg = exc.message
+
+    status = 500
+    if "duplicate key" in msg:
+        status = 400
+        msg = "Conflict error: item already exists in database"
+    else:
+        logger.error(exc)
+
+    return JSONResponse({"message": msg}, status_code=status)
 
 
 if __name__ == "__main__":
