@@ -80,6 +80,8 @@ def create_document(
         s3_url=document.s3_url,
         document_date=datetime.date(document.year, document.month, document.day),
         document_mod_date=document.document_mod_date,
+        is_valid=document.is_valid,
+        invalid_reason=document.invalid_reason,
     )
 
     db.add(db_document)

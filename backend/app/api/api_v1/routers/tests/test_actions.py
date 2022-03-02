@@ -1,22 +1,32 @@
-from app.db import models
 import datetime
 
+import pytest
 
-def test_post_action(
-    client, user_token_headers, test_s3_client, s3_document_bucket_names, test_db
-):
+from app.db import models
 
+
+@pytest.fixture
+def ensure_lookups(test_db):
     # ensure geography_id 1
-    test_db.add(models.Geography(country_code='foo', english_shortname='foo'))
+    test_db.add(models.Geography(country_code="foo", english_shortname="foo"))
     # ensure action_type_id 1
-    test_db.add(models.ActionType(type_name='foo'))
+    test_db.add(models.ActionType(type_name="foo"))
     # ensure source_id 1
-    test_db.add(models.Source(name='foo'))
+    test_db.add(models.Source(name="foo"))
     # ensure language_id 1
-    test_db.add(models.Language(language_code='foo'))
+    test_db.add(models.Language(language_code="foo"))
 
     test_db.flush()
 
+
+def test_post_action(
+    client,
+    user_token_headers,
+    test_s3_client,
+    s3_document_bucket_names,
+    test_db,
+    ensure_lookups,
+):
     response = client.post(
         "/api/v1/action",
         json={
@@ -70,6 +80,8 @@ def test_post_action(
         == f"https://{s3_document_bucket_names['store']}.s3.eu-west-2.amazonaws.com/test_document.pdf"
     )
 
+
+def test_x(client, user_token_headers):
     # API should be able to take null values for month and year, for both documents and actions, and for `s3_url`.
     response = client.post(
         "/api/v1/action",

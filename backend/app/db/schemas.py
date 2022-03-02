@@ -3,6 +3,8 @@ import typing as t
 
 from pydantic import BaseModel, HttpUrl, conint, validator
 
+from app.db.models import DocumentInvalidReason
+
 
 class UserBase(BaseModel):  # noqa: D101
     email: str
@@ -68,6 +70,8 @@ class DocumentBase(BaseModel):  # noqa: D101, D106
 class DocumentCreate(DocumentBase):  # noqa: D101
     action_id: int
     document_mod_date: datetime.date
+    is_valid: bool
+    invalid_reason: t.Optional[DocumentInvalidReason]
 
 
 class ActionBase(BaseModel):  # noqa: D101

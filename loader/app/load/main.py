@@ -16,13 +16,17 @@ def load(policies: PolicyLookup):
         country_code = key.country_code
         geography_id = get_geography_id(country_code)
         if not geography_id:
-            logger.warning(f"No geography found in lookup for country code {country_code}")
+            logger.warning(
+                f"No geography found in lookup for country code {country_code}"
+            )
             continue
 
         policy_type = key.policy_type
         action_type_id = get_type_id(policy_type)
         if not action_type_id:
-            logger.warning(f"No action type found in lookup for policy type {policy_type}")
+            logger.warning(
+                f"No action type found in lookup for policy type {policy_type}"
+            )
             continue
 
         policy_date: datetime = key.policy_date
@@ -69,11 +73,19 @@ def load(policies: PolicyLookup):
                 message = str(response.content)
             finally:
                 if "already exists" in message:
-                    logger.warning(f"Skipping duplicate item")
+                    logger.warning(f"Skipping duplicate item, policy={key}")
                 elif "unsupported mimetype" in message:
-                    logger.warning(f"Skipping non-PDF/HTML doc")
+                    logger.warning(
+                        f"Skipping unsupported/unfetchable doc, policy={key}"
+                    )
+                elif "date of the action provided is in the future" in message:
+                    logger.warning(f"Skipping future action, policy={key}")
                 else:
-                    logger.error(f"Error importing action and document(s) for policy={policy_data}, error={message}")
+                    logger.error(
+                        f"Error importing action and document(s) for policy={policy_data}, error={message}"
+                    )
                     return
 
-    logger.info(f"Done, {imported_count} policies imported out of {len(policies.items())} total")
+    logger.info(
+        f"Done, {imported_count} policies imported out of {len(policies.items())} total"
+    )
