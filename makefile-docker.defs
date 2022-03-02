@@ -2,13 +2,13 @@
 
 start_containers:
 	# Build and run containers
-	docker-compose up -d
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
 migrations_docker:
 	# Run database migrations when using docker for development
-	docker-compose run --rm backend alembic upgrade head
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic upgrade head
 	# Create initial data in database
-	docker-compose run --rm backend python3 app/initial_data.py
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 app/initial_data.py
 
 build: start_containers
 	# Hack to wait for postgres container to be up before running alembic migrations
@@ -23,7 +23,10 @@ test_frontend:
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
 
 test_backend:
-	docker-compose run --rm backend pytest
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest
+
+test_loader:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader pytest
 
 test:
 	make test_backend
@@ -31,7 +34,7 @@ test:
 
 # pipeline
 build_pipeline:
-	cd pipeline && docker build -t navigator_pipeline .
+	docker build -f pipeline/Dockerfile -t navigator_pipeline .
 
 test_pipeline:
 	docker run navigator_pipeline python -m pytest

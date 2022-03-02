@@ -62,7 +62,13 @@ from .utils import split_pdf
 class DocumentTextExtractor:
     """Base class for extracting text from a document."""
 
-    def pdf_to_data(self, pdf_filepath: Path, output_dir: Path, **kwargs):
+    def pdf_to_data(
+        self,
+        pdf_filepath: Path,
+        output_dir: Path,
+        pdf_name: Optional[str] = None,
+        **kwargs,
+    ):
         """Extracts information from the given document and save the results to an output path."""
         raise NotImplementedError
 
@@ -70,15 +76,20 @@ class DocumentTextExtractor:
         """Converts data outputted by `pdf_to_data` into a `Document` object."""
         raise NotImplementedError
 
-    def extract(self, pdf_filepath: Path, data_output_dir: Path, **kwargs):
+    def extract(
+        self,
+        pdf_filepath: Path,
+        data_output_dir: Path,
+        pdf_name: Optional[str] = None,
+        **kwargs,
+    ):
         """Extracts text from the given document"""
 
         raise NotImplementedError
 
 
 class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
-    """
-    Extracts embedded text stored in a pdf document using the pdfalto pdf parser.
+    """Extracts embedded text stored in a pdf document using the pdfalto pdf parser.
 
     This extractor can be used to extract text embedded in a pdf document. It uses
     the pdfalto pdf parser (used by grobid) to perform the extraction.
@@ -109,7 +120,9 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         self._pdfalto_path = pdfalto_path
 
-    def pdf_to_data(self, pdf_filepath: Path, output_dir: Path):
+    def pdf_to_data(
+        self, pdf_filepath: Path, output_dir: Path, pdf_name: Optional[str] = None
+    ):
         """Convert a pdf file to xml using the alto xml schema.
 
         Use pdfalto to parse the pdf file as an alto XML document and save it to `output_path`.
@@ -117,6 +130,8 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         Args:
             pdf_filepath: Path to pdf file to process
             output_dir: Path to export XML file to. The file will have the same name as the PDF, with an XML extension.
+            pdf_name: (optional) name of the pdf file which will be used as the name of the output files,
+                otherwise uses the filename given in pdf_filepath
 
         Raises:
             DocumentTextExtractorException: An error occurred calling pdfalto.
@@ -127,7 +142,8 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
                 "Path to pdfalto executable does not exist."
             )
 
-        xml_output_path = output_dir / f"{pdf_filepath.stem}.xml"
+        pdf_name = pdf_name if pdf_name is not None else pdf_filepath.stem
+        xml_output_path = output_dir / f"{pdf_name}.xml"
 
         try:
             # Create a temporary file to store the xml output from pdfalto
@@ -144,6 +160,8 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         except subprocess.CalledProcessError:
             raise DocumentTextExtractorException("Exception occurred calling pdfalto.")
+
+        return xml_output_path
 
     def _get_text_block_coords(self, text_block: Element) -> List[Tuple[float]]:
         """Get the coordinates of a text block element.
@@ -242,33 +260,41 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         return Document(document_pages, pdf_filename)
 
-    def extract(self, pdf_filepath: Path, data_output_dir: Path) -> Document:
+    def extract(
+        self, pdf_filepath: Path, data_output_dir: Path, pdf_name: Optional[str] = None
+    ) -> Document:
         """Extracts the text from a given pdf file and returns document structure.
 
         Args:
             pdf_filepath: /path/to/pdf/file to process
             data_output_dir: path to directory to output intermediate XML file produced by pdfalto.
+            pdf_name: (optional) name of the pdf file which will be used as the name of the output files,
+                otherwise uses the filename given in pdf_filepath
 
         Returns:
             An instance of a Document containing the document structure and text.
         """
-        self.pdf_to_data(pdf_filepath, data_output_dir)
-        xml_path = data_output_dir / f"{pdf_filepath.stem}.xml"
+        xml_path = self.pdf_to_data(pdf_filepath, data_output_dir, pdf_name)
         doc = self.data_to_document(xml_path, pdf_filepath.name)
 
         return doc
 
 
 class AdobeAPIExtractor(DocumentTextExtractor):
+    """Extract text from pdf files using the Adobe PDF Services Extract API"""
+
     def __init__(self, credentials_path: str, **kwargs):
-        """
+        """Extract text from a PDF document using Adobe PDF extract API.
+
         Extracts text from a PDF document using the Adobe PDF extract API. Also saves interim results, so API calls
         don't need to be re-run.
+
 
         Args:
             credentials_path: the path to the JSON file containing Adobe PDF services API credentials. A `private.key`
             file must also exist in the same folder.
         """
+
         super().__init__(**kwargs)
         self._elements_exclude = [
             "Aside",
@@ -299,6 +325,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         Returns:
             ExecutionContext: context used to run API calls using the PDF services SDK.
         """
+
         credentials = (
             Credentials.service_account_credentials_builder()
             .from_file(credentials_path)
@@ -310,7 +337,9 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
     @staticmethod
     def _flatten_data(data: dict) -> dict:
-        """Adobe data contains Kids elements which aim to encode sub-elements of an element.
+        """Flattens Kids elements in returned Adobe JSON
+
+        Adobe data contains Kids elements which aim to encode sub-elements of an element.
         This method flattens all Kids elements out in the returned Adobe JSON as they are unreliable.
 
         Args:
@@ -319,6 +348,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         Returns:
             dict: flattened JSON data
         """
+
         new_data = {k: v for k, v in data.items() if k != "elements"}
         new_data["elements"] = []
 
@@ -378,6 +408,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         Returns:
             _type_: _description_
         """
+
         in_line_bool_array = [
             char_bound[1] >= line[0] and char_bound[3] <= line[1] for line in lines
         ]
@@ -391,8 +422,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         return line_number_list[0]
 
     def _element_to_text_block(self, element: dict, text_block_id: str) -> TextBlock:
-        """
-        Convert an element in the Adobe PDF Extract output JSON's `elements` into a `TextBlock`.
+        """Convert an element in the Adobe PDF Extract output JSON's `elements` into a `TextBlock`.
 
         Args:
             element: dictionary from `data['elements']`, where data is the JSON returned by the Adobe API.
@@ -401,6 +431,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         Returns:
             TextBlock
         """
+
         char_bounds = element["CharBounds"]
         merged_lines = self._get_lines(char_bounds)
         chars_in_lines_idxs = [
@@ -454,6 +485,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             coords: list of coordinates output by Adobe: [x0, y0, x1, y1] with origin at bottom left.
             page_number: number of page output by Adobe. Indexed at 0.
         """
+
         page_height = self._current_data["pages"][page_number]["height"]
 
         # To reverse the coordinate system we subtract y0 and y1 from the page height and swap
@@ -462,8 +494,8 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
     @staticmethod
     def _structure_path(path: str, remove_numbers: bool = True) -> List[str]:
-        """
-        Convert a PDF path into a list.
+        """Convert a PDF path into a list.
+
         E.g. '//Document/Aside[3]/P[2]' becomes ['Document', 'Aside', 'P'].
 
         Args:
@@ -480,8 +512,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             return [re.sub(r"\[\d+\]", "", i) for i in path_split]
 
     def data_to_document(self, data_path: Path, pdf_filename: str) -> Document:
-        """
-        Converts an Adobe Extract API JSON into a Document object.
+        """Converts an Adobe Extract API JSON into a Document object.
 
         Args:
             data_path: path to JSON file outputted by Adobe API.
@@ -490,6 +521,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         Returns:
             Document
         """
+
         with open(data_path, "r") as f:
             data = json.load(f)
 
@@ -560,6 +592,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         Returns:
             FileRef representing ZIP file returned by API.
         """
+
         _execution_context = self._load_credentials(self._credentials_path)
 
         extract_pdf_operation = ExtractPDFOperation.create_new()
@@ -590,10 +623,15 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         return result
 
     def pdf_to_data(
-        self, pdf_filepath: Path, output_dir: Path, output_folder_pdf_splits: Path
+        self,
+        pdf_filepath: Path,
+        output_dir: Path,
+        output_folder_pdf_splits: Path,
+        pdf_name: Optional[str] = None,
     ) -> List[Path]:
-        """
-        Sends document at `pdf_filepath` to the Adobe Extract API. Stores the data from the API in the `output_dir` folder.
+        """Sends document at `pdf_filepath` to the Adobe Extract API.
+
+        Stores the data from the API in the `output_dir` folder.
 
         The Adobe Extract API has a variable page limit which is difficult to predict. To handle long PDFs this method
         splits a PDF into equal sized smaller PDFs and runs each through separately. These smaller PDFs are stored in
@@ -604,13 +642,18 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             output_dir: folder path to store the PDF Extract API results in. These results are
             stored in a subfolder with the same name as the PDF.
             output_folder_pdf_splits: folder path to store the split PDFs.
+            pdf_name: (optional) name of the pdf file which will be used as the name of the output files,
+                otherwise uses the filename given in pdf_filepath
 
         Returns:
             List of paths to JSON files (pathlib.Path objects).
         """
+
+        pdf_name = pdf_name if pdf_name is not None else pdf_filepath.stem
+
         try:
             result = self._get_adobe_api_result(pdf_filepath)
-            output_dir = output_dir / pdf_filepath.stem
+            output_dir = output_dir / pdf_name
             os.mkdir(output_dir)
             shutil.unpack_archive(result._file_path, output_dir)
 
@@ -652,13 +695,14 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             )
             json_paths = []
             for idx, pdf_path in enumerate(split_paths):
-                split_output_dir = output_dir / f"{pdf_filepath.stem}_{idx}"
+                split_output_dir = output_dir / f"{pdf_name}_{idx}"
                 os.mkdir(split_output_dir)
 
                 json_path = self.pdf_to_data(
                     pdf_filepath=pdf_path,
                     output_dir=split_output_dir,
                     output_folder_pdf_splits=output_folder_pdf_splits,
+                    pdf_name=pdf_name,
                 )
 
                 json_paths += json_path
@@ -666,7 +710,11 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             return json_paths
 
     def extract(
-        self, pdf_filepath: Path, data_output_dir: Path, output_folder_pdf_splits: Path
+        self,
+        pdf_filepath: Path,
+        data_output_dir: Path,
+        output_folder_pdf_splits: Path,
+        pdf_name: Optional[str] = None,
     ) -> Document:
         """Extracts the text from a given pdf file and returns document structure.
 
@@ -674,6 +722,8 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             pdf_filepath: /path/to/pdf/file to process.
             data_output_dir: folder to output Adobe Extract API data to.
             output_folder_pdf_splits: folder to store PDF splits. See `pdf_to_data` method.
+            pdf_name: (optional) name of the pdf file which will be used as the name of the output files,
+                otherwise uses the filename given in pdf_filepath
 
         Returns:
             An instance of a Document containing the document structure and text.
@@ -687,6 +737,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             pdf_filepath=pdf_filepath,
             output_dir=data_output_dir,
             output_folder_pdf_splits=output_folder_pdf_splits,
+            pdf_name=pdf_name,
         )
 
         pages = []

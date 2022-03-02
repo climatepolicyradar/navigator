@@ -1,0 +1,11 @@
+{
+  "Add a document to this action": "Add a document to this action",
+  "form": {
+    "Document name": "Document name",
+    "Language": "Language",
+    "Choose a language": "Choose a language",
+    "Enter URL": "Enter URL",
+    "or": "or",
+    "maximum": "maximum"
+  }
+}

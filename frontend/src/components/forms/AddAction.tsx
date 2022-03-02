@@ -20,6 +20,8 @@ import {
 } from '../../interfaces';
 import LoaderOverlay from '../LoaderOverlay';
 import { fakePromise } from '../../helpers';
+import '../../pages/i18n';
+import { useTranslation } from 'react-i18next';
 
 interface AddActionProps {
   geographies: Geography[];
@@ -51,6 +53,11 @@ const AddAction = ({
   };
 
   const yearSelections = yearRange();
+  const { t, i18n, ready } = useTranslation([
+    'addAction',
+    'formErrors',
+    'common',
+  ]);
 
   const handleDateChange = (e, values) => {
     const today = new Date();
@@ -109,15 +116,16 @@ const AddAction = ({
     window.scrollTo(0, 0);
 
     setProcessing(false);
-    setMessage('Action successfully added!');
+    setMessage(t('form.Action successfully added!'));
   };
 
   useEffect(() => {
     setDays(Array.from(Array(31).keys()));
   }, []);
+
   return (
     <>
-      {processing ? (
+      {processing && !ready ? (
         <>
           <LoaderOverlay />
         </>
@@ -128,242 +136,255 @@ const AddAction = ({
           setPopupActive(false);
         }}
       />
-      <div className="text-lg">
-        <p className="text-indigo-600 text-xl">
-          Add a new action using the form below. Multiple documents can be added
-          to an action.
-        </p>
-        {message.length > 0 && (
-          <p
-            data-cy="message"
-            className="mt-4 font-bold text-xl text-green-500"
-          >
-            {message}
+      {ready && (
+        <div className="text-lg">
+          <p className="text-indigo-600 text-xl">
+            {t(
+              'Add a new action using the form below. Multiple documents can be added to an action.'
+            )}
           </p>
-        )}
-
-        <Formik
-          initialValues={initialValues}
-          validationSchema={Yup.object({
-            source_id: Yup.string().required('Please select a source.'),
-            name: Yup.string().required('Required.'),
-            year: Yup.string().required('Please select a year.'),
-            geography_id: Yup.string().required('Please select a geography.'),
-            type_id: Yup.string().required('Please select an action type.'),
-            documents: Yup.array().min(
-              1,
-              'You must add at least one document.'
-            ),
-          })}
-          onSubmit={(values, { setSubmitting, resetForm }) => {
-            submitForm(values, resetForm);
-          }}
-        >
-          {({
-            values,
-            errors,
-            touched,
-            handleSubmit,
-            isSubmitting,
-            setFieldValue,
-          }) => (
-            <>
-              <Popup
-                active={popupActive}
-                onClick={() => {
-                  setPopupActive(false);
-                }}
-              >
-                <AddDocument
-                  setPopupActive={setPopupActive}
-                  days={days}
-                  handleDateChange={handleDateChange}
-                  yearSelections={yearSelections}
-                  year={values.year}
-                  month={values.month}
-                  day={values.day}
-                  languages={languages}
-                  active={popupActive}
-                />
-              </Popup>
-              <Form
-                data-cy="add-action-form"
-                className="lg:w-2/3 pointer-events-auto"
-              >
-                <div className="form-row">
-                  <Field
-                    as={Select}
-                    data-cy="selectSource"
-                    label="Source"
-                    name="source_id"
-                    required
-                  >
-                    <option>Choose a source</option>
-                    {sources.map((source, index) => (
-                      <option key={`source${index}`} value={source.source_id}>
-                        {source.name}
-                      </option>
-                    ))}
-                  </Field>
-                </div>
-                <div className="form-row">
-                  <TextInput
-                    label="Action name"
-                    name="name"
-                    type="text"
-                    required
-                  />
-                </div>
-                <div className="form-row">
-                  <TextArea
-                    label="Description"
-                    name="description"
-                    type="text"
-                  />
-                </div>
-                <div className="form-row md:flex items-start">
-                  <Field
-                    as={Select}
-                    label="Year"
-                    name="year"
-                    classes="md:w-1/3 md:mr-4"
-                    required
-                    onChange={(e) => {
-                      setFieldValue('year', e.target.value);
-                      handleDateChange(e, values);
-                    }}
-                  >
-                    <option value="" disabled>
-                      Choose
-                    </option>
-                    {yearSelections.map((year, index) => (
-                      <option key={index} value={year}>
-                        {year}
-                      </option>
-                    ))}
-                  </Field>
-                  <Field
-                    as={Select}
-                    label="Month"
-                    name="month"
-                    classes="md:w-1/3 md:mr-4 mt-2 md:mt-0"
-                    onChange={(e) => {
-                      setFieldValue('month', e.target.value);
-                      handleDateChange(e, values);
-                    }}
-                  >
-                    <option value="">Choose</option>
-                    {months.map((month, index) => (
-                      <option key={index} value={index + 1}>
-                        {month}
-                      </option>
-                    ))}
-                  </Field>
-                  <Field
-                    as={Select}
-                    label="Day"
-                    name="day"
-                    classes="md:w-1/3 mt-2 md:mt-0"
-                  >
-                    <option value="">Choose</option>
-                    {days.map((day, index) => (
-                      <option key={index} value={day + 1}>
-                        {day + 1}
-                      </option>
-                    ))}
-                  </Field>
-                </div>
-                <div className="form-row">
-                  <Field
-                    data-cy="selectGeographies"
-                    as={Select}
-                    label="Geography/Country"
-                    name="geography_id"
-                    required
-                  >
-                    <option>Choose a geography</option>
-                    {/* TODO - implement input box with suggestions as in prototype */}
-                    {geographies.map((geo: Geography) => (
-                      <option
-                        key={`geo${geo.geography_id}`}
-                        value={geo.geography_id}
-                      >
-                        {geo.english_shortname}
-                      </option>
-                    ))}
-                  </Field>
-                </div>
-                <div className="form-row">
-                  <Field
-                    data-cy="selectActionType"
-                    as={Select}
-                    label="Action type"
-                    name="type_id"
-                    required
-                  >
-                    <option>Choose an action type</option>
-                    {actionTypes.map((type: ActionType) => (
-                      <option
-                        key={`type${type.action_type_id}`}
-                        value={type.action_type_id}
-                      >
-                        {type.type_name}
-                      </option>
-                    ))}
-                  </Field>
-                </div>
-                <div className="form-row">
-                  <h3>Documents</h3>
-                  <div className="mt-4">
-                    {errors.documents && touched.documents ? (
-                      <p className="error text-red-500 mb-4">
-                        {errors.documents}
-                      </p>
-                    ) : null}
-
-                    {values.documents.length > 0 ? (
-                      <ol
-                        data-cy="document-list"
-                        className="mb-4 list-decimal list-inside text-left"
-                        role="list"
-                      >
-                        {values.documents.map((document, index) => (
-                          <li key={index} className="my-2">
-                            <span className="">{document.name}</span>
-                          </li>
-                        ))}
-                      </ol>
-                    ) : (
-                      <p className="mb-4">No documents added.</p>
-                    )}
-                  </div>
-                  <Button
-                    data-cy="add-doc-modal"
-                    type="submit"
-                    onClick={(e) => {
-                      e.preventDefault();
-                      window.scrollTo(0, 0);
-                      setPopupActive(true);
-                    }}
-                  >
-                    Add a document
-                  </Button>
-                </div>
-                <div className="my-4 flex border-t pt-8 mt-10 border-gray-300">
-                  <Button
-                    data-cy="submit-add-action-form"
-                    type="submit"
-                    color="dark"
-                    disabled={isSubmitting}
-                  >
-                    Submit Action
-                  </Button>
-                </div>
-              </Form>
-            </>
+          {message.length > 0 && (
+            <p
+              data-cy="message"
+              className="mt-4 font-bold text-xl text-green-500"
+            >
+              {message}
+            </p>
           )}
-        </Formik>
-      </div>
+
+          <Formik
+            initialValues={initialValues}
+            validationSchema={Yup.object({
+              source_id: Yup.string().required(
+                t('addAction.Please select a source.', { ns: 'formErrors' })
+              ),
+              name: Yup.string().required(t('Required', { ns: 'formErrors' })),
+              year: Yup.string().required(t('Year', { ns: 'formErrors' })),
+              geography_id: Yup.string().required(
+                t('addAction.Please select a geography.', { ns: 'formErrors' })
+              ),
+              type_id: Yup.string().required(
+                t('addAction.Please select an action type.', {
+                  ns: 'formErrors',
+                })
+              ),
+              documents: Yup.array().min(
+                1,
+                t('addAction.You must add at least one document.', {
+                  ns: 'formErrors',
+                })
+              ),
+            })}
+            onSubmit={(values, { setSubmitting, resetForm }) => {
+              submitForm(values, resetForm);
+            }}
+          >
+            {({
+              values,
+              errors,
+              touched,
+              handleSubmit,
+              isSubmitting,
+              setFieldValue,
+            }) => (
+              <>
+                <Popup
+                  active={popupActive}
+                  onClick={() => {
+                    setPopupActive(false);
+                  }}
+                >
+                  <AddDocument
+                    setPopupActive={setPopupActive}
+                    days={days}
+                    handleDateChange={handleDateChange}
+                    yearSelections={yearSelections}
+                    year={values.year}
+                    month={values.month}
+                    day={values.day}
+                    languages={languages}
+                    active={popupActive}
+                  />
+                </Popup>
+                <Form
+                  data-cy="add-action-form"
+                  className="lg:w-2/3 pointer-events-auto"
+                >
+                  <div className="form-row">
+                    <Field
+                      as={Select}
+                      data-cy="selectSource"
+                      label={t('form.Source')}
+                      name="source_id"
+                      required
+                    >
+                      <option>{t('form.Choose a source')}</option>
+                      {sources.map((source, index) => (
+                        <option key={`source${index}`} value={source.source_id}>
+                          {source.name}
+                        </option>
+                      ))}
+                    </Field>
+                  </div>
+                  <div className="form-row">
+                    <TextInput
+                      label={t('form.Action name')}
+                      name="name"
+                      type="text"
+                      required
+                    />
+                  </div>
+                  <div className="form-row">
+                    <TextArea
+                      label={t('form.Description')}
+                      name="description"
+                      type="text"
+                    />
+                  </div>
+                  <div className="form-row md:flex items-start">
+                    <Field
+                      as={Select}
+                      label={t('Year', { ns: 'common' })}
+                      name="year"
+                      classes="md:w-1/3 md:mr-4"
+                      required
+                      onChange={(e) => {
+                        setFieldValue('year', e.target.value);
+                        handleDateChange(e, values);
+                      }}
+                    >
+                      <option value="" disabled>
+                        {t('Choose', { ns: 'common' })}
+                      </option>
+                      {yearSelections.map((year, index) => (
+                        <option key={index} value={year}>
+                          {year}
+                        </option>
+                      ))}
+                    </Field>
+                    <Field
+                      as={Select}
+                      label={t('Month', { ns: 'common' })}
+                      name="month"
+                      classes="md:w-1/3 md:mr-4 mt-2 md:mt-0"
+                      onChange={(e) => {
+                        setFieldValue('month', e.target.value);
+                        handleDateChange(e, values);
+                      }}
+                    >
+                      <option value="">{t('Choose', { ns: 'common' })}</option>
+                      {months.map((month, index) => (
+                        <option key={index} value={index + 1}>
+                          {month}
+                        </option>
+                      ))}
+                    </Field>
+                    <Field
+                      as={Select}
+                      label={t('Day', { ns: 'common' })}
+                      name="day"
+                      classes="md:w-1/3 mt-2 md:mt-0"
+                    >
+                      <option value="">{t('Choose', { ns: 'common' })}</option>
+                      {days.map((day, index) => (
+                        <option key={index} value={day + 1}>
+                          {day + 1}
+                        </option>
+                      ))}
+                    </Field>
+                  </div>
+                  <div className="form-row">
+                    <Field
+                      data-cy="selectGeographies"
+                      as={Select}
+                      label={t('form.Geography/Country')}
+                      name="geography_id"
+                      required
+                    >
+                      <option>{t('form.Choose a geography')}</option>
+                      {/* TODO - implement input box with suggestions as in prototype */}
+                      {geographies.map((geo: Geography) => (
+                        <option
+                          key={`geo${geo.geography_id}`}
+                          value={geo.geography_id}
+                        >
+                          {geo.english_shortname}
+                        </option>
+                      ))}
+                    </Field>
+                  </div>
+                  <div className="form-row">
+                    <Field
+                      data-cy="selectActionType"
+                      as={Select}
+                      label={t('form.Action type')}
+                      name="type_id"
+                      required
+                    >
+                      <option>{t('form.Choose an action type')}</option>
+                      {actionTypes.map((type: ActionType) => (
+                        <option
+                          key={`type${type.action_type_id}`}
+                          value={type.action_type_id}
+                        >
+                          {type.type_name}
+                        </option>
+                      ))}
+                    </Field>
+                  </div>
+                  <div className="form-row">
+                    <h3>{t('form.Documents')}</h3>
+                    <div className="mt-4">
+                      {errors.documents && touched.documents ? (
+                        <p className="error text-red-500 mb-4">
+                          {errors.documents}
+                        </p>
+                      ) : null}
+
+                      {values.documents.length > 0 ? (
+                        <ol
+                          data-cy="document-list"
+                          className="mb-4 list-decimal list-inside text-left"
+                          role="list"
+                        >
+                          {values.documents.map((document, index) => (
+                            <li key={index} className="my-2">
+                              <span className="">{document.name}</span>
+                            </li>
+                          ))}
+                        </ol>
+                      ) : (
+                        <p className="mb-4">{t('form.No documents added.')}</p>
+                      )}
+                    </div>
+                    <Button
+                      data-cy="add-doc-modal"
+                      type="submit"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        window.scrollTo(0, 0);
+                        setPopupActive(true);
+                      }}
+                    >
+                      {t('form.Add Document')}
+                    </Button>
+                  </div>
+                  <div className="my-4 flex border-t pt-8 mt-10 border-gray-300">
+                    <Button
+                      data-cy="submit-add-action-form"
+                      type="submit"
+                      color="dark"
+                      disabled={isSubmitting}
+                    >
+                      {t('form.Submit Action')}
+                    </Button>
+                  </div>
+                </Form>
+              </>
+            )}
+          </Formik>
+        </div>
+      )}
     </>
   );
 };

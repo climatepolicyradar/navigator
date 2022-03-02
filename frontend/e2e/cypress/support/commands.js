@@ -25,6 +25,7 @@
 // Cypress.Commands.overwrite('visit', (originalFn, url, options) => { ... })
 
 import 'cypress-file-upload';
+import 'cypress-pseudo-localization';
 
 Cypress.Commands.add('login', () => {
   cy.request({
@@ -79,9 +80,58 @@ Cypress.Commands.add('get_lookups', () => {
 });
 
 Cypress.Commands.add('check_mobile_width', () => {
-  // smallest mobile width (320) including a scrollbar (335)
+  // This ensures page content is not too wide for screen size
+
+  // test with pseudo localisation (possibly longer words)
+  cy.pseudoLocalize();
+  cy.log('Pseudo localise');
+
+  // Smallest mobile width (320) including a scrollbar (335)
   cy.viewport(335, 600);
   // should scroll horizontally if elements too wide
   cy.scrollTo(1000, 0);
   cy.window().its('scrollX').should('equal', 0);
+  cy.stopPseudoLocalize;
+});
+
+Cypress.Commands.add('is_not_in_viewport', (element) => {
+  cy.get(element).then(($el) => {
+    const bottom = Cypress.$(cy.state('window')).height();
+    const rect = $el[0].getBoundingClientRect();
+
+    expect(rect.top).to.be.greaterThan(bottom);
+    expect(rect.bottom).to.be.greaterThan(bottom);
+    expect(rect.top).to.be.greaterThan(bottom);
+    expect(rect.bottom).to.be.greaterThan(bottom);
+  });
+});
+
+Cypress.Commands.add('is_in_viewport', (element) => {
+  cy.get(element).then(($el) => {
+    const bottom = Cypress.$(cy.state('window')).height();
+    const rect = $el[0].getBoundingClientRect();
+
+    expect(rect.top).not.to.be.greaterThan(bottom);
+    expect(rect.bottom).not.to.be.greaterThan(bottom);
+    expect(rect.top).not.to.be.greaterThan(bottom);
+    expect(rect.bottom).not.to.be.greaterThan(bottom);
+  });
+});
+
+Cypress.Commands.add('check_localisation', (page = '') => {
+  cy.visit(`http://localhost:3000/${page}`);
+  cy.get('[data-cy="banner-title"] span')
+    .invoke('text')
+    .then((titleEnglish) => {
+      cy.visit(`http://localhost:3000/fr/${page}`);
+      cy.get('[data-cy="banner-title"] span')
+        .invoke('text')
+        .should((titleFrench) => {
+          expect(titleFrench).not.to.eq(titleEnglish);
+        });
+    });
+  cy.visit(`http://localhost:3000/${page}`);
+  cy.pseudoLocalize();
+  cy.log('Pseudo localise');
+  cy.stopPseudoLocalize;
 });

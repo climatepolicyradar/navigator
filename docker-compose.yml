@@ -23,8 +23,8 @@ services:
 
   backend:
     build:
-      context: backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     command: python app/main.py
     tty: true
     volumes:
@@ -38,8 +38,25 @@ services:
     depends_on:
       - "postgres"
 
+  loader:
+    build:
+      context: loader
+      dockerfile: Dockerfile
+    command: python app/main.py
+    tty: true
+    volumes:
+      - ./loader:/app/:cached
+    environment:
+      PYTHONPATH: .
+      DATA_DIR: /app/data
+      ENV: production
+    env_file:
+      - .env
+    depends_on:
+      - backend
+
   frontend:
-#    user: node
+    #    user: node
     build:
       context: ./frontend
       dockerfile: Dockerfile

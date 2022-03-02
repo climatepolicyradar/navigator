@@ -1,14 +1,13 @@
-from datetime import datetime
-
 import requests
+from datetime import datetime
 from fastapi import APIRouter, Request, Depends, HTTPException
 
 from app.core.auth import get_current_active_user
 from app.db.session import get_db
 from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
 from app.db.crud import create_action, create_document
-from app.core.aws import get_s3_client, S3Document
-from app.log import get_logger
+from navigator.core.aws import get_s3_client, S3Document
+from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
 
@@ -37,7 +36,7 @@ async def action_create(
 
     for document in action.documents:
         if document.source_url:
-            response = requests.get(document.source_url)
+            response = requests.head(document.source_url, allow_redirects=True)
             if all(
                 [
                     c not in response.headers.get("content-type")
@@ -70,7 +69,11 @@ async def action_create(
         documents=action.documents,
     )
 
-    db_action = create_action(db, action_create)
+    try:
+        db_action = create_action(db, action_create)
+    except Exception as e:
+        logger.error(e)
+        raise e
 
     for idx, document in enumerate(action.documents):
         # Move document to cpr-document-store bucket
