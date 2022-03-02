@@ -23,8 +23,8 @@ services:
 
   backend:
     build:
-      context: backend
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: backend/Dockerfile
     command: python app/main.py
     tty: true
     volumes:

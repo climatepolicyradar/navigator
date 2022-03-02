@@ -3,11 +3,11 @@ from datetime import datetime
 from fastapi import APIRouter, Request, Depends, HTTPException
 
 from app.core.auth import get_current_active_user
-from app.core.aws import get_s3_client, S3Document
-from app.db.crud import create_action, create_document
-from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
 from app.db.session import get_db
-from app.log import get_logger
+from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
+from app.db.crud import create_action, create_document
+from navigator.core.aws import get_s3_client, S3Document
+from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
 
@@ -16,11 +16,11 @@ actions_router = r = APIRouter()
 
 @r.post("/action", response_model=ActionBase)
 async def action_create(
-        request: Request,
-        action: ActionBase,
-        db=Depends(get_db),
-        s3_client=Depends(get_s3_client),
-        current_user=Depends(get_current_active_user),
+    request: Request,
+    action: ActionBase,
+    db=Depends(get_db),
+    s3_client=Depends(get_s3_client),
+    current_user=Depends(get_current_active_user),
 ) -> ActionBase:
     """Add an action and its associated documents to the databases."""
 
@@ -38,10 +38,10 @@ async def action_create(
         if document.source_url:
             response = requests.head(document.source_url, allow_redirects=True)
             if all(
-                    [
-                        c not in response.headers.get("content-type")
-                        for c in ("application/pdf", "text/html")
-                    ]
+                [
+                    c not in response.headers.get("content-type")
+                    for c in ("application/pdf", "text/html")
+                ]
             ):
                 invalid_urls.append(document.source_url)
 

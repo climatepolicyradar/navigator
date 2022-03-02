@@ -3,8 +3,9 @@ import os
 import re
 import typing as t
 from botocore.exceptions import ClientError
+from botocore.response import StreamingBody
 
-from app.log import get_logger
+from .log import get_logger
 
 logger = get_logger(__name__)
 
@@ -48,7 +49,7 @@ class S3Client:
         )
 
     def upload_fileobj(
-            self, fileobj: t.BinaryIO, bucket: str, key: str
+        self, fileobj: t.BinaryIO, bucket: str, key: str
     ) -> t.Union[S3Document, bool]:
         """Upload a file object to an S3 bucket.
 
@@ -70,7 +71,7 @@ class S3Client:
         return S3Document(bucket, os.getenv("AWS_REGION"), key)
 
     def upload_file(
-            self, file_name: str, bucket: str, key: t.Optional[str] = None
+        self, file_name: str, bucket: str, key: t.Optional[str] = None
     ) -> t.Union[S3Document, bool]:
         """Upload a file to an S3 bucket by providing its filename.
 
@@ -97,7 +98,7 @@ class S3Client:
         return S3Document(bucket, os.getenv("AWS_REGION"), key)
 
     def copy_document(
-            self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
+        self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
     ) -> S3Document:
         """Copy a document from one bucket and key to another bucket, and optionally a new key.
 
@@ -130,7 +131,7 @@ class S3Client:
         self.client.delete_object(Bucket=s3_document.bucket_name, Key=s3_document.key)
 
     def move_document(
-            self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
+        self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
     ) -> S3Document:
         """Move a document from one bucket and key to another bucket, and optionally a new key.
 
@@ -151,6 +152,73 @@ class S3Client:
         return S3Document(
             new_bucket, os.getenv("AWS_REGION"), new_key or s3_document.key
         )
+
+    def list_files(
+        self, bucket: str, max_keys=1000
+    ) -> t.Union[t.Generator[S3Document, None, None], bool]:
+        """Yields the documents contained in a bucket on S3
+
+        Calls the s3 list_objects_v2 function to return all the keys in a given s3 bucket.
+        The argument max_keys can be used to control how many keys are returned in each
+        call made to s3. This function will always yield all keys in the bucket.
+
+        Args:
+            bucket (str): name of the bucket in which the files will be listed.
+            max_keys (int): maximum number of s3 keys to return on each request made to s3.
+
+        Returns:
+            False if the operation was unsuccessful.
+
+        Yields:
+            S3Document: representing each document.
+        """
+
+        is_truncated = True
+        next_continuation_token = None
+        try:
+            while is_truncated:
+                # Include a continuation token in the arguments to boto3 list_objects_v2
+                # if we want to continue listing files from the last call
+
+                kwargs = {"Bucket": bucket, "MaxKeys": max_keys}
+                if next_continuation_token:
+                    kwargs["ContinuationToken"] = next_continuation_token
+
+                response = self.client.list_objects_v2(**kwargs)
+
+                for s3_file in response.get("Contents", []):
+                    yield S3Document(bucket, os.getenv("AWS_REGION"), s3_file["Key"])
+
+                # Find out whether request was truncated and get continuation token
+                is_truncated = response.get("IsTruncated", False)
+                next_continuation_token = response.get("NextContinuationToken", None)
+
+        except ClientError as e:
+            logger.error(e)
+
+            return False
+
+    def download_file(self, s3_document: S3Document) -> StreamingBody:
+        """Downloads a file from S3
+
+        Args:
+            s3_document (S3Document): s3 document to retrieve
+
+        Returns:
+            Streaming file object
+        """
+
+        try:
+            response = self.client.get_object(
+                Bucket=s3_document.bucket_name, Key=s3_document.key
+            )
+
+            return response["Body"]
+
+        except ClientError as e:
+            logger.error(e)
+
+            return False
 
 
 def get_s3_client():

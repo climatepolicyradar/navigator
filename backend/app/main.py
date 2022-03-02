@@ -14,7 +14,7 @@ from app.api.api_v1.routers.users import users_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.db.session import SessionLocal
-from app.log import get_logger
+from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
 
@@ -88,7 +88,7 @@ async def integrityerror_handler(request: Request, exc: Exception):
     TODO map specific errors.
     """
     msg = str(exc)
-    if hasattr(exc, 'message'):
+    if hasattr(exc, "message"):
         msg = exc.message
 
     status = 500

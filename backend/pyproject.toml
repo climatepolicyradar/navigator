@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "navigator"
+name = "navigator_backend"
 version = "0.1.0"
 description = ""
 authors = ["chrisaballard <chris@climatepolicyradar.org>", "kalyandutia <kalyan@climatepolicyradar.org>", "paulahightower <paula@climatepolicyradar.org>"]
@@ -9,7 +9,6 @@ python = "^3.8"
 alembic = "^1.7.6"
 Authlib = "^0.15.5"
 bcrypt = "^3.2.0"
-boto3 = "^1.21.2"
 fastapi = "^0.74.0"
 httpx = "^0.22.0"
 itsdangerous = "^2.1.0"
@@ -21,6 +20,7 @@ python-multipart = "^0.0.5"
 SQLAlchemy = "^1.4.31"
 SQLAlchemy-Utils = "^0.38.2"
 uvicorn = "^0.17.5"
+navigator = {path = "../common", develop = true }
 
 [tool.poetry.dev-dependencies]
 moto = { version = "^3.0.3", extras = ["s3"] }

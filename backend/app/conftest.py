@@ -7,10 +7,10 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database, drop_database
 
+from navigator.core.aws import get_s3_client, S3Client
 from app.core import config, security
-from app.core.aws import get_s3_client, S3Client
-from app.db import models
 from app.db.session import Base, get_db
+from app.db import models
 from app.main import app
 
 
@@ -165,7 +165,7 @@ def verify_password_mock(first: str, second: str) -> bool:
 
 @pytest.fixture
 def user_token_headers(
-        client: TestClient, test_user, test_password, monkeypatch
+    client: TestClient, test_user, test_password, monkeypatch
 ) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
 
@@ -182,7 +182,7 @@ def user_token_headers(
 
 @pytest.fixture
 def superuser_token_headers(
-        client: TestClient, test_superuser, test_password, monkeypatch
+    client: TestClient, test_superuser, test_password, monkeypatch
 ) -> t.Dict[str, str]:
     monkeypatch.setattr(security, "verify_password", verify_password_mock)
 
