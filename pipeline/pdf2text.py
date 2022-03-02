@@ -10,9 +10,6 @@ from collections import namedtuple
 from typing import TextIO, Generator, Tuple
 
 
-# def process(
-#    pdf_dir: Path, data_dir: Path, out_dir: Path, save_json: bool, save_text: bool
-# ):
 from tqdm import tqdm
 
 from navigator.core.aws import S3Client
