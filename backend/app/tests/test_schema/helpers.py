@@ -32,12 +32,16 @@ class PytestHelpers:  # noqa: D101
             f"alembic upgrade {migration_id}"
         )
         out = check_output(cmd, shell=True, stderr=STDOUT, cwd=cwd).decode("utf-8")
-        print(f"""--- Alembic upgrade ---
+        print(
+            f"""--- Alembic upgrade ---
         |CWD: {cwd}
         |CMD: {cmd}
         |STDOUT:
         |{out}
-        """.replace("        |", ""))
+        """.replace(
+                "        |", ""
+            )
+        )
         return out
 
     def get_schema_str(self) -> str:
@@ -82,9 +86,7 @@ class PytestHelpers:  # noqa: D101
     @staticmethod
     def _split_and_filter(a):
         lines_a = [
-            l
-            for l in a.replace(",", "").splitlines()
-            if l not in _incomparable_lines
+            l for l in a.replace(",", "").splitlines() if l not in _incomparable_lines
         ]
         set_a = set(lines_a)
         return lines_a, set_a
@@ -115,9 +117,7 @@ class PytestHelpers:  # noqa: D101
 def clean_tables(session, exclude, sqlalchemy_base):
     """Clean (aka: truncate) table.  SQLAlchemy models listed in exclude will be skipped."""
     non_static_tables = [
-        t
-        for t in reversed(sqlalchemy_base.metadata.sorted_tables)
-        if t not in exclude
+        t for t in reversed(sqlalchemy_base.metadata.sorted_tables) if t not in exclude
     ]
     for table in non_static_tables:
         # "DELETE FROM $table" is quicker than TRUNCATE for small tables

@@ -37,6 +37,8 @@ services:
       - .env
     depends_on:
       - "postgres"
+    ports:
+      - "8888:8888"
 
   loader:
     build:

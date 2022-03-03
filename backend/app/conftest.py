@@ -8,8 +8,8 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import database_exists, create_database, drop_database
 
+import app.db.models.user
 from app.core import config, security
-from app.db import models
 from app.db.session import Base, get_db
 from app.main import app
 from navigator.core.aws import get_s3_client, S3Client
@@ -133,10 +133,10 @@ def get_password_hash() -> str:
 
 
 @pytest.fixture
-def test_user(test_db) -> models.User:
+def test_user(test_db) -> app.db.models.user.User:
     """Make a test user in the database"""
 
-    user = models.User(
+    user = app.db.models.user.User(
         email="fake@email.com",
         hashed_password=get_password_hash(),
         is_active=True,
@@ -147,10 +147,10 @@ def test_user(test_db) -> models.User:
 
 
 @pytest.fixture
-def test_superuser(test_db) -> models.User:
+def test_superuser(test_db) -> app.db.models.user.User:
     """Superuser for testing"""
 
-    user = models.User(
+    user = app.db.models.user.User(
         email="fakeadmin@email.com",
         hashed_password=get_password_hash(),
         is_superuser=True,

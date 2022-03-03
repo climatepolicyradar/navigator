@@ -1,9 +1,9 @@
 from fastapi import APIRouter, Request, Depends
 
+import app.db.models.lookups
+from app.core.auth import get_current_active_user
 from app.db import models
 from app.db.session import Base, get_db, SessionLocal
-from app.core.auth import get_current_active_user
-
 
 lookups_router = r = APIRouter()
 
@@ -30,7 +30,7 @@ def lookup_geographies(
     current_user=Depends(get_current_active_user),
 ):
     """Get list of geographies and associated metadata."""
-    return table_to_json(table=models.Geography, db=db)
+    return table_to_json(table=app.db.models.lookups.Geography, db=db)
 
 
 @r.get(
@@ -44,7 +44,7 @@ def lookup_languages(
     """Get list of languages and associated metadata."""
     return [
         item
-        for item in table_to_json(table=models.Language, db=db)
+        for item in table_to_json(table=app.db.models.lookups.Language, db=db)
         if item["part1_code"] is not None
     ]
 
@@ -58,7 +58,7 @@ def lookup_action_types(
     current_user=Depends(get_current_active_user),
 ):
     """Get list of action types and associated metadata."""
-    return table_to_json(table=models.ActionType, db=db)
+    return table_to_json(table=app.db.models.lookups.ActionType, db=db)
 
 
 @r.get(

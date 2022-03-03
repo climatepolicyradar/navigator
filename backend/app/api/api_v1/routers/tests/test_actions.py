@@ -3,20 +3,25 @@ from unittest.mock import patch
 
 import pytest
 
+import app.db.models.action
+import app.db.models.document
+import app.db.models.lookups
 from app.db import models
-from app.db.models import DocumentInvalidReason
+from app.db.models.document import DocumentInvalidReason
 
 
 @pytest.fixture
 def ensure_lookups(test_db):
     # ensure geography_id 1
-    test_db.add(models.Geography(country_code="foo", english_shortname="foo"))
+    test_db.add(
+        app.db.models.lookups.Geography(country_code="foo", english_shortname="foo")
+    )
     # ensure action_type_id 1
-    test_db.add(models.ActionType(type_name="foo"))
+    test_db.add(app.db.models.lookups.ActionType(type_name="foo"))
     # ensure source_id 1
     test_db.add(models.Source(name="foo"))
     # ensure language_id 1
-    test_db.add(models.Language(language_code="foo"))
+    test_db.add(app.db.models.lookups.Language(language_code="foo"))
 
     test_db.flush()
 
@@ -72,19 +77,24 @@ def test_post_action(
     assert store_bucket_contents[0].get("Key") == "test_document.pdf"
 
     # Action table contains one action, with the name 'test action'
-    assert len(test_db.query(models.Action).all()) == 1
-    assert test_db.query(models.Action).all()[0].name == "test action"
+    assert len(test_db.query(app.db.models.action.Action).all()) == 1
+    assert test_db.query(app.db.models.action.Action).all()[0].name == "test action"
 
     # Document table contains a document with the correct properties
-    assert test_db.query(models.Document).all()[0].name == "test document 1"
-    assert test_db.query(models.Document).all()[0].source_url is None
-    assert test_db.query(models.Document).all()[0].language_id == 1
     assert (
-        test_db.query(models.Document).all()[0].s3_url
+        test_db.query(app.db.models.document.Document).all()[0].name
+        == "test document 1"
+    )
+    assert test_db.query(app.db.models.document.Document).all()[0].source_url is None
+    assert test_db.query(app.db.models.document.Document).all()[0].language_id == 1
+    assert (
+        test_db.query(app.db.models.document.Document).all()[0].s3_url
         == f"https://{s3_document_bucket_names['store']}.s3.eu-west-2.amazonaws.com/test_document.pdf"
     )
-    assert test_db.query(models.Document).all()[0].is_valid
-    assert test_db.query(models.Document).all()[0].invalid_reason is None
+    assert test_db.query(app.db.models.document.Document).all()[0].is_valid
+    assert (
+        test_db.query(app.db.models.document.Document).all()[0].invalid_reason is None
+    )
     mock_get_document_validity.assert_not_called()
 
 
@@ -143,8 +153,10 @@ def test_null_values(
         ],
     }
 
-    assert test_db.query(models.Document).all()[0].is_valid
-    assert test_db.query(models.Document).all()[0].invalid_reason is None
+    assert test_db.query(app.db.models.document.Document).all()[0].is_valid
+    assert (
+        test_db.query(app.db.models.document.Document).all()[0].invalid_reason is None
+    )
     mock_get_document_validity.assert_called_once_with("https://valid.com/")
 
 
@@ -205,9 +217,9 @@ def test_unsupported_mime_type(
         ],
     }
 
-    assert not test_db.query(models.Document).all()[0].is_valid
+    assert not test_db.query(app.db.models.document.Document).all()[0].is_valid
     assert (
-        test_db.query(models.Document).all()[0].invalid_reason
+        test_db.query(app.db.models.document.Document).all()[0].invalid_reason
         == DocumentInvalidReason.unsupported_content_type
     )
     mock_get_document_validity.assert_called_once_with("https://invalid.com")
