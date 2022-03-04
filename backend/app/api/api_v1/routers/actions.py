@@ -5,9 +5,11 @@ from typing import Optional, List
 
 import httpx
 from fastapi import APIRouter, Request, Depends, HTTPException
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
 
 from app.core.auth import get_current_active_user
-from app.db.crud.action import create_action, is_action_exists, get_actions
+from app.db.crud.action import create_action, is_action_exists, get_actions_query
 from app.db.crud.document import create_document
 from app.db.models.document import DocumentInvalidReason
 from app.db.schemas.action import ActionCreate, ActionInDB
@@ -22,15 +24,13 @@ actions_router = r = APIRouter()
 
 @r.get(
     "/actions",
-    response_model=List[ActionInDB],
+    response_model=Page[ActionInDB],
     response_model_exclude_none=True,
 )
 async def action_list(
     db=Depends(get_db),
 ) -> List[ActionInDB]:
-    actions = get_actions(db)
-    # TODO response to include pagination data
-    return actions
+    return paginate(get_actions_query(db))
 
 
 @r.post("/actions", response_model=ActionInDB)

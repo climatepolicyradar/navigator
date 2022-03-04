@@ -10,6 +10,7 @@ alembic = "^1.7.6"
 Authlib = "^0.15.5"
 bcrypt = "^3.2.0"
 fastapi = "^0.74.0"
+fastapi-pagination = { extras = ["sqlalchemy"], version = "^0.9.1" }
 httpx = "^0.22.0"
 itsdangerous = "^2.1.0"
 navigator = { path = "../common", develop = true }

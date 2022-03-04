@@ -1,8 +1,7 @@
 import datetime
-from typing import List
 
 from sqlalchemy import exists
-from sqlalchemy.orm import Session, joinedload
+from sqlalchemy.orm import Session, joinedload, Query
 
 import app.db.models.action
 import app.db.schemas.action
@@ -48,13 +47,9 @@ def is_action_exists(
     ).scalar()
 
 
-def get_actions(
-    db: Session, skip: int = 0, limit: int = 100
-) -> List[app.db.models.action.Action]:
-    return (
-        db.query(app.db.models.action.Action)
-        .offset(skip)
-        .limit(limit)
-        .options(joinedload(app.db.models.action.Action.documents))
-        .all()
+def get_actions_query(
+    db: Session,
+) -> Query:
+    return db.query(app.db.models.action.Action).options(
+        joinedload(app.db.models.action.Action.documents)
     )
