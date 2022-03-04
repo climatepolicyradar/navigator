@@ -27,6 +27,12 @@ For more information see
 alembic revision --autogenerate -m "[revision message]"
 ```
 
+More specifically
+
+```
+PYTHONPATH=. DATABASE_URL=postgresql://navigator:password@localhost:5432/navigator alembic revision --autogenerate -m "[revision message]"
+```
+
 ## Docker dev environment
 
 ```

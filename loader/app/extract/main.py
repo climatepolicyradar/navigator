@@ -29,6 +29,9 @@ def extract(data_dir: PathLike) -> DataFrame:
             csv_file = os.path.join(root, file)
             break
 
+    if not csv_file:
+        raise Exception(f"CSV not found at path {data_dir}")
+
     cclw_policy_fe_df = pd.read_csv(
         csv_file,
         usecols=policy_fe_column_map.keys(),

@@ -18,7 +18,6 @@ repos:
     rev: 6.1.1
     hooks:
       - id: pydocstyle
-        args:
-        - --ignore=D100,D103,D104,D107,D202,D203,D213,D400,D401,D406,D407,D413,D415
+        additional_dependencies: [ "toml" ]
 
 # TODO isort, bandit, safety, mypy

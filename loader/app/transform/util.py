@@ -1,9 +1,17 @@
-import datetime as dt
+import logging
 import re
+from datetime import datetime
+from typing import Tuple, List, Optional
 
 from dateutil.parser import parse
 
-DEFAULT_POLICY_DATE = dt.date(1900, 1, 1)
+from app.mapping import CCLWActionType
+from app.model import Key, Doc, PolicyData
+from app.transform.datafixes import get_missing_date
+
+DEFAULT_POLICY_DATE = datetime(1900, 1, 1)
+
+logger = logging.getLogger(__file__)
 
 
 def clean_url(url):
@@ -39,45 +47,67 @@ def split_and_merge_urls(doc_urls, sep):
     return merged_doc_urls
 
 
-def get_urls(dataframe, policy_id=None, sep=';', sub_sep=None, url_sep=','):
-    country_code = dataframe['country_code']
+def get_policy_data(dataframe, sep=';', sub_sep=None, url_sep=',') -> Optional[Tuple[Key, PolicyData]]:
     policy_name = dataframe['policy_name']
-    doc_list = dataframe['document_list']
-    description = dataframe['policy_description']
+    country_code = dataframe['country_code']
+    policy_type = CCLWActionType[dataframe["policy_type"]].value
 
-    docs = []
+    policy_date: Optional[datetime] = extract_date(dataframe["events"])
+    if not policy_date:
+        policy_date = get_missing_date(policy_name, country_code)
+    if not policy_date:
+        logger.warning(
+            f"Found no date for policy policy_name={policy_name}, policy_type={policy_type}, country_code={country_code}")
+        return
+
+    key = Key(
+        policy_date=policy_date,
+        country_code=country_code,
+        policy_name=policy_name,
+        policy_type=policy_type,
+    )
+
+    doc_list = dataframe['document_list']
+
     if type(doc_list) == str:
+        docs: List[Doc] = []
         for u in doc_list.split(sep):
             if sub_sep is not None:
                 u_info = u.split(sub_sep)
                 doc_name = u_info[0]
-                doc_url = clean_url(u_info[1])
+                doc_urls = clean_url(u_info[1])
                 # Now try splitting on commas as sometimes there are multiple urls separated by commas
-                doc_url = split_and_merge_urls(doc_url, url_sep)
+                doc_urls = split_and_merge_urls(doc_urls, url_sep)
                 doc_language = u_info[2] if len(u_info[2]) > 0 else None
             else:
                 doc_name = ''
-                doc_url = split_and_merge_urls(u, url_sep)
+                doc_urls = split_and_merge_urls(u, url_sep)
                 doc_language = None
 
             # Now iterate through the urls for this document and add all the urls we have found
-            for u in doc_url:
-                # Add encoded url
-                doc = {}
-                doc['policy_id'] = policy_id
-                doc['country_code'] = country_code
-                doc['policy_name'] = policy_name
-                doc['doc_name'] = doc_name
-                doc['language'] = doc_language
-                doc['doc_url'] = u
-                doc['description'] = description
-                doc["events"] = dataframe["events"]
-                doc["policy_type"] = dataframe["policy_type"]
+            for doc_url in doc_urls:
+                doc = Doc(
+                    doc_name=doc_name,
+                    doc_language=doc_language,
+                    doc_url=ensure_safe(doc_url),
+                )
                 docs.append(doc)
-    return docs
+
+        if docs:
+            data = PolicyData(
+                policy_date=policy_date,
+                country_code=country_code,
+                policy_name=policy_name,
+                policy_type=policy_type,
+                policy_description=dataframe["policy_description"],
+                docs=docs,
+            )
+            return key, data
+        else:
+            logger.warning(f"Found no docs for policy {key}")
 
 
-def extract_date(val: str):
+def extract_date(val: Optional[str]) -> Optional[datetime]:
     if not val or not isinstance(val, str):
         return None
     date_str = val.split('|')[0]
@@ -85,3 +115,14 @@ def extract_date(val: str):
         date = parse(date_str)
         return date
     return DEFAULT_POLICY_DATE
+
+
+def ensure_safe(url: str) -> str:
+    """Ensure a URL is safe.
+
+    Some documents use http, not https. Instead of just ignoring those,
+    we'll try download a doc securely, if possible.
+    """
+    if "https://" not in url:
+        url = url.replace("http://", "https://")
+    return url
