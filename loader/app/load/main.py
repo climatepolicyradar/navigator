@@ -84,7 +84,6 @@ def load(policies: PolicyLookup):
                     logger.error(
                         f"Error importing action and document(s) for policy={policy_data}, error={message}"
                     )
-                    return
 
     logger.info(
         f"Done, {imported_count} policies imported out of {len(policies.items())} total"
