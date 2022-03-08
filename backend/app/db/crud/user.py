@@ -4,39 +4,31 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-import app.db.models.user
+from app.db.models.user import User
 import app.db.schemas.user
 from app.core.security import get_password_hash
 
 
 def get_user(db: Session, user_id: int):
-    user = (
-        db.query(app.db.models.user.User)
-        .filter(app.db.models.user.User.id == user_id)
-        .first()
-    )
+    user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
 def get_user_by_email(db: Session, email: str) -> app.db.schemas.user.UserBase:
-    return (
-        db.query(app.db.models.user.User)
-        .filter(app.db.models.user.User.email == email)
-        .first()
-    )
+    return db.query(User).filter(User.email == email).first()
 
 
 def get_users(
     db: Session, skip: int = 0, limit: int = 100
 ) -> t.List[app.db.schemas.user.UserOut]:
-    return db.query(app.db.models.user.User).offset(skip).limit(limit).all()
+    return db.query(User).offset(skip).limit(limit).all()
 
 
 def create_user(db: Session, user: app.db.schemas.user.UserCreate):
     hashed_password = get_password_hash(user.password)
-    db_user = app.db.models.user.User(
+    db_user = User(
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,

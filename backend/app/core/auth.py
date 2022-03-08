@@ -1,11 +1,12 @@
-import app.db.models.user
-import app.db.schemas.user
 import jwt
+from fastapi import Depends, HTTPException, status
+from jwt import PyJWTError
+
 from app.core import security
 from app.db import session
 from app.db.crud.user import create_user, get_user_by_email
-from fastapi import Depends, HTTPException, status
-from jwt import PyJWTError
+from app.db.models.user import User
+from app.db.schemas.user import TokenData, UserCreate
 
 
 async def get_current_user(
@@ -24,7 +25,7 @@ async def get_current_user(
         if email is None:
             raise credentials_exception
         permissions: str = payload.get("permissions")
-        token_data = app.db.schemas.user.TokenData(email=email, permissions=permissions)
+        token_data = TokenData(email=email, permissions=permissions)
     except PyJWTError:
         raise credentials_exception
     user = get_user_by_email(db, token_data.email)
@@ -34,7 +35,7 @@ async def get_current_user(
 
 
 async def get_current_active_user(
-    current_user: app.db.models.user.User = Depends(get_current_user),
+    current_user: User = Depends(get_current_user),
 ):
     if not current_user.is_active:
         raise HTTPException(status_code=400, detail="Inactive user")
@@ -42,8 +43,8 @@ async def get_current_active_user(
 
 
 async def get_current_active_superuser(
-    current_user: app.db.models.user.User = Depends(get_current_user),
-) -> app.db.models.user.User:
+    current_user: User = Depends(get_current_user),
+) -> User:
     if not current_user.is_superuser:
         raise HTTPException(
             status_code=403, detail="The user doesn't have enough privileges"
@@ -66,7 +67,7 @@ def sign_up_new_user(db, email: str, password: str):
         return False  # User already exists
     new_user = create_user(
         db,
-        app.db.schemas.user.UserCreate(
+        UserCreate(
             email=email,
             password=password,
             is_active=True,
