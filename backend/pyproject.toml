@@ -32,6 +32,7 @@ pytest = "^7.0.1"
 pytest-dotenv = "^0.5.2"
 pydocstyle = { version = "^6.1.1", extras = ["pydocstyle[toml]"] }
 black = "^22.1.0"
+mypy = "^0.931"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -67,3 +68,6 @@ D400,D401,D406,D407,D413,D415
 [tool.flake8]
 max-line-length = 88
 extend-ignore = "E203"
+
+[tool.mypy]
+ignore_missing_imports = "True"
