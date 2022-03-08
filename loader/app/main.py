@@ -77,7 +77,7 @@ if __name__ == "__main__":
     # wait for backend
     # TODO more robust solution here: https://github.com/climatepolicyradar/navigator/issues/368
     logger.warning("Waiting 5 seconds for backend...")
-    time.sleep(0)
+    time.sleep(5)
     logger.warning("Wait complete. Starting...")
 
     main()
