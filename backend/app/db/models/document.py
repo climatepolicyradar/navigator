@@ -1,10 +1,10 @@
 import enum
 
 import sqlalchemy as sa
+from app.db.session import Base
 from sqlalchemy import SmallInteger
 from sqlalchemy.dialects import postgresql
-
-from app.db.session import Base
+from sqlalchemy.orm import relationship
 
 
 class DocumentInvalidReason(enum.Enum):
@@ -42,3 +42,5 @@ class Document(Base):  # noqa: D101
     )
     is_valid = sa.Column(sa.Boolean, nullable=False)
     invalid_reason = sa.Column(sa.Enum(DocumentInvalidReason))
+
+    action = relationship("Action", back_populates="documents")

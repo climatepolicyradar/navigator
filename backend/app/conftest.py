@@ -2,17 +2,16 @@ import os
 import typing as t
 
 import pytest
-from fastapi.testclient import TestClient
-from moto import mock_s3
-from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy_utils import database_exists, create_database, drop_database
-
-import app.db.models.user
 from app.core import config, security
+from app.db.models.user import User
 from app.db.session import Base, get_db
 from app.main import app
-from navigator.core.aws import get_s3_client, S3Client
+from fastapi.testclient import TestClient
+from moto import mock_s3
+from navigator.core.aws import S3Client, get_s3_client
+from sqlalchemy import create_engine, event
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import create_database, database_exists, drop_database
 
 
 @pytest.fixture
@@ -60,16 +59,17 @@ def create_test_db():
     # Create the test database
     assert not database_exists(
         test_db_url
-    ), "Test database already exists. Aborting tests."
+    ), f"Test database already exists at {test_db_url}. Aborting tests."
     create_database(test_db_url)
     test_engine = create_engine(test_db_url)
     Base.metadata.create_all(test_engine)
 
-    # Run the tests
-    yield
-
-    # Drop the test database
-    drop_database(test_db_url)
+    try:
+        # Run the tests
+        yield
+    finally:
+        # Drop the test database
+        drop_database(test_db_url)
 
 
 @pytest.fixture
@@ -133,10 +133,10 @@ def get_password_hash() -> str:
 
 
 @pytest.fixture
-def test_user(test_db) -> app.db.models.user.User:
+def test_user(test_db) -> User:
     """Make a test user in the database"""
 
-    user = app.db.models.user.User(
+    user = User(
         email="fake@email.com",
         hashed_password=get_password_hash(),
         is_active=True,
@@ -147,10 +147,10 @@ def test_user(test_db) -> app.db.models.user.User:
 
 
 @pytest.fixture
-def test_superuser(test_db) -> app.db.models.user.User:
+def test_superuser(test_db) -> User:
     """Superuser for testing"""
 
-    user = app.db.models.user.User(
+    user = User(
         email="fakeadmin@email.com",
         hashed_password=get_password_hash(),
         is_superuser=True,

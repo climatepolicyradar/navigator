@@ -1,9 +1,8 @@
 import sqlalchemy as sa
-from sqlalchemy import SmallInteger, BigInteger, UniqueConstraint
+from app.db.session import Base
+from sqlalchemy import BigInteger, SmallInteger, UniqueConstraint
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
-
-from app.db.session import Base
 
 
 class Action(Base):  # noqa: D101
@@ -40,7 +39,7 @@ class Action(Base):  # noqa: D101
     )
     UniqueConstraint(name, action_date, geography_id, action_type_id, action_source_id)
     documents = relationship(
-        "Document", lazy="noload", primaryjoin="Action.action_id == Document.action_id"
+        "Document", lazy="joined", primaryjoin="Action.action_id == Document.action_id"
     )
 
 

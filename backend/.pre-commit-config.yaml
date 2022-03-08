@@ -20,4 +20,4 @@ repos:
       - id: pydocstyle
         additional_dependencies: [ "toml" ]
 
-# TODO isort, bandit, safety, mypy
+# TODO bandit, safety, mypy

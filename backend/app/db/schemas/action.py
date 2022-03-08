@@ -1,9 +1,8 @@
 import datetime
 import typing as t
 
-from pydantic import BaseModel, conint, validator, Field
-
 from app.db.schemas.document import Document, DocumentCreate
+from pydantic import BaseModel, Field, conint, validator
 
 
 class _ActionBase(BaseModel):

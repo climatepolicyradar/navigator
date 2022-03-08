@@ -1,16 +1,15 @@
 import datetime
 
+from app.db.models.document import Document
+from app.db.schemas.document import DocumentCreateInternal
 from sqlalchemy.orm import Session
-
-import app.db.models.document
-import app.db.schemas.document
 
 
 def create_document(
     db: Session,
-    document: app.db.schemas.document.DocumentCreate,
-) -> app.db.models.document.Document:
-    db_document = app.db.models.document.Document(
+    document: DocumentCreateInternal,
+) -> Document:
+    db_document = Document(
         action_id=document.action_id,
         name=document.name,
         language_id=document.language_id,

@@ -1,21 +1,20 @@
 import ssl
 from datetime import datetime
 from sqlite3 import IntegrityError
-from typing import Optional, List
+from typing import List, Optional
 
 import httpx
-from fastapi import APIRouter, Request, Depends, HTTPException
-from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlalchemy import paginate
-
 from app.core.auth import get_current_active_user
-from app.db.crud.action import create_action, is_action_exists, get_actions_query
+from app.db.crud.action import create_action, get_actions_query, is_action_exists
 from app.db.crud.document import create_document
 from app.db.models.document import DocumentInvalidReason
 from app.db.schemas.action import ActionCreate, ActionInDB
 from app.db.schemas.document import DocumentCreateInternal
 from app.db.session import get_db
-from navigator.core.aws import get_s3_client, S3Document
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
+from navigator.core.aws import S3Document, get_s3_client
 from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
@@ -124,6 +123,7 @@ async def action_create(
         action.documents[idx] = document_create
 
     db.refresh(db_action)
+
     return ActionInDB.from_orm(db_action)
 
 

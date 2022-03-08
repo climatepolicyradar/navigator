@@ -24,12 +24,14 @@ SQLAlchemy-Utils = "^0.38.2"
 uvicorn = "^0.17.5"
 
 [tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
 moto = { version = "^3.0.3", extras = ["s3"] }
 pre-commit = "^2.17.0"
 python-dotenv = "^0.19.2"
 pytest = "^7.0.1"
-pydocstyle = { version = "^6.1.1", extras = ["pydocstyle[toml]"] }
 pytest-dotenv = "^0.5.2"
+pydocstyle = { version = "^6.1.1", extras = ["pydocstyle[toml]"] }
+black = "^22.1.0"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -61,3 +63,7 @@ D100,D103,D104,D107,
 D202,D203,D213,
 D400,D401,D406,D407,D413,D415
 """
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "E203"

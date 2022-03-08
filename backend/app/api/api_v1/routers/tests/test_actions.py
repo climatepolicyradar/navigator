@@ -1,11 +1,10 @@
 import datetime
 from unittest.mock import patch
 
-import pytest
-
 import app.db.models.action
 import app.db.models.document
 import app.db.models.lookups
+import pytest
 from app.db import models
 from app.db.models.document import DocumentInvalidReason
 
@@ -37,15 +36,15 @@ def test_post_action(
     ensure_lookups,
 ):
     response = client.post(
-        "/api/v1/action",
+        "/api/v1/actions",
         json={
-            "source_id": 1,
+            "action_source_id": 1,
             "name": "test action",
             "year": 2008,
             "month": 9,
             "day": 12,
             "geography_id": 1,
-            "type_id": 1,
+            "action_type_id": 1,
             "documents": [
                 {
                     "name": "test document 1",
@@ -106,15 +105,15 @@ def test_null_values(
     mock_get_document_validity.return_value = None
 
     response = client.post(
-        "/api/v1/action",
+        "/api/v1/actions",
         json={
-            "source_id": 1,
+            "action_source_id": 1,
             "name": "test action",
             "year": 2008,
             "month": None,
             "day": None,
             "geography_id": 1,
-            "type_id": 1,
+            "action_type_id": 1,
             "documents": [
                 {
                     "name": "test document 1",
@@ -124,7 +123,7 @@ def test_null_values(
                     "year": 2009,
                     "month": None,
                     "day": None,
-                }
+                },
             ],
         },
         headers=user_token_headers,
@@ -132,23 +131,26 @@ def test_null_values(
 
     assert response.status_code == 200
     assert response.json() == {
-        "source_id": 1,
+        "action_id": 1,
+        "action_mod_date": datetime.date.today().isoformat(),
+        "action_source_id": 1,
         "name": "test action",
         "description": None,
-        "year": 2008,
-        "month": 1,
-        "day": 1,
+        "action_date": "2008-01-01",
         "geography_id": 1,
-        "type_id": 1,
+        "action_type_id": 1,
         "documents": [
             {
-                "name": "test document 1",
+                "action_id": 1,
+                "document_date": "2009-01-01",
+                "document_id": 1,
+                "document_mod_date": datetime.date.today().isoformat(),
+                "invalid_reason": None,
+                "is_valid": True,
                 "language_id": 1,
-                "source_url": "https://valid.com/",
+                "name": "test document 1",
                 "s3_url": None,
-                "year": 2009,
-                "month": 1,
-                "day": 1,
+                "source_url": "https://valid.com/",
             }
         ],
     }
@@ -170,15 +172,15 @@ def test_unsupported_mime_type(
         DocumentInvalidReason.unsupported_content_type
     )
     response = client.post(
-        "/api/v1/action",
+        "/api/v1/actions",
         json={
-            "source_id": 1,
+            "action_source_id": 1,
             "name": "test action",
             "year": 2008,
             "month": None,
             "day": None,
             "geography_id": 1,
-            "type_id": 1,
+            "action_type_id": 1,
             "documents": [
                 {
                     "name": "test document 1",
@@ -196,25 +198,28 @@ def test_unsupported_mime_type(
 
     assert response.status_code == 200
     assert response.json() == {
-        "source_id": 1,
-        "name": "test action",
+        "action_date": "2008-01-01",
+        "action_id": 1,
+        "action_mod_date": datetime.date.today().isoformat(),
+        "action_source_id": 1,
+        "action_type_id": 1,
         "description": None,
-        "year": 2008,
-        "month": 1,
-        "day": 1,
-        "geography_id": 1,
-        "type_id": 1,
         "documents": [
             {
-                "name": "test document 1",
+                "action_id": 1,
+                "document_date": "2009-01-01",
+                "document_id": 1,
+                "document_mod_date": datetime.date.today().isoformat(),
+                "invalid_reason": "unsupported_content_type",
+                "is_valid": False,
                 "language_id": 1,
-                "source_url": "https://invalid.com",
+                "name": "test document 1",
                 "s3_url": None,
-                "year": 2009,
-                "month": 1,
-                "day": 1,
+                "source_url": "https://invalid.com",
             }
         ],
+        "geography_id": 1,
+        "name": "test action",
     }
 
     assert not test_db.query(app.db.models.document.Document).all()[0].is_valid
@@ -230,15 +235,15 @@ def test_future_action(client, user_token_headers, test_db, ensure_lookups):
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 
     response = client.post(
-        "/api/v1/action",
+        "/api/v1/actions",
         json={
-            "source_id": 1,
+            "action_source_id": 1,
             "name": "test action",
             "year": tomorrow.year,
             "month": tomorrow.month,
             "day": tomorrow.day,
             "geography_id": 1,
-            "type_id": 1,
+            "action_type_id": 1,
             "documents": [
                 {
                     "name": "test document 1",
@@ -259,18 +264,18 @@ def test_future_action(client, user_token_headers, test_db, ensure_lookups):
 
 def test_duplicate_actions(client, user_token_headers, test_db, ensure_lookups):
     payload = {
-        "source_id": 1,
+        "action_source_id": 1,
         "name": "test action",
         "year": 2008,
         "month": 1,
         "day": 1,
         "geography_id": 1,
-        "type_id": 1,
+        "action_type_id": 1,
         "documents": [],
     }
 
     response = client.post(
-        "/api/v1/action",
+        "/api/v1/actions",
         json=payload,
         headers=user_token_headers,
     )
@@ -278,9 +283,131 @@ def test_duplicate_actions(client, user_token_headers, test_db, ensure_lookups):
     assert response.status_code == 200
 
     response = client.post(
-        "/api/v1/action",
+        "/api/v1/actions",
         json=payload,
         headers=user_token_headers,
     )
 
     assert response.status_code == 409
+
+
+@patch("app.api.api_v1.routers.actions.get_document_validity")
+def test_listing_with_pagination(
+    mock_get_document_validity,
+    client,
+    user_token_headers,
+    test_db,
+    ensure_lookups,
+):
+    mock_get_document_validity.return_value = None
+
+    payload = {
+        "action_source_id": 1,
+        "name": "test action",
+        "year": 2008,
+        "month": None,
+        "day": None,
+        "geography_id": 1,
+        "action_type_id": 1,
+        "documents": [
+            {
+                "name": "test document 1",
+                "language_id": 1,
+                "source_url": "https://valid.com",
+                "s3_url": None,
+                "year": 2009,
+                "month": None,
+                "day": None,
+            }
+        ],
+    }
+
+    response = client.post(
+        "/api/v1/actions",
+        json=payload,
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 200
+
+    payload["name"] = "test action 2"
+
+    response = client.post(
+        "/api/v1/actions",
+        json=payload,
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 200
+
+    # page 1
+    response = client.get(
+        "/api/v1/actions?page=1&size=1",
+        json=payload,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "items": [
+            {
+                "action_date": "2008-01-01",
+                "action_id": 1,
+                "action_mod_date": datetime.date.today().isoformat(),
+                "action_source_id": 1,
+                "action_type_id": 1,
+                "documents": [
+                    {
+                        "action_id": 1,
+                        "document_date": "2009-01-01",
+                        "document_id": 1,
+                        "document_mod_date": datetime.date.today().isoformat(),
+                        "is_valid": True,
+                        "language_id": 1,
+                        "name": "test document 1",
+                        "source_url": "https://valid.com",
+                    }
+                ],
+                "geography_id": 1,
+                "name": "test action",
+            }
+        ],
+        "page": 1,
+        "size": 1,
+        "total": 2,
+    }
+
+    # page 2
+    response = client.get(
+        "/api/v1/actions?page=2&size=1",
+        json=payload,
+    )
+
+    assert response.status_code == 200
+    assert response.json() == {
+        "items": [
+            {
+                "action_date": "2008-01-01",
+                "action_id": 2,
+                "action_mod_date": datetime.date.today().isoformat(),
+                "action_source_id": 1,
+                "action_type_id": 1,
+                "documents": [
+                    {
+                        "action_id": 2,
+                        "document_date": "2009-01-01",
+                        "document_id": 2,
+                        "document_mod_date": datetime.date.today().isoformat(),
+                        "is_valid": True,
+                        "language_id": 1,
+                        "name": "test document 1",
+                        "source_url": "https://valid.com",
+                    }
+                ],
+                "geography_id": 1,
+                "name": "test action 2",
+            }
+        ],
+        "page": 2,
+        "size": 1,
+        "total": 2,
+    }

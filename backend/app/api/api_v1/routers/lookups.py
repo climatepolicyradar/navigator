@@ -1,9 +1,8 @@
-from fastapi import APIRouter, Request, Depends
-
 import app.db.models.lookups
 from app.core.auth import get_current_active_user
 from app.db import models
-from app.db.session import Base, get_db, SessionLocal
+from app.db.session import Base, SessionLocal, get_db
+from fastapi import APIRouter, Depends, Request
 
 lookups_router = r = APIRouter()
 

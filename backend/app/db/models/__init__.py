@@ -1,7 +1,6 @@
 import sqlalchemy as sa
-from sqlalchemy import BigInteger, SmallInteger
-
 from app.db.session import Base
+from sqlalchemy import BigInteger, SmallInteger
 
 
 class PassageType(Base):  # noqa: D101
@@ -97,7 +96,7 @@ class Passage(Base):  # noqa: D101
         BigInteger, primary_key=True, autoincrement=True, nullable=False
     )
     document_id = sa.Column(
-        sa.INTEGER(), sa.ForeignKey("Document.document_id"), nullable=False
+        sa.INTEGER(), sa.ForeignKey("document.document_id"), nullable=False
     )
     page_id = sa.Column(BigInteger, autoincrement=False, nullable=False)
     passage_type_id = sa.Column(
@@ -107,7 +106,7 @@ class Passage(Base):  # noqa: D101
         sa.INTEGER(), sa.ForeignKey("passage.passage_id"), nullable=True
     )
     language_id = sa.Column(
-        SmallInteger, sa.ForeignKey("Language.language_id"), nullable=True
+        SmallInteger, sa.ForeignKey("language.language_id"), nullable=True
     )
     text = sa.Column(sa.TEXT(), autoincrement=False, nullable=False)
 

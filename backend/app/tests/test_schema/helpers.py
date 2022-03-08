@@ -1,10 +1,11 @@
 import logging
 import os
 import pathlib
+from subprocess import STDOUT, check_output
+from typing import Any, cast
+
 from sqlalchemy.engine import Engine
 from sqlalchemy.sql import text
-from subprocess import check_output, STDOUT
-from typing import Any, cast
 
 _incomparable_lines = {
     "    AS integer"  # this gets made in models, but not integrations
@@ -73,11 +74,11 @@ class PytestHelpers:  # noqa: D101
         if set_a != set_b:
             logger.error("Run pytest with -s to see differences!")
             print("\n\nIn models, but not migrations:\n")
-            for l in set_a - set_b:
-                print(l)
+            for line in set_a - set_b:
+                print(line)
             print("\n\nIn migrations, but not models:\n")
-            for l in set_b - set_a:
-                print(l)
+            for line in set_b - set_a:
+                print(line)
             print("Run again with ALEMBIC_DEBUG=1 to output schemas")
 
         assert set_a == set_b
@@ -86,7 +87,9 @@ class PytestHelpers:  # noqa: D101
     @staticmethod
     def _split_and_filter(a):
         lines_a = [
-            l for l in a.replace(",", "").splitlines() if l not in _incomparable_lines
+            line
+            for line in a.replace(",", "").splitlines()
+            if line not in _incomparable_lines
         ]
         set_a = set(lines_a)
         return lines_a, set_a

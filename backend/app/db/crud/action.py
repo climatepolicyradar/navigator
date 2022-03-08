@@ -1,17 +1,16 @@
 import datetime
 
+from app.db.models.action import Action
+from app.db.schemas.action import ActionCreate
 from sqlalchemy import exists
-from sqlalchemy.orm import Session, joinedload, Query
-
-import app.db.models.action
-import app.db.schemas.action
+from sqlalchemy.orm import Query, Session, joinedload
 
 
 def create_action(
     db: Session,
-    action: app.db.schemas.action.ActionCreate,
-) -> app.db.models.action.Action:
-    db_action = app.db.models.action.Action(
+    action: ActionCreate,
+) -> Action:
+    db_action = Action(
         # action_source_json=action.source_json,
         name=action.name,
         description=action.description,
@@ -31,18 +30,17 @@ def create_action(
 
 def is_action_exists(
     db: Session,
-    action: app.db.schemas.action.ActionCreate,
+    action: ActionCreate,
 ) -> bool:
     """Returns an action by its unique constraint."""
 
     return db.query(
         exists().where(
-            app.db.models.action.Action.name == action.name,
-            app.db.models.action.Action.action_date
-            == datetime.date(action.year, action.month, action.day),
-            app.db.models.action.Action.geography_id == action.geography_id,
-            app.db.models.action.Action.action_type_id == action.action_type_id,
-            app.db.models.action.Action.action_source_id == action.action_source_id,
+            Action.name == action.name,
+            Action.action_date == datetime.date(action.year, action.month, action.day),
+            Action.geography_id == action.geography_id,
+            Action.action_type_id == action.action_type_id,
+            Action.action_source_id == action.action_source_id,
         )
     ).scalar()
 
@@ -50,6 +48,4 @@ def is_action_exists(
 def get_actions_query(
     db: Session,
 ) -> Query:
-    return db.query(app.db.models.action.Action).options(
-        joinedload(app.db.models.action.Action.documents)
-    )
+    return db.query(Action).options(joinedload(Action.documents))
