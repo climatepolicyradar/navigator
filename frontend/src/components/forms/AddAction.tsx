@@ -52,6 +52,8 @@ const AddAction = ({
     documents: [],
   };
 
+  // const geographiesQuery = useLookups('geographies');
+
   const yearSelections = yearRange();
   const { t, i18n, ready } = useTranslation([
     'addAction',
@@ -138,6 +140,7 @@ const AddAction = ({
       />
       {ready && (
         <div className="text-lg">
+          {/* {console.log(geographiesQuery)} */}
           <p className="text-indigo-600 text-xl">
             {t(
               'Add a new action using the form below. Multiple documents can be added to an action.'

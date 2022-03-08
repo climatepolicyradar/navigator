@@ -3,3 +3,6 @@ export const fakePromise = (delay, value) => {
     setTimeout(resolve, delay, value); // Note the order, `delay` before `value`
   });
 };
+export const filterLanguages = (langs) => {
+  return langs.filter((lang) => lang.part1_code !== null);
+};
