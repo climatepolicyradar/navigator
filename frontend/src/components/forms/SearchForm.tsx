@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import Close from '../buttons/Close';
 import SearchButton from '../buttons/SearchButton';
 import { SearchIcon } from '../Icons';
-import useWindowResize from '../hooks/useWindowResize';
+import useWindowResize from '../../hooks/useWindowResize';
 
 interface SearchFormProps {
   placeholder: string;

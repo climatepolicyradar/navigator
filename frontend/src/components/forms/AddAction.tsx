@@ -6,7 +6,6 @@ import TextInput from '../form-inputs/TextInput';
 import TextArea from '../form-inputs/TextArea';
 import { months, yearRange, daysInMonth } from '../../constants/timedate';
 import Select from '../form-inputs/Select';
-import { getData, postData } from '../../api';
 import Overlay from '../Overlay';
 import Popup from '../modals/Popup';
 import AddDocument from './AddDocument';
@@ -22,6 +21,7 @@ import LoaderOverlay from '../LoaderOverlay';
 import { fakePromise } from '../../helpers';
 import '../../pages/i18n';
 import { useTranslation } from 'react-i18next';
+import useCreateAction from '../../hooks/useCreateAction';
 
 interface AddActionProps {
   geographies: Geography[];
@@ -36,8 +36,6 @@ const AddAction = ({
   actionTypes,
   sources,
 }: AddActionProps) => {
-  const [processing, setProcessing] = useState(false);
-  const [message, setMessage] = useState('');
   const [days, setDays] = useState([]);
   const [popupActive, setPopupActive] = useState(false);
   const initialValues = {
@@ -52,7 +50,7 @@ const AddAction = ({
     documents: [],
   };
 
-  // const geographiesQuery = useLookups('geographies');
+  const mutation = useCreateAction();
 
   const yearSelections = yearRange();
   const { t, i18n, ready } = useTranslation([
@@ -106,19 +104,10 @@ const AddAction = ({
     });
   };
 
-  const submitForm = async (values, resetForm) => {
-    setProcessing(true);
+  const submitForm = (values, resetForm) => {
     processValues(values);
-    let req = 'action';
-    resetForm({
-      values: initialValues,
-    });
-    //TODO: might want to use try/catch to handle errors?
-    await postData(req, values);
-    window.scrollTo(0, 0);
-
-    setProcessing(false);
-    setMessage(t('form.Action successfully added!'));
+    mutation.mutate(values);
+    resetForm();
   };
 
   useEffect(() => {
@@ -127,7 +116,7 @@ const AddAction = ({
 
   return (
     <>
-      {processing && !ready ? (
+      {mutation.isLoading || !ready ? (
         <>
           <LoaderOverlay />
         </>
@@ -140,18 +129,25 @@ const AddAction = ({
       />
       {ready && (
         <div className="text-lg">
-          {/* {console.log(geographiesQuery)} */}
-          <p className="text-indigo-600 text-xl">
-            {t(
-              'Add a new action using the form below. Multiple documents can be added to an action.'
-            )}
-          </p>
-          {message.length > 0 && (
+          {mutation.isError ? (
             <p
               data-cy="message"
               className="mt-4 font-bold text-xl text-green-500"
             >
-              {message}
+              {t('form.There was an error, please try again later.')}
+            </p>
+          ) : mutation.isSuccess ? (
+            <p
+              data-cy="message"
+              className="mt-4 font-bold text-xl text-green-500"
+            >
+              {t('form.Action successfully added!')}
+            </p>
+          ) : (
+            <p className="text-indigo-600 text-xl">
+              {t(
+                'Add a new action using the form below. Multiple documents can be added to an action.'
+              )}
             </p>
           )}
 

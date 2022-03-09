@@ -12,6 +12,7 @@ const authapi = axios.create({
   },
 });
 
+// temporary until we have proper login
 export const getAuth = async () => {
   await authapi
     .post(
@@ -31,45 +32,13 @@ export const getAuth = async () => {
 };
 
 export const postFile = async (req: string, data): Promise<any> => {
-  // return await fileapi.post(`${process.env.NEXT_PUBLIC_API_URL}/${req}`, data)
   return await axios({
     method: 'POST',
     url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
     data,
     headers: {
-      Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
+      Authorization: `Bearer ${storage.getToken()}`,
       'Content-Type': 'multipart/form-data',
-    },
-  }).then((response) => {
-    return response.statusText == 'OK'
-      ? response.data
-      : Promise.reject(Error('Unsuccessful response'));
-  });
-};
-export const postData = async (req: string, data): Promise<any> => {
-  // return await api.post(`${process.env.NEXT_PUBLIC_API_URL}/${req}`, data)
-  return await axios({
-    method: 'POST',
-    url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
-    data,
-    headers: {
-      Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
-      'Content-Type': 'application/json',
-    },
-  }).then((response) => {
-    return response.statusText == 'OK'
-      ? response.data
-      : Promise.reject(Error('Unsuccessful response'));
-  });
-};
-
-export const getData = async (req: string): Promise<any> => {
-  return await axios({
-    method: 'GET',
-    url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
-    headers: {
-      Authorization: `Bearer ${window.localStorage.getItem('jwt')}`,
-      'Content-Type': 'application/json',
     },
   }).then((response) => {
     return response.statusText == 'OK'
@@ -106,8 +75,6 @@ export async function handleApiResponse(response) {
 }
 
 export async function getUserProfile() {
-  console.log('get user profile');
-  // console.log(storage.getToken());
   return await fetch(`${API_URL}/users/me`, {
     headers: {
       Authorization: `Bearer ${storage.getToken()}`,
