@@ -40,8 +40,8 @@ def load(policies: PolicyLookup):
             "month": policy_date.month,
             "day": policy_date.day,
             "geography_id": geography_id,
-            "type_id": action_type_id,
-            "source_id": 1,  # CCLW is source_id 1
+            "action_type_id": action_type_id,
+            "action_source_id": 1,  # CCLW is source_id 1
             "documents": [
                 {
                     "name": doc.doc_name,

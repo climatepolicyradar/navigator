@@ -1,11 +1,6 @@
 import os
 
 import uvicorn
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from navigator.core.log import get_logger
-from starlette.requests import Request
-
 from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.documents import documents_router
@@ -14,6 +9,11 @@ from app.api.api_v1.routers.users import users_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.db.session import SessionLocal
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
+from navigator.core.log import get_logger
+from starlette.requests import Request
 
 logger = get_logger(__name__)
 
@@ -79,6 +79,8 @@ def assert_environment_variables():
             f"Environment variable(s) {', '.join(missing_env_vars)} do(es) not exist."
         )
 
+
+add_pagination(app)
 
 if __name__ == "__main__":
     assert_environment_variables()

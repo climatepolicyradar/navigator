@@ -61,8 +61,8 @@ def _get_lookup(model, lookup_key):
     if api_host.endswith("/"):
         api_host = api_host[:-1]  # strip trailing slash
 
-    headers = {'Authorization': 'Bearer {}'.format(machine_user_token)}
-    response = requests.get(f'{api_host}/api/v1/{model}', headers=headers)
+    headers = {"Authorization": "Bearer {}".format(machine_user_token)}
+    response = requests.get(f"{api_host}/api/v1/{model}", headers=headers)
     json_data = response.json()
     lookup = {}
     for datum in json_data:
@@ -78,8 +78,10 @@ def post_action(action_payload):
         api_host = api_host[:-1]  # strip trailing slash
 
     headers = {
-        'Authorization': 'Bearer {}'.format(machine_user_token),
-        'Accept': 'application/json',
+        "Authorization": "Bearer {}".format(machine_user_token),
+        "Accept": "application/json",
     }
-    response = requests.post(f'{api_host}/api/v1/action', headers=headers, json=action_payload)
+    response = requests.post(
+        f"{api_host}/api/v1/actions", headers=headers, json=action_payload
+    )
     return response

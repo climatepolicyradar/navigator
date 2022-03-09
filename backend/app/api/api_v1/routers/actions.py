@@ -1,31 +1,45 @@
 import ssl
 from datetime import datetime
 from sqlite3 import IntegrityError
-from typing import Optional
+from typing import List, Optional
 
 import httpx
-from fastapi import APIRouter, Request, Depends, HTTPException
-
 from app.core.auth import get_current_active_user
-from app.db.crud import create_action, create_document, is_action_exists
-from app.db.models import DocumentInvalidReason
-from app.db.schemas import ActionBase, ActionCreate, DocumentCreate
+from app.db.crud.action import create_action, get_actions_query, is_action_exists
+from app.db.crud.document import create_document
+from app.db.models.document import DocumentInvalidReason
+from app.db.schemas.action import ActionCreate, ActionInDB
+from app.db.schemas.document import DocumentCreateInternal
 from app.db.session import get_db
-from navigator.core.aws import get_s3_client, S3Document
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
+from navigator.core.aws import S3Document, get_s3_client
 from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
 actions_router = r = APIRouter()
 
 
-@r.post("/action", response_model=ActionBase)
+@r.get(
+    "/actions",
+    response_model=Page[ActionInDB],
+    response_model_exclude_none=True,
+)
+async def action_list(
+    db=Depends(get_db),
+) -> List[ActionInDB]:
+    return paginate(get_actions_query(db))
+
+
+@r.post("/actions", response_model=ActionInDB)
 async def action_create(
     request: Request,
-    action: ActionBase,
+    action: ActionCreate,
     db=Depends(get_db),
     s3_client=Depends(get_s3_client),
     current_user=Depends(get_current_active_user),
-) -> ActionBase:
+) -> ActionInDB:
     """Add an action and its associated documents to the databases."""
 
     # Data validation - check that year is in the past, and all external URLs provided point to valid PDFs.
@@ -41,6 +55,7 @@ async def action_create(
         raise HTTPException(409, detail="This action already exists")
 
     # Add action and related documents to database.
+    # TODO maybe https://pydantic-docs.helpmanual.io/usage/models/#parsing-data-into-a-specified-type ?
     action_create = ActionCreate(
         name=action.name,
         description=action.description,
@@ -48,8 +63,8 @@ async def action_create(
         month=action.month,
         day=action.day,
         geography_id=action.geography_id,
-        type_id=action.type_id,
-        source_id=action.source_id,
+        action_type_id=action.action_type_id,
+        action_source_id=action.action_source_id,
         # Modification date is set to date of document submission
         mod_date=datetime.now().date(),
         documents=action.documents,
@@ -76,15 +91,15 @@ async def action_create(
             moved_document_url = None
 
         # Create document in database
-        document_create = DocumentCreate(
+        document_create = DocumentCreateInternal(
             action_id=db_action.action_id,
             name=document.name,
             language_id=document.language_id,
             source_url=document.source_url,
-            s3_url=moved_document_url,
             year=document.year,
             month=document.month,
             day=document.day,
+            s3_url=moved_document_url,
             # Modification date is set to date of document submission
             document_mod_date=datetime.now().date(),
             is_valid=False,  # will be set by assign_document_validity
@@ -107,7 +122,9 @@ async def action_create(
         create_document(db, document_create)
         action.documents[idx] = document_create
 
-    return action
+    db.refresh(db_action)
+
+    return ActionInDB.from_orm(db_action)
 
 
 # TODO move all below to util module
