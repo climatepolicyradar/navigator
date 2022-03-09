@@ -1,11 +1,6 @@
 import os
-import uvicorn
-from fastapi import FastAPI, Depends
-from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import IntegrityError
-from starlette.requests import Request
-from starlette.responses import JSONResponse
 
+import uvicorn
 from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.documents import documents_router
@@ -14,7 +9,11 @@ from app.api.api_v1.routers.users import users_router
 from app.core import config
 from app.core.auth import get_current_active_user
 from app.db.session import SessionLocal
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_pagination import add_pagination
 from navigator.core.log import get_logger
+from starlette.requests import Request
 
 logger = get_logger(__name__)
 
@@ -81,25 +80,7 @@ def assert_environment_variables():
         )
 
 
-@app.exception_handler(IntegrityError)
-async def integrityerror_handler(request: Request, exc: Exception):
-    """Handle IntegrityError exceptions.
-
-    TODO map specific errors.
-    """
-    msg = str(exc)
-    if hasattr(exc, "message"):
-        msg = exc.message
-
-    status = 500
-    if "duplicate key" in msg:
-        status = 400
-        msg = "Conflict error: item already exists in database"
-    else:
-        logger.error(exc)
-
-    return JSONResponse({"message": msg}, status_code=status)
-
+add_pagination(app)
 
 if __name__ == "__main__":
     assert_environment_variables()

@@ -16,6 +16,9 @@ csvkit = "^1.0.6"
 pytest = "^7.0.1"
 pydocstyle = { version = "^6.1.1", extras = ["pydocstyle[toml]"] }
 pre-commit = "^2.17.0"
+flake8 = "^4.0.1"
+black = "^22.1.0"
+mypy = "^0.931"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -43,3 +46,10 @@ D100,D103,D104,D107,
 D202,D203,D213,
 D400,D401,D406,D407,D413,D415
 """
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "E203"
+
+[tool.mypy]
+ignore_missing_imports = "True"

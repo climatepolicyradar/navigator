@@ -1,12 +1,12 @@
 from app.db import models
+from app.db.models.lookups import Geography, Language, ActionType
 
 
 def test_get_lookups(client, user_token_headers, test_db):
-
     lookup_api_paths = [
-        ("geographies", models.Geography),
-        ("languages", models.Language),
-        ("action_types", models.ActionType),
+        ("geographies", Geography),
+        ("languages", Language),
+        ("action_types", ActionType),
         ("sources", models.Source),
     ]
 

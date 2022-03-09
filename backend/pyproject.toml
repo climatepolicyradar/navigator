@@ -10,8 +10,10 @@ alembic = "^1.7.6"
 Authlib = "^0.15.5"
 bcrypt = "^3.2.0"
 fastapi = "^0.74.0"
+fastapi-pagination = { extras = ["sqlalchemy"], version = "^0.9.1" }
 httpx = "^0.22.0"
 itsdangerous = "^2.1.0"
+navigator = { path = "../common", develop = true }
 pandas = "^1.4.1"
 passlib = "^1.7.4"
 psycopg2-binary = "^2.9.3"
@@ -20,14 +22,17 @@ python-multipart = "^0.0.5"
 SQLAlchemy = "^1.4.31"
 SQLAlchemy-Utils = "^0.38.2"
 uvicorn = "^0.17.5"
-navigator = {path = "../common", develop = true }
 
 [tool.poetry.dev-dependencies]
+flake8 = "^4.0.1"
 moto = { version = "^3.0.3", extras = ["s3"] }
 pre-commit = "^2.17.0"
 python-dotenv = "^0.19.2"
 pytest = "^7.0.1"
+pytest-dotenv = "^0.5.2"
 pydocstyle = { version = "^6.1.1", extras = ["pydocstyle[toml]"] }
+black = "^22.1.0"
+mypy = "^0.931"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -35,6 +40,10 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "-p no:cacheprovider"
+env_files = """
+    .env.test
+    .env
+"""
 
 [tool.pydocstyle]
 # D100 - Missing docstring in public module
@@ -55,3 +64,10 @@ D100,D103,D104,D107,
 D202,D203,D213,
 D400,D401,D406,D407,D413,D415
 """
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "E203"
+
+[tool.mypy]
+ignore_missing_imports = "True"
