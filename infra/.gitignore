@@ -1,0 +1,4 @@
+*.pyc
+venv/
+# generated file
+Dockerrun.aws.json
