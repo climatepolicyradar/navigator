@@ -1,6 +1,7 @@
 import sqlalchemy as sa
-from app.db.session import Base
 from sqlalchemy import BigInteger, SmallInteger
+
+from app.db.session import Base
 
 
 class PassageType(Base):  # noqa: D101
@@ -77,6 +78,12 @@ class MetadataValueKeywords(Base):  # noqa: D101
 
 
 class Source(Base):  # noqa: D101
+    """The action data source.
+
+    CCLW is the only source for alpha.
+    Future will be extras like CPD (https://climatepolicydatabase.org/), etc.
+    """
+
     __tablename__ = "source"
 
     source_id = sa.Column(
