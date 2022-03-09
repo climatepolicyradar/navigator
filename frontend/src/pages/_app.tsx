@@ -1,13 +1,7 @@
 import Head from 'next/head';
 import { AppProps } from 'next/app';
 import '../styles/main.scss';
-import {
-  useQuery,
-  useMutation,
-  useQueryClient,
-  QueryClient,
-  QueryClientProvider,
-} from 'react-query';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { AuthProvider } from '../lib/auth';
 
