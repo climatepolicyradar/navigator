@@ -2,16 +2,17 @@ import os
 import typing as t
 
 import pytest
+from fastapi.testclient import TestClient
+from moto import mock_s3
+from sqlalchemy import create_engine, event
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import create_database, database_exists, drop_database
+
 from app.core import config, security
 from app.db.models.user import User
 from app.db.session import Base, get_db
 from app.main import app
-from fastapi.testclient import TestClient
-from moto import mock_s3
 from navigator.core.aws import S3Client, get_s3_client
-from sqlalchemy import create_engine, event
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy_utils import create_database, database_exists, drop_database
 
 
 @pytest.fixture
@@ -61,10 +62,10 @@ def create_test_db():
         test_db_url
     ), f"Test database already exists at {test_db_url}. Aborting tests."
     create_database(test_db_url)
-    test_engine = create_engine(test_db_url)
-    Base.metadata.create_all(test_engine)
-
     try:
+        test_engine = create_engine(test_db_url)
+        Base.metadata.create_all(test_engine)
+
         # Run the tests
         yield
     finally:
