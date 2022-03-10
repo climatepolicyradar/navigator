@@ -15,9 +15,7 @@ def create_document(
         language_id=document.language_id,
         source_url=document.source_url,
         s3_url=document.s3_url,
-        document_date=datetime.date(
-            document.year, document.month or 1, document.day or 1
-        ),
+        document_date=datetime.date(document.year, document.month, document.day),
         document_mod_date=document.document_mod_date,
         is_valid=document.is_valid,
         invalid_reason=document.invalid_reason,

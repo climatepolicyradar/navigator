@@ -1,17 +1,12 @@
 import datetime
-import typing as t
 
-from pydantic import BaseModel, root_validator, validator
+from pydantic import BaseModel, root_validator
 
 
 class _ValidatedDateComponents(BaseModel):
     year: int
-    month: t.Optional[int] = None
-    day: t.Optional[int] = None
-
-    @validator("month", "day", pre=True, always=True)
-    def set_date(cls, val):  # noqa: D102
-        return val or 1
+    month: int = 1
+    day: int = 1
 
     @root_validator()
     def check_valid_date(cls, values):
