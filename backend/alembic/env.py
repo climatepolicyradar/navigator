@@ -15,7 +15,7 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)
+fileConfig(config.config_file_name)  # type: ignore
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -31,18 +31,14 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    return os.getenv("DATABASE_URL")
+    return os.environ["DATABASE_URL"]
 
 
-def generate_incremental_revision_id(
-        context, revision, directives
-) -> None:
+def generate_incremental_revision_id(context, revision, directives) -> None:
     if getattr(context.config.cmd_opts, "autogenerate", False):
         script = directives[0]
         # current version
-        cur_rev = max(
-            [int(rev) for rev in context.get_current_heads()], default=0
-        )
+        cur_rev = max([int(rev) for rev in context.get_current_heads()], default=0)
         # force new version
         script.rev_id = "{:04d}".format(cur_rev + 1)
         if script.upgrade_ops.is_empty():
@@ -79,11 +75,13 @@ def run_migrations_offline():
 
 def run_migrations_online():
     """Run migrations in 'online' mode.
-    
+
     In this scenario we need to create an Engine
     and associate a connection with the context.
     """
     configuration = config.get_section(config.config_ini_section)
+    if configuration is None:
+        raise RuntimeError("Alembic section of configuration is missing")
     configuration["sqlalchemy.url"] = get_url()
     connectable = engine_from_config(
         configuration,

@@ -7,8 +7,8 @@ class UserBase(BaseModel):  # noqa: D101
     email: str
     is_active: bool = True
     is_superuser: bool = False
-    first_name: str = None
-    last_name: str = None
+    first_name: t.Optional[str] = None
+    last_name: t.Optional[str] = None
 
 
 class UserOut(UserBase):  # noqa: D101
@@ -42,5 +42,5 @@ class Token(BaseModel):  # noqa: D101
 
 
 class TokenData(BaseModel):  # noqa: D101
-    email: str = None
+    email: str
     permissions: str = "user"

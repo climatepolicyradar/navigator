@@ -1,7 +1,7 @@
 import ssl
 from datetime import datetime
 from sqlite3 import IntegrityError
-from typing import List, Optional
+from typing import Optional
 
 import httpx
 from app.core.auth import get_current_active_user
@@ -28,87 +28,55 @@ actions_router = r = APIRouter()
 )
 async def action_list(
     db=Depends(get_db),
-) -> List[ActionInDB]:
+):
     return paginate(get_actions_query(db))
 
 
 @r.post("/actions", response_model=ActionInDB)
 async def action_create(
     request: Request,
-    action: ActionCreate,
+    action_create: ActionCreate,
     db=Depends(get_db),
     s3_client=Depends(get_s3_client),
     current_user=Depends(get_current_active_user),
 ) -> ActionInDB:
     """Add an action and its associated documents to the databases."""
 
-    # Data validation - check that year is in the past, and all external URLs provided point to valid PDFs.
-    action_date = datetime(action.year, action.month, action.day)
-    if action_date > datetime.now():
-        raise HTTPException(
-            400,
-            detail="The date of the action provided is in the future, and should be in the past.",
-        )
-
     # optimisation: check if action exists first
-    if is_action_exists(db, action):
+    if is_action_exists(db, action_create):
         raise HTTPException(409, detail="This action already exists")
-
-    # Add action and related documents to database.
-    # TODO maybe https://pydantic-docs.helpmanual.io/usage/models/#parsing-data-into-a-specified-type ?
-    action_create = ActionCreate(
-        name=action.name,
-        description=action.description,
-        year=action.year,
-        month=action.month,
-        day=action.day,
-        geography_id=action.geography_id,
-        action_type_id=action.action_type_id,
-        action_source_id=action.action_source_id,
-        # Modification date is set to date of document submission
-        mod_date=datetime.now().date(),
-        documents=action.documents,
-    )
 
     try:
         db_action = create_action(db, action_create)
     except Exception as e:
         if isinstance(e, IntegrityError):
-            raise HTTPException(
-                409, detail=f"Database integrity error, underlying={e.orig}"
-            )
+            raise HTTPException(409, detail=f"Database integrity error, underlying={e}")
         raise e
 
-    for idx, document in enumerate(action.documents):
+    for document_create in action_create.documents:
         # Move document to cpr-document-store bucket
-        if document.s3_url:
-            s3_document = S3Document.from_url(document.s3_url)
+        if document_create.s3_url:
+            s3_document = S3Document.from_url(document_create.s3_url)
             moved_document_url = s3_client.move_document(
                 s3_document,
                 "cpr-document-store",
             ).url
-        else:
-            moved_document_url = None
+            document_create.s3_url = moved_document_url
 
         # Create document in database
         document_create = DocumentCreateInternal(
-            action_id=db_action.action_id,
-            name=document.name,
-            language_id=document.language_id,
-            source_url=document.source_url,
-            year=document.year,
-            month=document.month,
-            day=document.day,
-            s3_url=moved_document_url,
             # Modification date is set to date of document submission
+            action_id=db_action.action_id,
             document_mod_date=datetime.now().date(),
-            is_valid=False,  # will be set by assign_document_validity
+            is_valid=True,  # will be set by assign_document_validity
+            invalid_reason=None,
+            **document_create.dict(),
         )
 
-        document_create.is_valid = True
         if document_create.source_url:
             logger.debug(
-                f"Checking document validity for action, name={action.name}, url={document.source_url}"
+                f"Checking document validity for action, name={action_create.name}, "
+                f"url={document_create.source_url}"
             )
             # TODO do we need to check s3_url?
             invalid_reason = await get_document_validity(document_create.source_url)
@@ -116,11 +84,12 @@ async def action_create(
                 document_create.is_valid = False
                 document_create.invalid_reason = invalid_reason
                 logger.warning(
-                    f"Invalid document, action name={action.name}, reason={invalid_reason} url={document.source_url}"
+                    f"Invalid document, action name={action_create.name}, reason={invalid_reason} "
+                    f"url={document_create.source_url}"
                 )
 
         create_document(db, document_create)
-        action.documents[idx] = document_create
+        # action.documents[idx] = document_create
 
     db.refresh(db_action)
 

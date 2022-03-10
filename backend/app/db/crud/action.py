@@ -2,7 +2,7 @@ import datetime
 
 from app.db.models.action import Action
 from app.db.schemas.action import ActionCreate
-from sqlalchemy import exists
+from sqlalchemy import and_, exists
 from sqlalchemy.orm import Query, Session, joinedload
 
 
@@ -14,9 +14,10 @@ def create_action(
         # action_source_json=action.source_json,
         name=action.name,
         description=action.description,
-        action_date=datetime.date(action.year, action.month, action.day),
+        action_date=datetime.date(action.year, action.month, day=action.day),
         geography_id=action.geography_id,
         action_type_id=action.action_type_id,
+        # Modification date is set to date of document submission
         action_mod_date=datetime.datetime.utcnow(),
         action_source_id=action.action_source_id,
     )
@@ -36,11 +37,14 @@ def is_action_exists(
 
     return db.query(
         exists().where(
-            Action.name == action.name,
-            Action.action_date == datetime.date(action.year, action.month, action.day),
-            Action.geography_id == action.geography_id,
-            Action.action_type_id == action.action_type_id,
-            Action.action_source_id == action.action_source_id,
+            and_(
+                Action.name == action.name,
+                Action.action_date
+                == datetime.date(action.year, action.month, action.day),
+                Action.geography_id == action.geography_id,
+                Action.action_type_id == action.action_type_id,
+                Action.action_source_id == action.action_source_id,
+            )
         )
     ).scalar()
 

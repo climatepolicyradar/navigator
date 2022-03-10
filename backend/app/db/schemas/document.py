@@ -1,9 +1,10 @@
 import datetime
 import typing as t
 
-from pydantic import BaseModel, HttpUrl, conint, validator
+from pydantic import BaseModel, HttpUrl
 
 from app.db.models.document import DocumentInvalidReason
+from app.db.schemas import _ValidatedDateComponents
 
 
 class _DocumentBase(BaseModel):  # noqa: D106
@@ -36,14 +37,8 @@ class _DocumentInDBBase(_DocumentBase):
         validate_assignment = True
 
 
-class DocumentCreate(_DocumentBase):  # noqa: D101, D106
-    year: conint(ge=1900, le=datetime.datetime.now().year)
-    month: t.Optional[conint(ge=1, le=12)]
-    day: t.Optional[conint(ge=1, le=31)]
-
-    @validator("month", "day")
-    def set_date(cls, val):  # noqa: D102
-        return val or 1
+class DocumentCreate(_DocumentBase, _ValidatedDateComponents):  # noqa: D101, D106
+    pass
 
 
 class DocumentCreateInternal(DocumentCreate):

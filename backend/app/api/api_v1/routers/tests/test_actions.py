@@ -94,7 +94,7 @@ def test_post_action(
 def test_null_values(
     mock_get_document_validity, client, user_token_headers, test_db, ensure_lookups
 ):
-    # API should be able to take null values for month and year, for both documents and actions, and for `s3_url`.
+    # API should be able to deal with missing values for month and year, for both documents and actions, and and null for `s3_url`.
     mock_get_document_validity.return_value = None
 
     response = client.post(
@@ -103,8 +103,6 @@ def test_null_values(
             "action_source_id": 1,
             "name": "test action",
             "year": 2008,
-            "month": None,
-            "day": None,
             "geography_id": 1,
             "action_type_id": 1,
             "documents": [
@@ -114,8 +112,6 @@ def test_null_values(
                     "source_url": "https://valid.com/",
                     "s3_url": None,
                     "year": 2009,
-                    "month": None,
-                    "day": None,
                 },
             ],
         },
@@ -168,8 +164,6 @@ def test_unsupported_mime_type(
             "action_source_id": 1,
             "name": "test action",
             "year": 2008,
-            "month": None,
-            "day": None,
             "geography_id": 1,
             "action_type_id": 1,
             "documents": [
@@ -179,8 +173,6 @@ def test_unsupported_mime_type(
                     "source_url": "https://invalid.com",
                     "s3_url": None,
                     "year": 2009,
-                    "month": None,
-                    "day": None,
                 }
             ],
         },
@@ -222,7 +214,7 @@ def test_unsupported_mime_type(
 
 
 def test_future_action(client, user_token_headers, test_db, ensure_lookups):
-    # Providing an action date in the future should raise a 400
+    # Providing an action date in the future should raise a 422
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 
     response = client.post(
@@ -242,15 +234,13 @@ def test_future_action(client, user_token_headers, test_db, ensure_lookups):
                     "source_url": "https://raw.githubusercontent.com/climatepolicyradar/navigator/dev/backend/app/api/api_v1/routers/tests/data/empty_img.png",
                     "s3_url": None,
                     "year": 2009,
-                    "month": None,
-                    "day": None,
                 }
             ],
         },
         headers=user_token_headers,
     )
 
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 def test_duplicate_actions(client, user_token_headers, test_db, ensure_lookups):
@@ -296,8 +286,6 @@ def test_listing_with_pagination(
         "action_source_id": 1,
         "name": "test action",
         "year": 2008,
-        "month": None,
-        "day": None,
         "geography_id": 1,
         "action_type_id": 1,
         "documents": [
@@ -307,8 +295,6 @@ def test_listing_with_pagination(
                 "source_url": "https://valid.com",
                 "s3_url": None,
                 "year": 2009,
-                "month": None,
-                "day": None,
             }
         ],
     }
