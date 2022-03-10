@@ -1,7 +1,7 @@
 import ssl
 from datetime import datetime
 from sqlite3 import IntegrityError
-from typing import List, Optional
+from typing import Optional
 
 import httpx
 from app.core.auth import get_current_active_user
@@ -28,7 +28,7 @@ actions_router = r = APIRouter()
 )
 async def action_list(
     db=Depends(get_db),
-) -> List[ActionInDB]:
+):
     return paginate(get_actions_query(db))
 
 
@@ -43,7 +43,7 @@ async def action_create(
     """Add an action and its associated documents to the databases."""
 
     # Data validation - check that year is in the past, and all external URLs provided point to valid PDFs.
-    action_date = datetime(action.year, action.month, action.day)
+    action_date = datetime(action.year, action.month or 1, action.day or 1)
     if action_date > datetime.now():
         raise HTTPException(
             400,
@@ -65,8 +65,6 @@ async def action_create(
         geography_id=action.geography_id,
         action_type_id=action.action_type_id,
         action_source_id=action.action_source_id,
-        # Modification date is set to date of document submission
-        mod_date=datetime.now().date(),
         documents=action.documents,
     )
 
@@ -74,9 +72,7 @@ async def action_create(
         db_action = create_action(db, action_create)
     except Exception as e:
         if isinstance(e, IntegrityError):
-            raise HTTPException(
-                409, detail=f"Database integrity error, underlying={e.orig}"
-            )
+            raise HTTPException(409, detail=f"Database integrity error, underlying={e}")
         raise e
 
     for idx, document in enumerate(action.documents):
@@ -102,10 +98,10 @@ async def action_create(
             s3_url=moved_document_url,
             # Modification date is set to date of document submission
             document_mod_date=datetime.now().date(),
-            is_valid=False,  # will be set by assign_document_validity
+            is_valid=True,  # will be set by assign_document_validity
+            invalid_reason=None,
         )
 
-        document_create.is_valid = True
         if document_create.source_url:
             logger.debug(
                 f"Checking document validity for action, name={action.name}, url={document.source_url}"

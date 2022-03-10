@@ -222,7 +222,7 @@ def test_unsupported_mime_type(
 
 
 def test_future_action(client, user_token_headers, test_db, ensure_lookups):
-    # Providing an action date in the future should raise a 400
+    # Providing an action date in the future should raise a 422
     tomorrow = datetime.date.today() + datetime.timedelta(days=1)
 
     response = client.post(
@@ -250,7 +250,7 @@ def test_future_action(client, user_token_headers, test_db, ensure_lookups):
         headers=user_token_headers,
     )
 
-    assert response.status_code == 400
+    assert response.status_code == 422
 
 
 def test_duplicate_actions(client, user_token_headers, test_db, ensure_lookups):

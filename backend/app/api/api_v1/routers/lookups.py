@@ -1,3 +1,5 @@
+from typing import Dict, List
+
 from fastapi import APIRouter, Depends, Request
 
 from app.core.auth import get_current_active_user
@@ -8,7 +10,10 @@ from app.db.session import Base, SessionLocal, get_db
 lookups_router = r = APIRouter()
 
 
-def table_to_json(table: Base, db: SessionLocal) -> dict:
+def table_to_json(
+    table: Base,
+    db: SessionLocal,  # type: ignore
+) -> List[Dict]:
     json_out = []
 
     for row in db.query(table).all():

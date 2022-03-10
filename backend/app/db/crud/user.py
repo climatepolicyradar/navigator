@@ -16,14 +16,17 @@ def get_user(db: Session, user_id: int):
     return user
 
 
-def get_user_by_email(db: Session, email: str) -> app.db.schemas.user.UserBase:
+def get_user_by_email(db: Session, email: str) -> t.Optional[User]:
     return db.query(User).filter(User.email == email).first()
 
 
 def get_users(
     db: Session, skip: int = 0, limit: int = 100
-) -> t.List[app.db.schemas.user.UserOut]:
-    return db.query(User).offset(skip).limit(limit).all()
+) -> t.List[app.db.schemas.user.User]:
+    return [
+        app.db.schemas.user.User.from_orm(user)
+        for user in db.query(User).offset(skip).limit(limit).all()
+    ]
 
 
 def create_user(db: Session, user: app.db.schemas.user.UserCreate):
@@ -59,7 +62,7 @@ def edit_user(
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     update_data = user.dict(exclude_unset=True)
 
-    if "password" in update_data:
+    if user.password:
         update_data["hashed_password"] = get_password_hash(user.password)
         del update_data["password"]
 

@@ -1,7 +1,7 @@
 """create users table
 
 Revision ID: 0001
-Revises: 
+Revises:
 Create Date: 2020-03-23 14:53:53.101322
 
 """
@@ -27,9 +27,9 @@ def upgrade():
         sa.Column("is_active", sa.Boolean, nullable=False),
         sa.Column("is_superuser", sa.Boolean, nullable=False),
     )
-    op.create_index(op.f('ix_user_email'), 'user', ['email'], unique=True)
+    op.create_index(op.f("ix_user_email"), "user", ["email"], unique=True)
 
 
 def downgrade():
-    op.drop_index(op.f('ix_user_email'), table_name='user')
+    op.drop_index(op.f("ix_user_email"), table_name="user")
     op.drop_table("user")
