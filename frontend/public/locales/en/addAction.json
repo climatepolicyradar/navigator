@@ -14,6 +14,7 @@
     "Add Document": "Add Document",
     "No documents added.": "No documents added.",
     "Submit Action": "Submit Action",
-    "Action successfully added!": "Action successfully added!"
+    "Action successfully added!": "Action successfully added!",
+    "There was an error, please try again later.": "There was an error, please try again later."
   }
 }
