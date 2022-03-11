@@ -1,4 +1,4 @@
-![backend and frontend tests](https://github.com/climatepolicyradar/navigator/actions/workflows/test.yml/badge.svg)
+![Tests](https://github.com/climatepolicyradar/navigator/actions/workflows/test.yml/badge.svg)
 
 # Climate Policy Radar Navigator
 
