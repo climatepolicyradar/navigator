@@ -1,6 +1,12 @@
 import os
 
 import uvicorn
+from fastapi import Depends, FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from fastapi_health import health
+from fastapi_pagination import add_pagination
+from starlette.requests import Request
+
 from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.documents import documents_router
@@ -8,12 +14,9 @@ from app.api.api_v1.routers.lookups import lookups_router
 from app.api.api_v1.routers.users import users_router
 from app.core import config
 from app.core.auth import get_current_active_user
+from app.core.health import is_database_online
 from app.db.session import SessionLocal
-from fastapi import Depends, FastAPI
-from fastapi.middleware.cors import CORSMiddleware
-from fastapi_pagination import add_pagination
 from navigator.core.log import get_logger
-from starlette.requests import Request
 
 logger = get_logger(__name__)
 
@@ -27,6 +30,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# add health endpoint
+app.add_api_route("/health", health([is_database_online]))
 
 
 @app.middleware("http")
@@ -80,6 +86,7 @@ def assert_environment_variables():
         )
 
 
+# add pagination support to all routes that ask for it
 add_pagination(app)
 
 if __name__ == "__main__":
