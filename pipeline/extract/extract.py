@@ -1,5 +1,4 @@
-"""
-Extracts text from a PDF document using a PDF parser
+"""Extracts text from a PDF document using a PDF parser
 
 Provides extractor classes which implement text extraction from a PDF document. These can extract
 text directly embedded in a PDF, or third party apis or libraries to extract the text using
@@ -93,8 +92,7 @@ class DocumentTextExtractor(ABC):
 
 
 class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
-    """
-    Extracts embedded text stored in a pdf document using the pdfalto pdf parser.
+    """Extracts embedded text stored in a pdf document using the pdfalto pdf parser.
 
     This extractor can be used to extract text embedded in a pdf document. It uses
     the pdfalto pdf parser (used by grobid) to perform the extraction.
@@ -104,8 +102,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
     """
 
     def __init__(self, pdfalto_path: Optional[Path] = None, **kwargs):
-        """
-        Initialise the document embedded text extractor
+        """Initialise the document embedded text extractor
 
         Args:
             pdfalto_path: Optional Path to pdfalto executable
@@ -129,8 +126,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         pdf_name: Optional[str] = None,
         **kwargs,
     ):
-        """
-        Convert a pdf file to xml using the alto xml schema.
+        """Convert a pdf file to xml using the alto xml schema.
 
         Use pdfalto to parse the pdf file as an alto XML document and save it to `output_path`.
 
@@ -171,8 +167,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         return xml_output_path
 
     def _get_text_block_coords(self, text_block: Element) -> List[Tuple[float, float]]:
-        """
-        Get the coordinates of a text block element.
+        """Get the coordinates of a text block element.
 
         Fetches the x, y, width and height coordinates from an alto xml text block element
         and returns as a list of x, y pairs.
@@ -206,8 +201,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         return w, h
 
     def data_to_document(self, data_path: Path, pdf_filename: str) -> Document:
-        """
-        Parse the alto xml document and returns document structure.
+        """Parse the alto xml document and returns document structure.
 
         Processes the xml document tree and returns the document structure as a
         list of text blocks within the document
@@ -274,8 +268,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
     def extract(
         self, pdf_filepath: Path, data_output_dir: Path, pdf_name: Optional[str] = None
     ) -> Document:
-        """
-        Extracts the text from a given pdf file and returns document structure.
+        """Extracts the text from a given pdf file and returns document structure.
 
         Args:
             pdf_filepath: /path/to/pdf/file to process
@@ -296,8 +289,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
     """Extract text from pdf files using the Adobe PDF Services Extract API"""
 
     def __init__(self, credentials_path: str, **kwargs):
-        """
-        Extract text from a PDF document using Adobe PDF extract API.
+        """Extract text from a PDF document using Adobe PDF extract API.
 
         Extracts text from a PDF document using the Adobe PDF extract API. Also saves interim results, so API calls
         don't need to be re-run.
@@ -330,8 +322,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
     @staticmethod
     def _load_credentials(credentials_path: str) -> ExecutionContext:
-        """
-        Load credentials given the path to a credentials JSON file.
+        """Load credentials given the path to a credentials JSON file.
 
         Args:
             credentials_path: path to credentials JSON file.
@@ -351,8 +342,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
     @staticmethod
     def _flatten_data(data: dict) -> dict:
-        """
-        Flattens Kids elements in returned Adobe JSON
+        """Flattens Kids elements in returned Adobe JSON
 
         Adobe data contains Kids elements which aim to encode sub-elements of an element.
         This method flattens all Kids elements out in the returned Adobe JSON as they are unreliable.
@@ -386,8 +376,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
     @staticmethod
     def _get_lines(char_bounds: List[List[float]]) -> List[Tuple[float, float]]:
-        """
-        Detects lines given a set of character bounds.
+        """Detects lines given a set of character bounds.
 
         Args:
             char_bounds: a list of character bounds. Each bound is in the form `x0,y0,x1,y1`.
@@ -418,8 +407,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
     def _get_line_number_of_char_bound(
         char_bound: List[float], line_bounds: List[Tuple[float, float]]
     ) -> int:
-        """
-        Returns the index of a line given a character bound.
+        """Returns the index of a line given a character bound.
 
         Args:
             char_bound: in the form [x0, y0, x1, y1].
@@ -444,8 +432,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         return matching_line_number_list[0]
 
     def _element_to_text_block(self, element: dict, text_block_id: str) -> TextBlock:
-        """
-        Convert an element in the Adobe PDF Extract output JSON's `elements` into a `TextBlock`.
+        """Convert an element in the Adobe PDF Extract output JSON's `elements` into a `TextBlock`.
 
         Args:
             element: dictionary from `data['elements']`, where data is the JSON returned by the Adobe API.
@@ -504,8 +491,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
     def _convert_bounding_box_to_coordinates(
         self, adobe_coords: List[float], page_number: int
     ) -> List[Tuple[float, float]]:
-        """
-        Convert to coordinates from bounding box produced by Adobe.
+        """Convert to coordinates from bounding box produced by Adobe.
 
         We convert the 4 element bounding box provided by Adobe into the four corner
         coordinate points.
@@ -530,8 +516,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
     @staticmethod
     def _structure_path(path: str, remove_numbers: bool = True) -> List[str]:
-        """
-        Convert a PDF path into a list.
+        """Convert a PDF path into a list.
 
         E.g. '//Document/Aside[3]/P[2]' becomes ['Document', 'Aside', 'P'].
 
@@ -551,8 +536,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
     def data_to_document(
         self, data_path: Path, pdf_filename: str, **kwargs
     ) -> Document:
-        """
-        Converts an Adobe Extract API JSON into a Document object.
+        """Converts an Adobe Extract API JSON into a Document object.
 
         Args:
             data_path: path to JSON file outputted by Adobe API.
@@ -625,8 +609,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         self,
         pdf_filepath: Path,
     ) -> FileRef:
-        """
-        Make a call to the Adobe PDF Extract API using the PDF services SDK.
+        """Make a call to the Adobe PDF Extract API using the PDF services SDK.
 
         Args:
             pdf_filepath: path to a PDF
@@ -670,8 +653,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         output_dir: Path,
         pdf_name: Optional[str] = None,
     ) -> List[Path]:
-        """
-        Sends document at `pdf_filepath` to the Adobe Extract API.
+        """Sends document at `pdf_filepath` to the Adobe Extract API.
 
         Stores the data from the API in the `output_dir` folder.
 
@@ -762,8 +744,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         data_output_dir: Path,
         pdf_name: Optional[str] = None,
     ) -> Document:
-        """
-        Extracts the text from a given pdf file and returns document structure.
+        """Extracts the text from a given pdf file and returns document structure.
 
         Args:
             pdf_filepath: /path/to/pdf/file to process.

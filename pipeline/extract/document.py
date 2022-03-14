@@ -1,5 +1,4 @@
-"""
-Defines data classes storing the state of a document and text in that document.
+"""Defines data classes storing the state of a document and text in that document.
 
 Provides classes which represent a document, the text it contains and positional information
 of that text.
@@ -37,8 +36,7 @@ from dataclasses import dataclass, asdict
 
 @dataclass
 class TextBlock:
-    """
-    Represents an individual text block on a page.
+    """Represents an individual text block on a page.
 
     Stores the text and positional information for a single
     text block extracted from a document.
@@ -68,8 +66,7 @@ class TextBlock:
 
 @dataclass
 class Page:
-    """
-    Represents a page in a document.
+    """Represents a page in a document.
 
     All text blocks on a page are contained within a Page object. Also, the dimensions of the page can
     be specified.
@@ -95,8 +92,7 @@ class Page:
 
 @dataclass
 class Document:
-    """
-    Represents a document and associated pages and text blocks.
+    """Represents a document and associated pages and text blocks.
 
     Stores all of the pages that are contained in a document.
 

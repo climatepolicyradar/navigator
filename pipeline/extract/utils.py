@@ -6,8 +6,7 @@ from PyPDF2 import PdfFileReader, PdfFileWriter
 
 
 def split_pdf(pdf_path: Path, max_pages_per_split: int, output_dir: Path) -> List[Path]:
-    """
-    Splits a PDF into smaller PDFs each with maximum size `max_pages_per_split`.
+    """Splits a PDF into smaller PDFs each with maximum size `max_pages_per_split`.
 
     Outputs the PDF in `output_dir` with the name `ORIGINAL_PDF_NAME_split_0_maxpages_100`,
     0 representing the order of the split in the original PDF, and 100 representing the
