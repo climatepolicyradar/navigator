@@ -124,7 +124,6 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
         pdf_filepath: Path,
         output_dir: Path,
         pdf_name: Optional[str] = None,
-        **kwargs,
     ):
         """Convert a pdf file to xml using the alto xml schema.
 
@@ -534,7 +533,9 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             return [re.sub(r"\[\d+\]", "", i) for i in path_split]
 
     def data_to_document(
-        self, data_path: Path, pdf_filename: str, **kwargs
+        self,
+        data_path: Path,
+        pdf_filename: str,
     ) -> Document:
         """Converts an Adobe Extract API JSON into a Document object.
 
