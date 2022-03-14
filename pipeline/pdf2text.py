@@ -7,15 +7,18 @@ import argparse
 from pathlib import Path
 import tempfile
 from collections import namedtuple
-from typing import TextIO, Generator, Tuple
+from typing import TextIO, Generator, Tuple, Optional
+from multiprocessing import Pool, cpu_count
 
 
 from tqdm import tqdm
 
 from navigator.core.aws import S3Client
+from navigator.core.log import get_logger
 from extract.extract import DocumentEmbeddedTextExtractor, AdobeAPIExtractor
 from extract.exceptions import DocumentTextExtractorException
 
+logger = get_logger(__name__)
 
 S3PathComponents = namedtuple(
     "S3PathComponents", ["bucket", "folders", "filename", "extension"]
@@ -27,7 +30,6 @@ def split_s3_path(s3_path: str, include_bucket=True, include_filename=True):
 
     Returns a path to an s3 bucket/folder or s3 object as a set of components
     """
-
     bucket = None
     folders = None
 
@@ -49,7 +51,7 @@ def split_s3_path(s3_path: str, include_bucket=True, include_filename=True):
 def get_pdf_files(
     pdf_path: str, use_s3: bool = False
 ) -> Generator[Tuple[Path, str], None, None]:
-    """Retrieve files from an s3 bucket/folder, or local directory
+    """Retrieve files from an S3 bucket/folder, or local directory.
 
     Yields paths to pdf files to be processed. The files are either retrieved from a bucket/folder on S3,
     or from a local directory, depending on the use_s3 argument.
@@ -60,9 +62,8 @@ def get_pdf_files(
         use_s3 (bool): if True, will treat pdf_path as an s3 bucket path, otherwise as a path on the local file system.
 
     Yields:
-        (Path) a path to each pdf document found in pdf_path.
+        Tuple[Path, str]: path and filename of each pdf document found in the directory, S3 bucket, or S3 folder.
     """
-
     if use_s3:
         s3_client = S3Client()
         s3_path_components = split_s3_path(
@@ -107,7 +108,6 @@ def upload_extract_files(
         out_json_file (TextIO): file like object for temporary output json file
         out_text_file (TextIO): file like object for temporary output text file
     """
-
     out_path_components = split_s3_path(
         out_path, include_bucket=True, include_filename=False
     )
@@ -139,51 +139,61 @@ def upload_extract_files(
     out_text_file.close()
 
 
-def process(pdf_path: str, data_dir: Path, out_path: str, use_s3: bool = False):
-    """Extracts text from text in a directory containing pdf files.
+class PDFProcessor:
+    """Process PDF files using the Adobe Extractor, falling back to the embedded text extractor when it fails."""
 
-    Iterates through files with a .pdf extension in a given directory or s3 bucket/folder,
-    and processes those files to extract text. Produces a .json and/or
-    .txt file containing extracted text and associated positional data.
+    def __init__(
+        self,
+        data_dir: Path,
+        out_path: str,
+        use_s3: bool,
+        adobe_extractor: AdobeAPIExtractor,
+        embedded_extractor: DocumentEmbeddedTextExtractor,
+    ):
+        """Initalise PDFProcessor.
 
-    Args:
-        pdf_path (str): Either a path to a local directory or an s3 bucket/folders containing input pdf files
-        data_dir (Path): Path to local directory to write output intermediate extract files
-        out_path (str): Either a path to a local directory or an bucket/folders to upload files to in format
-        use_s3 (bool): if True, will treat pdf_path as an s3 bucket path, otherwise as a path on the local file system.
-    """
+        Args:
+            data_dir (Path): directory to store intermediate results in
+            out_path (str): directory to store output files (.json and .txt) in
+            use_s3 (bool): whether input and output directories are s3 buckets or folders
+            adobe_extractor (AdobeAPIExtractor): instance of Adobe API extractor
+            embedded_extractor (DocumentEmbeddedTextExtractor): instance of embedded text extractor
+        """
+        self.data_dir = data_dir
+        self.out_path = out_path
+        self.use_s3 = use_s3
+        self.adobe_extractor = adobe_extractor
+        self.embedded_extractor = embedded_extractor
 
-    adobe_extractor = AdobeAPIExtractor(
-        credentials_path="./pdfservices-credentials.json"
-    )
-    embedded_extractor = DocumentEmbeddedTextExtractor()
+    def process_file(self, pdf_filepath: Path, pdf_filename: str):
+        """Process a single file.
 
-    pdf_file_iterator = tqdm(
-        get_pdf_files(pdf_path, use_s3), desc="Documents processed", unit="file"
-    )
-    for pdf_file, source_pdf_filename in pdf_file_iterator:
-        pdf_file_iterator.set_description(desc=f"Processing {source_pdf_filename}")
-
-        pdf_name = Path(source_pdf_filename).stem
+        Args:
+            pdf_file: path to PDF file.
+            source_pdf_filename: name of PDF file.
+        """
+        pdf_name = Path(pdf_filename).stem
 
         try:
-            pdf_doc = adobe_extractor.extract(
-                pdf_filepath=pdf_file,
+            pdf_doc = self.adobe_extractor.extract(
+                pdf_filepath=pdf_filepath,
                 pdf_name=pdf_name,
-                data_output_dir=data_dir,
+                data_output_dir=self.data_dir,
                 output_folder_pdf_splits="/temp",
             )
         except Exception as e:
             print(
                 f"Adobe extractor failed with error {e}. Falling back to embedded text extractor."
             )
-            pdf_doc = embedded_extractor.extract(
-                pdf_filepath=pdf_file, pdf_name=pdf_name, data_output_dir=data_dir
+            pdf_doc = self.embedded_extractor.extract(
+                pdf_filepath=pdf_filepath,
+                pdf_name=pdf_name,
+                data_output_dir=self.data_dir,
             )
 
-        save_filename = Path(source_pdf_filename).stem
+        save_filename = Path(pdf_filename).stem
 
-        if use_s3:
+        if self.use_s3:
             out_json_file = tempfile.NamedTemporaryFile(
                 prefix="navigator_", suffix=".json"
             )
@@ -193,21 +203,57 @@ def process(pdf_path: str, data_dir: Path, out_path: str, use_s3: bool = False):
             )
             out_text_filepath = out_text_file.name
         else:
-            out_json_filepath = Path(out_path) / f"{save_filename}.json"
-            out_text_filepath = Path(out_path) / f"{save_filename}.txt"
+            out_json_filepath = Path(self.out_path) / f"{save_filename}.json"
+            out_text_filepath = Path(self.out_path) / f"{save_filename}.txt"
 
         # Save the json and text for the document
         pdf_doc.save_json(out_json_filepath)
         pdf_doc.save_text(out_text_filepath)
 
         # If we're using s3, upload the document to the given bucket/folder
-        if use_s3:
-            upload_extract_files(out_path, save_filename, out_json_file, out_text_file)
+        if self.use_s3:
+            upload_extract_files(
+                self.out_path, save_filename, out_json_file, out_text_file
+            )
+
+    def _process_file_star(self, args):
+        """Enable use of multiprocessing.imap rather than multiprocessing.starmap, meaning tqdm can be used to create a progress bar."""
+        return self.process_file(*args)
+
+    def process(self, pdf_path: str, n_process: Optional[int] = None):
+        """Extract text from text in a directory containing pdf files.
+
+        Iterate through files with a .pdf extension in a given directory or s3 bucket/folder,
+        and processes those files to extract text. Produces a .json and/or
+        .txt file containing extracted text and associated positional data.
+
+        Args:
+            pdf_path (str): Either a path to a local directory or an s3 bucket/folder containing input pdf files.
+            If an S3 bucket or folder, the `use_s3` argument for the class must be set to True.
+            n_process (int, optional): number of process to parallelise PDF processing over. Defaults to the
+            CPU count of the host machine.
+        """
+        pdf_file_iterator = get_pdf_files(pdf_path, self.use_s3)
+
+        if n_process is None:
+            n_process = cpu_count()
+
+        if n_process == 1:
+            logger.info("Processing PDFs using single process")
+            for filepath, filename in tqdm(pdf_file_iterator):
+                self.process_file(filepath, filename)
+        else:
+            logger.info(f"Processing PDFs using all available {n_process} processes")
+            with Pool(processes=n_process) as pool:
+                _ = list(
+                    tqdm(
+                        pool.imap_unordered(self._process_file_star, pdf_file_iterator)
+                    )
+                )
 
 
 def configure_args():
-    """Configure command line arguments for the cli"""
-
+    """Configure command line arguments for the cli."""
     parser = argparse.ArgumentParser(
         prog="pdf2text",
         description="Extracts text from a directory containing pdf documents.",
@@ -233,6 +279,12 @@ def configure_args():
         default=False,
         help="Retrieve and write files to s3 buckets",
     )
+    parser.add_argument(
+        "--single_process",
+        action="store_true",
+        default=False,
+        help="Whether to run processing on a single process",
+    )
 
     args = parser.parse_args()
 
@@ -240,8 +292,7 @@ def configure_args():
 
 
 def cli():
-    """Main entry point for the cli"""
-
+    """Run the cli."""
     # Configure and parse command line arguments
     args = configure_args()
 
@@ -257,8 +308,23 @@ def cli():
     if not out_path.exists() and not args.s3:
         raise DocumentTextExtractorException("Output path is invalid")
 
+    adobe_extractor = AdobeAPIExtractor(
+        credentials_path="./pdfservices-credentials.json"
+    )
+    embedded_extractor = DocumentEmbeddedTextExtractor()
+
     # Process the files in the directory
-    process(pdf_path, data_dir, out_path, args.s3),
+    processor = PDFProcessor(
+        data_dir=data_dir,
+        out_path=out_path,
+        use_s3=args.s3,
+        adobe_extractor=adobe_extractor,
+        embedded_extractor=embedded_extractor,
+    )
+    if args.single_process:
+        processor.process(pdf_path, n_process=1)
+    else:
+        processor.process(pdf_path)
 
 
 if __name__ == "__main__":
