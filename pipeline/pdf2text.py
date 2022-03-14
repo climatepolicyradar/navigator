@@ -1,5 +1,4 @@
-"""
-CLI which extracts text from pdf documents in a directory.
+"""CLI which extracts text from pdf documents in a directory.
 
 Implements a cli which will extract the text contained in a set of pdf files in a directory.
 """
@@ -25,8 +24,7 @@ S3PathComponents = namedtuple(
 
 
 def split_s3_path(s3_path: Path, include_bucket=True, include_filename=True):
-    """
-    Return the components of an s3 path.
+    """Return the components of an s3 path.
 
     Returns a path to an s3 bucket/folder or s3 object as a set of components
     """
@@ -51,8 +49,7 @@ def split_s3_path(s3_path: Path, include_bucket=True, include_filename=True):
 def get_pdf_files(
     pdf_path: Path, use_s3: bool = False
 ) -> Generator[Tuple[Path, str], None, None]:
-    """
-    Retrieve files from an s3 bucket/folder, or local directory
+    """Retrieve files from an s3 bucket/folder, or local directory
 
     Yields paths to pdf files to be processed. The files are either retrieved from a bucket/folder on S3,
     or from a local directory, depending on the use_s3 argument.
@@ -101,8 +98,7 @@ def get_pdf_files(
 def upload_extract_files(
     out_path: Path, save_filename: str, out_json_filepath: Path, out_text_filepath: Path
 ):
-    """
-    Upload the extracted json and text files to an s3 bucket.
+    """Upload the extracted json and text files to an s3 bucket.
 
     Uploads the json and text extract files to an s3 bucket. save_filename is used as the
     root filename for these files to make sure that they have the same name as the file processed.
@@ -145,8 +141,7 @@ def upload_extract_files(
 
 
 def process(pdf_path: Path, data_dir: Path, out_path: Path, use_s3: bool = False):
-    """
-    Extracts text from text in a directory containing pdf files.
+    """Extracts text from text in a directory containing pdf files.
 
     Iterates through files with a .pdf extension in a given directory or s3 bucket/folder,
     and processes those files to extract text. Produces a .json and/or
