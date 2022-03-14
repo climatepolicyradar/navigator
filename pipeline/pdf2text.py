@@ -1,4 +1,5 @@
-"""CLI which extracts text from pdf documents in a directory.
+"""
+CLI which extracts text from pdf documents in a directory.
 
 Implements a cli which will extract the text contained in a set of pdf files in a directory.
 """
@@ -7,7 +8,8 @@ import argparse
 from pathlib import Path
 import tempfile
 from collections import namedtuple
-from typing import TextIO, Generator, Tuple
+from typing import Generator, Tuple
+from uuid import uuid4
 
 
 from tqdm import tqdm
@@ -22,8 +24,9 @@ S3PathComponents = namedtuple(
 )
 
 
-def split_s3_path(s3_path: str, include_bucket=True, include_filename=True):
-    """Return the components of an s3 path.
+def split_s3_path(s3_path: Path, include_bucket=True, include_filename=True):
+    """
+    Return the components of an s3 path.
 
     Returns a path to an s3 bucket/folder or s3 object as a set of components
     """
@@ -31,7 +34,6 @@ def split_s3_path(s3_path: str, include_bucket=True, include_filename=True):
     bucket = None
     folders = None
 
-    s3_path = Path(s3_path)
     start_ix = 0
     end_ix = -1 if include_filename else len(s3_path.parts)
     if include_bucket:
@@ -47,9 +49,10 @@ def split_s3_path(s3_path: str, include_bucket=True, include_filename=True):
 
 
 def get_pdf_files(
-    pdf_path: str, use_s3: bool = False
+    pdf_path: Path, use_s3: bool = False
 ) -> Generator[Tuple[Path, str], None, None]:
-    """Retrieve files from an s3 bucket/folder, or local directory
+    """
+    Retrieve files from an s3 bucket/folder, or local directory
 
     Yields paths to pdf files to be processed. The files are either retrieved from a bucket/folder on S3,
     or from a local directory, depending on the use_s3 argument.
@@ -68,9 +71,14 @@ def get_pdf_files(
         s3_path_components = split_s3_path(
             pdf_path, include_bucket=True, include_filename=False
         )
-        for s3_document in s3_client.list_files(s3_path_components.bucket):
+        s3_documents = s3_client.list_files(s3_path_components.bucket)
+        if s3_documents is False:
+            raise RuntimeError("Failed to list s3 bucket '{s3_path_components.bucket}'")
+        if s3_documents is True:
+            raise RuntimeError("Unexpected response from s3 bucket listing")
+        for s3_document in s3_documents:
             s3_document_path_components = split_s3_path(
-                s3_document.key, include_bucket=False, include_filename=True
+                Path(s3_document.key), include_bucket=False, include_filename=True
             )
             if (
                 s3_path_components.folders == s3_document_path_components.folders
@@ -91,9 +99,10 @@ def get_pdf_files(
 
 
 def upload_extract_files(
-    out_path: str, save_filename: str, out_json_file: TextIO, out_text_file: TextIO
+    out_path: Path, save_filename: str, out_json_filepath: Path, out_text_filepath: Path
 ):
-    """Upload the extracted json and text files to an s3 bucket.
+    """
+    Upload the extracted json and text files to an s3 bucket.
 
     Uploads the json and text extract files to an s3 bucket. save_filename is used as the
     root filename for these files to make sure that they have the same name as the file processed.
@@ -101,11 +110,11 @@ def upload_extract_files(
     `document.json` and `document.txt` respectively.
 
     Args:
-        out_path (str): path to bucket and folders to upload files to in format
+        out_path (Path): path to bucket and folders to upload files to in format
             [bucket]/[folder]/[folder]/...
         save_filename (str): name of file being processed
-        out_json_file (TextIO): file like object for temporary output json file
-        out_text_file (TextIO): file like object for temporary output text file
+        out_json_filepath (Path): path for temporary output json file
+        out_text_filepath (Path): path for temporary output text file
     """
 
     out_path_components = split_s3_path(
@@ -128,19 +137,16 @@ def upload_extract_files(
 
     # Upload the files
     s3_client.upload_file(
-        out_json_file.name, out_path_components.bucket, key=s3_json_key
+        out_json_filepath.name, out_path_components.bucket, key=s3_json_key
     )
     s3_client.upload_file(
-        out_text_file.name, out_path_components.bucket, key=s3_text_key
+        out_text_filepath.name, out_path_components.bucket, key=s3_text_key
     )
 
-    # Close the temp files to ensure they're deleted afterwards
-    out_json_file.close()
-    out_text_file.close()
 
-
-def process(pdf_path: str, data_dir: Path, out_path: str, use_s3: bool = False):
-    """Extracts text from text in a directory containing pdf files.
+def process(pdf_path: Path, data_dir: Path, out_path: Path, use_s3: bool = False):
+    """
+    Extracts text from text in a directory containing pdf files.
 
     Iterates through files with a .pdf extension in a given directory or s3 bucket/folder,
     and processes those files to extract text. Produces a .json and/or
@@ -171,38 +177,40 @@ def process(pdf_path: str, data_dir: Path, out_path: str, use_s3: bool = False):
                 pdf_filepath=pdf_file,
                 pdf_name=pdf_name,
                 data_output_dir=data_dir,
-                output_folder_pdf_splits="/temp",
             )
         except Exception as e:
             print(
                 f"Adobe extractor failed with error {e}. Falling back to embedded text extractor."
             )
             pdf_doc = embedded_extractor.extract(
-                pdf_filepath=pdf_file, pdf_name=pdf_name, data_output_dir=data_dir
+                pdf_filepath=pdf_file,
+                pdf_name=pdf_name,
+                data_output_dir=data_dir,
             )
 
         save_filename = Path(source_pdf_filename).stem
 
-        if use_s3:
-            out_json_file = tempfile.NamedTemporaryFile(
-                prefix="navigator_", suffix=".json"
-            )
-            out_json_filepath = out_json_file.name
-            out_text_file = tempfile.NamedTemporaryFile(
-                prefix="navigator_", suffix=".txt"
-            )
-            out_text_filepath = out_text_file.name
-        else:
-            out_json_filepath = Path(out_path) / f"{save_filename}.json"
-            out_text_filepath = Path(out_path) / f"{save_filename}.txt"
+        with tempfile.TemporaryDirectory() as temp_dir:
+            if use_s3:
+                _u = str(uuid4())
+                out_json_filepath = Path(temp_dir) / f"navigator_{_u}.json"
+                out_text_filepath = Path(temp_dir) / f"navigator_{_u}.txt"
+            else:
+                out_json_filepath = Path(out_path) / f"{save_filename}.json"
+                out_text_filepath = Path(out_path) / f"{save_filename}.txt"
 
-        # Save the json and text for the document
-        pdf_doc.save_json(out_json_filepath)
-        pdf_doc.save_text(out_text_filepath)
+            # Save the json and text for the document
+            pdf_doc.save_json(out_json_filepath)
+            pdf_doc.save_text(out_text_filepath)
 
-        # If we're using s3, upload the document to the given bucket/folder
-        if use_s3:
-            upload_extract_files(out_path, save_filename, out_json_file, out_text_file)
+            # If we're using s3, upload the document to the given bucket/folder
+            if use_s3:
+                upload_extract_files(
+                    out_path,
+                    save_filename,
+                    out_json_filepath,
+                    out_text_filepath,
+                )
 
 
 def configure_args():

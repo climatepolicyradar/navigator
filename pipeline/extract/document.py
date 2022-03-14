@@ -1,4 +1,5 @@
-"""Defines data classes storing the state of a document and text in that document.
+"""
+Defines data classes storing the state of a document and text in that document.
 
 Provides classes which represent a document, the text it contains and positional information
 of that text.
@@ -36,7 +37,8 @@ from dataclasses import dataclass, asdict
 
 @dataclass
 class TextBlock:
-    """Represents an individual text block on a page.
+    """
+    Represents an individual text block on a page.
 
     Stores the text and positional information for a single
     text block extracted from a document.
@@ -66,7 +68,8 @@ class TextBlock:
 
 @dataclass
 class Page:
-    """Represents a page in a document.
+    """
+    Represents a page in a document.
 
     All text blocks on a page are contained within a Page object. Also, the dimensions of the page can
     be specified.
@@ -92,7 +95,8 @@ class Page:
 
 @dataclass
 class Document:
-    """Represents a document and associated pages and text blocks.
+    """
+    Represents a document and associated pages and text blocks.
 
     Stores all of the pages that are contained in a document.
 
@@ -101,8 +105,8 @@ class Document:
         filename: Name of the pdf file
     """
 
-    pages: List[Page] = None  # List of textblocks in the document
-    filename: str = None  # Name of the pdf file that this document relates to
+    pages: List[Page]  # List of textblocks in the document
+    filename: str  # Name of the pdf file that this document relates to
 
     def save_json(self, json_filepath: Path):
         """Save the document contents to json"""
