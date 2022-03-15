@@ -182,7 +182,7 @@ class AdobeDocumentPostProcessor:
             previous_block = None
             new_text_blocks = []
             dd = defaultdict(list)
-            if type(page)!=dict:
+            if type(page) != dict:
                 continue
             for text_block in page["text_blocks"]:
                 blocks_seen += 1
@@ -194,8 +194,12 @@ class AdobeDocumentPostProcessor:
                         current_list_id = f"{ix}_{list_group}"
                         # Handle the case where we have a new list at the beginning of a page and where
                         # the previous list block is assumed context.
-                        if (text_block["text_block_id"].split("_")[1] == "b1") and previous_block:
-                            text_block = self._update_custom_attributes(text_block, "contiguous_with_prev_page_context")
+                        if (
+                            text_block["text_block_id"].split("_")[1] == "b1"
+                        ) and previous_block:
+                            text_block = self._update_custom_attributes(
+                                text_block, "contiguous_with_prev_page_context"
+                            )
                         # If the list group for the current page is unpopulated and there is
                         # a previous list block on the page, prepend it under
                         # the assumption that it is context.
@@ -247,9 +251,7 @@ class AdobeDocumentPostProcessor:
         new_contents = {"pages": new_pages}
         return new_contents
 
-    def postprocess(
-        self, root_path: pathlib.Path
-    ) -> Document:
+    def postprocess(self, root_path: pathlib.Path) -> Document:
         """
         Parse the elements belonging to a list into a single block, including the list's introductory text.
 
