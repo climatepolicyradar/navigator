@@ -5,7 +5,7 @@ import {
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
   User,
-} from '../api';
+} from '.';
 import { storage } from '../utils/storage';
 
 export async function handleUserResponse(data) {
