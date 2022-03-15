@@ -243,6 +243,7 @@ class AdobeDocumentPostProcessor:
             # If blocks have a repeated block id, only keep the final one: the others are context values
             # that are included in the list group.
             # Sort blocks by block index of the first attribute.
+            # TODO: Why have we got pages with no list blocks?
             if len(new_text_blocks) > 0:
                 new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
             new_pages.append(new_text_blocks)
