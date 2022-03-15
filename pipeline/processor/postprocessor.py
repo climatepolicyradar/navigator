@@ -185,6 +185,8 @@ class AdobeDocumentPostProcessor:
                             # likely need to add some logic to handle the case where the list is more than 1 element
                             # away because of garbage text blocks at the end of the page. But for now this may be
                             # good enough.
+                            # TODO: Perhaps add some more nuance here, as another possibility is that it's contiguous
+                            #  with the previous page but it's context/a list continuation.
                             if prev_list_ix + 1 == blocks_seen:
                                 text_block = self._update_custom_attributes(text_block, "contiguous_with_previous_page")
                             else:
