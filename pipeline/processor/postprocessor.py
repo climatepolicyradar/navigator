@@ -182,8 +182,6 @@ class AdobeDocumentPostProcessor:
             previous_block = None
             new_text_blocks = []
             dd = defaultdict(list)
-            if type(page) != dict:
-                continue
             for text_block in page["text_blocks"]:
                 blocks_seen += 1
                 if text_block["path"]:
