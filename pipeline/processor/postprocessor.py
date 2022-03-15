@@ -77,20 +77,21 @@ class AdobeDocumentPostProcessor:
         return string
 
     @staticmethod
-    def _update_custom_attributes(text_block: dict) -> dict:
+    def _update_custom_attributes(text_block: dict, new_attribute: str) -> dict:
         """
         Helper method to update custom attributes with metadata to inform that a block
-        is contiguous with the last element of the previous page.
+        is contiguous with the previous element, which may be of a different type.
 
         Args:
             text_block: The text block that is contiguous from the previous page.
+            new_attribute: The new attribute to add to custom_attributes.
 
         Returns:
             The text block with the updated custom attributes.
 
         """
         new_custom_attributes = {
-            "joined_with_previous_block": True
+            new_attribute: True
         }
         if text_block['custom_attributes'] is not None:
             text_block["custom_attributes"].update(new_custom_attributes)
@@ -175,6 +176,9 @@ class AdobeDocumentPostProcessor:
                         # a previous list block on the page, prepend it under
                         # the assumption that it is context.
                         if (len(dd[current_list_id]) == 0) and (previous_block):
+                            # TODO: Before, we added the previous block to the list but decided to separate this out.
+                            #  Perhaps it's a good idea to add it back in but to the metadata, so that we can validate
+                            #   the assumption that the previous block is context by pprinting the list when coding.
                             # Heuristic: If the list block is adjacent to the previous list block and the current
                             # list id was unpopulated and the start of this conditional, assume we are on the same
                             # list but on a new page, appending the appropriate metadata to custom attributes. We
@@ -182,7 +186,9 @@ class AdobeDocumentPostProcessor:
                             # away because of garbage text blocks at the end of the page. But for now this may be
                             # good enough.
                             if prev_list_ix + 1 == blocks_seen:
-                                text_block = self._update_custom_attributes(text_block)
+                                text_block = self._update_custom_attributes(text_block, "contiguous_with_previous_page")
+                            else:
+                                text_block = self._update_custom_attributes(text_block, "contiguous_with_preceding_contextual_block")
 
                         dd[current_list_id].append(text_block)
                         prev_list_ix += 1
