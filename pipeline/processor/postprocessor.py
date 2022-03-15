@@ -88,10 +88,8 @@ class AdobeDocumentPostProcessor:
             The text block with the updated custom attributes.
 
         """
-        new_custom_attributes = {
-            new_attribute: True
-        }
-        if text_block['custom_attributes'] is not None:
+        new_custom_attributes = {new_attribute: True}
+        if text_block["custom_attributes"] is not None:
             text_block["custom_attributes"].update(new_custom_attributes)
         else:
             text_block["custom_attributes"] = new_custom_attributes
@@ -110,17 +108,17 @@ class AdobeDocumentPostProcessor:
 
         """
         df = pd.DataFrame(text_blocks)
-        df['page_num'] = df['text_block_id'].str.split('_b').str[0]
-        df['block_num'] = df['text_block_id'].str.split('_b').str[1].astype(int)
+        df["page_num"] = df["text_block_id"].str.split("_b").str[0]
+        df["block_num"] = df["text_block_id"].str.split("_b").str[1].astype(int)
         # Remove all but the last block for each id, as this is unsorted with
         # the last block being the grouped list element we want to keep.
         new_text_blocks = (
             df.groupby("text_block_id")
-                .apply(lambda x: x.iloc[-1])
-                .reset_index(drop=True)
-                .sort_values(['page_num', 'block_num'])
-                .drop(columns=['page_num', 'block_num'])
-                .to_dict("records")
+            .apply(lambda x: x.iloc[-1])
+            .reset_index(drop=True)
+            .sort_values(["page_num", "block_num"])
+            .drop(columns=["page_num", "block_num"])
+            .to_dict("records")
         )
         return new_text_blocks
 
@@ -138,9 +136,7 @@ class AdobeDocumentPostProcessor:
         df = pd.DataFrame(blocks)
         # Note this drop duplicates step is a bit of a hack to deal with undiagnosed upstream
         # issues leading to duplicates..
-        df = df.loc[
-            df.astype(str).drop_duplicates().index
-        ]
+        df = df.loc[df.astype(str).drop_duplicates().index]
         df["page_num"] = (
             df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
         )
@@ -150,8 +146,8 @@ class AdobeDocumentPostProcessor:
         block_ids = df["text_block_id"].tolist()
         custom_bounding_boxes = (
             df.groupby("page_num")
-                .apply(lambda x: self._minimal_bounding_box(x["coords"]))
-                .tolist()
+            .apply(lambda x: self._minimal_bounding_box(x["coords"]))
+            .tolist()
         )
         custom_attributes_dict = {
             "paths": paths,
@@ -189,20 +185,24 @@ class AdobeDocumentPostProcessor:
             for text_block in page["text_blocks"]:
                 blocks_seen += 1
                 if text_block["path"]:
-                    list_group = self._find_first_occurrence(self.regex_pattern, text_block["path"])
+                    list_group = self._find_first_occurrence(
+                        self.regex_pattern, text_block["path"]
+                    )
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
                         # Handle the case where we have a new list at the beginning of a page and where
-                        # the previous list block is assumed context. Seen cases where this happens.
-                        if text_block['text_block_id'].split("_")[1] == 'b1':
-                            text_block = self._update_custom_attributes(text_block)
+                        # the previous list block is assumed context.
+                        if (text_block["text_block_id"].split("_")[1] == "b1") and previous_block:
+                            text_block = self._update_custom_attributes(text_block, "contiguous_with_prev_page_context")
                         # If the list group for the current page is unpopulated and there is
                         # a previous list block on the page, prepend it under
                         # the assumption that it is context.
-                        if (len(dd[current_list_id]) == 0) and (previous_block):
+                        if (len(dd[current_list_id]) == 0) and previous_block:
                             # TODO: Before, we added the previous block to the list but decided to separate this out.
-                            #  Perhaps it's a good idea to add it back in but to the metadata, so that we can validate
-                            #   the assumption that the previous block is context by pprinting the list when coding.
+                            #  Perhaps it's a good idea to add it back in but to the metadata, so that we can
+                            #  validate the assumption that the previous block is context by pretty printing the list
+                            #  when coding.
+
                             # Heuristic: If the list block is adjacent to the previous list block and the current
                             # list id was unpopulated and the start of this conditional, assume we are on the same
                             # list but on a new page, appending the appropriate metadata to custom attributes. We
@@ -212,10 +212,14 @@ class AdobeDocumentPostProcessor:
                             # TODO: Perhaps add some more nuance here, as another possibility is that it's contiguous
                             #  with the previous page but it's context/a list continuation.
                             if prev_list_ix + 1 == blocks_seen:
-                                text_block = self._update_custom_attributes(text_block, "contiguous_with_previous_page")
+                                text_block = self._update_custom_attributes(
+                                    text_block, "contiguous_with_previous_page_list"
+                                )
                             else:
-                                text_block = self._update_custom_attributes(text_block,
-                                                                            "contiguous_with_preceding_contextual_block")
+                                text_block = self._update_custom_attributes(
+                                    text_block,
+                                    "contiguous_with_same_page_context",
+                                )
 
                         dd[current_list_id].append(text_block)
                         prev_list_ix += 1
@@ -236,11 +240,11 @@ class AdobeDocumentPostProcessor:
             # Sort blocks by block index of the first attribute.
             new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
             new_pages.append(new_text_blocks)
-        new_contents = {'pages': new_pages}
+        new_contents = {"pages": new_pages}
         return new_contents
 
     def postprocess(
-            self, root_path: pathlib.Path, out_path: pathlib.Path = None
+        self, root_path: pathlib.Path
     ) -> Document:
         """
         Parse the elements belonging to a list into a single block, including the list's introductory text.
@@ -256,7 +260,5 @@ class AdobeDocumentPostProcessor:
             filename = root_path.stem
 
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
-        new_contents = self._group_list_elements(
-            contents, self.regex_pattern
-        )
-        return Document(pages=new_contents['pages'], filename=filename)
+        new_contents = self._group_list_elements(contents)
+        return Document(pages=new_contents["pages"], filename=filename)
