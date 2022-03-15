@@ -19,8 +19,8 @@ def process(in_path, out_path):
     postprocessor = AdobeDocumentPostProcessor()
     for file in in_path.iterdir():
         if file.suffix == ".json":
-            doc = postprocessor.postprocess(file, out_path)
-            doc.save_json(out_path)
+            doc = postprocessor.postprocess(file)
+            doc.save_json(out_path / file)
 
 
 if __name__ == "__main__":
@@ -31,4 +31,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
     in_dir = Path(args.in_path)
     out_dir = Path(args.out_path)
-    new_contents = process(in_dir, out_dir)
+    process(in_dir, out_dir)
