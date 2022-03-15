@@ -10,7 +10,6 @@ from collections import namedtuple
 from typing import Generator, Tuple
 from uuid import uuid4
 
-
 from tqdm import tqdm
 
 from navigator.core.aws import S3Client
@@ -70,7 +69,9 @@ def get_pdf_files(
         )
         s3_documents = s3_client.list_files(s3_path_components.bucket)
         if s3_documents is False:
-            raise RuntimeError("Failed to list s3 bucket '{s3_path_components.bucket}'")
+            raise RuntimeError(
+                f"Failed to list s3 bucket '{s3_path_components.bucket}'"
+            )
         if s3_documents is True:
             raise RuntimeError("Unexpected response from s3 bucket listing")
         for s3_document in s3_documents:
