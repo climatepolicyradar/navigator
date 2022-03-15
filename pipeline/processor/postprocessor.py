@@ -76,6 +76,28 @@ class AdobeDocumentPostProcessor:
                 string += f"{row['text'][0]}\n"
         return string
 
+    @staticmethod
+    def _update_custom_attributes(text_block: dict) -> dict:
+        """
+        Helper method to update custom attributes with metadata to inform that a block
+        is contiguous with the last element of the previous page.
+
+        Args:
+            text_block: The text block that is contiguous from the previous page.
+
+        Returns:
+            The text block with the updated custom attributes.
+
+        """
+        new_custom_attributes = {
+            "joined_with_previous_block": True
+        }
+        if text_block['custom_attributes'] is not None:
+            text_block["custom_attributes"].update(new_custom_attributes)
+        else:
+            text_block["custom_attributes"] = new_custom_attributes
+        return text_block
+
 
     def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
@@ -148,19 +170,20 @@ class AdobeDocumentPostProcessor:
                         # Handle the case where we have a new list at the beginning of a page and where
                         # the previous list block is assumed context. Seen cases where this happens.
                         if text_block['text_block_id'].split("_")[1] == 'b1':
-                            text_block = self._new_custom_attributes(text_block)
+                            text_block = self._update_custom_attributes(text_block)
                         # If the list group for the current page is unpopulated and there is
                         # a previous list block on the page, prepend it under
                         # the assumption that it is context.
                         if (len(dd[current_list_id]) == 0) and (previous_block):
                             dd[current_list_id].append(previous_block)
-                            # Heuristic: If the list block is adjacent to the previous list block and the current list id
-                            # was unpopulated and the start of this conditional, assume we are on the same list but on a
-                            # new page, appending the appropriate metadata to custom attributes. We likely need to add
-                            # some logic to handle the case where the list is more than 1 element away because of garbage
-                            # text blocks at the end of the page. But for now this may be good enough.
+                            # Heuristic: If the list block is adjacent to the previous list block and the current
+                            # list id was unpopulated and the start of this conditional, assume we are on the same
+                            # list but on a new page, appending the appropriate metadata to custom attributes. We
+                            # likely need to add some logic to handle the case where the list is more than 1 element
+                            # away because of garbage text blocks at the end of the page. But for now this may be
+                            # good enough.
                             if prev_list_ix + 1 == blocks_seen:
-                                text_block = self._new_custom_attributes(text_block)
+                                text_block = self._update_custom_attributes(text_block)
 
                         dd[current_list_id].append(text_block)
                         prev_list_ix += 1
