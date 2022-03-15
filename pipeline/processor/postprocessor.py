@@ -6,7 +6,101 @@ from typing import List, Dict
 
 import pandas as pd
 
-from pipeline.extract.document import Document
+from pipeline.extract.document import Document, TextBlock
+
+from collections import Counter
+from copy import deepcopy
+
+
+class AdobeTextStylingPostProcessor:
+    @staticmethod
+    def _classify_text_block_styling(text_block: TextBlock):
+        if not text_block.custom_attributes:
+            return None
+
+        if text_block.custom_attributes.get("BaselineShift", 0) < 0:
+            return "subscript"
+        elif text_block.custom_attributes.get("TextDecorationType") == "Underline":
+            return "underline"
+        elif text_block.custom_attributes.get("TextPosition") == "Sup":
+            return "superscript"
+        else:
+            return None
+
+    @staticmethod
+    def _add_text_styling_markers(text: str, styling: str):
+        leading_spaces = " " * (len(text) - len(text.lstrip(" ")))
+        trailing_spaces = " " * (len(text) - len(text.rstrip(" ")))
+
+        if styling == "subscript":
+            return f"{leading_spaces}<sub>{text.strip()}</sub>{trailing_spaces}"
+        elif styling == "superscript":
+            return f"{leading_spaces + trailing_spaces}"
+        elif styling == "underline":
+            return f"{leading_spaces}<u>{text.strip()}</u>{trailing_spaces}"
+        else:
+            return text
+
+    def merge_text_blocks(self, text_blocks: List[TextBlock]) -> TextBlock:
+        all_coords = [tuple(text_block.coords) for text_block in text_blocks]
+        merged_coords = [
+            # x0, y0, x1, y1
+            min([c[0] for c in all_coords]),
+            min([c[1] for c in all_coords]),
+            max([c[2] for c in all_coords]),
+            max([c[3] for c in all_coords]),
+        ]
+
+        merged_block_text = []
+
+        for text_block in text_blocks:
+            block_styling = self._classify_text_block_styling(text_block)
+            new_block_text = [
+                self._add_text_styling_markers(line, block_styling)
+                for line in text_block.text
+            ]
+
+            if merged_block_text == []:
+                merged_block_text = new_block_text
+            else:
+                merged_block_text[-1] = merged_block_text[-1] + new_block_text[0]
+                merged_block_text += new_block_text[1:]
+
+        return TextBlock(
+            text=merged_block_text,
+            text_block_id=text_blocks[0].text_block_id + "_merged",
+            coords=merged_coords,
+            path=text_blocks[0].path,
+        )
+
+    def process(self, document: Document) -> Document:
+        new_document = deepcopy(document)
+
+        for page in new_document.pages:
+            path_counts = Counter([tuple(block.path) for block in page.text_blocks])
+
+            duplicated_paths = [
+                path for path, count in path_counts.items() if count > 1
+            ]
+
+            for path in duplicated_paths:
+                text_block_idxs, text_blocks_to_merge = list(
+                    zip(
+                        *[
+                            (idx, block)
+                            for idx, block in enumerate(page.text_blocks)
+                            if tuple(block.path) == path
+                        ]
+                    )
+                )
+                merged_text_block = self.merge_text_blocks(text_blocks_to_merge)
+                page.text_blocks = (
+                    page.text_blocks[0 : text_block_idxs[0]]
+                    + [merged_text_block]
+                    + page.text_blocks[text_block_idxs[-1] + 1 :]
+                )
+
+        return new_document
 
 
 class AdobeDocumentPostProcessor:
@@ -245,7 +339,9 @@ class AdobeDocumentPostProcessor:
             # TODO: Why have we got pages with no list blocks?
             if len(new_text_blocks) > 0:
                 new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
-            new_pages.append(new_text_blocks)
+            newpage = {'text_blocks': new_text_blocks, "dimensions": page['dimensions'], 'page_id': page['page_id']}
+            new_pages.append(newpage)
+
         new_contents = {"pages": new_pages}
         return new_contents
 
