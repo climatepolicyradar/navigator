@@ -1,9 +1,8 @@
-import copy
 import json
 import pathlib
 import re
 from collections import defaultdict
-from typing import List, Dict, DefaultDict
+from typing import List, Dict
 
 import pandas as pd
 
@@ -15,7 +14,6 @@ class AdobeDocumentPostProcessor:
     handled by the API itself)."""
 
     regex_pattern = r"L\[?\d?\]?"
-
 
     @staticmethod
     def _minimal_bounding_box(coords: List[list]) -> list:
@@ -99,6 +97,32 @@ class AdobeDocumentPostProcessor:
             text_block["custom_attributes"] = new_custom_attributes
         return text_block
 
+    @staticmethod
+    def _postprocess_list_grouped_page(text_blocks: List[dict]) -> dict:
+        """
+        Remove list elements on a page that are not part of a list group.
+
+        Args:
+            text_blocks: All text blocks on a page.
+
+        Returns:
+            The text blocks with singular list elements removed.
+
+        """
+        df = pd.DataFrame(text_blocks)
+        df['page_num'] = df['text_block_id'].str.split('_b').str[0]
+        df['block_num'] = df['text_block_id'].str.split('_b').str[1].astype(int)
+        # Remove all but the last block for each id, as this is unsorted with
+        # the last block being the grouped list element we want to keep.
+        new_text_blocks = (
+            df.groupby("text_block_id")
+                .apply(lambda x: x.iloc[-1])
+                .reset_index(drop=True)
+                .sort_values(['page_num', 'block_num'])
+                .drop(columns=['page_num', 'block_num'])
+                .to_dict("records")
+        )
+        return new_text_blocks
 
     def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
@@ -143,15 +167,15 @@ class AdobeDocumentPostProcessor:
         }
         return new_dict
 
-
-    def _group_list_elements(self, contents: dict, reg: str) -> dict:
+    def _group_list_elements(self, contents: dict) -> dict:
         """
+        Parse Adobe outputs to group list elements
+
         Args:
-            file:
-            reg:
+            contents: A dict of the processed adobe output for a particular pdf.
 
         Returns:
-
+            Reprocessed version of the Adobe output with grouped list elements.
         """
 
         prev_list_ix = 0
@@ -165,7 +189,7 @@ class AdobeDocumentPostProcessor:
             for text_block in page["text_blocks"]:
                 blocks_seen += 1
                 if text_block["path"]:
-                    list_group = self._find_first_occurrence(reg, text_block["path"])
+                    list_group = self._find_first_occurrence(self.regex_pattern, text_block["path"])
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
                         # Handle the case where we have a new list at the beginning of a page and where
@@ -190,7 +214,8 @@ class AdobeDocumentPostProcessor:
                             if prev_list_ix + 1 == blocks_seen:
                                 text_block = self._update_custom_attributes(text_block, "contiguous_with_previous_page")
                             else:
-                                text_block = self._update_custom_attributes(text_block, "contiguous_with_preceding_contextual_block")
+                                text_block = self._update_custom_attributes(text_block,
+                                                                            "contiguous_with_preceding_contextual_block")
 
                         dd[current_list_id].append(text_block)
                         prev_list_ix += 1
@@ -203,8 +228,8 @@ class AdobeDocumentPostProcessor:
 
             last_page_ix += 1
             # Append default dict to page.
-            for ll in dd.values():
-                grouped_block = self._create_custom_attributes(ll)
+            for li in dd.values():
+                grouped_block = self._create_custom_attributes(li)
                 new_text_blocks.append(grouped_block)
             # If blocks have a repeated block id, only keep the final one: the others are context values
             # that are included in the list group.
@@ -213,7 +238,6 @@ class AdobeDocumentPostProcessor:
             new_pages.append(new_text_blocks)
         new_contents = {'pages': new_pages}
         return new_contents
-
 
     def postprocess(
             self, root_path: pathlib.Path, out_path: pathlib.Path = None
@@ -236,4 +260,3 @@ class AdobeDocumentPostProcessor:
             contents, self.regex_pattern
         )
         return Document(pages=new_contents['pages'], filename=filename)
-
