@@ -4,9 +4,10 @@ import re
 from collections import defaultdict
 from typing import List, Dict
 
+import numpy as np
 import pandas as pd
 
-from pipeline.extract.document import Document, TextBlock
+from pipeline.extract.document import Document, TextBlock, Page
 
 from collections import Counter
 from copy import deepcopy
@@ -77,7 +78,10 @@ class AdobeTextStylingPostProcessor:
         new_document = deepcopy(document)
 
         for page in new_document.pages:
-            path_counts = Counter([tuple(block.path) for block in page.text_blocks])
+            try:
+                path_counts = Counter([tuple(block.path) for block in page.text_blocks])
+            except:
+                print('hi')
 
             duplicated_paths = [
                 path for path, count in path_counts.items() if count > 1
@@ -339,7 +343,13 @@ class AdobeDocumentPostProcessor:
             # TODO: Why have we got pages with no list blocks?
             if len(new_text_blocks) > 0:
                 new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
-            newpage = {'text_blocks': new_text_blocks, "dimensions": page['dimensions'], 'page_id': page['page_id']}
+            # In cases with 1 block on a page, sometimes coords appear ommitted. Add None. May affect downstream
+            # processing.
+            if len(new_text_blocks) == 1 and ('coords' not in new_text_blocks[0]):
+                new_text_blocks[0]['coords'] = None
+            # Convert to text block data class.
+            new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
+            newpage = Page(text_blocks=new_text_blocks, dimensions = page['dimensions'], page_id=page['page_id'])
             new_pages.append(newpage)
 
         new_contents = {"pages": new_pages}
