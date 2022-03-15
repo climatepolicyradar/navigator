@@ -3,7 +3,7 @@ import json
 import pathlib
 import re
 from collections import defaultdict
-from typing import List, Dict, Tuple, DefaultDict
+from typing import List, Dict, DefaultDict
 
 import pandas as pd
 
@@ -129,6 +129,7 @@ class AdobeDocumentPostProcessor:
             new_contents["pages"].append(text_blocks_copy)
         return new_contents
 
+
     def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
         Create custom attributes for a list of text blocks.
@@ -173,7 +174,7 @@ class AdobeDocumentPostProcessor:
         return new_dict
 
 
-    def _group_list_elements(self, file: pathlib.Path, reg: str) -> dict:
+    def _group_list_elements(self, contents: dict, reg: str) -> dict:
         """
         Args:
             file:
@@ -183,8 +184,6 @@ class AdobeDocumentPostProcessor:
 
         """
 
-        with open(file, "r") as j:
-            contents = json.loads(j.read())
         prev_list_ix = 0
         blocks_seen = 0
         last_page_ix = 0
@@ -238,135 +237,6 @@ class AdobeDocumentPostProcessor:
         new_contents = {'pages': new_pages}
         return new_contents
 
-    def _group_list_elements(
-            self,
-            contents: dict,
-            filename: str,
-    ) -> Tuple[dict, DefaultDict]:
-        """
-        Groups text elements in each file if they belong to the same list (as recognized by a regular expression), including introductory context.
-
-        Args:
-            contents: dict parsed from json file of Adobe outputs.
-
-        Returns:
-            A tuple of the original adobe content and a default dict of grouped list elements.
-
-        """
-
-        # Loop through the text blocks on each page and group them if they belong to the same list,
-        # (including introductory context), indexing by the block index (e.g p0_b2) of the first
-        # element. The resulting dictionary will be used later to replace the list blocks in the
-        # original adobe content. It's not trivial to replace within this loop because this code
-        # attempts to handle the case where a list starts on the previous page. It's therefore
-        # simpler to replace in a separate step.
-        grouped_list_dict = defaultdict(list)
-        previous_text_block = (
-            None  # For prepending context to first element of each list block
-        )
-        blocks_seen = 0  # Total blocks seen.
-        prev_list_block_ix = 0  # Total blocks seen that belong to a list.
-        list_num = 0  # List in doc (First list is 0, second is 1, etc.)
-        previous_block_id = None
-        current_list_id = None
-        for page in contents["pages"]:
-            for text_block in page["text_blocks"]:
-                # Not all text blocks have a populated path attribute.
-                if text_block["path"]:
-                    text_block["file_name"] = filename
-                    # Get list group if list element (e.g. L, L[1], L[2], etc).
-                    list_group = self._find_first_occurrence(
-                        self.regex_pattern, text_block["path"]
-                    )
-                    if list_group:
-                        # If the list element is adjacent to the last seen list element,
-                        # assume it belongs to the same list, even if we've crossed pages.
-                        if (
-                                blocks_seen != prev_list_block_ix + 1
-                        ):  # i.e. if not adjacent (rule not perfect due to elements
-                            # at bottom and top of pages).
-                            list_num += 1  # Increment list number.
-                            # first_block_id = text_block["text_block_id"]
-
-                        # Handle the first element of the first list by prepending the previous text block
-                        # by default for context. This could result in some false positive semantics, but
-                        # it's a good start. Note, first block id comes from the previous iteration if it's
-                        # inferred that we're on the previous iteration's list.
-                        if (list_num == 1) and (not grouped_list_dict):
-                            current_list_id = previous_block_id
-                            grouped_list_dict[f"{current_list_id}"].append(
-                                previous_text_block
-                            )
-
-                        # Append text to current list group.
-                        grouped_list_dict[f"{current_list_id}"].append(text_block)
-
-                        # If the element is more than 1 block away from the previous list element and there is at least 1
-                        # intervening text block, start a new list and prepend the previous text block to the list. The
-                        # assumption is that in this case the prepended item is introductory context. This may produce
-                        # false negatives (failing to group items in the same semantic list) because sometimes the same
-                        # list is more than 1 element away because of garbage text blocks at the end of the page rather
-                        # than because it is a new list. Nevertheless, this is a good start. In any case, it's hard to
-                        # generalise here because the Adobe API also parses into separate lists in cases like this,
-                        # and so we can't just infer from path names. Depending on the extent of this issue, we can add
-                        # some custom logic depending on whether elements are at the end of a page.
-                        if (
-                                previous_text_block
-                                and prev_list_block_ix + 1
-                                < blocks_seen  # implies discontinuity so start a new list.
-                        ):
-                            list_num += 1
-                            current_list_id = previous_block_id
-                            grouped_list_dict[f"{current_list_id}"].append(
-                                previous_text_block
-                            )
-
-                        # Update previous list index.
-                        prev_list_block_ix = (
-                            blocks_seen  # Save total index for next iteration.
-                        )
-
-                    # Save text block and text block id, so we can use it for the next iteration.
-                    # (we may need to prepend context to the first element of the list).
-                    previous_text_block = text_block
-                    previous_block_id = text_block["text_block_id"]
-                # Increment blocks seen, needed for determining discontinuities between different lists.
-                blocks_seen += 1
-        return contents, grouped_list_dict
-
-    def _remove_ungrouped_list_elements(self, contents: dict) -> list:
-        """
-        Remove ungrouped list elements from the contents dict.
-
-        Args:
-            contents:
-
-        Returns:
-
-        """
-        newpages = []
-        for page in contents["pages"]:
-            newblocks = []
-            for block in page:
-                if block["type"] == "list":
-                    newblocks.append(block)
-                try:
-                    if block["path"]:
-                        # Anything that's a list is already included in the new contents after the processing above,
-                        # so ignore it.
-                        if self._find_first_occurrence(
-                                self.regex_pattern, block["path"]
-                        ):
-                            pass
-                        else:
-                            newblocks.append(block)
-                    else:
-                        pass
-                except KeyError:
-                    print("No path key in block:", block)
-                    newblocks.append(block)
-            newpages.append(newblocks)
-        return newpages
 
     def postprocess(
             self, root_path: pathlib.Path, out_path: pathlib.Path = None
@@ -385,17 +255,8 @@ class AdobeDocumentPostProcessor:
             filename = root_path.stem
 
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
-        original_contents, grouped_list_dict = self._group_list_elements(
-            contents, filename
+        new_contents = self._group_list_elements(
+            contents, self.regex_pattern
         )
-        # Replace original with processed version.
-        for k, v in grouped_list_dict.items():
-            grouped_list_dict[k] = self._create_custom_attributes(v)
-
-        # TODO: Add a condition here to see if we should keep the old list taxonomy or the new one.
-        new_contents = self._insert_grouped_lists(original_contents, grouped_list_dict)
-        new_pages = self._remove_ungrouped_list_elements(new_contents)
-        self._sort_and_dedupe_pages(new_pages)
-
-        return Document(pages=new_pages, filename=filename)
+        return Document(pages=new_contents['pages'], filename=filename)
 
