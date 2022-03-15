@@ -246,8 +246,6 @@ class AdobeDocumentPostProcessor:
             if len(new_text_blocks) > 0:
                 new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
             new_pages.append(new_text_blocks)
-        # TODO: fix this upstream.
-
         new_contents = {"pages": new_pages}
         return new_contents
 
