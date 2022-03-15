@@ -92,43 +92,6 @@ class AdobeDocumentPostProcessor:
         except KeyError as e:
             print(e)
 
-    @staticmethod
-    def _insert_grouped_lists(
-            old_contents: dict, list_default_dict: DefaultDict
-    ) -> dict:
-        """
-        Create a new contents dict from the old contents dict.
-
-        Args:
-            old_contents: old contents dictionary.
-            list_default_dict: defaultdict of semantic lists.
-
-        Returns:
-            new_contents: new contents dictionary.
-        """
-
-        # Create a new contents json file.
-        # Pages is a bit of a misnomer here because lists can now overlap pages, but keeping it for now.
-        new_contents = {"pages": []}
-        for page in old_contents["pages"]:
-            text_blocks = page["text_blocks"]
-            # Reassigning the grouped list blocks to the first block of the list at
-            # the correct index.
-            text_blocks_copy = copy.deepcopy(
-                text_blocks
-            )  # Copy necessary here as insert happens in place.
-            for block_ix, block in enumerate(text_blocks):
-                block_id = block["text_block_id"]
-                if block_id in list_default_dict.keys():
-                    _ = text_blocks_copy.pop(
-                        block_ix
-                    )  # For some reason this isn't working as expected...
-                    text_blocks_copy.insert(
-                        block_ix, list_default_dict[block_id]
-                    )  # Insert replacement block.
-            new_contents["pages"].append(text_blocks_copy)
-        return new_contents
-
 
     def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
