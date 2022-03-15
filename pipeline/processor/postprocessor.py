@@ -175,7 +175,6 @@ class AdobeDocumentPostProcessor:
                         # a previous list block on the page, prepend it under
                         # the assumption that it is context.
                         if (len(dd[current_list_id]) == 0) and (previous_block):
-                            dd[current_list_id].append(previous_block)
                             # Heuristic: If the list block is adjacent to the previous list block and the current
                             # list id was unpopulated and the start of this conditional, assume we are on the same
                             # list but on a new page, appending the appropriate metadata to custom attributes. We
