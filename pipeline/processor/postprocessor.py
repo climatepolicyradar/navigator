@@ -108,7 +108,10 @@ class AdobeDocumentPostProcessor:
 
         """
         df = pd.DataFrame(text_blocks)
-        df["page_num"] = df["text_block_id"].str.split("_b").str[0]
+        try:
+            df["page_num"] = df["text_block_id"].str.split("_b").str[0]
+        except KeyError:
+            print('hi')
         df["block_num"] = df["text_block_id"].str.split("_b").str[1].astype(int)
         # Remove all but the last block for each id, as this is unsorted with
         # the last block being the grouped list element we want to keep.
@@ -163,7 +166,7 @@ class AdobeDocumentPostProcessor:
         }
         return new_dict
 
-    def _group_list_elements(self, contents: dict) -> dict:
+    def _group_list_elements(self, contents: dict, filename) -> dict:
         """
         Parse Adobe outputs to group list elements
 
@@ -182,6 +185,8 @@ class AdobeDocumentPostProcessor:
             previous_block = None
             new_text_blocks = []
             dd = defaultdict(list)
+            if type(page)!=dict:
+                continue
             for text_block in page["text_blocks"]:
                 blocks_seen += 1
                 if text_block["path"]:
@@ -238,8 +243,11 @@ class AdobeDocumentPostProcessor:
             # If blocks have a repeated block id, only keep the final one: the others are context values
             # that are included in the list group.
             # Sort blocks by block index of the first attribute.
-            new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
+            if len(new_text_blocks) > 0:
+                new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
             new_pages.append(new_text_blocks)
+        # TODO: fix this upstream.
+
         new_contents = {"pages": new_pages}
         return new_contents
 
@@ -260,5 +268,5 @@ class AdobeDocumentPostProcessor:
             filename = root_path.stem
 
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
-        new_contents = self._group_list_elements(contents)
+        new_contents = self._group_list_elements(contents, filename)
         return Document(pages=new_contents["pages"], filename=filename)
