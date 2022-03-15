@@ -76,22 +76,6 @@ class AdobeDocumentPostProcessor:
                 string += f"{row['text'][0]}\n"
         return string
 
-    @staticmethod
-    def _sort_and_dedupe_pages(newpages: list):
-        try:
-            for pg_ix, page in enumerate(newpages):
-                df = pd.DataFrame(page)
-                df = df.loc[df.astype(str).drop_duplicates().index].reset_index(
-                    drop=True
-                )
-                df["page"] = df["text_block_id"].str.split("_", expand=True)[0]
-                df["block"] = df["text_block_id"].str.split("_", expand=True)[1]
-                df.drop(columns=["page", "block"], inplace=True)
-                df.sort_values(by=["page", "block"], inplace=True)
-                newpages[pg_ix] = df.to_dict("records")
-        except KeyError as e:
-            print(e)
-
 
     def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
