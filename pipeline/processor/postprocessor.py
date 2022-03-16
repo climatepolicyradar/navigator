@@ -2,10 +2,11 @@ import json
 import pathlib
 import re
 from collections import defaultdict
-from typing import List, Dict
+from typing import List, Dict, Optional
 
 import numpy as np
 import pandas as pd
+from utils import minimal_bounding_box
 
 from pipeline.extract.document import Document, TextBlock, Page
 
@@ -14,8 +15,26 @@ from copy import deepcopy
 
 
 class AdobeTextStylingPostProcessor:
+    """
+    Some semantic passages have separate blocks for styling markers such
+    as underlines, superscripts and subscripts. We want to group such cases
+    into single contiguous blocks. However, we want to keep the styling information
+    because it's often relevant to semantics. For example, CO2 is often represented
+    using a subscript. For now, we keep everything and indicate the styling with
+    HTML style tags inline.
+
+    """
     @staticmethod
-    def _classify_text_block_styling(text_block: TextBlock):
+    def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
+        """
+        Get text block styling, if present.
+
+        Args:
+            text_block:
+
+        Returns:
+
+        """
         if not text_block.custom_attributes:
             return None
 
@@ -29,28 +48,45 @@ class AdobeTextStylingPostProcessor:
             return None
 
     @staticmethod
-    def _add_text_styling_markers(text: str, styling: str):
+    def _add_text_styling_markers(text: str, styling: str) -> str:
+        """
+        Add inline styling markers to text.
+
+        Args:
+            text: raw text without styling.
+            styling: styling to apply.
+
+        Returns:
+
+        """
         leading_spaces = " " * (len(text) - len(text.lstrip(" ")))
         trailing_spaces = " " * (len(text) - len(text.rstrip(" ")))
 
         if styling == "subscript":
+            # Keep subscripts as they may be semantically relevant (as in CO2)
             return f"{leading_spaces}<sub>{text.strip()}</sub>{trailing_spaces}"
         elif styling == "superscript":
+            # Superscripts not semantically relevant, remove them.
             return f"{leading_spaces + trailing_spaces}"
         elif styling == "underline":
+            # TODO: What is the semantic relevance of underlines?
             return f"{leading_spaces}<u>{text.strip()}</u>{trailing_spaces}"
         else:
             return text
 
     def merge_text_blocks(self, text_blocks: List[TextBlock]) -> TextBlock:
+        """
+        Merge text blocks in the same semantic category (same path) that have been separated due to styling elements.
+
+        Args:
+            text_blocks:
+
+        Returns:
+            A new text block
+
+        """
         all_coords = [tuple(text_block.coords) for text_block in text_blocks]
-        merged_coords = [
-            # x0, y0, x1, y1
-            min([c[0] for c in all_coords]),
-            min([c[1] for c in all_coords]),
-            max([c[2] for c in all_coords]),
-            max([c[3] for c in all_coords]),
-        ]
+        merged_coords = minimal_bounding_box(all_coords)
 
         merged_block_text = []
 
@@ -75,13 +111,21 @@ class AdobeTextStylingPostProcessor:
         )
 
     def process(self, document: Document) -> Document:
+        """
+        Iterate through a document and merge text blocks that have been separated due to styling elements.
+
+        Args:
+            document: pdf doc object.
+
+        Returns:
+                A new document object with styling info added.
+        """
         new_document = deepcopy(document)
 
         for page in new_document.pages:
-            try:
-                path_counts = Counter([tuple(block.path) for block in page.text_blocks])
-            except:
-                print('hi')
+            # Count repeated paths since blocks with custom styling (subscript, superscript, underline)
+            # have separate elements in the same text block.
+            path_counts = Counter([tuple(block.path) for block in page.text_blocks])
 
             duplicated_paths = [
                 path for path, count in path_counts.items() if count > 1
@@ -345,11 +389,15 @@ class AdobeDocumentPostProcessor:
                 new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
             # In cases with 1 block on a page, sometimes coords appear ommitted. Add None. May affect downstream
             # processing.
-            if len(new_text_blocks) == 1 and ('coords' not in new_text_blocks[0]):
-                new_text_blocks[0]['coords'] = None
+            if len(new_text_blocks) == 1 and ("coords" not in new_text_blocks[0]):
+                new_text_blocks[0]["coords"] = None
             # Convert to text block data class.
             new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
-            newpage = Page(text_blocks=new_text_blocks, dimensions = page['dimensions'], page_id=page['page_id'])
+            newpage = Page(
+                text_blocks=new_text_blocks,
+                dimensions=page["dimensions"],
+                page_id=page["page_id"],
+            )
             new_pages.append(newpage)
 
         new_contents = {"pages": new_pages}
