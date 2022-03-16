@@ -1,0 +1,40 @@
+"""Infra-as-code for CPR stack."""
+
+import pulumi
+import pulumi_aws as aws
+
+from cpr.common import default_tag
+from cpr.plumbing.main import Plumbing
+
+
+class Storage:
+    """Sets up all storage for the rest of the stack."""
+
+    backend_database_connection_url: pulumi.Output
+
+    def __init__(self, plumbing: Plumbing):
+        config = pulumi.Config()
+        db_username = config.require("db_username")
+        db_password = config.require_secret("db_password")
+        db_name = "navigator"
+
+        rds = aws.rds.Instance(
+            "rds-instance",
+            storage_type="gp2",
+            allocated_storage=20,
+            max_allocated_storage=0,  # disable autoscaling
+            engine="postgres",
+            engine_version="12.10",
+            instance_class="db.t3.micro",
+            name=db_name,
+            password=db_password,
+            skip_final_snapshot=True,
+            username=db_username,
+            vpc_security_group_ids=[plumbing.vpc_to_rds.id],
+            multi_az=False,
+            tags=default_tag,
+        )
+
+        self.backend_database_connection_url = pulumi.Output.all(rds.address, db_password).apply(
+            lambda out: f"postgresql://{db_username}:{out[1]}@{out[0]}/{db_name}"
+        )
