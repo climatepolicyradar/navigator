@@ -43,11 +43,14 @@ async function logoutFn() {
   await storage.clearToken();
 }
 
+// const loaderComponent = () => null;
+
 const authConfig = {
   loadUser,
   loginFn,
   registerFn,
   logoutFn,
+  waitInitial: false
 };
 
 const { AuthProvider, useAuth } = initReactQueryAuth<User>(authConfig);
