@@ -3,8 +3,8 @@ FROM python:3.8
 RUN mkdir /app
 WORKDIR /app
 
-#RUN apt update && \
-#    apt install -y postgresql-client
+RUN apt update && \
+    apt install -y postgresql-client
 
 # Install pip and poetry
 RUN pip install --upgrade pip
