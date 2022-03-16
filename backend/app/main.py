@@ -1,5 +1,3 @@
-import os
-
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -60,35 +58,8 @@ app.include_router(actions_router, prefix="/api/v1", tags=["Actions"])
 app.include_router(documents_router, prefix="/api/v1", tags=["Documents"])
 app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
 
-
-class MissingEnvironmentVariableError(Exception):
-    """Exception for missing environment variables"""
-
-
-def assert_environment_variables():
-    """Check that all required environment variables exist."""
-    required_env_vars = (
-        "POSTGRES_USER",
-        "POSTGRES_PASSWORD",
-        "DATABASE_URL",
-        "SUPERUSER_EMAIL",
-        "SUPERUSER_PASSWORD",
-        "AWS_ACCESS_KEY_ID",
-        "AWS_SECRET_ACCESS_KEY",
-        "AWS_REGION",
-    )
-
-    missing_env_vars = [e for e in required_env_vars if not os.getenv(e)]
-
-    if missing_env_vars:
-        raise MissingEnvironmentVariableError(
-            f"Environment variable(s) {', '.join(missing_env_vars)} do(es) not exist."
-        )
-
-
 # add pagination support to all routes that ask for it
 add_pagination(app)
 
 if __name__ == "__main__":
-    assert_environment_variables()
     uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)
