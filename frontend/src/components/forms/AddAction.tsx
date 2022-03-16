@@ -39,18 +39,18 @@ const AddAction = ({
   const [days, setDays] = useState([]);
   const [popupActive, setPopupActive] = useState(false);
   const initialValues = {
-    source_id: '',
+    action_source_id: '',
     name: '',
     description: '',
     year: '',
     month: '',
     day: '',
     geography_id: '',
-    type_id: '',
+    action_type_id: '',
     documents: [],
   };
 
-  const mutation = useCreateAction();
+  const createAction = useCreateAction();
 
   const yearSelections = yearRange();
   const { t, i18n, ready } = useTranslation([
@@ -106,7 +106,7 @@ const AddAction = ({
 
   const submitForm = (values, resetForm) => {
     processValues(values);
-    mutation.mutate(values);
+    createAction.mutate(values);
     resetForm();
   };
 
@@ -116,7 +116,7 @@ const AddAction = ({
 
   return (
     <>
-      {mutation.isLoading || !ready ? (
+      {createAction.isLoading || !ready ? (
         <>
           <LoaderOverlay />
         </>
@@ -129,14 +129,14 @@ const AddAction = ({
       />
       {ready && (
         <div className="text-lg">
-          {mutation.isError ? (
+          {createAction.isError ? (
             <p
               data-cy="message"
-              className="mt-4 font-bold text-xl text-green-500"
+              className="mt-4 font-bold text-xl text-red-500"
             >
               {t('form.There was an error, please try again later.')}
             </p>
-          ) : mutation.isSuccess ? (
+          ) : createAction.isSuccess ? (
             <p
               data-cy="message"
               className="mt-4 font-bold text-xl text-green-500"
@@ -154,7 +154,7 @@ const AddAction = ({
           <Formik
             initialValues={initialValues}
             validationSchema={Yup.object({
-              source_id: Yup.string().required(
+              action_source_id: Yup.string().required(
                 t('addAction.Please select a source.', { ns: 'formErrors' })
               ),
               name: Yup.string().required(t('Required', { ns: 'formErrors' })),
@@ -162,7 +162,7 @@ const AddAction = ({
               geography_id: Yup.string().required(
                 t('addAction.Please select a geography.', { ns: 'formErrors' })
               ),
-              type_id: Yup.string().required(
+              action_type_id: Yup.string().required(
                 t('addAction.Please select an action type.', {
                   ns: 'formErrors',
                 })
@@ -214,7 +214,7 @@ const AddAction = ({
                       as={Select}
                       data-cy="selectSource"
                       label={t('form.Source')}
-                      name="source_id"
+                      name="action_source_id"
                       required
                     >
                       <option>{t('form.Choose a source')}</option>
@@ -317,7 +317,7 @@ const AddAction = ({
                       data-cy="selectActionType"
                       as={Select}
                       label={t('form.Action type')}
-                      name="type_id"
+                      name="action_type_id"
                       required
                     >
                       <option>{t('form.Choose an action type')}</option>

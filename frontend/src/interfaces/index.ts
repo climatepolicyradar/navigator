@@ -20,14 +20,14 @@ export interface Document {
 }
 
 export interface Action {
-  source_id: string;
+  action_source_id: string;
   name: string;
   description: string;
   year: string;
   month: string;
   day: string;
   geography_id: string;
-  type_id: string;
+  action_type_id: string;
   documents: Document[];
 }
 
