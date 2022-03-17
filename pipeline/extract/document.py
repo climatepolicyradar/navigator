@@ -101,8 +101,8 @@ class Document:
         filename: Name of the pdf file
     """
 
-    pages: List[Page] = None  # List of textblocks in the document
-    filename: str = None  # Name of the pdf file that this document relates to
+    pages: List[Page]  # List of textblocks in the document
+    filename: str  # Name of the pdf file that this document relates to
 
     def save_json(self, json_filepath: Path):
         """Save the document contents to json"""

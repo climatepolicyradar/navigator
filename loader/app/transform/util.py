@@ -1,6 +1,8 @@
 import logging
 import re
 from datetime import datetime
+from html.parser import HTMLParser
+from io import StringIO
 from typing import Tuple, List, Optional
 
 from dateutil.parser import parse
@@ -17,7 +19,7 @@ logger = logging.getLogger(__file__)
 def clean_url(url):
     """Remove additional date strings which are erroneously present in some of the CCLW urls."""
 
-    url = re.sub(r'([0-9]+-[a-zA-Z]{3,}-[0-9]+)', '', url)
+    url = re.sub(r"([0-9]+-[a-zA-Z]{3,}-[0-9]+)", "", url)
 
     return url
 
@@ -35,9 +37,9 @@ def split_and_merge_urls(doc_urls, sep):
     merged_doc_urls = []
     for u_ix, u in enumerate(doc_urls):
         u = u.strip()
-        if u[0:4] == 'http':
+        if u[0:4] == "http":
             merged_doc_urls.append(u)
-        elif u_ix > 0 and u[0:4] != 'http':
+        elif u_ix > 0 and u[0:4] != "http":
             if len(merged_doc_urls) > 0 and len(u) > 0:
                 merged_doc_urls[-1] = merged_doc_urls[-1] + u
 
@@ -47,9 +49,11 @@ def split_and_merge_urls(doc_urls, sep):
     return merged_doc_urls
 
 
-def get_policy_data(dataframe, sep=';', sub_sep=None, url_sep=',') -> Optional[Tuple[Key, PolicyData]]:
-    policy_name = dataframe['policy_name']
-    country_code = dataframe['country_code']
+def get_policy_data(
+    dataframe, sep=";", sub_sep=None, url_sep=","
+) -> Optional[Tuple[Key, PolicyData]]:
+    policy_name = dataframe["policy_name"]
+    country_code = dataframe["country_code"]
     policy_type = CCLWActionType[dataframe["policy_type"]].value
 
     policy_date: Optional[datetime] = extract_date(dataframe["events"])
@@ -57,7 +61,8 @@ def get_policy_data(dataframe, sep=';', sub_sep=None, url_sep=',') -> Optional[T
         policy_date = get_missing_date(policy_name, country_code)
     if not policy_date:
         logger.warning(
-            f"Found no date for policy policy_name={policy_name}, policy_type={policy_type}, country_code={country_code}")
+            f"Found no date for policy policy_name={policy_name}, policy_type={policy_type}, country_code={country_code}"
+        )
         return
 
     key = Key(
@@ -67,7 +72,7 @@ def get_policy_data(dataframe, sep=';', sub_sep=None, url_sep=',') -> Optional[T
         policy_type=policy_type,
     )
 
-    doc_list = dataframe['document_list']
+    doc_list = dataframe["document_list"]
 
     if type(doc_list) == str:
         docs: List[Doc] = []
@@ -80,7 +85,7 @@ def get_policy_data(dataframe, sep=';', sub_sep=None, url_sep=',') -> Optional[T
                 doc_urls = split_and_merge_urls(doc_urls, url_sep)
                 doc_language = u_info[2] if len(u_info[2]) > 0 else None
             else:
-                doc_name = ''
+                doc_name = ""
                 doc_urls = split_and_merge_urls(u, url_sep)
                 doc_language = None
 
@@ -99,7 +104,7 @@ def get_policy_data(dataframe, sep=';', sub_sep=None, url_sep=',') -> Optional[T
                 country_code=country_code,
                 policy_name=policy_name,
                 policy_type=policy_type,
-                policy_description=dataframe["policy_description"],
+                policy_description=strip_tags(dataframe["policy_description"]),
                 docs=docs,
             )
             return key, data
@@ -110,7 +115,7 @@ def get_policy_data(dataframe, sep=';', sub_sep=None, url_sep=',') -> Optional[T
 def extract_date(val: Optional[str]) -> Optional[datetime]:
     if not val or not isinstance(val, str):
         return None
-    date_str = val.split('|')[0]
+    date_str = val.split("|")[0]
     if date_str:
         date = parse(date_str)
         return date
@@ -126,3 +131,26 @@ def ensure_safe(url: str) -> str:
     if "https://" not in url:
         url = url.replace("http://", "https://")
     return url
+
+
+class MLStripper(HTMLParser):
+    """Strips HTML from strings."""
+
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.strict = False
+        self.convert_charrefs = True
+        self.text = StringIO()
+
+    def handle_data(self, d):  # noqa:D102
+        self.text.write(d)
+
+    def get_data(self):  # noqa:D102
+        return self.text.getvalue()
+
+
+def strip_tags(html: str) -> str:
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
