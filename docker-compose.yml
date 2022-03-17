@@ -42,7 +42,6 @@ services:
     build:
       context: loader
       dockerfile: Dockerfile
-    command: python app/main.py
     tty: true
     volumes:
       - ./loader:/app/:cached

@@ -72,15 +72,4 @@ if __name__ == "__main__":
         load_dotenv("../../.env")
         load_dotenv("../../.env.local")
 
-    if os.environ.get("LOADER_RUN") != "0":
-        import time
-
-        # wait for backend
-        # TODO more robust solution here: https://github.com/climatepolicyradar/navigator/issues/368
-        logger.warning("Waiting 5 seconds for backend...")
-        time.sleep(5)
-        logger.warning("Wait complete. Starting...")
-
-        main()
-    else:
-        logger.warning("Loader is disabled.")
+    main()
