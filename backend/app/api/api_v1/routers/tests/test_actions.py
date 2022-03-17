@@ -456,3 +456,11 @@ def test_get_action(
             }
         ],
     }
+
+    # verify missing action raises 404
+    response = client.get("/api/v1/actions/2", headers=user_token_headers)
+    assert response.status_code == 404
+
+    # test auth required
+    response = client.get(f"/api/v1/actions/{action_id}")
+    assert response.status_code == 401
