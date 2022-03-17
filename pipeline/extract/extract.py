@@ -49,6 +49,7 @@ from adobe.pdfservices.operation.pdfops.options.extractpdf.table_structure_type 
     TableStructureType,
 )
 from adobe.pdfservices.operation.execution_context import ExecutionContext
+from adobe.pdfservices.operation.client_config import ClientConfig
 from adobe.pdfservices.operation.io.file_ref import FileRef
 from adobe.pdfservices.operation.pdfops.extract_pdf_operation import ExtractPDFOperation
 
@@ -321,8 +322,13 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             .build()
         )
 
+        # Timeouts are in milliseconds. TODO: move these variables to the constructor
+        client_config = (
+            ClientConfig.Builder().with_connect_timeout(300000).with_read_timeout(30000)
+        )
+
         # Create an ExecutionContext using credentials and create a new operation instance.
-        return ExecutionContext.create(credentials)
+        return ExecutionContext.create(credentials, client_config)
 
     @staticmethod
     def _flatten_data(data: dict) -> dict:
