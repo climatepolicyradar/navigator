@@ -5,7 +5,7 @@ import {
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
   User,
-} from '../api';
+} from '.';
 import { storage } from '../utils/storage';
 
 export async function handleUserResponse(data) {
@@ -43,11 +43,14 @@ async function logoutFn() {
   await storage.clearToken();
 }
 
+// const loaderComponent = () => null;
+
 const authConfig = {
   loadUser,
   loginFn,
   registerFn,
   logoutFn,
+  waitInitial: false
 };
 
 const { AuthProvider, useAuth } = initReactQueryAuth<User>(authConfig);

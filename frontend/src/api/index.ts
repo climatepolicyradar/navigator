@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { storage } from '../utils/storage';
-
-let token;
+import ApiClient from './http-common';
 
 const authapi = axios.create({
   baseURL: 'http://localhost:8000/api/',
@@ -12,7 +11,7 @@ const authapi = axios.create({
   },
 });
 
-// temporary until we have proper login
+// forces a login, temporary until we have proper login
 export const getAuth = async () => {
   await authapi
     .post(
@@ -20,11 +19,8 @@ export const getAuth = async () => {
       'grant_type=&username=user%40navigator.com&password=password&scope=&client_id=test&client_secret=super_secret'
     )
     .then((response) => {
-      token = response.data.access_token;
-      // window.localStorage.setItem('jwt', response.data.access_token);
       storage.clearToken();
       storage.setToken(response.data.access_token);
-      // console.log(response);
       return response.statusText == 'OK'
         ? response.data
         : Promise.reject(Error('Unsuccessful response'));
@@ -48,6 +44,8 @@ export const postFile = async (req: string, data): Promise<any> => {
 };
 
 /* NEW AUTH */
+
+const apiClient = new ApiClient();
 
 interface AuthResponse {
   jwt: string;
@@ -74,12 +72,8 @@ export async function handleApiResponse(response) {
   }
 }
 
-export async function getUserProfile() {
-  return await fetch(`${API_URL}/users/me`, {
-    headers: {
-      Authorization: `Bearer ${storage.getToken()}`,
-    },
-  }).then(handleApiResponse);
+export function getUserProfile() {
+  return apiClient.get('/users/me', null);
 }
 
 export async function loginWithEmailAndPassword(data): Promise<AuthResponse> {

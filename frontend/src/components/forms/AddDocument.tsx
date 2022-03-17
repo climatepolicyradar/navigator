@@ -176,7 +176,6 @@ const AddDocuments = ({
                 type="file"
                 className="w-full"
                 onChange={(event) => {
-                  console.log(event.currentTarget.files[0]);
                   setFieldValue('file', event.currentTarget.value);
                   setFileObj(event.currentTarget.files[0]);
                 }}
