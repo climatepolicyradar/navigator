@@ -1,9 +1,11 @@
 import datetime
 
-from app.db.models.action import Action
-from app.db.schemas.action import ActionCreate
+from fastapi import HTTPException
 from sqlalchemy import and_, exists
 from sqlalchemy.orm import Query, Session, joinedload
+
+from app.db.models.action import Action
+from app.db.schemas.action import ActionCreate
 
 
 def create_action(
@@ -53,3 +55,13 @@ def get_actions_query(
     db: Session,
 ) -> Query:
     return db.query(Action).options(joinedload(Action.documents))
+
+
+def get_action(
+    action_id: int,
+    db: Session,
+) -> Query:
+    action = db.query(Action).filter(Action.action_id == action_id).first()
+    if not action:
+        raise HTTPException(status_code=404, detail="Action not found")
+    return action
