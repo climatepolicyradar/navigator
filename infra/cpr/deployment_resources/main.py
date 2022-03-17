@@ -8,7 +8,7 @@ import pulumi_docker as docker
 default_tag = {"Created-By": "pulumi"}
 
 
-class SharedResources:
+class DeploymentResources:
     """Shared resources that aren't used by the running stack.
 
     These resources are necessary for deployment, e.g. intermediary buckets and Docker image registries.
@@ -28,9 +28,27 @@ class SharedResources:
             tags=({"key": "created-by", "value": "pulumi"}),
         )
 
-        # TODO aws.ecr.LifecyclePolicy to expire old images
-
-        docker_registry_credentials = aws.ecr.get_authorization_token()
+        # keep the last 3 images
+        app_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
+            "cpr-container-registry-lifecycle-policy",
+            repository=self.ecr_repo.name,
+            policy="""{
+                "rules": [
+                    {
+                        "rulePriority": 10,
+                        "description": "Remove untagged images",
+                        "selection": {
+                            "tagStatus": "untagged",
+                            "countType": "imageCountMoreThan",
+                            "countNumber": 3
+                        },
+                        "action": {
+                            "type": "expire"
+                        }
+                    }
+                ]
+            }""",
+        )
 
         def get_registry_info(rid):
             creds = aws.ecr.get_credentials(registry_id=rid)

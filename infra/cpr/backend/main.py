@@ -8,27 +8,35 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_docker as docker
 
-from cpr.common import SharedResources, default_tag
+from cpr.deployment_resources.main import DeploymentResources, default_tag
 from cpr.plumbing.main import Plumbing
 from cpr.storage.main import Storage
 
 
 class Backend:
+    """Deploys all resources necessary for backend API to function."""
 
-    def __init__(self, shared: SharedResources, plumbing: Plumbing, storage: Storage):
+    def __init__(
+        self,
+        deployment_resources: DeploymentResources,
+        plumbing: Plumbing,
+        storage: Storage,
+    ):
         # context has to be one level below 'backend' as backend Dockerfile references '../common'
         docker_context = Path(os.getcwd()) / ".."
         docker_context = docker_context.resolve().as_posix()
         backend_dockerfile = Path(os.getcwd()) / ".." / "backend" / "Dockerfile"
         backend_dockerfile = backend_dockerfile.resolve().as_posix()
 
-        backend_image = docker.Image(
+        self.backend_image = docker.Image(
             "backend-docker-image",
-            build=docker.DockerBuild(context=docker_context, dockerfile=backend_dockerfile),
+            build=docker.DockerBuild(
+                context=docker_context, dockerfile=backend_dockerfile
+            ),
             # image_name=f"{backend_image_name}:{stack}",
-            image_name=shared.ecr_repo.repository_url,
+            image_name=deployment_resources.ecr_repo.repository_url,
             skip_push=False,
-            registry=shared.docker_registry,
+            registry=deployment_resources.docker_registry,
         )
 
         dockerrun_aws_json_template = json.dumps(
@@ -53,8 +61,10 @@ class Backend:
 
             deploy_resource = aws.s3.BucketObject(
                 "backend-beanstalk-docker-manifest",
-                bucket=shared.deploy_bucket,
-                key=datetime.datetime.today().strftime("%Y/%M/%d/%H:%M:%S/Dockerrun.aws.json"),
+                bucket=deployment_resources.deploy_bucket,
+                key=datetime.datetime.today().strftime(
+                    "%Y/%M/%d/%H:%M:%S/Dockerrun.aws.json"
+                ),
                 source=pulumi.asset.FileAsset("Dockerrun.aws.json"),
                 tags=default_tag,
             )
@@ -63,11 +73,13 @@ class Backend:
         deploy_resource = dockerrun_file.apply(create_deploy_resource)
 
         # create Elastic Beanstalk app
-        backend_eb_app = aws.elasticbeanstalk.Application("backend-beanstalk-application")
+        backend_eb_app = aws.elasticbeanstalk.Application(
+            "backend-beanstalk-application"
+        )
         backend_app_version = aws.elasticbeanstalk.ApplicationVersion(
             "navigator-api-version",
             application=backend_eb_app,
-            bucket=shared.deploy_bucket.id,
+            bucket=deployment_resources.deploy_bucket.id,
             key=deploy_resource.id,
             force_delete=True,
             tags=default_tag,

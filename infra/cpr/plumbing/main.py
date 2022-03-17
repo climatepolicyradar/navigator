@@ -4,11 +4,12 @@ import json
 import pulumi
 import pulumi_aws as aws
 
-from cpr.common import default_tag
+from cpr.deployment_resources.main import default_tag
 
 
 class Plumbing:
-    """
+    """Deploys necessary "glue" components for the stack.
+
     Plumbing is a blanket term for all the "invisible" things we need in the infrastructure:
     - security groups
     - availability zones
@@ -24,6 +25,7 @@ class Plumbing:
     service_role: aws.iam.Role
 
     def __init__(self):
+        # Security groups control traffic flow between applications running inside our VPC
         self.security_group = aws.ec2.SecurityGroup(
             "navigator-security-group",
             description="Enable HTTP access",
@@ -47,7 +49,7 @@ class Plumbing:
 
         default_az1 = aws.ec2.DefaultSubnet(
             "default-az-1",
-            availability_zone="eu-west-2a",
+            availability_zone="eu-west-2a",  # TODO make this dynamic
             tags={
                 "Name": "Default subnet for eu-west-2a",
             },
@@ -55,7 +57,7 @@ class Plumbing:
 
         default_az2 = aws.ec2.DefaultSubnet(
             "default-az-2",
-            availability_zone="eu-west-2b",
+            availability_zone="eu-west-2b",  # TODO make this dynamic
             tags={
                 "Name": "Default subnet for eu-west-2b",
             },
@@ -63,15 +65,16 @@ class Plumbing:
 
         default_az3 = aws.ec2.DefaultSubnet(
             "default-az-3",
-            availability_zone="eu-west-2c",
+            availability_zone="eu-west-2c",  # TODO make this dynamic
             tags={
                 "Name": "Default subnet for eu-west-2c",
             },
         )
+        self.subnets = [default_az1, default_az2, default_az3]
 
-        self.subnet_ids = pulumi.Output.all(default_az1.id, default_az2.id, default_az3.id).apply(
-            lambda az: f"{az[0]},{az[1]},{az[2]}"
-        )
+        self.subnet_ids = pulumi.Output.all(
+            default_az1.id, default_az2.id, default_az3.id
+        ).apply(lambda az: f"{az[0]},{az[1]},{az[2]}")
 
         self.vpc_to_rds = aws.ec2.SecurityGroup(
             "vpc-to-rds",
@@ -144,7 +147,9 @@ class Plumbing:
                 "Statement": [
                     {
                         "Action": "sts:AssumeRole",
-                        "Condition": {"StringEquals": {"sts:ExternalId": "elasticbeanstalk"}},
+                        "Condition": {
+                            "StringEquals": {"sts:ExternalId": "elasticbeanstalk"}
+                        },
                         "Principal": {"Service": "elasticbeanstalk.amazonaws.com"},
                         "Effect": "Allow",
                     }
@@ -163,8 +168,32 @@ class Plumbing:
             role=self.service_role.name,
             policy_arn="arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkEnhancedHealth",
         )
+        # TODO This policy is on a deprecation path.
+        #  See documentation for guidance: https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/iam-servicerole.html.
+        #  AWS Elastic Beanstalk Service role policy which grants permissions to create & manage resources
+        #  (i.e.: AutoScaling, EC2, S3, CloudFormation, ELB, etc.) on your behalf.
         aws.iam.RolePolicyAttachment(
             "service-role-policy-attach-AWSElasticBeanstalkService",
             role=self.service_role.name,
             policy_arn="arn:aws:iam::aws:policy/service-role/AWSElasticBeanstalkService",
         )
+
+        # TODO A gateway and routing table are needed to allow the VPC to communicate with the Internet.
+        # Once created, we associate the routing table with our VPC.
+        """
+        app_gateway = aws.ec2.InternetGateway("navigator-gateway",
+            vpc_id=app_vpc.id)
+        
+        app_routetable = aws.ec2.RouteTable("navigator-routetable",
+            routes=[
+                {
+                    "cidr_block": "0.0.0.0/0",
+                    "gateway_id": app_gateway.id,
+                }
+            ],
+            vpc_id=app_vpc.id)
+        
+        app_routetable_association = aws.ec2.MainRouteTableAssociation("navigator_routetable_association",
+            route_table_id=app_routetable.id,
+            vpc_id=app_vpc)
+    """
