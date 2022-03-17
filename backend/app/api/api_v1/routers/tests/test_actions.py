@@ -321,6 +321,7 @@ def test_listing_with_pagination(
     response = client.get(
         "/api/v1/actions?page=1&size=1",
         json=payload,
+        headers=user_token_headers,
     )
 
     assert response.status_code == 200
@@ -357,6 +358,7 @@ def test_listing_with_pagination(
     response = client.get(
         "/api/v1/actions?page=2&size=1",
         json=payload,
+        headers=user_token_headers,
     )
 
     assert response.status_code == 200
@@ -387,4 +389,70 @@ def test_listing_with_pagination(
         "page": 2,
         "size": 1,
         "total": 2,
+    }
+
+
+@patch("app.api.api_v1.routers.actions.get_document_validity")
+def test_get_action(
+    mock_get_document_validity,
+    client,
+    user_token_headers,
+    test_s3_client,
+    s3_document_bucket_names,
+    test_db,
+    ensure_lookups,
+):
+    mock_get_document_validity.return_value = None
+
+    response = client.post(
+        "/api/v1/actions",
+        json={
+            "action_source_id": 1,
+            "name": "test action",
+            "year": 2008,
+            "month": 9,
+            "day": 12,
+            "geography_id": 1,
+            "action_type_id": 1,
+            "documents": [
+                {
+                    "name": "test document 1",
+                    "language_id": 1,
+                    "source_url": "https://valid.com/",
+                    "s3_url": None,
+                    "year": 2009,
+                    "month": 12,
+                    "day": 10,
+                }
+            ],
+        },
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 200
+    action_id = response.json()["action_id"]
+
+    # fetch action
+    response = client.get(f"/api/v1/actions/{action_id}", headers=user_token_headers)
+    assert response.status_code == 200
+    assert response.json() == {
+        "action_id": 1,
+        "action_mod_date": datetime.date.today().isoformat(),
+        "action_source_id": 1,
+        "name": "test action",
+        "action_date": "2008-09-12",
+        "geography_id": 1,
+        "action_type_id": 1,
+        "documents": [
+            {
+                "action_id": 1,
+                "document_date": "2009-12-10",
+                "document_id": 1,
+                "document_mod_date": datetime.date.today().isoformat(),
+                "is_valid": True,
+                "language_id": 1,
+                "name": "test document 1",
+                "source_url": "https://valid.com/",
+            }
+        ],
     }
