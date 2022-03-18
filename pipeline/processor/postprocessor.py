@@ -20,18 +20,18 @@ class AdobeDocumentPostProcessor:
         """
         Return the minimally enclosing bounding box of bounding boxes.
 
-        Args:
-            coords: A list of coordinates for each bounding box formatted [x1,y1,x2,y2] with the top left as the origin.
+        Args: coords: A list of coordinates for each bounding box formatted [x1,y1,x2,y2] with the bottom left as the
+        origin.
 
         Returns:
             A list of coordinates for the minimally enclosing bounding box for all input bounding boxes.
 
         """
-        x_min = min(coord[0] for coord in coords)
-        y_min = min(coord[1] for coord in coords)
-        x_max = max(coord[2] for coord in coords)
-        y_max = max(coord[3] for coord in coords)
-        return [x_min, y_min, x_max, y_max]
+        x_min = min(coord[0][0] for coord in coords)
+        y_min = min(coord[1][1] for coord in coords)
+        x_max = max(coord[1][0] for coord in coords)
+        y_max = max(coord[3][1] for coord in coords)
+        return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
 
     @staticmethod
     def _find_first_occurrence(regex_pattern: str, list_of_strings):
@@ -152,12 +152,12 @@ class AdobeDocumentPostProcessor:
         custom_attributes_dict = {
             "paths": paths,
             "text_block_ids": block_ids,
-            "custom_bounding_boxes": custom_bounding_boxes,
             "pretty_list_string": self._pprint_list(df),
         }
         new_dict = {
             "text_block_id": block_ids[0],
             "type": "list",
+            "coords": custom_bounding_boxes,
             "text": full_list_text,
             "custom_attributes": custom_attributes_dict,
         }
