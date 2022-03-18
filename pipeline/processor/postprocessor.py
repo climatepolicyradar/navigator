@@ -5,7 +5,7 @@ from collections import defaultdict
 from typing import List, Dict, Optional
 
 import pandas as pd
-from utils import minimal_bounding_box
+from pipeline.processor.utils import minimal_bounding_box
 
 from pipeline.extract.document import Document, TextBlock, Page
 

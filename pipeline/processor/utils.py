@@ -1,4 +1,8 @@
+import json
+import pathlib
 from typing import List, Iterable
+
+from pipeline.extract.document import Document, TextBlock, Page
 
 
 def minimal_bounding_box(coords: List[Iterable]) -> list:
@@ -17,3 +21,16 @@ def minimal_bounding_box(coords: List[Iterable]) -> list:
     x_max = max(coord[2] for coord in coords)
     y_max = max(coord[3] for coord in coords)
     return [x_min, y_min, x_max, y_max]
+
+def json_to_document(path: pathlib.Path) -> Document:
+    with open(path, "r") as f:
+        data = json.load(f)
+    for ix, page in enumerate(data['pages']):
+        new_blocks = []
+        for block in page['text_blocks']:
+            new_block = TextBlock(**block)
+            new_blocks.append(new_block)
+        page['text_blocks'] = new_blocks
+        page = Page(**page)
+    doc = Document(**data)
+    return doc

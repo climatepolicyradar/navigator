@@ -1,7 +1,10 @@
 import argparse
+import json
 from pathlib import Path
 
-from processor.postprocessor import AdobeDocumentPostProcessor
+from pipeline.extract.document import TextBlock, Page, Document
+from processor.postprocessor import AdobeDocumentPostProcessor, AdobeTextStylingPostProcessor
+from pipeline.processor.utils import json_to_document
 
 
 def process(in_path, out_path):
@@ -16,9 +19,13 @@ def process(in_path, out_path):
 
     """
     # TODO: Add s3 support.
+    text_styling_processor = AdobeTextStylingPostProcessor()
     postprocessor = AdobeDocumentPostProcessor()
     for file in in_path.iterdir():
         if file.suffix == ".json":
+            # Read json file to dict.
+            doc = json_to_document(file)
+            print('hi')
             doc = postprocessor.postprocess(file)
             doc.save_json(out_path / file.stem)
 
