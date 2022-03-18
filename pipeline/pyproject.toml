@@ -10,7 +10,6 @@ PyPDF2 = "^1.26.0"
 pdfservices-sdk = "^1.0.1"
 navigator = {path = "../common", develop = true }
 tqdm = "^4.62.3"
-pandas = "^1.4.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
