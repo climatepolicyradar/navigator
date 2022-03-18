@@ -20,7 +20,7 @@ def process(in_path, out_path):
     for file in in_path.iterdir():
         if file.suffix == ".json":
             doc = postprocessor.postprocess(file)
-            doc.save_json(out_path / file)
+            doc.save_json(out_path / file.stem)
 
 
 if __name__ == "__main__":

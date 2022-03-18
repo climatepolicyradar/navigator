@@ -122,6 +122,17 @@ class AdobeDocumentPostProcessor:
         )
         return new_text_blocks
 
+    @staticmethod
+    def _format_list_text(df):
+        new_text_list = []
+        for ix, row in df.iterrows():
+            if row["type"] == "Lbl":
+                row["text"] = [row["text"][0]]
+            elif row["type"] == "LBody":
+                row["text"] = [row["text"][0]]
+            else:
+                row["text"] = [row["text"][0]]
+
     def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
         Create custom attributes for a list of text blocks.
@@ -140,6 +151,9 @@ class AdobeDocumentPostProcessor:
         df["page_num"] = (
             df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
         )
+        # Flatten list with list comprehension
+        def flatten(l):
+            return [item for sublist in l for item in sublist]
 
         full_list_text = df["text"].tolist()
         paths = df["path"].tolist()
