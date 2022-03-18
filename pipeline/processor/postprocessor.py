@@ -96,7 +96,7 @@ class AdobeDocumentPostProcessor:
         return text_block
 
     @staticmethod
-    def _postprocess_list_grouped_page(text_blocks: List[dict]) -> dict:
+    def _remove_unmerged_lists(text_blocks: List[dict]) -> dict:
         """
         Remove list elements on a page that are not part of a list group.
 
@@ -244,7 +244,7 @@ class AdobeDocumentPostProcessor:
             # Sort blocks by block index of the first attribute.
             # TODO: Why have we got pages with no list blocks?
             if len(new_text_blocks) > 0:
-                new_text_blocks = self._postprocess_list_grouped_page(new_text_blocks)
+                new_text_blocks = self._remove_unmerged_lists(new_text_blocks)
             new_pages.append(new_text_blocks)
         new_contents = {"pages": new_pages}
         return new_contents
