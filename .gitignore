@@ -1,6 +1,7 @@
 # Adobe PDF services keys
 pdfservices-credentials.json
 private.key
+certificate_pub.crt
 
 #temporary
 /frontend-old
