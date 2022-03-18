@@ -25,7 +25,7 @@ def process(in_path, out_path):
         if file.suffix == ".json":
             # Read json file to dict.
             doc = json_to_document(file)
-            print('hi')
+            doc = text_styling_processor.process(doc)
             doc = postprocessor.postprocess(file)
             doc.save_json(out_path / file.stem)
 
