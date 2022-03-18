@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { Form, Formik, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
@@ -20,10 +19,10 @@ import {
   Source,
 } from '../../interfaces';
 import LoaderOverlay from '../LoaderOverlay';
-import { fakePromise } from '../../helpers';
 import '../../pages/i18n';
 import { useTranslation } from 'react-i18next';
 import useCreateAction from '../../hooks/useCreateAction';
+import DocumentList from './DocumentList';
 
 interface AddActionProps {
   geographies: Geography[];
@@ -40,17 +39,17 @@ const AddAction = ({
 }: AddActionProps) => {
   const [days, setDays] = useState([]);
   const [popupActive, setPopupActive] = useState(false);
-  // const initialValues = {
-  //   action_source_id: '',
-  //   name: '',
-  //   description: '',
-  //   year: '',
-  //   month: '',
-  //   day: '',
-  //   geography_id: '',
-  //   action_type_id: '',
-  //   documents: [],
-  // };
+  const initialValues = {
+    action_source_id: '',
+    name: '',
+    description: '',
+    year: '',
+    month: '',
+    day: '',
+    geography_id: '',
+    action_type_id: '',
+    documents: [],
+  };
   const createAction = useCreateAction();
 
   const yearSelections = yearRange();
@@ -81,6 +80,22 @@ const AddAction = ({
       })
     ),
   });
+
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { isSubmitting },
+    formState: { errors },
+    formState: { isSubmitSuccessful },
+    reset,
+    watch,
+  } = useForm({
+    resolver: yupResolver(schema),
+    defaultValues: initialValues,
+  });
+  const values = watch();
+  const documents = watch('documents');
 
   const handleDateChange = (e) => {
     const values = getValues();
@@ -128,30 +143,22 @@ const AddAction = ({
     });
   };
 
-  const {
-    register,
-    handleSubmit,
-    getValues,
-    formState: { isSubmitting },
-    formState: { errors },
-  } = useForm({
-    resolver: yupResolver(schema),
-  });
-
   const submitForm = (values, resetForm) => {
     processValues(values);
     createAction.mutate(values);
-    resetForm();
   };
 
   useEffect(() => {
     setDays(Array.from(Array(31).keys()));
   }, []);
 
+  useEffect(() => {
+    reset();
+  }, [isSubmitSuccessful]);
+
   return (
     <>
-      {console.log(errors)}
-      {console.log(getValues())}
+      {console.log(values)}
       {createAction.isLoading || !ready ? (
         <>
           <LoaderOverlay />
@@ -192,6 +199,20 @@ const AddAction = ({
               setPopupActive(false);
             }}
           >
+            {popupActive && (
+              <AddDocument
+                setPopupActive={setPopupActive}
+                days={days}
+                handleDateChange={handleDateChange}
+                yearSelections={yearSelections}
+                // year={values.year}
+                // month={values.month}
+                // day={values.day}
+                languages={languages}
+                active={popupActive}
+                getValues={getValues}
+              />
+            )}
             {/* <AddDocument
                 setPopupActive={setPopupActive}
                 days={days}
@@ -209,6 +230,7 @@ const AddAction = ({
             className="lg:w-2/3 pointer-events-auto"
             onSubmit={handleSubmit(submitForm)}
           >
+            <input type="hidden" defaultValue="[]" {...register('documents')} />
             <div className="form-row">
               <Select
                 data-cy="selectSource"
@@ -252,14 +274,10 @@ const AddAction = ({
                 classes="md:w-1/3 md:mr-4"
                 errors={errors}
                 register={register}
-                onChange={(e) => {
-                  handleDateChange(e);
-                }}
+                onChange={handleDateChange}
                 required
               >
-                <option value="" disabled>
-                  {t('Choose', { ns: 'common' })}
-                </option>
+                <option value="">{t('Choose', { ns: 'common' })}</option>
                 {yearSelections.map((year, index) => (
                   <option key={index} value={year}>
                     {year}
@@ -272,13 +290,9 @@ const AddAction = ({
                 classes="md:w-1/3 md:mr-4 mt-2 md:mt-0"
                 errors={errors}
                 register={register}
-                onChange={(e) => {
-                  handleDateChange(e);
-                }}
+                onChange={handleDateChange}
               >
-                <option value="" disabled>
-                  {t('Choose', { ns: 'common' })}
-                </option>
+                <option value="">{t('Choose', { ns: 'common' })}</option>
                 {months.map((month, index) => (
                   <option key={index} value={index + 1}>
                     {month}
@@ -292,9 +306,7 @@ const AddAction = ({
                 errors={errors}
                 register={register}
               >
-                <option value="" disabled>
-                  {t('Choose', { ns: 'common' })}
-                </option>
+                <option value="">{t('Choose', { ns: 'common' })}</option>
                 {days.map((day, index) => (
                   <option key={index} value={day + 1}>
                     {day + 1}
@@ -311,7 +323,7 @@ const AddAction = ({
                 register={register}
                 required
               >
-                <option>{t('form.Choose a geography')}</option>
+                <option value="">{t('form.Choose a geography')}</option>
                 {/* TODO - implement input box with suggestions as in prototype */}
                 {geographies.map((geo: Geography) => (
                   <option
@@ -332,7 +344,7 @@ const AddAction = ({
                 register={register}
                 required
               >
-                <option>{t('form.Choose an action type')}</option>
+                <option value="">{t('form.Choose an action type')}</option>
                 {actionTypes.map((type: ActionType) => (
                   <option
                     key={`type${type.action_type_id}`}
@@ -347,24 +359,12 @@ const AddAction = ({
               <h3>{t('form.Documents')}</h3>
               <div className="mt-4">
                 {errors.documents ? (
-                  <p className="error text-red-500 mb-4">{errors.documents}</p>
+                  <p className="error text-red-500 mb-4">
+                    {errors.documents?.message}
+                  </p>
                 ) : null}
 
-                {/* {values.documents.length > 0 ? (
-                  <ol
-                    data-cy="document-list"
-                    className="mb-4 list-decimal list-inside text-left"
-                    role="list"
-                  >
-                    {values.documents.map((document, index) => (
-                      <li key={index} className="my-2">
-                        <span className="">{document.name}</span>
-                      </li>
-                    ))}
-                  </ol>
-                ) : (
-                  <p className="mb-4">{t('form.No documents added.')}</p>
-                )} */}
+                <DocumentList documents={documents} />
               </div>
               <Button
                 data-cy="add-doc-modal"

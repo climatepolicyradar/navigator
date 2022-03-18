@@ -1,5 +1,4 @@
 import React from 'react';
-import { useField } from 'formik';
 import { Path, useForm, UseFormRegister, SubmitHandler } from 'react-hook-form';
 import { getStaticProps } from '../../pages/users';
 
