@@ -6,7 +6,7 @@ from typing import List, Dict, Optional
 
 import numpy as np
 import pandas as pd
-from utils import minimal_bounding_box
+# from utils import minimal_bounding_box
 
 from pipeline.extract.document import Document, TextBlock, Page
 
@@ -300,6 +300,7 @@ class AdobeDocumentPostProcessor:
         new_dict = {
             "text_block_id": block_ids[0],
             "type": "list",
+            "coords": custom_bounding_boxes[0],
             "text": full_list_text,
             "custom_attributes": custom_attributes_dict,
         }
@@ -392,7 +393,10 @@ class AdobeDocumentPostProcessor:
             if len(new_text_blocks) == 1 and ("coords" not in new_text_blocks[0]):
                 new_text_blocks[0]["coords"] = None
             # Convert to text block data class.
-            new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
+            try:
+                new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
+            except Exception as e:
+                print('hi')
             newpage = Page(
                 text_blocks=new_text_blocks,
                 dimensions=page["dimensions"],
