@@ -1,10 +1,12 @@
 #!/usr/bin/env python3
 
-from app.db.crud import create_user
-from app.db.schemas import UserCreate
-from app.db.session import SessionLocal
-
 import os
+
+from sqlalchemy.exc import IntegrityError
+
+from app.db.crud.user import create_user
+from app.db.schemas.user import UserCreate
+from app.db.session import SessionLocal
 
 
 def create_superuser(email, password):
@@ -22,11 +24,21 @@ def create_superuser(email, password):
 
 
 def init() -> None:
-    create_superuser(os.getenv("SUPERUSER_EMAIL"), os.getenv("SUPERUSER_PASSWORD"))
-    create_superuser(os.getenv("MACHINE_USER_LOADER_EMAIL"), os.getenv("MACHINE_USER_LOADER_PASSWORD"))
+    try:
+        create_superuser(os.getenv("SUPERUSER_EMAIL"), os.getenv("SUPERUSER_PASSWORD"))
+    except IntegrityError:
+        print("Skipping - super user already exists")
+
+    try:
+        create_superuser(
+            os.getenv("MACHINE_USER_LOADER_EMAIL"),
+            os.getenv("MACHINE_USER_LOADER_PASSWORD"),
+        )
+    except IntegrityError:
+        print("Skipping - loader machine user already exists")
 
 
 if __name__ == "__main__":
-    print("Creating initial data")
+    print("Creating initial data...")
     init()
     print("Done creating initial data")

@@ -1,10 +1,9 @@
-import os
 import uvicorn
-from fastapi import FastAPI, Depends
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from sqlalchemy.exc import IntegrityError
+from fastapi_health import health
+from fastapi_pagination import add_pagination
 from starlette.requests import Request
-from starlette.responses import JSONResponse
 
 from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.auth import auth_router
@@ -13,6 +12,7 @@ from app.api.api_v1.routers.lookups import lookups_router
 from app.api.api_v1.routers.users import users_router
 from app.core import config
 from app.core.auth import get_current_active_user
+from app.core.health import is_database_online
 from app.db.session import SessionLocal
 from navigator.core.log import get_logger
 
@@ -28,6 +28,9 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
+
+# add health endpoint
+app.add_api_route("/health", health([is_database_online]))
 
 
 @app.middleware("http")
@@ -55,52 +58,8 @@ app.include_router(actions_router, prefix="/api/v1", tags=["Actions"])
 app.include_router(documents_router, prefix="/api/v1", tags=["Documents"])
 app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
 
-
-class MissingEnvironmentVariableError(Exception):
-    """Exception for missing environment variables"""
-
-
-def assert_environment_variables():
-    """Check that all required environment variables exist."""
-    required_env_vars = (
-        "POSTGRES_USER",
-        "POSTGRES_PASSWORD",
-        "DATABASE_URL",
-        "SUPERUSER_EMAIL",
-        "SUPERUSER_PASSWORD",
-        "AWS_ACCESS_KEY_ID",
-        "AWS_SECRET_ACCESS_KEY",
-        "AWS_REGION",
-    )
-
-    missing_env_vars = [e for e in required_env_vars if not os.getenv(e)]
-
-    if missing_env_vars:
-        raise MissingEnvironmentVariableError(
-            f"Environment variable(s) {', '.join(missing_env_vars)} do(es) not exist."
-        )
-
-
-@app.exception_handler(IntegrityError)
-async def integrityerror_handler(request: Request, exc: Exception):
-    """Handle IntegrityError exceptions.
-
-    TODO map specific errors.
-    """
-    msg = str(exc)
-    if hasattr(exc, "message"):
-        msg = exc.message
-
-    status = 500
-    if "duplicate key" in msg:
-        status = 400
-        msg = "Conflict error: item already exists in database"
-    else:
-        logger.error(exc)
-
-    return JSONResponse({"message": msg}, status_code=status)
-
+# add pagination support to all routes that ask for it
+add_pagination(app)
 
 if __name__ == "__main__":
-    assert_environment_variables()
     uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)

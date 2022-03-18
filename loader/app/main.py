@@ -7,43 +7,43 @@ from app.load import load
 from app.transform import transform
 
 DEFAULT_LOGGING = {
-    'version': 1,
-    'disable_existing_loggers': False,
-    'formatters': {
-        'standard': {
-            'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s'
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {"format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"},
+    },
+    "handlers": {
+        "default": {
+            "level": "INFO",
+            "formatter": "standard",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",  # Default is stderr
         },
     },
-    'handlers': {
-        'default': {
-            'level': 'INFO',
-            'formatter': 'standard',
-            'class': 'logging.StreamHandler',
-            'stream': 'ext://sys.stdout',  # Default is stderr
+    "loggers": {
+        "": {  # root logger
+            "handlers": ["default"],
+            "level": "INFO",
+        },
+        "__main__": {  # if __name__ == '__main__'
+            "handlers": ["default"],
+            "level": "DEBUG",
+            "propagate": False,
         },
     },
-    'loggers': {
-        '': {  # root logger
-            'handlers': ['default'],
-            'level': 'INFO',
-        },
-        '__main__': {  # if __name__ == '__main__'
-            'handlers': ['default'],
-            'level': 'DEBUG',
-            'propagate': False
-        },
-    }
 }
 
 logging.config.dictConfig(DEFAULT_LOGGING)
 
+logger = logging.getLogger(__file__)
+
 
 def get_data_dir():
-    data_dir = os.environ.get('DATA_DIR')
+    data_dir = os.environ.get("DATA_DIR")
     if data_dir:
         data_dir = Path(data_dir).resolve()
     else:
-        data_dir = Path(__file__).cwd() / '..' / 'data'
+        data_dir = Path(__file__).parent.resolve() / ".." / "data"
     return data_dir
 
 

@@ -18,7 +18,15 @@ repos:
     rev: 6.1.1
     hooks:
       - id: pydocstyle
-        args:
-        - --ignore=D100,D103,D104,D107,D202,D203,D213,D400,D401,D406,D407,D413,D415
+        additional_dependencies: [ "toml" ]
+  - repo: https://github.com/pre-commit/mirrors-mypy
+    rev: v0.931
+    hooks:
+      - id: mypy
+        name: mypy (backend)
+        files: ^backend/
+      - id: mypy
+        name: mypy (pipeline)
+        files: ^pipeline/
 
-# TODO isort, bandit, safety, mypy
+# TODO bandit, safety

@@ -1,6 +1,9 @@
 /// <reference types="cypress" />
 
 describe('Submit Action form', () => {
+  beforeEach(() => {
+    cy.login();
+  });
   it('should load all lookups', () => {
     cy.get_lookups();
 
@@ -23,15 +26,19 @@ describe('Submit Action form', () => {
   });
 
   it('should fill out form and display success message on submit', () => {
-    cy.intercept('POST', 'action', { fixture: 'action' }).as('postAction');
+    cy.intercept('POST', 'actions', { fixture: 'action' }).as('postAction');
     cy.get_lookups();
-    cy.get('[data-cy="add-action-form"] select[name=source_id]').select('1');
+    cy.get('[data-cy="add-action-form"] select[name=action_source_id]').select(
+      '1'
+    );
     cy.get('[data-cy="add-action-form"] input[name=name]').type(
       'Name of action'
     );
     cy.get('[data-cy="add-action-form"] select[name=year]').select('2020');
     cy.get('[data-cy="add-action-form"] select[name=geography_id]').select('3');
-    cy.get('[data-cy="add-action-form"] select[name=type_id]').select('1');
+    cy.get('[data-cy="add-action-form"] select[name=action_type_id]').select(
+      '1'
+    );
     // open add document modal
     cy.get('[data-cy="add-doc-modal"]').click();
     cy.submit_pdf_file();

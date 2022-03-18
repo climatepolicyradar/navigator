@@ -25,8 +25,7 @@ def make_declarative_base():
     # overwrite the SQLAlchemy __repr__ method for ORM instances
     def base_repr(self):
         values = [
-            f"{col.key}={repr(getattr(self, col.key))}"
-            for col in self.__table__.c
+            f"{col.key}={repr(getattr(self, col.key))}" for col in self.__table__.c
         ]
         return f'<Row of {self.__tablename__}: {", ".join(values)}>'
 
@@ -44,6 +43,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 # https://fastapi.tiangolo.com/advanced/async-sql-databases/
 # async def get_session() -> AsyncSession:

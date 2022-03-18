@@ -6,7 +6,6 @@ import TextInput from '../form-inputs/TextInput';
 import TextArea from '../form-inputs/TextArea';
 import { months, yearRange, daysInMonth } from '../../constants/timedate';
 import Select from '../form-inputs/Select';
-import { getData, postData } from '../../api';
 import Overlay from '../Overlay';
 import Popup from '../modals/Popup';
 import AddDocument from './AddDocument';
@@ -22,6 +21,7 @@ import LoaderOverlay from '../LoaderOverlay';
 import { fakePromise } from '../../helpers';
 import '../../pages/i18n';
 import { useTranslation } from 'react-i18next';
+import useCreateAction from '../../hooks/useCreateAction';
 
 interface AddActionProps {
   geographies: Geography[];
@@ -36,21 +36,21 @@ const AddAction = ({
   actionTypes,
   sources,
 }: AddActionProps) => {
-  const [processing, setProcessing] = useState(false);
-  const [message, setMessage] = useState('');
   const [days, setDays] = useState([]);
   const [popupActive, setPopupActive] = useState(false);
   const initialValues = {
-    source_id: '',
+    action_source_id: '',
     name: '',
     description: '',
     year: '',
     month: '',
     day: '',
     geography_id: '',
-    type_id: '',
+    action_type_id: '',
     documents: [],
   };
+
+  const createAction = useCreateAction();
 
   const yearSelections = yearRange();
   const { t, i18n, ready } = useTranslation([
@@ -104,19 +104,10 @@ const AddAction = ({
     });
   };
 
-  const submitForm = async (values, resetForm) => {
-    setProcessing(true);
+  const submitForm = (values, resetForm) => {
     processValues(values);
-    let req = 'action';
-    resetForm({
-      values: initialValues,
-    });
-    //TODO: might want to use try/catch to handle errors?
-    await postData(req, values);
-    window.scrollTo(0, 0);
-
-    setProcessing(false);
-    setMessage(t('form.Action successfully added!'));
+    createAction.mutate(values);
+    resetForm();
   };
 
   useEffect(() => {
@@ -125,7 +116,7 @@ const AddAction = ({
 
   return (
     <>
-      {processing && !ready ? (
+      {createAction.isLoading || !ready ? (
         <>
           <LoaderOverlay />
         </>
@@ -138,24 +129,32 @@ const AddAction = ({
       />
       {ready && (
         <div className="text-lg">
-          <p className="text-indigo-600 text-xl">
-            {t(
-              'Add a new action using the form below. Multiple documents can be added to an action.'
-            )}
-          </p>
-          {message.length > 0 && (
+          {createAction.isError ? (
+            <p
+              data-cy="message"
+              className="mt-4 font-bold text-xl text-red-500"
+            >
+              {t('form.There was an error, please try again later.')}
+            </p>
+          ) : createAction.isSuccess ? (
             <p
               data-cy="message"
               className="mt-4 font-bold text-xl text-green-500"
             >
-              {message}
+              {t('form.Action successfully added!')}
+            </p>
+          ) : (
+            <p className="text-indigo-600 text-xl">
+              {t(
+                'Add a new action using the form below. Multiple documents can be added to an action.'
+              )}
             </p>
           )}
 
           <Formik
             initialValues={initialValues}
             validationSchema={Yup.object({
-              source_id: Yup.string().required(
+              action_source_id: Yup.string().required(
                 t('addAction.Please select a source.', { ns: 'formErrors' })
               ),
               name: Yup.string().required(t('Required', { ns: 'formErrors' })),
@@ -163,7 +162,7 @@ const AddAction = ({
               geography_id: Yup.string().required(
                 t('addAction.Please select a geography.', { ns: 'formErrors' })
               ),
-              type_id: Yup.string().required(
+              action_type_id: Yup.string().required(
                 t('addAction.Please select an action type.', {
                   ns: 'formErrors',
                 })
@@ -215,7 +214,7 @@ const AddAction = ({
                       as={Select}
                       data-cy="selectSource"
                       label={t('form.Source')}
-                      name="source_id"
+                      name="action_source_id"
                       required
                     >
                       <option>{t('form.Choose a source')}</option>
@@ -318,7 +317,7 @@ const AddAction = ({
                       data-cy="selectActionType"
                       as={Select}
                       label={t('form.Action type')}
-                      name="type_id"
+                      name="action_type_id"
                       required
                     >
                       <option>{t('form.Choose an action type')}</option>

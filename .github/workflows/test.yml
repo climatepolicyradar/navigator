@@ -1,6 +1,6 @@
 name: run-tests
 
-on: 
+on:
   push:
     branches:
       - main
@@ -16,7 +16,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build docker-compose stack using .env.example
-        run: cp .env.example .env && make build
+        run: cp .env.example .env && make start
       - name: verify backend is up
         run: curl http://localhost:8000/api/docs
       - name: Run backend tests

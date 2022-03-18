@@ -2,11 +2,32 @@ import contextlib
 import os
 
 import pytest
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-
 from app.db.session import Base
 from app.tests.test_schema.helpers import clean_tables
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy_utils import create_database, database_exists, drop_database
+
+
+@pytest.fixture(scope="session", autouse=True)
+def create_test_db():
+    """Create a test database and use it for the whole test session."""
+
+    test_db_url = os.environ.get("DATABASE_URL") + "_test"
+
+    # Create the test database
+    assert not database_exists(
+        test_db_url
+    ), "Test database already exists. Aborting tests."
+    create_database(test_db_url)
+    test_engine = create_engine(test_db_url)
+    Base.metadata.create_all(test_engine)
+
+    # Run the tests
+    yield
+
+    # Drop the test database
+    drop_database(test_db_url)
 
 
 @pytest.fixture(scope="session")

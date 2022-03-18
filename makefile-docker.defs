@@ -1,8 +1,14 @@
 # definitions for docker-based development
 
+# ----------------------------------
+# starting, stopping, migrating DB
+# ----------------------------------
 start_containers:
 	# Build and run containers
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+show_logs:
+	docker-compose logs -f
 
 migrations_docker:
 	# Run database migrations when using docker for development
@@ -10,7 +16,7 @@ migrations_docker:
 	# Create initial data in database
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 app/initial_data.py
 
-build: start_containers
+start: start_containers
 	# Hack to wait for postgres container to be up before running alembic migrations
 	sleep 5;
 	# Run migrations
@@ -19,6 +25,29 @@ build: start_containers
 stop:
 	docker-compose stop
 
+remove_volumes:
+	docker-compose down -v
+
+# ----------------------------------
+# building images
+# ----------------------------------
+build_backend:
+	docker-compose build backend
+
+build_frontend:
+	docker-compose build frontend
+
+build_loader:
+	docker-compose build loader
+
+build_pipeline:
+	docker build -f pipeline/Dockerfile -t navigator_pipeline .
+
+build: build_backend build_frontend build_loader build_pipeline
+
+# ----------------------------------
+# testing
+# ----------------------------------
 test_frontend:
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
 
@@ -28,14 +57,14 @@ test_backend:
 test_loader:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader pytest
 
-test:
-	make test_backend
-	make test_frontend
-
-# pipeline
-build_pipeline:
-	docker build -f pipeline/Dockerfile -t navigator_pipeline .
-
 test_pipeline:
 	docker run navigator_pipeline python -m pytest
 
+test: test_backend test_frontend test_loader test_pipeline
+
+# ----------------------------------
+# tasks
+# ----------------------------------
+
+run_loader:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader python app/main.py

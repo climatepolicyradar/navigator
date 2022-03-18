@@ -7,7 +7,7 @@ services:
     volumes:
       - ./backend:/app/:ro
     ports:
-      - 8888:8888
+      - "8888:8888"
 
   loader:
     environment:

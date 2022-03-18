@@ -13,10 +13,20 @@ docker build -f pipeline/Dockerfile -t navigator_pipeline .
 ```
 
 ### 2. Running the cli
-Use the following command to run the pdf2text cli:
+Use the following commands to run the pdf2text cli:
+
+**local:**
 
 ```
 docker run -v /path/to/pdf/files:/pdf-in -v /path/to/data/directory:/data-dir -v /path/to/output/directory:/pdf-out navigator_pipeline python /app/pdf2text.py /pdf-in /data-dir /pdf-out
+```
+
+**s3:**
+
+Note that intermediate data files aren't currently uploaded to s3.
+
+```
+docker run -v /path/to/data/directory:/data-dir python pdf2text.py output-bucket/folder/folder /data-dir input-bucket/folder/folder --s3
 ```
 
 where:
