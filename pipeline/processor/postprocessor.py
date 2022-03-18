@@ -123,12 +123,14 @@ class AdobeTextStylingPostProcessor:
 
         for page in new_document.pages:
             # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
+            # TODO: This is a hack. We should be able to handle this better.
             if page.text_blocks[0].path is None:
                 continue
             # Count repeated paths since blocks with custom styling (subscript, superscript, underline)
             # have separate elements in the same text block.
             path_counts = Counter([tuple(block.path) for block in page.text_blocks])
 
+            # TODO: This logic does not always work. For instance, cclw-9460 separates
             duplicated_paths = [
                 path for path, count in path_counts.items() if count > 1
             ]
