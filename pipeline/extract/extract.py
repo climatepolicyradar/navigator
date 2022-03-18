@@ -155,7 +155,9 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
             subprocess.run(pdfalto_args, check=True)
 
         except subprocess.CalledProcessError:
-            raise DocumentTextExtractorException("Exception occurred calling pdfalto.")
+            raise DocumentTextExtractorException(
+                f"Exception occurred calling pdfalto for {pdf_name}."
+            )
 
         return xml_output_path
 
@@ -303,8 +305,8 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         # Number of pages to limit each PDF to whether scanned or not scanned.
         # These values are used to split a PDF if the API returns a "File exceeds page limit" error.
-        self.API_MAX_PAGES = 75
-        self.API_SCANNED_MAX_PAGES = 35
+        self.API_MAX_PAGES = 50
+        self.API_SCANNED_MAX_PAGES = 25
 
     @staticmethod
     def _load_credentials(credentials_path: str) -> ExecutionContext:
@@ -324,7 +326,9 @@ class AdobeAPIExtractor(DocumentTextExtractor):
 
         # Timeouts are in milliseconds. TODO: move these variables to the constructor
         client_config = (
-            ClientConfig.Builder().with_connect_timeout(300000).with_read_timeout(30000)
+            ClientConfig.Builder()
+            .with_connect_timeout(99999999999999)
+            .with_read_timeout(99999999999999)
         )
 
         # Create an ExecutionContext using credentials and create a new operation instance.
