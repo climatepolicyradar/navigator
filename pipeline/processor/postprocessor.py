@@ -23,6 +23,7 @@ class AdobeTextStylingPostProcessor:
     HTML style tags inline.
 
     """
+
     @staticmethod
     def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
         """
@@ -196,6 +197,48 @@ class AdobeDocumentPostProcessor:
             if re.search(regex_pattern, string):
                 return string
         return None
+
+    # Find number of occurrences of a regex pattern in a list of strings
+    @staticmethod
+    def _find_all_occurrences(regex_pattern: str, list_of_strings):
+        """
+        Finds all occurrences of a regular expression in a list of strings.
+
+        Args:
+            regex_pattern: Regular expression to search for in the list of strings.
+            list_of_strings: List of strings to search through.
+
+        Returns:
+            All occurrences of the regular expression in the list of strings.
+
+        """
+        return [
+            string for string in list_of_strings if re.search(regex_pattern, string)
+        ]
+
+    def _format_semantic_lists(self, dic: dict) -> List[List[str]]:
+        """ """
+        df = pd.DataFrame(dic)
+        df["list_num"] = df["path"].apply(
+            len(self._find_all_occurrences(self.regex_pattern, df["path"]))
+        )
+        # Bit of a hack here to handle the fact that there are sometimes trailing stylespan elements that haven't
+        # been dealt with upstream.
+        df = df[df.type != "StyleSpan"]
+        lst = []
+        new_string = ""
+        for ix, row in df.iterrows():
+            text_type = row["type"]
+            if text_type == "Lbl":
+                if new_string:
+                    lst.append(new_string + "<LBody>")
+                new_string = f"<Lbl>{row['text'][0].strip()}<Lbl>"
+            else:
+                if new_string.endswith("<Lbl>"):
+                    new_string += f"<LBody>{row['text'][0].strip()}"
+                else:
+                    new_string += f"{row['text'][0].strip()} "
+        return lst
 
     @staticmethod
     def _pprint_list(df: pd.DataFrame) -> str:
