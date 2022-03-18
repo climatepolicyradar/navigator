@@ -11,6 +11,7 @@ pdfservices-sdk = "1.0.1"
 navigator = {path = "../common", develop = true }
 tqdm = "^4.62.3"
 pandas = "^1.4.1"
+english-words = "^1.1.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^7.0.1"

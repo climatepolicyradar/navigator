@@ -153,6 +153,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "english-words"
+version = "1.1.0"
+description = "Contains sets of english words"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "filelock"
 version = "3.6.0"
 description = "A platform independent file lock."
@@ -587,7 +595,7 @@ testing = ["coverage (>=4)", "coverage-enable-subprocess (>=1)", "flaky (>=3)", 
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.8"
-content-hash = "bdc835252d77218b21e3ead8a656aca25ef7bff43b337b5c6f6fdfd3d2e8565a"
+content-hash = "07dcbc1cb487cd9e8fc4d200056a0621e81b36384042c07f73c55bf9aa3affd2"
 
 [metadata.files]
 atomicwrites = [
@@ -697,6 +705,9 @@ definitions = [
 distlib = [
     {file = "distlib-0.3.4-py2.py3-none-any.whl", hash = "sha256:6564fe0a8f51e734df6333d08b8b94d4ea8ee6b99b5ed50613f731fd4089f34b"},
     {file = "distlib-0.3.4.zip", hash = "sha256:e4b58818180336dc9c529bfb9a0b58728ffc09ad92027a3f30b7cd91e3458579"},
+]
+english-words = [
+    {file = "english-words-1.1.0.tar.gz", hash = "sha256:b72edecb98ec66da706c89a72443dffc051a103d0394ff2e743dc24b1c8485f1"},
 ]
 filelock = [
     {file = "filelock-3.6.0-py3-none-any.whl", hash = "sha256:f8314284bfffbdcfa0ff3d7992b023d4c628ced6feb957351d4c48d059f56bc0"},
