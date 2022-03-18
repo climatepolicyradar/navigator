@@ -5,8 +5,149 @@ from collections import defaultdict
 from typing import List, Dict
 
 import pandas as pd
+from utils import minimal_bounding_box
 
-from pipeline.extract.document import Document
+from pipeline.extract.document import Document, TextBlock, Page
+
+from collections import Counter
+from copy import deepcopy
+
+
+class AdobeTextStylingPostProcessor:
+    """
+    Some semantic passages have separate blocks for styling markers such
+    as underlines, superscripts and subscripts. We want to group such cases
+    into single contiguous blocks. However, we want to keep the styling information
+    because it's often relevant to semantics. For example, CO2 is often represented
+    using a subscript. For now, we keep everything and indicate the styling with
+    HTML style tags inline.
+
+    """
+    @staticmethod
+    def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
+        """
+        Get text block styling, if present.
+
+        Args:
+            text_block:
+
+        Returns:
+
+        """
+        if not text_block.custom_attributes:
+            return None
+
+        if text_block.custom_attributes.get("BaselineShift", 0) < 0:
+            return "subscript"
+        elif text_block.custom_attributes.get("TextDecorationType") == "Underline":
+            return "underline"
+        elif text_block.custom_attributes.get("TextPosition") == "Sup":
+            return "superscript"
+        else:
+            return None
+
+    @staticmethod
+    def _add_text_styling_markers(text: str, styling: str) -> str:
+        """
+        Add inline styling markers to text.
+
+        Args:
+            text: raw text without styling.
+            styling: styling to apply.
+
+        Returns:
+
+        """
+        leading_spaces = " " * (len(text) - len(text.lstrip(" ")))
+        trailing_spaces = " " * (len(text) - len(text.rstrip(" ")))
+
+        if styling == "subscript":
+            # Keep subscripts as they may be semantically relevant (as in CO2)
+            return f"{leading_spaces}<sub>{text.strip()}</sub>{trailing_spaces}"
+        elif styling == "superscript":
+            # Superscripts not semantically relevant, remove them.
+            return f"{leading_spaces + trailing_spaces}"
+        elif styling == "underline":
+            # TODO: What is the semantic relevance of underlines?
+            return f"{leading_spaces}<u>{text.strip()}</u>{trailing_spaces}"
+        else:
+            return text
+
+    def merge_text_blocks(self, text_blocks: List[TextBlock]) -> TextBlock:
+        """
+        Merge text blocks in the same semantic category (same path) that have been separated due to styling elements.
+
+        Args:
+            text_blocks:
+
+        Returns:
+            A new text block
+
+        """
+        all_coords = [tuple(text_block.coords) for text_block in text_blocks]
+        merged_coords = minimal_bounding_box(all_coords)
+
+        merged_block_text = []
+
+        for text_block in text_blocks:
+            block_styling = self._classify_text_block_styling(text_block)
+            new_block_text = [
+                self._add_text_styling_markers(line, block_styling)
+                for line in text_block.text
+            ]
+
+            if merged_block_text == []:
+                merged_block_text = new_block_text
+            else:
+                merged_block_text[-1] = merged_block_text[-1] + new_block_text[0]
+                merged_block_text += new_block_text[1:]
+
+        return TextBlock(
+            text=merged_block_text,
+            text_block_id=text_blocks[0].text_block_id + "_merged",
+            coords=merged_coords,
+            path=text_blocks[0].path,
+        )
+
+    def process(self, document: Document) -> Document:
+        """
+        Iterate through a document and merge text blocks that have been separated due to styling elements.
+
+        Args:
+            document: pdf doc object.
+
+        Returns:
+                A new document object with styling info added.
+        """
+        new_document = deepcopy(document)
+
+        for page in new_document.pages:
+            # Count repeated paths since blocks with custom styling (subscript, superscript, underline)
+            # have separate elements in the same text block.
+            path_counts = Counter([tuple(block.path) for block in page.text_blocks])
+
+            duplicated_paths = [
+                path for path, count in path_counts.items() if count > 1
+            ]
+
+            for path in duplicated_paths:
+                text_block_idxs, text_blocks_to_merge = list(
+                    zip(
+                        *[
+                            (idx, block)
+                            for idx, block in enumerate(page.text_blocks)
+                            if tuple(block.path) == path
+                        ]
+                    )
+                )
+                merged_text_block = self.merge_text_blocks(text_blocks_to_merge)
+                page.text_blocks = (
+                    page.text_blocks[0 : text_block_idxs[0]]
+                    + [merged_text_block]
+                    + page.text_blocks[text_block_idxs[-1] + 1 :]
+                )
+
+        return new_document
 
 
 class AdobeDocumentPostProcessor:
@@ -151,9 +292,6 @@ class AdobeDocumentPostProcessor:
         df["page_num"] = (
             df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
         )
-        # Flatten list with list comprehension
-        def flatten(l):
-            return [item for sublist in l for item in sublist]
 
         full_list_text = df["text"].tolist()
         paths = df["path"].tolist()
@@ -166,12 +304,12 @@ class AdobeDocumentPostProcessor:
         custom_attributes_dict = {
             "paths": paths,
             "text_block_ids": block_ids,
+            "custom_bounding_boxes": custom_bounding_boxes,
             "pretty_list_string": self._pprint_list(df),
         }
         new_dict = {
             "text_block_id": block_ids[0],
             "type": "list",
-            "coords": custom_bounding_boxes,
             "text": full_list_text,
             "custom_attributes": custom_attributes_dict,
         }
@@ -259,7 +397,19 @@ class AdobeDocumentPostProcessor:
             # TODO: Why have we got pages with no list blocks?
             if len(new_text_blocks) > 0:
                 new_text_blocks = self._remove_unmerged_lists(new_text_blocks)
-            new_pages.append(new_text_blocks)
+            # In cases with 1 block on a page, sometimes coords appear ommitted. Add None. May affect downstream
+            # processing.
+            if len(new_text_blocks) == 1 and ("coords" not in new_text_blocks[0]):
+                new_text_blocks[0]["coords"] = None
+            # Convert to text block data class.
+            new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
+            newpage = Page(
+                text_blocks=new_text_blocks,
+                dimensions=page["dimensions"],
+                page_id=page["page_id"],
+            )
+            new_pages.append(newpage)
+
         new_contents = {"pages": new_pages}
         return new_contents
 
