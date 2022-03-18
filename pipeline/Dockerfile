@@ -6,10 +6,6 @@ WORKDIR /app
 RUN apt update && \
     apt install -y cmake
 
-# To try to resolve Adobe API SSL Errors
-# https://superuser.com/questions/1101004/ssl-certificate-verify-failed-error-in-a-docker-container
-# RUN apt-get install ca-certificates
-
 RUN git clone https://github.com/kermitt2/pdfalto.git
 # Set submodule URL to HTTPS to avoid need for SSH setup when run on a server
 RUN cd pdfalto && git submodule set-url xpdf-4.03 https://github.com/kermitt2/xpdf-4.03.git && git submodule update --init --recursive
