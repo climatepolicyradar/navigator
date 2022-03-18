@@ -122,6 +122,9 @@ class AdobeTextStylingPostProcessor:
         new_document = deepcopy(document)
 
         for page in new_document.pages:
+            # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
+            if page.text_blocks[0].path is None:
+                continue
             # Count repeated paths since blocks with custom styling (subscript, superscript, underline)
             # have separate elements in the same text block.
             path_counts = Counter([tuple(block.path) for block in page.text_blocks])
