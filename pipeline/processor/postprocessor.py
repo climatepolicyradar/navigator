@@ -2,7 +2,7 @@ import json
 import pathlib
 import re
 from collections import defaultdict
-from typing import List, Dict, Optional
+from typing import List, Dict
 
 import pandas as pd
 from utils import minimal_bounding_box
