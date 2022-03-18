@@ -38,6 +38,7 @@ def rewrap_hyphenated_words(li: list) -> list:
         regex_match = re.search(r'\w+(-|–){1}$', l)
         if current:
             word_fragment = current.rstrip('-')
+            # TODO: Handle non-English words
             if word_fragment in english_words_set:
                 li[ix] = word_fragment + l
             else:
