@@ -23,6 +23,7 @@ class AdobeTextStylingPostProcessor:
     HTML style tags inline.
 
     """
+
     @staticmethod
     def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
         """
@@ -147,9 +148,9 @@ class AdobeTextStylingPostProcessor:
                 )
                 merged_text_block = self.merge_text_blocks(text_blocks_to_merge)
                 page.text_blocks = (
-                    page.text_blocks[0 : text_block_idxs[0]]
-                    + [merged_text_block]
-                    + page.text_blocks[text_block_idxs[-1] + 1 :]
+                        page.text_blocks[0: text_block_idxs[0]]
+                        + [merged_text_block]
+                        + page.text_blocks[text_block_idxs[-1] + 1:]
                 )
 
         return new_document
@@ -213,28 +214,56 @@ class AdobeDocumentPostProcessor:
         """
         return [string for string in list_of_strings if re.search(regex_pattern, string)]
 
-    def _format_semantic_lists(self, dic: dict) -> List[List[str]]:
+    def _format_semantic_lists(self, df: pd.DataFrame) -> List[List[str]]:
         """
         """
-        df = pd.DataFrame(dic)
-        df['list_num'] = df['path'].apply(len(self._find_all_occurrences(self.regex_pattern, df['path'])))
+        # TODO: fix this!
         # Bit of a hack here to handle the fact that there are sometimes trailing stylespan elements that haven't
-        # been dealt with upstream.
+        # been dealt with upstream e.g. if there is more than one style span in a row.
         df = df[df.type != 'StyleSpan']
         lst = []
         new_string = ''
         for ix, row in df.iterrows():
             text_type = row['type']
-            # TODO: Handle spans.
             if text_type == 'Lbl':
-                if new_string:
-                    lst.append(new_string + '<LBody>')
-                new_string = f"<Lbl>{row['text'][0].strip()}<Lbl>"
-            else:
-                if new_string.endswith('<Lbl>'):
-                    new_string += f"<LBody>{row['text'][0].strip()}"
+                new_string = ''
+                label_string=f"<Lbl>{row['text']}<\Lbl>"
+                if row['first_bool']:
+                    new_string += f"\n<li{row['list_num']}>\n{label_string}"
                 else:
-                    new_string += f"{row['text'][0].strip()} "
+                    new_string += f"{label_string}"
+            # Assume that if we haven't got a label, we're in a list body. This is a bit of a hack to get around the
+            # fact that there are sometimes other types e.g. Span or Paragraph span that (due to italics and such)
+            # that should really be part of a list body. Tested this and works in most cases, but doesn't work for
+            # cclw-8149 for example.
+            else:
+                if row['last_bool']:
+                    new_string +=f" <LBody>{row['text']}<\LBody>\n"+ f"\n<\li{row['list_num']}>\n"
+                else:
+                    new_string += f" <LBody>{row['text']}<\LBody>\n"
+                lst.append(new_string)
+
+        #     # Start list text by indicating the list nesting level.
+        #     list_nesting_number = row['list_num']
+        #     if list_nesting_number != prev_list_nesting_number:
+        #         if list_nesting_number == 1:
+        #             new_string += f"<li{list_nesting_number}>\n"
+        #         else:
+        #             new_string += f"<\li{prev_list_nesting_number}>\n<li{list_nesting_number}>\n"
+        #     # TODO: Handle spans.
+        #     if text_type == 'Lbl':
+        #         if new_string:
+        #             lst.append(new_string + '<LBody>\n')
+        #         new_string = f"<Lbl>{row['text'][0].strip()}<Lbl>"
+        #     else:
+        #         if new_string.endswith('<Lbl>'):
+        #             new_string += f"<LBody>{row['text'][0].strip()}"
+        #         else:
+        #             new_string += f"{row['text'][0].strip()} "
+        #     prev_list_nesting_number = list_nesting_number
+        # if not re.match(r"\n?<\\li1>",lst[-1]):
+        #     lst.append("\n<\li1>")
+        formatted = '. '.join([li for li in lst])
         return lst
 
     @staticmethod
@@ -295,14 +324,13 @@ class AdobeDocumentPostProcessor:
         # the last block being the grouped list element we want to keep.
         new_text_blocks = (
             df.groupby("text_block_id")
-            .apply(lambda x: x.iloc[-1])
-            .reset_index(drop=True)
-            .sort_values(["page_num", "block_num"])
-            .drop(columns=["page_num", "block_num"])
-            .to_dict("records")
+                .apply(lambda x: x.iloc[-1])
+                .reset_index(drop=True)
+                .sort_values(["page_num", "block_num"])
+                .drop(columns=["page_num", "block_num"])
+                .to_dict("records")
         )
         return new_text_blocks
-
 
     def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
@@ -323,14 +351,20 @@ class AdobeDocumentPostProcessor:
             df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
         )
         df['list_num'] = df['path'].apply(lambda x: len(self._find_all_occurrences(self.regex_pattern, x)))
+        # Get the first and last index of each page number as this will be convenient for formatting.
+        df = df.merge(df.index.to_series().groupby(df.list_num).agg(['first', 'last']).reset_index(), how='left',
+                      on='list_num')
+        df['first_bool'] = df['first'] == df.index
+        df['last_bool'] = df['last'] == df.index
+        self._format_semantic_lists(df)
 
         full_list_text = df["text"].tolist()
         paths = df["path"].tolist()
         block_ids = df["text_block_id"].tolist()
         custom_bounding_boxes = (
             df.groupby("page_num")
-            .apply(lambda x: self._minimal_bounding_box(x["coords"]))
-            .tolist()
+                .apply(lambda x: self._minimal_bounding_box(x["coords"]))
+                .tolist()
         )
         custom_attributes_dict = {
             "paths": paths,
@@ -376,7 +410,7 @@ class AdobeDocumentPostProcessor:
                         # Handle the case where we have a new list at the beginning of a page and where
                         # the previous list block is assumed context.
                         if (
-                            text_block["text_block_id"].split("_")[1] == "b1"
+                                text_block["text_block_id"].split("_")[1] == "b1"
                         ) and previous_block:
                             text_block = self._update_custom_attributes(
                                 text_block, "contiguous_with_prev_page_context"
