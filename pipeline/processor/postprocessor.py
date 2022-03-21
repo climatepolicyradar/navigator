@@ -12,7 +12,57 @@ from pipeline.extract.document import Document, TextBlock, Page
 
 from collections import Counter
 from copy import deepcopy
+from english_words import english_words_set
 
+class HyphenationPostProcessor:
+    """
+    Post processor to join words that are separated into separate blocks due
+    to hyphenation at line breaks.
+    """
+
+    def rewrap_hyphenated_words(self, li: list) -> list:
+        """
+        Reorganise a list of strings so that word fragments separated
+        by hyphens or em dashes to start new lines are joined into a single
+        word if the word fragments have no meaning by themselves.
+
+        Args:
+            li: List of strings/sentences.
+
+        Returns:
+            List of strings/sentences with hyphenated words joined into a single word.
+
+        """
+        current = None
+        for ix, l in enumerate(li):
+            regex_match = re.search(r'\w+(-|–){1}$', l)
+            if current:
+                word_fragment = current.rstrip('-')
+                # TODO: Handle non-English words
+                if word_fragment in english_words_set:
+                    # Check if the word with hyphen removed is an english
+                    # word and if it is, make this the first word of the newline
+                    # without the hyphen (e.g. repair-ing)
+                    newline_first_word = word_fragment + l.split(' ')[0].lstrip('-')
+                    if newline_first_word in english_words_set:
+                        li[ix] = newline_first_word + l.split(' ')[1:]
+                    # Otherwise, keep the hyphenation but put it on a newline e.g. post-processing.
+                    else:
+                        li[ix] = word_fragment + '-' + l
+                else:
+                    li[ix] = word_fragment + l
+                # Reset.
+                current = None
+            if regex_match:
+                # Strip matching regex from the end of the string.
+                li[ix] = l[:regex_match.start()]
+                current = regex_match[0]
+        return li
+
+    def process(self, contents) -> Document:
+        for ix, page in enumerate(contents['pages']):
+            new_text_blocks = self.rewrap_hyphenated_words(page['text_blocks'])
+            contents['pages'][ix]['text_blocks'] = new_text_blocks
 
 class AdobeTextStylingPostProcessor:
     """
