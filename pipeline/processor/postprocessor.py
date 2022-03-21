@@ -358,10 +358,10 @@ class AdobeDocumentPostProcessor:
 
         """
         new_custom_attributes = {new_attribute: True}
-        if text_block["custom_attributes"] is not None:
-            text_block["custom_attributes"].update(new_custom_attributes)
+        if text_block.custom_attributes is not None:
+            text_block.custom_attributes .update(new_custom_attributes)
         else:
-            text_block["custom_attributes"] = new_custom_attributes
+            text_block.custom_attributes  = new_custom_attributes
         return text_block
 
     @staticmethod
@@ -376,7 +376,10 @@ class AdobeDocumentPostProcessor:
             The text blocks with singular list elements removed.
 
         """
-        df = pd.DataFrame(text_blocks)
+        try:
+            df = pd.DataFrame(text_blocks)
+        except TypeError:
+            print('hi')
         df["page_num"] = df["text_block_id"].str.split("_b").str[0]
         df["block_num"] =df["text_block_id"].str.extract('b(\d+)').astype(int)
         # Remove all but the last block for each id, as this is unsorted with
@@ -529,8 +532,8 @@ class AdobeDocumentPostProcessor:
             new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
             newpage = Page(
                 text_blocks=new_text_blocks,
-                dimensions=page["dimensions"],
-                page_id=page["page_id"],
+                dimensions=page.dimensions,
+                page_id=page.page_id,
             )
             new_pages.append(newpage)
 
