@@ -13,9 +13,9 @@ import '../../pages/i18n';
 import { useTranslation } from 'react-i18next';
 
 interface AddDocumentsProps {
-  setPopupActive(): void;
-  days: number;
-  handleDateChange(): void;
+  setPopupActive(value: boolean): void;
+  days: number[];
+  handleDateChange(e: any): void;
   yearSelections: number[];
   languages: Language[];
   active: boolean;
@@ -30,9 +30,7 @@ const AddDocuments = ({
   languages,
   active,
   getValues,
-  ...props
-}) => {
-  const [processing, setProcessing] = useState(false);
+}: AddDocumentsProps) => {
   const [fileobj, setFileObj] = useState(null);
 
   const { t, i18n, ready } = useTranslation([
@@ -89,19 +87,15 @@ const AddDocuments = ({
   const {
     register,
     handleSubmit,
-    // getValues,
     formState: { isSubmitting },
     formState: { errors },
-    formState: { isSubmitSuccessful },
     reset,
-    watch,
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
   });
 
   const submitDocument = async (data) => {
-    setProcessing(true);
     window.scrollTo(0, 0);
     if (!fileobj) {
       closePopup(data);
@@ -123,18 +117,15 @@ const AddDocuments = ({
   const closePopup = (data) => {
     addDocumentToAction(data);
     setPopupActive(false);
-    setProcessing(false);
     reset();
   };
-
-  useEffect(() => {}, []);
 
   return (
     <div
       data-cy="add-document-form"
       className={`relative mt-8 ${active ? 'is-active' : ''}`}
     >
-      {processing ? (
+      {isSubmitting ? (
         <>
           <div className="inset-0 fixed"></div>
           <LoaderOverlay />
@@ -146,9 +137,9 @@ const AddDocuments = ({
         <div className="form-row">
           <TextInput
             label={t('form.Document name')}
-            name="name"
             type="text"
             errors={errors}
+            name="name"
             register={register}
             required
           />
@@ -176,10 +167,10 @@ const AddDocuments = ({
         <div className="form-row">
           <TextInput
             label={t('form.Enter URL')}
-            name="source_url"
             type="text"
             placeholder="http://example.com/document.pdf"
             errors={errors}
+            name="source_url"
             register={register}
           />
           <p className="mt-8">{t('form.or')}</p>
@@ -187,11 +178,11 @@ const AddDocuments = ({
         <div className="form-row">
           <TextInput
             label="Select file"
-            name="file"
             accept=".pdf"
             type="file"
             className="w-full"
             errors={errors}
+            name="file"
             register={register}
             onChange={(event) => {
               setFileObj(event.currentTarget.files[0]);
@@ -269,5 +260,3 @@ const AddDocuments = ({
 };
 
 export default AddDocuments;
-
-// export default connect(AddDocuments);

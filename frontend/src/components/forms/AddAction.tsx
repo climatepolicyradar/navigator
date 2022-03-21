@@ -205,40 +205,26 @@ const AddAction = ({
                 days={days}
                 handleDateChange={handleDateChange}
                 yearSelections={yearSelections}
-                // year={values.year}
-                // month={values.month}
-                // day={values.day}
                 languages={languages}
                 active={popupActive}
                 getValues={getValues}
               />
             )}
-            {/* <AddDocument
-                setPopupActive={setPopupActive}
-                days={days}
-                handleDateChange={handleDateChange}
-                yearSelections={yearSelections}
-                year={values.year}
-                month={values.month}
-                day={values.day}
-                languages={languages}
-                active={popupActive}
-              /> */}
           </Popup>
           <form
             data-cy="add-action-form"
             className="lg:w-2/3 pointer-events-auto"
             onSubmit={handleSubmit(submitForm)}
           >
-            <input type="hidden" defaultValue="[]" {...register('documents')} />
+            <input type="hidden" {...register('documents')} />
             <div className="form-row">
               <Select
                 data-cy="selectSource"
                 label={t('form.Source')}
                 name="action_source_id"
                 errors={errors}
-                register={register}
                 required
+                register={register}
               >
                 <option value="">{t('form.Choose a source')}</option>
                 {sources.map((source, index) => (
@@ -254,15 +240,14 @@ const AddAction = ({
                 name="name"
                 type="text"
                 errors={errors}
-                register={register}
                 required
+                register={register}
               />
             </div>
             <div className="form-row">
               <TextArea
                 label={t('form.Description')}
                 name="description"
-                type="text"
                 errors={errors}
                 register={register}
               />
@@ -360,7 +345,7 @@ const AddAction = ({
               <div className="mt-4">
                 {errors.documents ? (
                   <p className="error text-red-500 mb-4">
-                    {errors.documents?.message}
+                    {(errors.documents as any).message}
                   </p>
                 ) : null}
 
