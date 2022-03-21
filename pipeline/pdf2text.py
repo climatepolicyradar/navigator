@@ -243,7 +243,7 @@ class PDFProcessor:
             for filepath, filename in tqdm(pdf_file_iterator):
                 self.process_file(filepath, filename)
         else:
-            logger.info(f"Processing PDFs using all available {n_process} processes")
+            logger.info(f"Processing PDFs using {n_process} processes")
             with Pool(processes=n_process) as pool:
                 _ = list(
                     tqdm(
@@ -283,7 +283,7 @@ def configure_args():
         "--single_process",
         action="store_true",
         default=False,
-        help="Whether to run processing on a single process",
+        help="Whether to run processing on a single process. Otherwise runs on two processes.",
     )
 
     args = parser.parse_args()
@@ -324,7 +324,9 @@ def cli():
     if args.single_process:
         processor.process(pdf_path, n_process=1)
     else:
-        processor.process(pdf_path)
+        # Two processes has been selected experimentally as the max number of processes
+        # possible whilst avoiding queuing and timeout errors.
+        processor.process(pdf_path, n_process=2)
 
 
 if __name__ == "__main__":
