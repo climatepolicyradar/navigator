@@ -292,27 +292,6 @@ class AdobeDocumentPostProcessor:
                 else:
                     new_string += f" <LBody>{row['text']}<\LBody>\n"
                 lst.append(new_string)
-
-        #     # Start list text by indicating the list nesting level.
-        #     list_nesting_number = row['list_num']
-        #     if list_nesting_number != prev_list_nesting_number:
-        #         if list_nesting_number == 1:
-        #             new_string += f"<li{list_nesting_number}>\n"
-        #         else:
-        #             new_string += f"<\li{prev_list_nesting_number}>\n<li{list_nesting_number}>\n"
-        #     # TODO: Handle spans.
-        #     if text_type == 'Lbl':
-        #         if new_string:
-        #             lst.append(new_string + '<LBody>\n')
-        #         new_string = f"<Lbl>{row['text'][0].strip()}<Lbl>"
-        #     else:
-        #         if new_string.endswith('<Lbl>'):
-        #             new_string += f"<LBody>{row['text'][0].strip()}"
-        #         else:
-        #             new_string += f"{row['text'][0].strip()} "
-        #     prev_list_nesting_number = list_nesting_number
-        # if not re.match(r"\n?<\\li1>",lst[-1]):
-        #     lst.append("\n<\li1>")
         formatted = '. '.join([li for li in lst])
         return lst
 
