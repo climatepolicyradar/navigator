@@ -59,10 +59,34 @@ class HyphenationPostProcessor:
                 current = regex_match[0]
         return li
 
-    def process(self, contents) -> Document:
+    def process(self, root_path: pathlib.Path) -> Document:
+        with open(root_path, "r") as j:
+            contents = json.loads(j.read())
+            filename = root_path.stem
+
         for ix, page in enumerate(contents['pages']):
             new_text_blocks = self.rewrap_hyphenated_words(page['text_blocks'])
             contents['pages'][ix]['text_blocks'] = new_text_blocks
+
+        return Document(pages=contents["pages"], filename=filename)
+
+    def postprocess(self, root_path: pathlib.Path) -> Document:
+        """
+        Parse the elements belonging to a list into a single block, including the list's introductory text.
+
+        Args:
+            root_path: Path to Adobe extract API output.
+
+        Returns:
+            A dictionary with values corresponding to a semantic block of a list (introductory context plus the list itself).
+        """
+        with open(root_path, "r") as j:
+            contents = json.loads(j.read())
+            filename = root_path.stem
+
+        # Return original content dict and the grouped list blocks to overwrite original list elements with.
+        new_contents = self._group_list_elements(contents, filename)
+        return Document(pages=new_contents["pages"], filename=filename)
 
 class AdobeTextStylingPostProcessor:
     """
@@ -415,7 +439,7 @@ class AdobeDocumentPostProcessor:
         }
         return new_dict
 
-    def _group_list_elements(self, contents: dict, filename) -> dict:
+    def _group_list_elements(self, contents: Document, filename) -> dict:
         """
         Parse Adobe outputs to group list elements
 
@@ -430,22 +454,22 @@ class AdobeDocumentPostProcessor:
         blocks_seen = 0
         last_page_ix = 0
         new_pages = []
-        for ix, page in enumerate(contents["pages"]):
+        for ix, page in enumerate(contents.pages):
             previous_block = None
             new_text_blocks = []
             dd = defaultdict(list)
-            for text_block in page["text_blocks"]:
+            for text_block in page.text_blocks:
                 blocks_seen += 1
-                if text_block["path"]:
+                if text_block.path:
                     list_group = self._find_first_occurrence(
-                        self.regex_pattern, text_block["path"]
+                        self.regex_pattern, text_block.path
                     )
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
                         # Handle the case where we have a new list at the beginning of a page and where
                         # the previous list block is assumed context.
                         if (
-                                text_block["text_block_id"].split("_")[1] == "b1"
+                                text_block.text_block_id.split("_")[1] == "b1"
                         ) and previous_block:
                             text_block = self._update_custom_attributes(
                                 text_block, "contiguous_with_prev_page_context"
@@ -513,20 +537,20 @@ class AdobeDocumentPostProcessor:
         new_contents = {"pages": new_pages}
         return new_contents
 
-    def postprocess(self, root_path: pathlib.Path) -> Document:
+    def postprocess(self, doc: Document, filename) -> Document:
         """
         Parse the elements belonging to a list into a single block, including the list's introductory text.
 
         Args:
-            root_path: Path to Adobe extract API output.
+            doc: Document object.
 
         Returns:
             A dictionary with values corresponding to a semantic block of a list (introductory context plus the list itself).
         """
-        with open(root_path, "r") as j:
-            contents = json.loads(j.read())
-            filename = root_path.stem
+        # with open(root_path, "r") as j:
+        #     contents = json.loads(j.read())
+        #     filename = root_path.stem
 
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
-        new_contents = self._group_list_elements(contents, filename)
+        new_contents = self._group_list_elements(doc, filename)
         return Document(pages=new_contents["pages"], filename=filename)
