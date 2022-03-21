@@ -20,6 +20,7 @@ def minimal_bounding_box(coords: List[Iterable]) -> list:
     y_max = max(coord[3] for coord in coords)
     return [x_min, y_min, x_max, y_max]
 
+
 def rewrap_hyphenated_words(li: list) -> list:
     """
     Reorganise a list of strings so that word fragments separated
@@ -40,9 +41,18 @@ def rewrap_hyphenated_words(li: list) -> list:
             word_fragment = current.rstrip('-')
             # TODO: Handle non-English words
             if word_fragment in english_words_set:
-                li[ix] = word_fragment + l
+                # Check if the word with hyphen removed is an english
+                # word and if it is, make this the first word of the newline
+                # without the hyphen (e.g. repair-ing)
+                newline_first_word = word_fragment + l.split(' ')[0].lstrip('-')
+                if newline_first_word in english_words_set:
+                    li[ix] = newline_first_word + l.split(' ')[1:]
+                # Otherwise, keep the hyphenation but put it on a newline e.g. post-processing.
+                else:
+                    li[ix] = word_fragment + '-' + l
             else:
                 li[ix] = word_fragment + l
+            # Reset.
             current = None
         if regex_match:
             # Strip matching regex from the end of the string.
