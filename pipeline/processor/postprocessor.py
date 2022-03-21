@@ -70,7 +70,6 @@ class HyphenationPostProcessor:
         return contents
 
 
-
 class AdobeTextStylingPostProcessor:
     """
     Some semantic passages have separate blocks for styling markers such
@@ -278,6 +277,11 @@ class AdobeDocumentPostProcessor:
     def _format_semantic_lists(self, df: pd.DataFrame) -> List[List[str]]:
         """
         """
+        # TODO: Temporary hack from breakage created by texthyphenation part of pipeline. Messy duplicatation.
+        df['type'] = df['path'].apply(lambda x: x[-1])
+        # Sometimes label is called ExtraCharSpan, replace it with label
+        df['type'] = df['type'].replace({'ExtraCharSpan': 'Lbl', 'ParagraphSpan': 'LBody'})
+
         # TODO: fix this!
         # Bit of a hack here to handle the fact that there are sometimes trailing stylespan elements that haven't
         # been dealt with upstream e.g. if there is more than one style span in a row.
@@ -286,11 +290,13 @@ class AdobeDocumentPostProcessor:
         new_string = ''
         for ix, row in df.iterrows():
             text_type = row['type']
+            text = row['text'][0].strip()
+            list_number = row['list_num']
             if text_type == 'Lbl':
                 new_string = ''
-                label_string = f"<Lbl>{row['text']}<\Lbl>"
+                label_string = f"<Lbl>{text}<\Lbl>"
                 if row['first_bool']:
-                    new_string += f"\n<li{row['list_num']}>\n{label_string}"
+                    new_string += f"\n<li{list_number}>\n{label_string}"
                 else:
                     new_string += f"{label_string}"
             # Assume that if we haven't got a label, we're in a list body. This is a bit of a hack to get around the
@@ -299,12 +305,28 @@ class AdobeDocumentPostProcessor:
             # cclw-8149 for example.
             else:
                 if row['last_bool']:
-                    new_string += f" <LBody>{row['text']}<\LBody>\n" + f"\n<\li{row['list_num']}>\n"
+                    new_string += f"<LBody>{text}<\LBody>\n" + f"\n<\li{list_number}>\n"
                 else:
-                    new_string += f" <LBody>{row['text']}<\LBody>\n"
+                    new_string += f"<LBody>{text}<\LBody>\n"
                 lst.append(new_string)
         formatted = '. '.join([li for li in lst])
         return lst
+
+    @staticmethod
+    def _pprinter(text_lst: List[str]) -> str:
+        pretty_string = ""
+        current_tab_level = -1
+        for line in text_lst:
+            if line.startswith('<li'):
+                current_tab_level += 1
+            elif line.startswith('<\li'):
+                current_tab_level -= 1
+            elif line.startswith('<Lbl>'):
+                line = re.sub(r"<Lbl>.*<\\Lbl>", '*', line)
+                line = re.sub(r"<LBody>", ' ', line)
+                line = re.sub(r"<\\LBody>", '', line)
+                pretty_string += "\t" * current_tab_level + line
+        return pretty_string
 
     @staticmethod
     def _pprint_list(df: pd.DataFrame) -> str:
@@ -501,6 +523,8 @@ class AdobeDocumentPostProcessor:
             last_page_ix += 1
             # Append default dict to page.
             for li in dd.values():
+                if filename.startswith("cclw-8149"):
+                    print(f"{filename}: {len(li)}")
                 grouped_block = self._create_custom_attributes(li)
                 new_text_blocks.append(grouped_block)
             # If blocks have a repeated block id, only keep the final one: the others are context values
