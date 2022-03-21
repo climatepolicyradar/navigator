@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 from pipeline.extract.document import TextBlock, Page, Document
-from processor.postprocessor import AdobeDocumentPostProcessor, AdobeTextStylingPostProcessor
+from processor.postprocessor import AdobeDocumentPostProcessor, AdobeTextStylingPostProcessor, HyphenationPostProcessor
 from pipeline.processor.utils import json_to_document
 
 
@@ -20,15 +20,17 @@ def process(in_path, out_path):
     """
     # TODO: Add s3 support.
     text_styling_processor = AdobeTextStylingPostProcessor()
+    hyphenation_processor = HyphenationPostProcessor()
     postprocessor = AdobeDocumentPostProcessor()
     for file in in_path.iterdir():
         if file.suffix == ".json":
             # Read json file to dict.
-            doc = json_to_document(file)
-            if file.stem.startswith("cclw-9460"):
-                print('hi')
+            with open(file, "r") as f:
+                data = json.load(f)
+            # doc = json_to_document(file)
+            doc = hyphenation_processor.process(data)
             doc = text_styling_processor.process(doc)
-            doc = postprocessor.postprocess(file)
+            doc = postprocessor.postprocess(doc, file.stem)
             doc.save_json(out_path / file.stem)
 
 

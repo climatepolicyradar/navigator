@@ -14,6 +14,7 @@ from collections import Counter
 from copy import deepcopy
 from english_words import english_words_set
 
+
 class HyphenationPostProcessor:
     """
     Post processor to join words that are separated into separate blocks due
@@ -36,6 +37,7 @@ class HyphenationPostProcessor:
         current = None
         for ix, l in enumerate(li):
             regex_match = re.search(r'\w+(-|–){1}$', l)
+
             if current:
                 word_fragment = current.rstrip('-')
                 # TODO: Handle non-English words
@@ -59,34 +61,15 @@ class HyphenationPostProcessor:
                 current = regex_match[0]
         return li
 
-    def process(self, root_path: pathlib.Path) -> Document:
-        with open(root_path, "r") as j:
-            contents = json.loads(j.read())
-            filename = root_path.stem
-
+    def process(self, contents: dict) -> dict:
         for ix, page in enumerate(contents['pages']):
-            new_text_blocks = self.rewrap_hyphenated_words(page['text_blocks'])
-            contents['pages'][ix]['text_blocks'] = new_text_blocks
+            for text_block in page['text_blocks']:
+                text_block['text'] = self.rewrap_hyphenated_words(text_block['text'])
+            # contents['pages'][ix]['text_blocks'] = new_text_blocks
 
-        return Document(pages=contents["pages"], filename=filename)
+        return contents
 
-    def postprocess(self, root_path: pathlib.Path) -> Document:
-        """
-        Parse the elements belonging to a list into a single block, including the list's introductory text.
 
-        Args:
-            root_path: Path to Adobe extract API output.
-
-        Returns:
-            A dictionary with values corresponding to a semantic block of a list (introductory context plus the list itself).
-        """
-        with open(root_path, "r") as j:
-            contents = json.loads(j.read())
-            filename = root_path.stem
-
-        # Return original content dict and the grouped list blocks to overwrite original list elements with.
-        new_contents = self._group_list_elements(contents, filename)
-        return Document(pages=new_contents["pages"], filename=filename)
 
 class AdobeTextStylingPostProcessor:
     """
@@ -98,6 +81,7 @@ class AdobeTextStylingPostProcessor:
     HTML style tags inline.
 
     """
+
     @staticmethod
     def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
         """
@@ -177,11 +161,11 @@ class AdobeTextStylingPostProcessor:
                 merged_block_text[-1] = merged_block_text[-1] + new_block_text[0]
                 merged_block_text += new_block_text[1:]
 
-        text_block ={
+        text_block = {
             "text": merged_block_text,
             "coords": merged_coords,
             "path": text_blocks[0]['path'],
-            "text_block_id": text_blocks[0]['text_block_id']+"_merged",
+            "text_block_id": text_blocks[0]['text_block_id'] + "_merged",
         }
         return text_block
 
@@ -304,7 +288,7 @@ class AdobeDocumentPostProcessor:
             text_type = row['type']
             if text_type == 'Lbl':
                 new_string = ''
-                label_string=f"<Lbl>{row['text']}<\Lbl>"
+                label_string = f"<Lbl>{row['text']}<\Lbl>"
                 if row['first_bool']:
                     new_string += f"\n<li{row['list_num']}>\n{label_string}"
                 else:
@@ -315,7 +299,7 @@ class AdobeDocumentPostProcessor:
             # cclw-8149 for example.
             else:
                 if row['last_bool']:
-                    new_string +=f" <LBody>{row['text']}<\LBody>\n"+ f"\n<\li{row['list_num']}>\n"
+                    new_string += f" <LBody>{row['text']}<\LBody>\n" + f"\n<\li{row['list_num']}>\n"
                 else:
                     new_string += f" <LBody>{row['text']}<\LBody>\n"
                 lst.append(new_string)
@@ -382,7 +366,7 @@ class AdobeDocumentPostProcessor:
         """
         df = pd.DataFrame(text_blocks)
         df["page_num"] = df["text_block_id"].str.split("_b").str[0]
-        df["block_num"] =df["text_block_id"].str.extract('b(\d+)').astype(int)
+        df["block_num"] = df["text_block_id"].str.extract('b(\d+)').astype(int)
         # Remove all but the last block for each id, as this is unsorted with
         # the last block being the grouped list element we want to keep.
         new_text_blocks = (
@@ -533,23 +517,18 @@ class AdobeDocumentPostProcessor:
             # new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
             newpage = {"text_blocks": new_text_blocks,
                        "dimensions": page["dimensions"],
-                       "page_id": page["page_id"],}
-            # newpage = Page(
-            #     text_blocks=new_text_blocks,
-            #     dimensions=page.dimensions,
-            #     page_id=page.page_id,
-            # )
+                       "page_id": page["page_id"], }
             new_pages.append(newpage)
 
         new_contents = {"pages": new_pages}
         return new_contents
 
-    def postprocess(self, doc: Document, filename) -> Document:
+    def postprocess(self, doc: dict, filename) -> Document:
         """
         Parse the elements belonging to a list into a single block, including the list's introductory text.
 
         Args:
-            doc: Document object.
+            doc: dict.
 
         Returns:
             A dictionary with values corresponding to a semantic block of a list (introductory context plus the list itself).
