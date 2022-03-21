@@ -4,6 +4,7 @@ import re
 from collections import defaultdict
 from typing import List, Dict, Optional
 
+import numpy as np
 import pandas as pd
 from pipeline.processor.utils import minimal_bounding_box
 
@@ -23,7 +24,6 @@ class AdobeTextStylingPostProcessor:
     HTML style tags inline.
 
     """
-
     @staticmethod
     def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
         """
@@ -272,6 +272,12 @@ class AdobeDocumentPostProcessor:
         Pretty print a text block list so that
         it can be viewed in a programming language
         or text editor.
+
+        Args:
+            df:
+
+        Returns:
+
         """
         string = ""
         for ix, row in df.iterrows():
