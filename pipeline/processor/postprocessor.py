@@ -109,14 +109,14 @@ class AdobeTextStylingPostProcessor:
         Returns:
 
         """
-        if not text_block.custom_attributes:
+        if not text_block['custom_attributes']:
             return None
 
-        if text_block.custom_attributes.get("BaselineShift", 0) < 0:
+        if text_block['custom_attributes'].get("BaselineShift", 0) < 0:
             return "subscript"
-        elif text_block.custom_attributes.get("TextDecorationType") == "Underline":
+        elif text_block['custom_attributes'].get("TextDecorationType") == "Underline":
             return "underline"
-        elif text_block.custom_attributes.get("TextPosition") == "Sup":
+        elif text_block['custom_attributes'].get("TextPosition") == "Sup":
             return "superscript"
         else:
             return None
@@ -148,7 +148,7 @@ class AdobeTextStylingPostProcessor:
         else:
             return text
 
-    def merge_text_blocks(self, text_blocks: List[TextBlock]) -> TextBlock:
+    def merge_text_blocks(self, text_blocks: List[dict]) -> dict:
         """
         Merge text blocks in the same semantic category (same path) that have been separated due to styling elements.
 
@@ -159,7 +159,7 @@ class AdobeTextStylingPostProcessor:
             A new text block
 
         """
-        all_coords = [tuple(text_block.coords) for text_block in text_blocks]
+        all_coords = [tuple(text_block['coords']) for text_block in text_blocks]
         merged_coords = minimal_bounding_box(all_coords)
 
         merged_block_text = []
@@ -168,7 +168,7 @@ class AdobeTextStylingPostProcessor:
             block_styling = self._classify_text_block_styling(text_block)
             new_block_text = [
                 self._add_text_styling_markers(line, block_styling)
-                for line in text_block.text
+                for line in text_block['text']
             ]
 
             if merged_block_text == []:
@@ -177,55 +177,58 @@ class AdobeTextStylingPostProcessor:
                 merged_block_text[-1] = merged_block_text[-1] + new_block_text[0]
                 merged_block_text += new_block_text[1:]
 
-        return TextBlock(
-            text=merged_block_text,
-            text_block_id=text_blocks[0].text_block_id + "_merged",
-            coords=merged_coords,
-            path=text_blocks[0].path,
-        )
+        text_block ={
+            "text": merged_block_text,
+            "coords": merged_coords,
+            "path": text_blocks[0]['path'],
+            "text_block_id": text_blocks[0]['text_block_id']+"_merged",
+        }
+        return text_block
 
-    def process(self, document: Document) -> Document:
+    def process(self, document: dict) -> dict:
         """
         Iterate through a document and merge text blocks that have been separated due to styling elements.
 
         Args:
-            document: pdf doc object.
+            dict: dict of a pdf doc object.
 
         Returns:
-                A new document object with styling info added.
+                A new dict object with styling info added.
         """
         new_document = deepcopy(document)
 
-        for page in new_document.pages:
+        for page in new_document['pages']:
             # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
             # TODO: This is a hack. We should be able to handle this better.
-            if page.text_blocks[0].path is None:
+            if page['text_blocks'][0]['path'] is None:
                 continue
             # Count repeated paths since blocks with custom styling (subscript, superscript, underline)
             # have separate elements in the same text block.
-            path_counts = Counter([tuple(block.path) for block in page.text_blocks])
+            path_counts = Counter([tuple(block['path']) for block in page['text_blocks']])
 
             # TODO: This logic does not always work. For instance, cclw-9460 separates
             duplicated_paths = [
                 path for path, count in path_counts.items() if count > 1
             ]
-
-            for path in duplicated_paths:
-                text_block_idxs, text_blocks_to_merge = list(
-                    zip(
-                        *[
-                            (idx, block)
-                            for idx, block in enumerate(page.text_blocks)
-                            if tuple(block.path) == path
-                        ]
+            try:
+                for path in duplicated_paths:
+                    text_block_idxs, text_blocks_to_merge = list(
+                        zip(
+                            *[
+                                (idx, block)
+                                for idx, block in enumerate(page['text_blocks'])
+                                if tuple(block['path']) == path
+                            ]
+                        )
                     )
-                )
-                merged_text_block = self.merge_text_blocks(text_blocks_to_merge)
-                page.text_blocks = (
-                        page.text_blocks[0: text_block_idxs[0]]
-                        + [merged_text_block]
-                        + page.text_blocks[text_block_idxs[-1] + 1:]
-                )
+                    merged_text_block = self.merge_text_blocks(text_blocks_to_merge)
+                    page['text_blocks'] = (
+                            page['text_blocks'][0: text_block_idxs[0]]
+                            + [merged_text_block]
+                            + page['text_blocks'][text_block_idxs[-1] + 1:]
+                    )
+            except TypeError:
+                pass
 
         return new_document
 
@@ -358,10 +361,11 @@ class AdobeDocumentPostProcessor:
 
         """
         new_custom_attributes = {new_attribute: True}
-        if text_block.custom_attributes is not None:
-            text_block.custom_attributes .update(new_custom_attributes)
-        else:
-            text_block.custom_attributes  = new_custom_attributes
+        try:
+            if text_block['custom_attributes'] is not None:
+                text_block['custom_attributes'].update(new_custom_attributes)
+        except KeyError:
+            text_block['custom_attributes'] = new_custom_attributes
         return text_block
 
     @staticmethod
@@ -376,10 +380,7 @@ class AdobeDocumentPostProcessor:
             The text blocks with singular list elements removed.
 
         """
-        try:
-            df = pd.DataFrame(text_blocks)
-        except TypeError:
-            print('hi')
+        df = pd.DataFrame(text_blocks)
         df["page_num"] = df["text_block_id"].str.split("_b").str[0]
         df["block_num"] =df["text_block_id"].str.extract('b(\d+)').astype(int)
         # Remove all but the last block for each id, as this is unsorted with
@@ -442,7 +443,7 @@ class AdobeDocumentPostProcessor:
         }
         return new_dict
 
-    def _group_list_elements(self, contents: Document, filename) -> dict:
+    def _group_list_elements(self, contents: dict, filename) -> dict:
         """
         Parse Adobe outputs to group list elements
 
@@ -457,22 +458,22 @@ class AdobeDocumentPostProcessor:
         blocks_seen = 0
         last_page_ix = 0
         new_pages = []
-        for ix, page in enumerate(contents.pages):
+        for ix, page in enumerate(contents['pages']):
             previous_block = None
             new_text_blocks = []
             dd = defaultdict(list)
-            for text_block in page.text_blocks:
+            for text_block in page['text_blocks']:
                 blocks_seen += 1
-                if text_block.path:
+                if text_block['path']:
                     list_group = self._find_first_occurrence(
-                        self.regex_pattern, text_block.path
+                        self.regex_pattern, text_block['path']
                     )
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
                         # Handle the case where we have a new list at the beginning of a page and where
                         # the previous list block is assumed context.
                         if (
-                                text_block.text_block_id.split("_")[1] == "b1"
+                                text_block['text_block_id'].split("_")[1] == "b1"
                         ) and previous_block:
                             text_block = self._update_custom_attributes(
                                 text_block, "contiguous_with_prev_page_context"
@@ -529,12 +530,15 @@ class AdobeDocumentPostProcessor:
             if len(new_text_blocks) == 1 and ("coords" not in new_text_blocks[0]):
                 new_text_blocks[0]["coords"] = None
             # Convert to text block data class.
-            new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
-            newpage = Page(
-                text_blocks=new_text_blocks,
-                dimensions=page.dimensions,
-                page_id=page.page_id,
-            )
+            # new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
+            newpage = {"text_blocks": new_text_blocks,
+                       "dimensions": page["dimensions"],
+                       "page_id": page["page_id"],}
+            # newpage = Page(
+            #     text_blocks=new_text_blocks,
+            #     dimensions=page.dimensions,
+            #     page_id=page.page_id,
+            # )
             new_pages.append(newpage)
 
         new_contents = {"pages": new_pages}
