@@ -378,7 +378,7 @@ class AdobeDocumentPostProcessor:
         """
         df = pd.DataFrame(text_blocks)
         df["page_num"] = df["text_block_id"].str.split("_b").str[0]
-        df["block_num"] = df["text_block_id"].str.split("_b").str[1].astype(int)
+        df["block_num"] =df["text_block_id"].str.extract('b(\d+)').astype(int)
         # Remove all but the last block for each id, as this is unsorted with
         # the last block being the grouped list element we want to keep.
         new_text_blocks = (
