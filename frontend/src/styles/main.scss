@@ -57,9 +57,10 @@ h6 {
 }
 input[type='text'],
 input[type='number'],
+input[type='password'],
 textarea,
 select {
-  @apply p-3 rounded-lg text-lg w-full bg-indigo-100;
+  @apply p-3 rounded-lg text-lg w-full bg-indigo-100 text-indigo-600;
 }
 
 .form-row {

@@ -9,6 +9,7 @@ interface ButtonProps {
   id?: string;
   extraClasses?: string;
   'data-cy'?: string;
+  fullWidth?: boolean;
 }
 
 const Button = ({
@@ -19,6 +20,7 @@ const Button = ({
   color = 'light',
   id = '',
   extraClasses = '',
+  fullWidth = false,
   ...props
 }: ButtonProps) => {
   let colorClasses =
@@ -40,7 +42,9 @@ const Button = ({
       disabled={disabled}
       id={id}
       data-cy={props['data-cy']}
-      className={`${colorClasses} button transition duration-300 px-4 py-2 rounded-3xl w-full md:w-auto md:px-8 pointer-events-auto ${extraClasses}`}
+      className={`${colorClasses} button transition duration-300 px-4 py-2 rounded-3xl md:px-8 pointer-events-auto w-full ${extraClasses} ${
+        !fullWidth ? 'md:w-auto' : ''
+      }`}
     >
       {children}
     </button>
