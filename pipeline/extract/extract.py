@@ -522,15 +522,6 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         self._current_data = self._flatten_data(data)
 
         for el in self._current_data["elements"]:
-            # Ignore rotated text elements.
-            element_rotation = el.get("Rotation", 0)
-            if (
-                self._max_rotation_degrees
-                < element_rotation
-                < 360 - self._max_rotation_degrees
-            ):
-                continue
-
             # Increment page_id and reset block_counter if starting new page.
             # Elements sometimes don't have page numbers, so in these cases we assume
             # the page hasn't changed.
@@ -538,6 +529,17 @@ class AdobeAPIExtractor(DocumentTextExtractor):
                 block_counter = 1
 
             page_id = el.get("Page", page_id)
+
+            # Ignore rotated text elements.
+            element_rotation = (
+                el.get("Rotation", 0) - data["pages"][page_id]["rotation"]
+            )
+            if (
+                self._max_rotation_degrees
+                < element_rotation
+                < 360 - self._max_rotation_degrees
+            ):
+                continue
 
             # Only consider blocks that aren't in one of the types to exclude, and contain text.
             if not any(
