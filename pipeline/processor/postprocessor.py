@@ -23,7 +23,6 @@ class AdobeTextStylingPostProcessor:
     HTML style tags inline.
 
     """
-
     @staticmethod
     def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
         """
@@ -160,7 +159,7 @@ class AdobeDocumentPostProcessor:
     """Further processing of processed outputs from the Adobe API (handling cases not easily
     handled by the API itself)."""
 
-    regex_pattern = r"L\[?\d?\]?"
+    regex_pattern = r"L\[?\d?\]?$"
 
     @staticmethod
     def _minimal_bounding_box(coords: List[list]) -> list:
@@ -212,29 +211,27 @@ class AdobeDocumentPostProcessor:
             All occurrences of the regular expression in the list of strings.
 
         """
-        return [
-            string for string in list_of_strings if re.search(regex_pattern, string)
-        ]
+        return [string for string in list_of_strings if re.search(regex_pattern, string)]
 
     def _format_semantic_lists(self, dic: dict) -> List[List[str]]:
-        """ """
+        """
+        """
         df = pd.DataFrame(dic)
-        df["list_num"] = df["path"].apply(
-            len(self._find_all_occurrences(self.regex_pattern, df["path"]))
-        )
+        df['list_num'] = df['path'].apply(len(self._find_all_occurrences(self.regex_pattern, df['path'])))
         # Bit of a hack here to handle the fact that there are sometimes trailing stylespan elements that haven't
         # been dealt with upstream.
-        df = df[df.type != "StyleSpan"]
+        df = df[df.type != 'StyleSpan']
         lst = []
-        new_string = ""
+        new_string = ''
         for ix, row in df.iterrows():
-            text_type = row["type"]
-            if text_type == "Lbl":
+            text_type = row['type']
+            # TODO: Handle spans.
+            if text_type == 'Lbl':
                 if new_string:
-                    lst.append(new_string + "<LBody>")
+                    lst.append(new_string + '<LBody>')
                 new_string = f"<Lbl>{row['text'][0].strip()}<Lbl>"
             else:
-                if new_string.endswith("<Lbl>"):
+                if new_string.endswith('<Lbl>'):
                     new_string += f"<LBody>{row['text'][0].strip()}"
                 else:
                     new_string += f"{row['text'][0].strip()} "
@@ -246,15 +243,10 @@ class AdobeDocumentPostProcessor:
         Pretty print a text block list so that
         it can be viewed in a programming language
         or text editor.
-
-        Args:
-            df:
-
-        Returns:
-
         """
         string = ""
         for ix, row in df.iterrows():
+            # TODO: Handle spans.
             if row["type"] == "Lbl":
                 string += f"{row['text'][0]} "
             elif row["type"] == "LBody":
@@ -311,16 +303,6 @@ class AdobeDocumentPostProcessor:
         )
         return new_text_blocks
 
-    @staticmethod
-    def _format_list_text(df):
-        new_text_list = []
-        for ix, row in df.iterrows():
-            if row["type"] == "Lbl":
-                row["text"] = [row["text"][0]]
-            elif row["type"] == "LBody":
-                row["text"] = [row["text"][0]]
-            else:
-                row["text"] = [row["text"][0]]
 
     def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
@@ -340,6 +322,7 @@ class AdobeDocumentPostProcessor:
         df["page_num"] = (
             df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
         )
+        df['list_num'] = df['path'].apply(lambda x: len(self._find_all_occurrences(self.regex_pattern, x)))
 
         full_list_text = df["text"].tolist()
         paths = df["path"].tolist()
