@@ -20,6 +20,7 @@ interface AddDocumentsProps {
   languages: Language[];
   active: boolean;
   getValues: Function;
+  setValue: any;
 }
 
 const AddDocuments = ({
@@ -30,6 +31,7 @@ const AddDocuments = ({
   languages,
   active,
   getValues,
+  setValue,
 }: AddDocumentsProps) => {
   const [fileobj, setFileObj] = useState(null);
 
@@ -112,6 +114,7 @@ const AddDocuments = ({
 
   const addDocumentToAction = (document: Document) => {
     documents.push(document);
+    setValue('documents', documents);
   };
 
   const closePopup = (data) => {
@@ -153,7 +156,7 @@ const AddDocuments = ({
             register={register}
             required
           >
-            <option>{t('form.Choose a language')}</option>
+            <option value="">{t('form.Choose a language')}</option>
             {languages.map((language: Language) => (
               <option
                 key={`language${language.language_id}`}
@@ -202,7 +205,7 @@ const AddDocuments = ({
             register={register}
             onChange={handleDateChange}
           >
-            <option>{t('Choose', { ns: 'common' })}</option>
+            <option value="">{t('Choose', { ns: 'common' })}</option>
             {yearSelections.map((year, index) => (
               <option key={index} value={year}>
                 {year}
@@ -217,7 +220,7 @@ const AddDocuments = ({
             register={register}
             onChange={handleDateChange}
           >
-            <option>{t('Choose', { ns: 'common' })}</option>
+            <option value="">{t('Choose', { ns: 'common' })}</option>
             {months.map((month, index) => (
               <option key={index} value={index + 1}>
                 {month}
@@ -231,7 +234,7 @@ const AddDocuments = ({
             errors={errors}
             register={register}
           >
-            <option>{t('Choose', { ns: 'common' })}</option>
+            <option value="">{t('Choose', { ns: 'common' })}</option>
             {days.map((day, index) => (
               <option key={index} value={day + 1}>
                 {day + 1}

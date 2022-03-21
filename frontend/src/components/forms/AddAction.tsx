@@ -85,9 +85,8 @@ const AddAction = ({
     register,
     handleSubmit,
     getValues,
-    formState: { isSubmitting },
-    formState: { errors },
-    formState: { isSubmitSuccessful },
+    setValue,
+    formState: { isSubmitting, errors, isSubmitSuccessful, isValid },
     reset,
     watch,
   } = useForm({
@@ -158,7 +157,6 @@ const AddAction = ({
 
   return (
     <>
-      {console.log(values)}
       {createAction.isLoading || !ready ? (
         <>
           <LoaderOverlay />
@@ -208,6 +206,7 @@ const AddAction = ({
                 languages={languages}
                 active={popupActive}
                 getValues={getValues}
+                setValue={setValue}
               />
             )}
           </Popup>
@@ -343,9 +342,9 @@ const AddAction = ({
             <div className="form-row">
               <h3>{t('form.Documents')}</h3>
               <div className="mt-4">
-                {errors.documents ? (
+                {documents.length < 1 && !isValid ? (
                   <p className="error text-red-500 mb-4">
-                    {(errors.documents as any).message}
+                    {(errors.documents as any)?.message}
                   </p>
                 ) : null}
 
