@@ -63,6 +63,12 @@ def _get_lookup(model, lookup_key):
 
     headers = {"Authorization": "Bearer {}".format(machine_user_token)}
     response = requests.get(f"{api_host}/api/v1/{model}", headers=headers)
+
+    if response.status_code >= 400:
+        raise Exception(
+            "Backend error. Check migrations ran, or base data is imported (e.g. geographies)"
+        )
+
     json_data = response.json()
     lookup = {}
     for datum in json_data:

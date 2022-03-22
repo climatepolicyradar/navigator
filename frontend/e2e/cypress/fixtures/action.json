@@ -5,8 +5,8 @@
   "month": 12,
   "day": 31,
   "geography_id": 1,
-  "type_id": 1,
-  "source_id": 1,
+  "action_type_id": 1,
+  "action_source_id": 1,
   "documents": [
     {
       "name": "Name of document",

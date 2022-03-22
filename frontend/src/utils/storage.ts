@@ -1,6 +1,5 @@
 export const storage = {
-  getToken: () => JSON.parse(window.localStorage.getItem('jwt')),
-  setToken: (token) =>
-    window.localStorage.setItem('jwt', JSON.stringify(token)),
-  clearToken: () => window.localStorage.removeItem('jwt'),
+  getToken: () => JSON.parse(localStorage.getItem('jwt')),
+  setToken: (token) => localStorage.setItem('jwt', JSON.stringify(token)),
+  clearToken: () => localStorage.removeItem('jwt'),
 };

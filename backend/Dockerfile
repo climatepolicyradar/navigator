@@ -19,3 +19,7 @@ COPY ./common ../common
 # Install python dependencies using poetry
 RUN poetry config virtualenvs.create false
 RUN poetry install
+
+ENV PYTHONPATH=/app
+
+CMD python app/main.py
