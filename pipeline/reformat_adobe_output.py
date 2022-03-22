@@ -2,9 +2,7 @@ import argparse
 import json
 from pathlib import Path
 
-from pipeline.extract.document import TextBlock, Page, Document
 from processor.postprocessor import AdobeDocumentPostProcessor, AdobeTextStylingPostProcessor, HyphenationPostProcessor
-from pipeline.processor.utils import json_to_document
 
 
 def process(in_path, out_path):
