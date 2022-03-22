@@ -11,6 +11,7 @@ interface SelectProps {
   errors: FieldErrors;
   onChange?(event: any): any;
   register: any;
+  'data-cy'?: string;
 }
 
 const Select = ({
@@ -23,6 +24,7 @@ const Select = ({
   onChange = () => {},
   errors,
   register,
+  'data-cy': dataCy,
 }: SelectProps) => {
   return (
     <div className={`${classes}`}>
@@ -31,6 +33,7 @@ const Select = ({
         {required ? <strong className="text-red-500"> *</strong> : null}
       </label>
       <select
+        data-cy={dataCy}
         onChange={onChange}
         className={`border ${
           errors[name] ? 'border-red-500' : 'border-gray-300'

@@ -10,7 +10,6 @@ describe('Submit Action form', () => {
     cy.get('[data-cy="selectSource"] option').should('have.length', 2);
     cy.get('[data-cy="selectGeographies"] option').should('have.length', 11);
     cy.get('[data-cy="selectActionType"] option').should('have.length', 3);
-    cy.get('[data-cy="selectLanguages"] option').should('have.length', 11);
   });
 
   it('Should show errors when any required fields are not filled out', () => {
