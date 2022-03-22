@@ -6,7 +6,7 @@ import Banner from '../banner/Auth';
 type Props = {
   children?: ReactNode;
   title?: string;
-  heading: string;
+  heading?: string;
 };
 
 const Layout = ({

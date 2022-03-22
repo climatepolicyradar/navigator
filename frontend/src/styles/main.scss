@@ -58,13 +58,14 @@ h6 {
 input[type='text'],
 input[type='number'],
 input[type='password'],
+input[type='email'],
 textarea,
 select {
   @apply p-3 rounded-lg text-lg w-full bg-indigo-100 text-indigo-600;
 }
 
 .form-row {
-  @apply my-8;
+  @apply my-6;
 }
 
 select {

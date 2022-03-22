@@ -9,27 +9,19 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from '../components/form-inputs/TextInput';
 import Button from '../components/buttons/Button';
 
-const ActivateAccount = () => {
+const ResetRequest = () => {
   const { t, i18n, ready } = useTranslation('auth');
   const schema = Yup.object({
-    /* TODO: decide on password requirements */
-    password: Yup.string().required(t('Password is required')).min(6),
-    confirm_password: Yup.string().oneOf(
-      [Yup.ref('password'), null],
-      t('Passwords must match')
-    ),
+    email: Yup.string()
+      .email(t('Invalid email format'))
+      .required('Email is required'),
   });
   const {
     register,
     handleSubmit,
-    getValues,
-    setValue,
     formState: { isSubmitting, errors, isSubmitSuccessful, isValid },
-    reset,
-    watch,
   } = useForm({
     resolver: yupResolver(schema),
-    // defaultValues: initialValues,
   });
   const submitForm = (data) => {
     console.log(data);
@@ -39,32 +31,25 @@ const ActivateAccount = () => {
       {!ready ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Navigator | ${t('Activate your account')}`}>
+        <Layout title={`Navigator | ${t('Reset your password')}`}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper
-                heading={t('Activate your account')}
-                description={t('Specify your password')}
+                heading={t('Reset your password')}
+                description={t(
+                  'Enter your email you signed up with.<br>We will send you a link.'
+                )}
               >
                 <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                   <div className="form-row text-white">
                     <TextInput
-                      label={t('Password')}
-                      name="password"
-                      type="password"
+                      label={t('Email')}
+                      name="email"
+                      type="email"
                       errors={errors}
                       required
                       register={register}
-                    />
-                  </div>
-                  <div className="form-row text-white">
-                    <TextInput
-                      label={t('Confirm password')}
-                      name="confirm_password"
-                      type="password"
-                      errors={errors}
-                      required
-                      register={register}
+                      placeholder="Enter your email"
                     />
                   </div>
                   <div className="mt-8">
@@ -75,7 +60,7 @@ const ActivateAccount = () => {
                       extraClasses="w-full"
                       fullWidth
                     >
-                      {t('Activate')}
+                      {t('Reset password')}
                     </Button>
                   </div>
                 </form>
@@ -88,4 +73,4 @@ const ActivateAccount = () => {
   );
 };
 
-export default ActivateAccount;
+export default ResetRequest;
