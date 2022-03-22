@@ -138,6 +138,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             increment_start_ix = len(string) - len(string[match.end():])
             start_ix += increment_start_ix
             string = string[match.end():]
+            # re.sub(r"<u>(\w+)</u>", r'\1', text_block['text'][0])
 
     @staticmethod
     def _add_text_styling_markers(text: str, styling: str) -> str:
@@ -181,8 +182,10 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         merged_coords = self._minimal_bounding_box(all_coords)
 
         merged_block_text = []
-
+        cumulative_block_len = 0
         for text_block in text_blocks:
+            start_ix = cumulative_block_len
+            cumulative_block_len += sum([len(line) for line in text_block["text"]])
             block_styling = self._classify_text_block_styling(text_block)
             new_block_text = [
                 self._add_text_styling_markers(line, block_styling)
@@ -194,6 +197,11 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             else:
                 merged_block_text[-1] = merged_block_text[-1] + new_block_text[0]
                 merged_block_text += new_block_text[1:]
+
+            # Add new custom attributes to text block here.
+            if block_styling:
+                d={"styleSpans": [{"style": block_styling, "start_idx": start_ix, "end_idx": cumulative_block_len}]}
+                print('hi')
 
         text_block = {
             "text": merged_block_text,
