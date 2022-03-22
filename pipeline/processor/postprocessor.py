@@ -10,14 +10,33 @@ from english_words import english_words_set
 from pipeline.extract.document import Document, TextBlock
 from pipeline.processor.utils import minimal_bounding_box
 
+class PostProcessor:
+    @staticmethod
+    def _minimal_bounding_box(coords: List[list]) -> list:
+        """
+        Return the minimally enclosing bounding box of bounding boxes.
+
+        Args: coords: A list of coordinates for each bounding box formatted [x1,y1,x2,y2] with the bottom left as the
+        origin.
+
+        Returns:
+            A list of coordinates for the minimally enclosing bounding box for all input bounding boxes.
+
+        """
+        x_min = min(coord[0][0] for coord in coords)
+        y_min = min(coord[1][1] for coord in coords)
+        x_max = max(coord[1][0] for coord in coords)
+        y_max = max(coord[3][1] for coord in coords)
+        return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
 
 class HyphenationPostProcessor:
     """
     Post processor to join words that are separated into separate blocks due
     to hyphenation at line breaks.
     """
-
-    def rewrap_hyphenated_words(self, li: list) -> list:
+    
+    @staticmethod
+    def _rewrap_hyphenated_words(li: list) -> list:
         """
         Reorganise a list of strings so that word fragments separated
         by hyphens or em dashes to start new lines are joined into a single
@@ -60,13 +79,11 @@ class HyphenationPostProcessor:
     def process(self, contents: dict) -> dict:
         for ix, page in enumerate(contents["pages"]):
             for text_block in page["text_blocks"]:
-                text_block["text"] = self.rewrap_hyphenated_words(text_block["text"])
-            # contents['pages'][ix]['text_blocks'] = new_text_blocks
-
+                text_block["text"] = self._rewrap_hyphenated_words(text_block["text"])
         return contents
 
 
-class AdobeTextStylingPostProcessor:
+class AdobeTextStylingPostProcessor(PostProcessor):
     """
     Some semantic passages have separate blocks for styling markers such
     as underlines, superscripts and subscripts. We want to group such cases
@@ -76,6 +93,9 @@ class AdobeTextStylingPostProcessor:
     HTML style tags inline.
 
     """
+    
+    def __init__(self):
+        super(AdobeTextStylingPostProcessor, self).__init__()
 
     @staticmethod
     def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
@@ -139,7 +159,7 @@ class AdobeTextStylingPostProcessor:
 
         """
         all_coords = [tuple(text_block["coords"]) for text_block in text_blocks]
-        merged_coords = minimal_bounding_box(all_coords)
+        merged_coords = self._minimal_bounding_box(all_coords)
 
         merged_block_text = []
 
@@ -214,29 +234,14 @@ class AdobeTextStylingPostProcessor:
         return new_document
 
 
-class AdobeDocumentPostProcessor:
+class AdobeDocumentPostProcessor(PostProcessor):
     """Further processing of processed outputs from the Adobe API (handling cases not easily
     handled by the API itself)."""
 
     regex_pattern = r"L\[?\d?\]?$"
 
-    @staticmethod
-    def _minimal_bounding_box(coords: List[list]) -> list:
-        """
-        Return the minimally enclosing bounding box of bounding boxes.
-
-        Args: coords: A list of coordinates for each bounding box formatted [x1,y1,x2,y2] with the bottom left as the
-        origin.
-
-        Returns:
-            A list of coordinates for the minimally enclosing bounding box for all input bounding boxes.
-
-        """
-        x_min = min(coord[0][0] for coord in coords)
-        y_min = min(coord[1][1] for coord in coords)
-        x_max = max(coord[1][0] for coord in coords)
-        y_max = max(coord[3][1] for coord in coords)
-        return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
+    def __init__(self):
+        super(AdobeDocumentPostProcessor, self).__init__()
 
     @staticmethod
     def _find_first_occurrence(regex_pattern: str, list_of_strings):

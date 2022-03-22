@@ -1,26 +1,7 @@
 import json
 import pathlib
-from typing import List, Iterable
 
 from pipeline.extract.document import Document, TextBlock, Page
-
-
-def minimal_bounding_box(coords: List[list]) -> list:
-    """
-    Return the minimally enclosing bounding box of bounding boxes.
-
-    Args: coords: A list of coordinates for each bounding box formatted [x1,y1,x2,y2] with the bottom left as the
-    origin.
-
-    Returns:
-        A list of coordinates for the minimally enclosing bounding box for all input bounding boxes.
-
-    """
-    x_min = min(coord[0][0] for coord in coords)
-    y_min = min(coord[1][1] for coord in coords)
-    x_max = max(coord[1][0] for coord in coords)
-    y_max = max(coord[3][1] for coord in coords)
-    return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
 
 def json_to_document(path: pathlib.Path) -> Document:
     with open(path, "r") as f:
