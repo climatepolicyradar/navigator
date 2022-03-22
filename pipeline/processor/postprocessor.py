@@ -119,6 +119,26 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         else:
             return None
 
+
+    @staticmethod
+    def findall(pattern, string):
+        """
+        Helper function to get the start and end indices for a given pattern.
+
+        Args:
+            pattern: The pattern to search for.
+            string: string to search in.
+        """
+        start_ix = 0
+        while True:
+            match = re.search(pattern, string)
+            if not match:
+                break
+            yield start_ix + match.start(), start_ix + match.end()
+            increment_start_ix = len(string) - len(string[match.end():])
+            start_ix += increment_start_ix
+            string = string[match.end():]
+
     @staticmethod
     def _add_text_styling_markers(text: str, styling: str) -> str:
         """
