@@ -39,18 +39,92 @@ class Backend:
             registry=deployment_resources.docker_registry,
         )
 
+        # frontend
+        frontend_dockerfile = Path(os.getcwd()) / ".." / "frontend" / "Dockerfile"
+        frontend_dockerfile = frontend_dockerfile.resolve().as_posix()
+
+        frontend_image = docker.Image(
+            "frontend-docker-image",
+            build=docker.DockerBuild(
+                context=docker_context, dockerfile=frontend_dockerfile
+            ),
+            image_name=deployment_resources.ecr_repo.repository_url,
+            skip_push=False,
+            registry=deployment_resources.docker_registry,
+        )
+
+        # nginx
+        nginx_dockerfile = Path(os.getcwd()) / ".." / "nginx" / "Dockerfile"
+        nginx_dockerfile = nginx_dockerfile.resolve().as_posix()
+
+        nginx_image = docker.Image(
+            "nginx-docker-image",
+            build=docker.DockerBuild(
+                context=docker_context, dockerfile=nginx_dockerfile
+            ),
+            image_name=deployment_resources.ecr_repo.repository_url,
+            skip_push=False,
+            registry=deployment_resources.docker_registry,
+        )
+
+        config = pulumi.Config()
+        backend_secret_key = config.require_secret("backend_secret_key")
+
         dockerrun_aws_json_template = json.dumps(
             {
-                "AWSEBDockerrunVersion": "1",
-                "Image": {"Name": "%s"},
-                "Ports": [{"ContainerPort": "8888"}],
+                "AWSEBDockerrunVersion": "2",
+                "containerDefinitions": [
+                    {
+                        "name": "backend",
+                        "image": "%s",
+                        "essential": True,
+                        "memory": 128,
+                        "environment": [
+                            {
+                                "name": "DATABASE_URL",
+                                "value": storage.backend_database_connection_url,
+                            },
+                            {"name": "SECRET_KEY", "value": backend_secret_key},
+                            {"name": "PORT", "value": "8888"},
+                        ],
+                    },
+                    {
+                        "name": "frontend",
+                        "image": "%s",
+                        "essential": True,
+                        "memory": 128,
+                        "environment": [
+                            {
+                                "name": "NEXT_PUBLIC_API_URL",
+                                "value": "https://api.climatepolicyradar.com/",
+                            },
+                            {"name": "PORT", "value": "3000"},
+                        ],
+                    },
+                    {
+                        "name": "nginx-proxy",
+                        "image": "%s",
+                        "essential": True,
+                        "memory": 128,
+                        "portMappings": [{"hostPort": 80, "containerPort": 80}],
+                        "links": ["backend", "frontend"],
+                        "mountPoints": [
+                            {
+                                "sourceVolume": "awseb-logs-nginx-proxy",
+                                "containerPath": "/var/log/nginx",
+                            }
+                        ],
+                    },
+                ],
             }
         )
 
-        def fill_template(img):
-            return dockerrun_aws_json_template % (img)
+        def fill_template(arg):
+            return dockerrun_aws_json_template % (arg[0], arg[1], arg[2])
 
-        dockerrun_file = self.backend_image.image_name.apply(fill_template)
+        dockerrun_file = pulumi.Output.all(
+            self.backend_image, frontend_image, nginx_image
+        ).apply(fill_template)
 
         pulumi.export("dockerrun_file", dockerrun_file)
 
@@ -89,11 +163,9 @@ class Backend:
         # aws elasticbeanstalk list-available-solution-stacks
         solution_stack = aws.elasticbeanstalk.get_solution_stack_output(
             most_recent=True,
-            name_regex=r"^64bit Amazon Linux 2 (.*) Docker(.*)$",
+            # name_regex=r"^64bit Amazon Linux 2 (.*) Docker(.*)$",
+            name_regex=r"^64bit Amazon Linux(.*)Multi-container Docker(.*)$",
         )
-
-        config = pulumi.Config()
-        backend_secret_key = config.require_secret("backend_secret_key")
 
         backend_eb_env = aws.elasticbeanstalk.Environment(
             "navigator-api-environment",
@@ -162,22 +234,6 @@ class Backend:
                     namespace="aws:elasticbeanstalk:healthreporting:system",
                     name="SystemType",
                     value="enhanced",
-                ),
-                # app env vars
-                aws.elasticbeanstalk.EnvironmentSettingArgs(
-                    namespace="aws:elasticbeanstalk:application:environment",
-                    name="DATABASE_URL",
-                    value=storage.backend_database_connection_url,
-                ),
-                aws.elasticbeanstalk.EnvironmentSettingArgs(
-                    namespace="aws:elasticbeanstalk:application:environment",
-                    name="SECRET_KEY",
-                    value=backend_secret_key,
-                ),
-                aws.elasticbeanstalk.EnvironmentSettingArgs(
-                    namespace="aws:elasticbeanstalk:application:environment",
-                    name="PORT",
-                    value="8888",
                 ),
             ],
         )
