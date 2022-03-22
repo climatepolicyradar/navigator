@@ -5,6 +5,10 @@ describe('SubmitDocument', () => {
     cy.get('[data-cy="add-doc-modal"]').click();
   });
 
+  it('Select list should be populated with language choices', () => {
+    cy.get('[data-cy="selectLanguages"] option').should('have.length', 11);
+  });
+
   it('Should return errors when clicking Add because required form fields are empty', () => {
     cy.get('[data-cy="submit-add-document-form"]').click();
     cy.get('.error').should('have.length', 4);
