@@ -338,9 +338,20 @@ class AdobeDocumentPostProcessor:
         return lst
 
     @staticmethod
-    def _pprinter(text_lst: List[str]) -> str:
+    def _duped_line_reformatting(line: str) -> str:
         """
-        Pretty prints a list of strings for API/Python access, handling nested lists gracefully.
+        Helper to remove duplication in pprinter method.
+        """
+        line = re.sub(r"<Lbl>.*<\\Lbl>", "*", line)
+        line = re.sub(r"<LBody>", " ", line)
+        line = re.sub(r"<\\LBody>", "", line)
+        return line
+
+    def _pprinter(self, text_lst: List[str]) -> str:
+        """
+        Pretty prints a list of strings for API/Python access, handling nested lists gracefully
+        with tabulation. This can be used for debugging purposes.
+
         Args:
             text_lst: A list of strings, each of which is a list element.
 
@@ -349,19 +360,23 @@ class AdobeDocumentPostProcessor:
 
         """
         pretty_string = ""
-        current_tab_level = -1
+        current_tab_level = 0
         for line in text_lst:
             if line.startswith("<Lbl>"):
-                line = re.sub(r"<Lbl>.*<\\Lbl>", "*", line)
-                line = re.sub(r"<LBody>", " ", line)
-                line = re.sub(r"<\\LBody>", "", line)
+                line = self._duped_line_reformatting(line)
                 end_of_list = re.search(r"<\\li\d+>$", line.strip())
                 line = re.sub(r"<\\li\d+>", "", line)
                 pretty_string += "\t" * current_tab_level + line.strip() + "\n"
                 if end_of_list:
-                    current_tab_level -= 1
+                    if current_tab_level > 0:
+                        current_tab_level -= 1
             elif line.strip().startswith("<li"):
-                current_tab_level += 1
+                list_num = int(re.search(r"<li(\d+)>", line.strip()).group(1))
+                line = self._duped_line_reformatting(line)
+                line = re.sub(r"<li\d+>", "", line)
+                if list_num > 1:
+                    current_tab_level += 1
+                pretty_string += "\t" * current_tab_level + line.strip() + "\n"
         return pretty_string
 
     @staticmethod
