@@ -61,7 +61,6 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-        NODE_ENV: development
     command: npm run dev
     ports:
       - 3000:3000

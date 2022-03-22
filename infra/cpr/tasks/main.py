@@ -1,9 +1,6 @@
-from dataclasses import dataclass
-from typing import List, Optional
 import json
 import pulumi
 import pulumi_aws as aws
-from pulumi.dynamic import ResourceProvider
 
 from cpr.backend.main import Backend
 from cpr.plumbing.main import Plumbing
@@ -12,7 +9,10 @@ from cpr.tasks.util.run_task_resource import FargateRunTask
 
 
 class Tasks:
-    """Runs one-off tasks, e.g. database migrations."""
+    """Runs one-off tasks, e.g. database migrations.
+
+    Inspired by https://github.com/sevenwestmedia-labs/pulumi/tree/master/packages/run-fargate-task
+    """
 
     def __init__(
         self,
