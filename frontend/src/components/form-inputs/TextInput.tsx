@@ -1,44 +1,50 @@
 import React from 'react';
-import { useField } from 'formik';
+import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
 
-interface TextInputProps {
-  id?: string;
-  name: string;
+interface InputProps {
   label: string;
-  type: string;
   required?: boolean;
+  errors: FieldErrors;
+  name: string;
+  type?: string;
   placeholder?: string;
+  accept?: string;
+  className?: string;
+  onChange?(event: any): any;
+  register: any;
 }
 
 const TextInput = ({
   label,
   required = false,
+  errors,
+  name,
+  type = 'text',
   placeholder = '',
-  ...props
-}: TextInputProps) => {
-  // useField() returns [formik.getFieldProps(), formik.getFieldMeta()]
-  // which we can spread on <input>. We can use field meta to show an error
-  // message if the field is invalid and it has been touched (i.e. visited)
-  const [field, meta] = useField(props);
-
+  accept = '',
+  className = '',
+  onChange,
+  register,
+}: InputProps): JSX.Element => {
   return (
-    <div>
-      <label htmlFor={props.id || props.name} className="text-indigo-600">
+    <div className={className}>
+      <label className="text-indigo-600">
         {label}
         {required ? <strong className="text-red-500"> *</strong> : null}
       </label>
       <input
-        className={`w-full ${
-          meta.touched && meta.error ? 'border-red-500' : 'border-gray-300'
-        }`}
-        type={props.type}
+        type={type}
         placeholder={placeholder}
-        {...field}
-        {...props}
+        accept={accept}
+        className={`border ${
+          errors[name] ? 'border-red-500' : 'border-gray-300'
+        }`}
+        onChange={onChange}
+        {...register(name)}
       />
-      {meta.touched && meta.error ? (
-        <div className="error w-full text-red-500">{meta.error}</div>
-      ) : null}
+      {errors[name] && (
+        <div className="error w-full text-red-500">{errors[name].message}</div>
+      )}
     </div>
   );
 };
