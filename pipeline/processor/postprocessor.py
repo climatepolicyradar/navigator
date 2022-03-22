@@ -279,7 +279,27 @@ class AdobeDocumentPostProcessor:
         ]
 
     def _format_semantic_lists(self, df: pd.DataFrame) -> List[List[str]]:
-        """ """
+        """
+        Takes a dataframe with list elements and associated metadata and
+        parses the list text into a more formatted list of strings with html-esque
+        tags. Best attempt is made to keep the right semantics and assign
+        appropriate tags.
+
+        Args:
+            df: pd.DataFrame
+                text                  object
+                text_block_id         object
+                coords                object
+                type                  object
+                path                  object
+                custom_attributes     object
+                page_num               int64
+                list_num               int64
+                first_list_index       int64
+                last_list_index        int64
+                first_list_ix_bool      bool
+                last_list_ix_bool       bool
+        """
         # TODO: Temporary hack from breakage created by texthyphenation part of pipeline. Messy duplicatation.
         df["type"] = df["path"].apply(lambda x: x[-1])
         # Sometimes label is called ExtraCharSpan, replace it with label
