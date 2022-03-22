@@ -517,10 +517,11 @@ class AdobeDocumentPostProcessor:
                     )
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
-                        # Handle the case where we have a new list at the beginning of a page and where
+                        # Case 1: We have a new list at the beginning of a page and
                         # the previous list block is assumed context.
+                        block_num = int(re.search(r"b(\d+)", text_block['text_block_id']).group(1))
                         if (
-                            text_block["text_block_id"].split("_")[1] == "b1"
+                            block_num == 1
                         ) and previous_block:
                             text_block = self._update_custom_attributes(
                                 text_block, "contiguous_with_prev_page_context"
@@ -564,8 +565,6 @@ class AdobeDocumentPostProcessor:
             last_page_ix += 1
             # Append default dict to page.
             for li in dd.values():
-                if filename.startswith("cclw-8149"):
-                    print(f"{filename}: {len(li)}")
                 grouped_block = self._create_custom_attributes(li)
                 new_text_blocks.append(grouped_block)
             # If blocks have a repeated block id, only keep the final one: the others are context values
