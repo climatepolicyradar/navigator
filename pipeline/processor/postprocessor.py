@@ -36,35 +36,35 @@ class HyphenationPostProcessor:
         """
         current = None
         for ix, l in enumerate(li):
-            regex_match = re.search(r'\w+(-|–){1}$', l)
+            regex_match = re.search(r"\w+(-|–){1}$", l)
 
             if current:
-                word_fragment = current.rstrip('-')
+                word_fragment = current.rstrip("-")
                 # TODO: Handle non-English words
                 if word_fragment in english_words_set:
                     # Check if the word with hyphen removed is an english
                     # word and if it is, make this the first word of the newline
                     # without the hyphen (e.g. repair-ing)
-                    newline_first_word = word_fragment + l.split(' ')[0].lstrip('-')
+                    newline_first_word = word_fragment + l.split(" ")[0].lstrip("-")
                     if newline_first_word in english_words_set:
-                        li[ix] = newline_first_word + l.split(' ')[1:]
+                        li[ix] = newline_first_word + l.split(" ")[1:]
                     # Otherwise, keep the hyphenation but put it on a newline e.g. post-processing.
                     else:
-                        li[ix] = word_fragment + '-' + l
+                        li[ix] = word_fragment + "-" + l
                 else:
                     li[ix] = word_fragment + l
                 # Reset.
                 current = None
             if regex_match:
                 # Strip matching regex from the end of the string.
-                li[ix] = l[:regex_match.start()]
+                li[ix] = l[: regex_match.start()]
                 current = regex_match[0]
         return li
 
     def process(self, contents: dict) -> dict:
-        for ix, page in enumerate(contents['pages']):
-            for text_block in page['text_blocks']:
-                text_block['text'] = self.rewrap_hyphenated_words(text_block['text'])
+        for ix, page in enumerate(contents["pages"]):
+            for text_block in page["text_blocks"]:
+                text_block["text"] = self.rewrap_hyphenated_words(text_block["text"])
             # contents['pages'][ix]['text_blocks'] = new_text_blocks
 
         return contents
@@ -92,14 +92,14 @@ class AdobeTextStylingPostProcessor:
         Returns:
 
         """
-        if not text_block['custom_attributes']:
+        if not text_block["custom_attributes"]:
             return None
 
-        if text_block['custom_attributes'].get("BaselineShift", 0) < 0:
+        if text_block["custom_attributes"].get("BaselineShift", 0) < 0:
             return "subscript"
-        elif text_block['custom_attributes'].get("TextDecorationType") == "Underline":
+        elif text_block["custom_attributes"].get("TextDecorationType") == "Underline":
             return "underline"
-        elif text_block['custom_attributes'].get("TextPosition") == "Sup":
+        elif text_block["custom_attributes"].get("TextPosition") == "Sup":
             return "superscript"
         else:
             return None
@@ -142,7 +142,7 @@ class AdobeTextStylingPostProcessor:
             A new text block
 
         """
-        all_coords = [tuple(text_block['coords']) for text_block in text_blocks]
+        all_coords = [tuple(text_block["coords"]) for text_block in text_blocks]
         merged_coords = minimal_bounding_box(all_coords)
 
         merged_block_text = []
@@ -151,7 +151,7 @@ class AdobeTextStylingPostProcessor:
             block_styling = self._classify_text_block_styling(text_block)
             new_block_text = [
                 self._add_text_styling_markers(line, block_styling)
-                for line in text_block['text']
+                for line in text_block["text"]
             ]
 
             if merged_block_text == []:
@@ -163,8 +163,8 @@ class AdobeTextStylingPostProcessor:
         text_block = {
             "text": merged_block_text,
             "coords": merged_coords,
-            "path": text_blocks[0]['path'],
-            "text_block_id": text_blocks[0]['text_block_id'] + "_merged",
+            "path": text_blocks[0]["path"],
+            "text_block_id": text_blocks[0]["text_block_id"] + "_merged",
         }
         return text_block
 
@@ -180,14 +180,16 @@ class AdobeTextStylingPostProcessor:
         """
         new_document = deepcopy(document)
 
-        for page in new_document['pages']:
+        for page in new_document["pages"]:
             # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
             # TODO: This is a hack. We should be able to handle this better.
-            if page['text_blocks'][0]['path'] is None:
+            if page["text_blocks"][0]["path"] is None:
                 continue
             # Count repeated paths since blocks with custom styling (subscript, superscript, underline)
             # have separate elements in the same text block.
-            path_counts = Counter([tuple(block['path']) for block in page['text_blocks']])
+            path_counts = Counter(
+                [tuple(block["path"]) for block in page["text_blocks"]]
+            )
 
             # TODO: This logic does not always work. For instance, cclw-9460 separates
             duplicated_paths = [
@@ -199,16 +201,16 @@ class AdobeTextStylingPostProcessor:
                         zip(
                             *[
                                 (idx, block)
-                                for idx, block in enumerate(page['text_blocks'])
-                                if tuple(block['path']) == path
+                                for idx, block in enumerate(page["text_blocks"])
+                                if tuple(block["path"]) == path
                             ]
                         )
                     )
                     merged_text_block = self.merge_text_blocks(text_blocks_to_merge)
-                    page['text_blocks'] = (
-                            page['text_blocks'][0: text_block_idxs[0]]
-                            + [merged_text_block]
-                            + page['text_blocks'][text_block_idxs[-1] + 1:]
+                    page["text_blocks"] = (
+                        page["text_blocks"][0 : text_block_idxs[0]]
+                        + [merged_text_block]
+                        + page["text_blocks"][text_block_idxs[-1] + 1 :]
                     )
             except TypeError:
                 pass
@@ -272,44 +274,47 @@ class AdobeDocumentPostProcessor:
             All occurrences of the regular expression in the list of strings.
 
         """
-        return [string for string in list_of_strings if re.search(regex_pattern, string)]
+        return [
+            string for string in list_of_strings if re.search(regex_pattern, string)
+        ]
 
     def _format_semantic_lists(self, df: pd.DataFrame) -> List[List[str]]:
-        """
-        """
+        """ """
         # TODO: Temporary hack from breakage created by texthyphenation part of pipeline. Messy duplicatation.
-        df['type'] = df['path'].apply(lambda x: x[-1])
+        df["type"] = df["path"].apply(lambda x: x[-1])
         # Sometimes label is called ExtraCharSpan, replace it with label
-        df['type'] = df['type'].replace({'ExtraCharSpan': 'Lbl', 'ParagraphSpan': 'LBody'})
+        df["type"] = df["type"].replace(
+            {"ExtraCharSpan": "Lbl", "ParagraphSpan": "LBody"}
+        )
 
         # TODO: fix this!
         # Bit of a hack here to handle the fact that there are sometimes trailing stylespan elements that haven't
         # been dealt with upstream e.g. if there is more than one style span in a row.
-        df = df[df.type != 'StyleSpan']
+        df = df[df.type != "StyleSpan"]
         lst = []
-        new_string = ''
+        new_string = ""
         for ix, row in df.iterrows():
-            text_type = row['type']
-            text = row['text'][0].strip()
-            list_number = row['list_num']
-            if text_type == 'Lbl':
-                new_string = ''
+            text_type = row["type"]
+            text = row["text"][0].strip()
+            list_number = row["list_num"]
+            if text_type == "Lbl":
+                new_string = ""
                 label_string = f"<Lbl>{text}<\Lbl>"
-                if row['first_bool']:
+                if row["first_list_ix_bool"]:
                     new_string += f"\n<li{list_number}>\n{label_string}"
                 else:
                     new_string += f"{label_string}"
-            # Assume that if we haven't got a label, we're in a list body. This is a bit of a hack to get around the
-            # fact that there are sometimes other types e.g. Span or Paragraph span that (due to italics and such)
-            # that should really be part of a list body. Tested this and works in most cases, but doesn't work for
-            # cclw-8149 for example.
+            # TODO: Test more thoroughly.
+            #  Assume that if the list element isn't a label and the type hasnt been
+            #  handled above, it's part ofa list body. This is a bit of a hack to get around the fact that there are
+            #  sometimes other types e.g. Span or Paragraph span that (due to italics and such) that should really be
+            #  part of a list body. Tested this and works so far, but there may be some difficult edge cases.
             else:
-                if row['last_bool']:
+                if row["last_list_ix_bool"]:
                     new_string += f"<LBody>{text}<\LBody>\n" + f"\n<\li{list_number}>\n"
                 else:
                     new_string += f"<LBody>{text}<\LBody>\n"
                 lst.append(new_string)
-        formatted = '. '.join([li for li in lst])
         return lst
 
     @staticmethod
@@ -326,19 +331,18 @@ class AdobeDocumentPostProcessor:
         pretty_string = ""
         current_tab_level = -1
         for line in text_lst:
-            if line.startswith('<Lbl>'):
-                line = re.sub(r"<Lbl>.*<\\Lbl>", '*', line)
-                line = re.sub(r"<LBody>", ' ', line)
-                line = re.sub(r"<\\LBody>", '', line)
-                end_of_list=re.search(r"<\\li\d+>$",line.strip())
-                line = re.sub(r"<\\li\d+>", '', line)
+            if line.startswith("<Lbl>"):
+                line = re.sub(r"<Lbl>.*<\\Lbl>", "*", line)
+                line = re.sub(r"<LBody>", " ", line)
+                line = re.sub(r"<\\LBody>", "", line)
+                end_of_list = re.search(r"<\\li\d+>$", line.strip())
+                line = re.sub(r"<\\li\d+>", "", line)
                 pretty_string += "\t" * current_tab_level + line.strip() + "\n"
                 if end_of_list:
                     current_tab_level -= 1
-            elif line.strip().startswith('<li'):
+            elif line.strip().startswith("<li"):
                 current_tab_level += 1
         return pretty_string
-
 
     @staticmethod
     def _update_custom_attributes(text_block: dict, new_attribute: str) -> dict:
@@ -356,10 +360,10 @@ class AdobeDocumentPostProcessor:
         """
         new_custom_attributes = {new_attribute: True}
         try:
-            if text_block['custom_attributes'] is not None:
-                text_block['custom_attributes'].update(new_custom_attributes)
+            if text_block["custom_attributes"] is not None:
+                text_block["custom_attributes"].update(new_custom_attributes)
         except KeyError:
-            text_block['custom_attributes'] = new_custom_attributes
+            text_block["custom_attributes"] = new_custom_attributes
         return text_block
 
     @staticmethod
@@ -376,16 +380,16 @@ class AdobeDocumentPostProcessor:
         """
         df = pd.DataFrame(text_blocks)
         df["page_num"] = df["text_block_id"].str.split("_b").str[0]
-        df["block_num"] = df["text_block_id"].str.extract('b(\d+)').astype(int)
+        df["block_num"] = df["text_block_id"].str.extract("b(\d+)").astype(int)
         # Remove all but the last block for each id, as this is unsorted with
         # the last block being the grouped list element we want to keep.
         new_text_blocks = (
             df.groupby("text_block_id")
-                .apply(lambda x: x.iloc[-1])
-                .reset_index(drop=True)
-                .sort_values(["page_num", "block_num"])
-                .drop(columns=["page_num", "block_num"])
-                .to_dict("records")
+            .apply(lambda x: x.iloc[-1])
+            .reset_index(drop=True)
+            .sort_values(["page_num", "block_num"])
+            .drop(columns=["page_num", "block_num"])
+            .to_dict("records")
         )
         return new_text_blocks
 
@@ -407,27 +411,41 @@ class AdobeDocumentPostProcessor:
         df["page_num"] = (
             df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
         )
-        df['list_num'] = df['path'].apply(lambda x: len(self._find_all_occurrences(self.regex_pattern, x)))
-        # Get the first and last index of each page number as this will be convenient for formatting.
-        df = df.merge(df.index.to_series().groupby(df.list_num).agg(['first', 'last']).reset_index(), how='left',
-                      on='list_num')
-        df['first_bool'] = df['first'] == df.index
-        df['last_bool'] = df['last'] == df.index
-        self._format_semantic_lists(df)
+        df["list_num"] = df["path"].apply(
+            lambda x: len(self._find_all_occurrences(self.regex_pattern, x))
+        )
+        # Get the first and last index of each list number in a group of nested lists.
+        # This is used to determine if a list element is the first or last element in a group,
+        # which is used to determine the nesting level when printing and also to give html-esque
+        # indicators e.g. <li1>, <li2>, etc.
+        df = df.merge(
+            df.index.to_series()
+            .groupby(df.list_num)
+            .agg(["first", "last"])
+            .reset_index(),
+            how="left",
+            on="list_num",
+        ).rename(columns={"first": "first_list_index", "last": "last_list_index"})
+        # Get booleans to indicate whether each text block contains the first or last element of a
+        # (nested) list.
+        df["first_list_ix_bool"] = df["first_list_index"] == df.index
+        df["last_list_ix_bool"] = df["last_list_index"] == df.index
 
-        full_list_text = df["text"].tolist()
+        original_list_text = df["text"].tolist()
+        full_list_text = self._format_semantic_lists(df)
         paths = df["path"].tolist()
         block_ids = df["text_block_id"].tolist()
         custom_bounding_boxes = (
             df.groupby("page_num")
-                .apply(lambda x: self._minimal_bounding_box(x["coords"]))
-                .tolist()
+            .apply(lambda x: self._minimal_bounding_box(x["coords"]))
+            .tolist()
         )
         custom_attributes_dict = {
             "paths": paths,
             "text_block_ids": block_ids,
             "custom_bounding_boxes": custom_bounding_boxes,
-            "pretty_list_string": self._pprint_list(df),
+            "pretty_list_string": self._pprinter(df),
+            "original_list_text": original_list_text,
         }
         new_dict = {
             "text_block_id": block_ids[0],
@@ -452,22 +470,22 @@ class AdobeDocumentPostProcessor:
         blocks_seen = 0
         last_page_ix = 0
         new_pages = []
-        for ix, page in enumerate(contents['pages']):
+        for ix, page in enumerate(contents["pages"]):
             previous_block = None
             new_text_blocks = []
             dd = defaultdict(list)
-            for text_block in page['text_blocks']:
+            for text_block in page["text_blocks"]:
                 blocks_seen += 1
-                if text_block['path']:
+                if text_block["path"]:
                     list_group = self._find_first_occurrence(
-                        self.regex_pattern, text_block['path']
+                        self.regex_pattern, text_block["path"]
                     )
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
                         # Handle the case where we have a new list at the beginning of a page and where
                         # the previous list block is assumed context.
                         if (
-                                text_block['text_block_id'].split("_")[1] == "b1"
+                            text_block["text_block_id"].split("_")[1] == "b1"
                         ) and previous_block:
                             text_block = self._update_custom_attributes(
                                 text_block, "contiguous_with_prev_page_context"
@@ -527,9 +545,11 @@ class AdobeDocumentPostProcessor:
                 new_text_blocks[0]["coords"] = None
             # Convert to text block data class.
             # new_text_blocks = [TextBlock(**tb) for tb in new_text_blocks]
-            newpage = {"text_blocks": new_text_blocks,
-                       "dimensions": page["dimensions"],
-                       "page_id": page["page_id"], }
+            newpage = {
+                "text_blocks": new_text_blocks,
+                "dimensions": page["dimensions"],
+                "page_id": page["page_id"],
+            }
             new_pages.append(newpage)
 
         new_contents = {"pages": new_pages}
