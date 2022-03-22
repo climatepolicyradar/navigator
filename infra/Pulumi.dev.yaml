@@ -1,0 +1,7 @@
+config:
+  aws:region: eu-west-2
+  infra:backend_secret_key:
+    secure: AAABAOW9HpZnPSnZYJJ3FqPwg1WWmbTCvHOMr8qHOa1bQ9d9iibfLSg0tftyAyZstHH5ew5JoOPlroSLRmXNOskq4bydJBnMOVUN5m+CG2oGfCOul+gjN1lbnJvzX4xosDa/
+  infra:db_password:
+    secure: AAABAFWl0f+kyMKie8S7cSH8rbuUriZEZIo50exNfigRUP+MsBuCtmbd5hCLAyqOsjbUDOI=
+  infra:db_username: navigator_db_user

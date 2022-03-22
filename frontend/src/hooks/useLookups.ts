@@ -1,15 +1,9 @@
 import { useQuery } from 'react-query';
-import apiClient from '../api/http-common';
-import { storage } from '../utils/storage';
+import ApiClient from '../api/http-common';
 
 export default function useLookups(path) {
+  const client = new ApiClient()
   return useQuery(path, () =>
-    apiClient
-      .get(`/${path}`, {
-        headers: {
-          Authorization: `Bearer ${storage.getToken()}`,
-        },
-      })
-      .then((res) => res.data)
+    client.get(`/${path}`, null)
   );
 }

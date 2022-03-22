@@ -1,10 +1,11 @@
 import os
 import json
 from pathlib import Path
-from unittest import mock
+import shutil
 
 import pytest
 from adobe.pdfservices.operation.io.file_ref import FileRef
+from adobe.pdfservices.operation.internal.io.file_ref_impl import FileRefImpl
 from adobe.pdfservices.operation.exception.exceptions import ServiceApiException
 from PyPDF2 import PdfFileReader
 
@@ -163,51 +164,60 @@ def test_embedded_text_extractor(test_pdf_path, tmp_path):
 
 
 def get_sample_adobe_fileref(*args, **kwargs):
-    return FileRef.create_from_local_file(
-        Path(__file__).parent / "sample_adobe_output.zip"
+    sample_path = Path(__file__).parent / "sample_adobe_output.zip"
+    return FileRef.create_from_local_file(str(sample_path))
+
+
+def mock_file_ref_impl_save_as(self, destination_file_path):
+    abs_path = os.path.abspath(destination_file_path)
+    dir = os.path.dirname(abs_path)
+    if not os.path.exists(dir):
+        os.mkdir(dir)
+    if not os.path.exists(abs_path):
+        shutil.copy(self._file_path, abs_path)
+        return
+
+
+def test_adobe_text_extractor(test_pdf_path, tmp_path, mocker):
+
+    mocker.patch.object(FileRefImpl, "save_as", new=mock_file_ref_impl_save_as)
+    mocker.patch.object(
+        AdobeAPIExtractor, "_get_adobe_api_result", new=get_sample_adobe_fileref
     )
 
+    data_output_dir = tmp_path / "data"
+    os.mkdir(data_output_dir)
 
-def test_adobe_text_extractor(test_pdf_path, tmp_path):
-    with mock.patch.object(
-        AdobeAPIExtractor, "_get_adobe_api_result", new=get_sample_adobe_fileref
-    ):
-        data_output_dir = tmp_path / "data"
-        split_dir = tmp_path / "splits"
-        os.mkdir(data_output_dir)
-        os.mkdir(split_dir)
+    text_extractor = AdobeAPIExtractor(credentials_path="fake/path")
 
-        text_extractor = AdobeAPIExtractor(credentials_path="fake/path")
-        doc = text_extractor.extract(
-            test_pdf_path,
-            data_output_dir=data_output_dir,
-            output_folder_pdf_splits=split_dir,
-        )
+    doc = text_extractor.extract(
+        test_pdf_path,
+        data_output_dir=data_output_dir,
+    )
 
-        assert doc.filename == test_pdf_path.name
+    assert doc.filename == test_pdf_path.name
 
-        # The returned document can have up to 8 pages (the number of pages in the original PDF).
-        # Pages with no parsed content (e.g. all figures) won't be added to the document.
-        assert len(doc.pages) == 8
+    # The returned document can have up to 8 pages (the number of pages in the original PDF).
+    # Pages with no parsed content (e.g. all figures) won't be added to the document.
+    assert len(doc.pages) == 8
 
-        # Every page in the Adobe output should have text blocks, as pages are only created if there are text blocks
-        assert all([len(page.text_blocks) > 0 for page in doc.pages])
+    # Every page in the Adobe output should have text blocks, as pages are only created if there are text blocks
+    assert all([len(page.text_blocks) > 0 for page in doc.pages])
 
-        # Check that text blocks all have paths and types
-        assert all(
-            [text_block.path for page in doc.pages for text_block in page.text_blocks]
-        )
-        assert all(
-            [text_block.type for page in doc.pages for text_block in page.text_blocks]
-        )
+    # Check that text blocks all have paths and types
+    assert all(
+        [text_block.path for page in doc.pages for text_block in page.text_blocks]
+    )
+    assert all(
+        [text_block.type for page in doc.pages for text_block in page.text_blocks]
+    )
 
-        # Check that files have been successfully unzipped and stored and that split_dir is empty
-        assert os.listdir(data_output_dir) == [test_pdf_path.stem]
-        assert sorted(os.listdir(data_output_dir / test_pdf_path.stem)) == [
-            "figures",
-            "structuredData.json",
-        ]
-        assert os.listdir(split_dir) == []
+    # Check that files have been successfully unzipped and stored and that split_dir is empty
+    assert os.listdir(data_output_dir) == [test_pdf_path.stem]
+    assert sorted(os.listdir(data_output_dir / test_pdf_path.stem)) == [
+        "figures",
+        "structuredData.json",
+    ]
 
 
 def mock_get_adobe_api_result_raise_exception(
@@ -225,34 +235,33 @@ def mock_get_adobe_api_result_raise_exception(
 
 
 def test_adobe_text_extractor_with_pdf_split(
-    test_pdf_path, tmp_path, test_pdf_no_pages
+    test_pdf_path, tmp_path, test_pdf_no_pages, mocker
 ):
-    with mock.patch.object(
+    mocker.patch.object(FileRefImpl, "save_as", new=mock_file_ref_impl_save_as)
+    mocker.patch.object(
         AdobeAPIExtractor,
         "_get_adobe_api_result",
         new=lambda self, x: mock_get_adobe_api_result_raise_exception(
             self, x, test_pdf_no_pages
         ),
-    ):
-        data_output_dir = tmp_path / "data"
-        split_dir = tmp_path / "splits"
-        os.mkdir(data_output_dir)
-        os.mkdir(split_dir)
+    )
 
-        text_extractor = AdobeAPIExtractor(credentials_path="fake/path")
-        # Set API max pages limit to 5 - this means the extractor should split the 8 page input PDF into 5 and 3 page PDFs.
-        text_extractor.API_MAX_PAGES = 5
-        doc = text_extractor.extract(
-            test_pdf_path,
-            data_output_dir=data_output_dir,
-            output_folder_pdf_splits=split_dir,
-        )
+    data_output_dir = tmp_path / "data"
+    os.mkdir(data_output_dir)
 
-        # Note the returned documents will just be two instances of the same document because of the way that the mocking is set up.
-        # We know the document in test_pdf_path has 8 pages so can still test for that.
-        assert isinstance(doc, Document)
-        assert len(doc.pages) == 8
-        assert doc.filename == test_pdf_path.name
+    text_extractor = AdobeAPIExtractor(credentials_path="fake/path")
+    # Set API max pages limit to 5 - this means the extractor should split the 8 page input PDF into 5 and 3 page PDFs.
+    text_extractor.API_MAX_PAGES = 5
+    doc = text_extractor.extract(
+        test_pdf_path,
+        data_output_dir=data_output_dir,
+    )
+
+    # Note the returned documents will just be two instances of the same document because of the way that the mocking is set up.
+    # We know the document in test_pdf_path has 8 pages so can still test for that.
+    assert isinstance(doc, Document)
+    assert len(doc.pages) == 8
+    assert doc.filename == test_pdf_path.name
 
 
 def test_split_pdf(test_pdf_path, tmpdir):

@@ -1,19 +1,17 @@
-import apiClient from '../api/http-common';
+import ApiClient from '../api/http-common';
 import { storage } from '../utils/storage';
 import { useMutation, useQueryClient } from 'react-query';
 
 const useCreateAction = () => {
   const queryClient = useQueryClient();
+  const client = new ApiClient();
   return useMutation(
     (values) =>
-      apiClient
-        .post(`/action`, values, {
-          headers: {
-            Authorization: `Bearer ${storage.getToken()}`,
-          },
-        })
-        .then((res) => res.data),
+      client.post(`/actions`, values),
     {
+      onError: (err) => {
+        console.log(err)
+      },
       onSettled: () => {
         window.scrollTo(0, 0);
       },

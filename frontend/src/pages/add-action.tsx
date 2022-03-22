@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../components/LoaderOverlay';
 
 import useLookups from '../hooks/useLookups';
-import { useAuth } from '../lib/auth';
+import { useAuth } from '../api/auth';
 
 const AddActionPage = () => {
   const geosQuery = useLookups('geographies');

@@ -3,7 +3,7 @@ import { AppProps } from 'next/app';
 import '../styles/main.scss';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
-import { AuthProvider } from '../lib/auth';
+import { AuthProvider } from '../api/auth';
 
 // Create a client
 const queryClient = new QueryClient();

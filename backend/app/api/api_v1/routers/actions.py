@@ -4,21 +4,42 @@ from sqlite3 import IntegrityError
 from typing import Optional
 
 import httpx
+from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi_pagination import Page
+from fastapi_pagination.ext.sqlalchemy import paginate
+
 from app.core.auth import get_current_active_user
-from app.db.crud.action import create_action, get_actions_query, is_action_exists
+from app.db.crud.action import (
+    create_action,
+    get_actions_query,
+    is_action_exists,
+    get_action,
+)
 from app.db.crud.document import create_document
 from app.db.models.document import DocumentInvalidReason
 from app.db.schemas.action import ActionCreate, ActionInDB
 from app.db.schemas.document import DocumentCreateInternal
 from app.db.session import get_db
-from fastapi import APIRouter, Depends, HTTPException, Request
-from fastapi_pagination import Page
-from fastapi_pagination.ext.sqlalchemy import paginate
 from navigator.core.aws import S3Document, get_s3_client
 from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
 actions_router = r = APIRouter()
+
+
+@r.get(
+    "/actions/{action_id}",
+    response_model=ActionInDB,
+    response_model_exclude_none=True,
+)
+async def action_details(
+    action_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """Get action details"""
+    action = get_action(action_id, db)
+    return action
 
 
 @r.get(
@@ -28,6 +49,7 @@ actions_router = r = APIRouter()
 )
 async def action_list(
     db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
 ):
     return paginate(get_actions_query(db))
 
