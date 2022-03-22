@@ -1,18 +1,14 @@
-import json
-import pathlib
 import re
+from collections import Counter
 from collections import defaultdict
+from copy import deepcopy
 from typing import List, Dict, Optional
 
-import numpy as np
 import pandas as pd
-from pipeline.processor.utils import minimal_bounding_box
-
-from pipeline.extract.document import Document, TextBlock, Page
-
-from collections import Counter
-from copy import deepcopy
 from english_words import english_words_set
+
+from pipeline.extract.document import Document, TextBlock
+from pipeline.processor.utils import minimal_bounding_box
 
 
 class HyphenationPostProcessor:
@@ -601,10 +597,6 @@ class AdobeDocumentPostProcessor:
         Returns:
             A dictionary with values corresponding to a semantic block of a list (introductory context plus the list itself).
         """
-        # with open(root_path, "r") as j:
-        #     contents = json.loads(j.read())
-        #     filename = root_path.stem
-
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
         new_contents = self._group_list_elements(doc, filename)
         return Document(pages=new_contents["pages"], filename=filename)
