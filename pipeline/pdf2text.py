@@ -147,7 +147,7 @@ class PDFProcessor:
     def __init__(
         self,
         data_dir: Path,
-        out_path: str,
+        out_path: Path,
         use_s3: bool,
         adobe_extractor: AdobeAPIExtractor,
         embedded_extractor: DocumentEmbeddedTextExtractor,
@@ -168,8 +168,7 @@ class PDFProcessor:
         self.embedded_extractor = embedded_extractor
 
     def process_file(self, pdf_filepath: Path, pdf_filename: str):
-        """Process a single file. Produces a .json and .txt file containing extracted text and 
-        associated positional data.
+        """Process a single file. Produces a .json and .txt file containing extracted text and associated positional data.
 
         Args:
             pdf_filepath (Path): path to PDF file.
@@ -179,17 +178,17 @@ class PDFProcessor:
         try:
             pdf_doc = self.adobe_extractor.extract(
                 pdf_filepath=pdf_filepath,
-                pdf_name=pdf_name,
+                pdf_name=pdf_filename,
                 data_output_dir=self.data_dir,
             )
         except Exception as e:
             print(
-                f"Adobe extractor failed with error {e} for {pdf_name}. Falling back to embedded text extractor."
+                f"Adobe extractor failed with error {e} for {pdf_filename}. Falling back to embedded text extractor."
             )
 
             pdf_doc = self.embedded_extractor.extract(
                 pdf_filepath=pdf_filepath,
-                pdf_name=pdf_name,
+                pdf_name=pdf_filename,
                 data_output_dir=self.data_dir,
             )
 
@@ -209,7 +208,7 @@ class PDFProcessor:
             pdf_doc.save_text(out_text_filepath)
 
             # If we're using s3, upload the document to the given bucket/folder
-            if use_s3:
+            if self.use_s3:
                 upload_extract_files(
                     self.out_path,
                     save_filename,
@@ -221,7 +220,7 @@ class PDFProcessor:
         """Enable use of multiprocessing.imap rather than multiprocessing.starmap, meaning tqdm can be used to create a progress bar."""
         return self.process_file(*args)
 
-    def process(self, pdf_path: str, n_process: Optional[int] = None):
+    def process(self, pdf_path: Path, n_process: Optional[int] = None):
         """Extract text from text in a directory containing pdf files.
 
         Iterate through files with a .pdf extension in a given directory or s3 bucket/folder,

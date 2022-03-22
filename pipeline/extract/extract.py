@@ -38,6 +38,8 @@ from abc import ABC, abstractmethod
 from adobe.pdfservices.operation.auth.credentials import Credentials
 from adobe.pdfservices.operation.exception.exceptions import (
     ServiceApiException,
+    ServiceUsageException,
+    SdkException,
 )
 from adobe.pdfservices.operation.pdfops.options.extractpdf.extract_pdf_options import (
     ExtractPDFOptions,
@@ -77,7 +79,7 @@ class DocumentTextExtractor(ABC):
     @abstractmethod
     def data_to_document(self, data_path: Path, pdf_filename: str) -> Document:
         """Converts data outputted by `pdf_to_data` into a `Document` object."""
-        
+
         raise NotImplementedError
 
     @abstractmethod
