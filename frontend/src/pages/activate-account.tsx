@@ -2,7 +2,6 @@ import './i18n';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../components/LoaderOverlay';
 import Layout from '../components/layouts/Auth';
-import Logo from '../components/Logo';
 import AuthWrapper from '../components/auth/AuthWrapper';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -44,7 +43,7 @@ const ActivateAccount = () => {
           title={`Navigator | ${t('Activate your account')}`}
           heading={t('Activate your account')}
         >
-          <section>
+          <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper
                 heading="Activate your account"

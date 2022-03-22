@@ -1,5 +1,6 @@
 import React from 'react';
 import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
+import FormFieldError from '../text-blocks/Error';
 
 interface SelectProps {
   id?: string;
@@ -43,9 +44,7 @@ const Select = ({
         {children}
       </select>
 
-      {errors[name] ? (
-        <div className="error text-red-500 mt-1">{errors[name].message}</div>
-      ) : null}
+      {errors[name] ? <FormFieldError message={errors[name].message} /> : null}
     </div>
   );
 };

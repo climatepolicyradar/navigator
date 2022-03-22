@@ -77,13 +77,6 @@ select {
   background-size: 16px 16px;
 }
 
-.button {
-  box-shadow: 0 0 32px #1f93ff6f;
-  &.clear {
-    box-shadow: none;
-  }
-}
-
 // radar loader
 .radar {
   transform: rotate(-70deg);
