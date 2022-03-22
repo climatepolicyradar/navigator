@@ -8,7 +8,6 @@ import pandas as pd
 from english_words import english_words_set
 
 from pipeline.extract.document import Document, TextBlock
-from pipeline.processor.utils import minimal_bounding_box
 
 class PostProcessor:
     @staticmethod
