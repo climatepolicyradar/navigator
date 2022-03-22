@@ -314,43 +314,31 @@ class AdobeDocumentPostProcessor:
 
     @staticmethod
     def _pprinter(text_lst: List[str]) -> str:
+        """
+        Pretty prints a list of strings for API/Python access, handling nested lists gracefully.
+        Args:
+            text_lst: A list of strings, each of which is a list element.
+
+        Returns:
+            A nicely formatted string for API/Python access.
+
+        """
         pretty_string = ""
         current_tab_level = -1
         for line in text_lst:
-            if line.startswith('<li'):
-                current_tab_level += 1
-            elif line.startswith('<\li'):
-                current_tab_level -= 1
-            elif line.startswith('<Lbl>'):
+            if line.startswith('<Lbl>'):
                 line = re.sub(r"<Lbl>.*<\\Lbl>", '*', line)
                 line = re.sub(r"<LBody>", ' ', line)
                 line = re.sub(r"<\\LBody>", '', line)
-                pretty_string += "\t" * current_tab_level + line
+                end_of_list=re.search(r"<\\li\d+>$",line.strip())
+                line = re.sub(r"<\\li\d+>", '', line)
+                pretty_string += "\t" * current_tab_level + line.strip() + "\n"
+                if end_of_list:
+                    current_tab_level -= 1
+            elif line.strip().startswith('<li'):
+                current_tab_level += 1
         return pretty_string
 
-    @staticmethod
-    def _pprint_list(df: pd.DataFrame) -> str:
-        """
-        Pretty print a text block list so that
-        it can be viewed in a programming language
-        or text editor.
-
-        Args:
-            df:
-
-        Returns:
-
-        """
-        string = ""
-        for ix, row in df.iterrows():
-            # TODO: Handle spans.
-            if row["type"] == "Lbl":
-                string += f"{row['text'][0]} "
-            elif row["type"] == "LBody":
-                string += f"{row['text'][0]}\n"
-            else:
-                string += f"{row['text'][0]}\n"
-        return string
 
     @staticmethod
     def _update_custom_attributes(text_block: dict, new_attribute: str) -> dict:
