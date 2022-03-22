@@ -719,7 +719,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
                 for idx, pdf_path in enumerate(split_paths):
                     split_output_dir = output_dir / f"{pdf_name}_{idx}"
                     json_paths += self.__pdf_to_data(
-                        pdf_filepath=pdf_filepath,
+                        pdf_filepath=pdf_path,
                         output_dir=split_output_dir,
                         temp_dir=temp_dir,
                     )
