@@ -2,7 +2,11 @@ import argparse
 import json
 from pathlib import Path
 
-from processor.postprocessor import AdobeDocumentPostProcessor, AdobeTextStylingPostProcessor, HyphenationPostProcessor
+from processor.postprocessor import (
+    AdobeDocumentPostProcessor,
+    AdobeTextStylingPostProcessor,
+    HyphenationPostProcessor,
+)
 
 
 def process(in_path, out_path):
