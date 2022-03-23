@@ -122,26 +122,6 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             return None
 
     @staticmethod
-    def findall(pattern, string):
-        """
-        Helper function to get the start and end indices for a given pattern.
-
-        Args:
-            pattern: The pattern to search for.
-            string: string to search in.
-        """
-        start_ix = 0
-        while True:
-            match = re.search(pattern, string)
-            if not match:
-                break
-            yield start_ix + match.start(), start_ix + match.end()
-            increment_start_ix = len(string) - len(string[match.end() :])
-            start_ix += increment_start_ix
-            string = string[match.end() :]
-            # re.sub(r"<u>(\w+)</u>", r'\1', text_block['text'][0])
-
-    @staticmethod
     def _add_text_styling_markers(text: str, styling: str) -> str:
         """
         Add inline styling markers to text.
@@ -189,10 +169,6 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             start_ix = cumulative_block_len
             cumulative_block_len += sum([len(line) for line in text_block["text"]])
             block_styling = self._classify_text_block_styling(text_block)
-            new_block_text = [
-                self._add_text_styling_markers(line, block_styling)
-                for line in text_block["text"]
-            ]
             new_block_text = [line for line in text_block["text"]]
 
             if merged_block_text == []:
