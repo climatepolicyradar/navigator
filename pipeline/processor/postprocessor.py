@@ -169,15 +169,14 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             start_ix = cumulative_block_len
             cumulative_block_len += sum([len(line) for line in text_block["text"]])
             block_styling = self._classify_text_block_styling(text_block)
-            new_block_text = [line for line in text_block["text"]]
 
             if merged_block_text == []:
-                merged_block_text = new_block_text
+                merged_block_text = text_block["text"]
             else:
-                merged_block_text[-1] = merged_block_text[-1] + new_block_text[0]
-                merged_block_text += new_block_text[1:]
+                merged_block_text[-1] = merged_block_text[-1] + text_block["text"][0]
+                merged_block_text += text_block["text"][1:]
 
-            # Add new custom attributes to text block here.
+            # Append style metadata that will later be added to custom attributes for text block.
             if block_styling:
                 last_style_ix = len(merged_block_text[0].strip()) - 1
                 style_spans.append(
@@ -188,7 +187,10 @@ class AdobeTextStylingPostProcessor(PostProcessor):
                     }
                 )
 
-        custom_attributes = {"styleSpans": style_spans}
+        if style_spans:
+            custom_attributes = {"styleSpans": style_spans}
+        else:
+            custom_attributes = {}
 
         text_block = {
             "text": merged_block_text,
