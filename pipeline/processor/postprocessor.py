@@ -398,7 +398,7 @@ class AdobeDocumentPostProcessor(PostProcessor):
         return pretty_string
 
     @staticmethod
-    def _update_custom_attributes(text_block: dict, new_attribute: str) -> dict:
+    def _update_contiguity_attributes(text_block: dict, new_attribute: str) -> dict:
         """
         Helper method to update custom attributes with metadata to inform that a block
         is contiguous with the previous element, which may be of a different type.
@@ -446,7 +446,7 @@ class AdobeDocumentPostProcessor(PostProcessor):
         )
         return new_text_blocks
 
-    def _create_custom_attributes(self, blocks: List[Dict]) -> dict:
+    def _update_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
         Create custom attributes for a list of text blocks.
 
@@ -493,18 +493,27 @@ class AdobeDocumentPostProcessor(PostProcessor):
             .apply(lambda x: self._minimal_bounding_box(x["coords"]))
             .tolist()
         )
-        custom_attributes_dict = {
+        # Code here a little awkward due to the way the dataframe is structured (dict not hashable type), but works.
+        orig_custom_attributes = {}
+        for val in df["custom_attributes"].values:
+            if type(val) == dict:
+                orig_custom_attributes.update(val)
+
+        custom_attributes_new = {
             "paths": paths,
             "text_block_ids": block_ids,
             "custom_bounding_boxes": custom_bounding_boxes,
             "pretty_list_string": self._pprinter(df),
             "original_list_text": original_list_text,
         }
+
+        custom_attributes_concat = {**orig_custom_attributes, **custom_attributes_new}
+
         new_dict = {
             "text_block_id": block_ids[0],
             "type": "list",
             "text": full_list_text,
-            "custom_attributes": custom_attributes_dict,
+            "custom_attributes": custom_attributes_concat,
         }
         return new_dict
 
@@ -542,7 +551,7 @@ class AdobeDocumentPostProcessor(PostProcessor):
                             re.search(r"b(\d+)", text_block["text_block_id"]).group(1)
                         )
                         if (block_num == 1) and previous_block:
-                            text_block = self._update_custom_attributes(
+                            text_block = self._update_contiguity_attributes(
                                 text_block, "possibly_contiguous_with_prev_page_context"
                             )
                         # If the list group for the current page is unpopulated and there is
@@ -563,12 +572,12 @@ class AdobeDocumentPostProcessor(PostProcessor):
                             # TODO: Perhaps add some more nuance here, as another possibility is that it's contiguous
                             #  with the previous page but it's context/a list continuation.
                             if prev_list_ix + 1 == blocks_seen:
-                                text_block = self._update_custom_attributes(
+                                text_block = self._update_contiguity_attributes(
                                     text_block,
                                     "possibly_contiguous_with_previous_page_list",
                                 )
                             else:
-                                text_block = self._update_custom_attributes(
+                                text_block = self._update_contiguity_attributes(
                                     text_block,
                                     "possibly_contiguous_with_same_page_context",
                                 )
@@ -585,8 +594,9 @@ class AdobeDocumentPostProcessor(PostProcessor):
             last_page_ix += 1
             # Append default dict to page.
             for li in dd.values():
-                grouped_block = self._create_custom_attributes(li)
+                grouped_block = self._update_custom_attributes(li)
                 new_text_blocks.append(grouped_block)
+
             # If blocks have a repeated block id, only keep the final one: the others are context values
             # that are included in the list group.
             # Sort blocks by block index of the first attribute.
