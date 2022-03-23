@@ -86,8 +86,6 @@ class HyphenationPostProcessor:
         return contents
 
 
-
-
 class AdobeTextStylingPostProcessor(PostProcessor):
     """
     Some semantic passages have separate blocks for styling markers such
@@ -626,7 +624,6 @@ class AdobeDocumentPostProcessor(PostProcessor):
 
         new_contents = {"pages": new_pages}
         return new_contents
-
 
     def process(self, doc: Document, filename: str) -> Document:
         """
