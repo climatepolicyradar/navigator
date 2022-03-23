@@ -144,3 +144,16 @@ export function SearchIcon({
     </svg>
   );
 }
+
+export function MenuIcon({
+  color = 'currentColor',
+}: IconProps) {
+  return (
+    <svg 
+    viewBox="0 0 35 35" fill="none" xmlns="http://www.w3.org/2000/svg" height="35" width="35">
+    <path d="M4.375 17.5H30.625M4.375 8.75H30.625M4.375 26.25H30.625" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+    </svg>
+
+
+  );
+}

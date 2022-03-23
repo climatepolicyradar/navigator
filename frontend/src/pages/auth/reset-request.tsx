@@ -1,23 +1,20 @@
-import './i18n';
+import '../i18n';
 import { useTranslation } from 'react-i18next';
-import LoaderOverlay from '../components/LoaderOverlay';
-import Layout from '../components/layouts/Auth';
-import AuthWrapper from '../components/auth/AuthWrapper';
+import LoaderOverlay from '../../components/LoaderOverlay';
+import Layout from '../../components/layouts/Auth';
+import AuthWrapper from '../../components/auth/AuthWrapper';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import TextInput from '../components/form-inputs/TextInput';
-import Button from '../components/buttons/Button';
+import TextInput from '../../components/form-inputs/TextInput';
+import Button from '../../components/buttons/Button';
 
-const ActivateAccount = () => {
+const ResetRequest = () => {
   const { t, i18n, ready } = useTranslation('auth');
   const schema = Yup.object({
-    /* TODO: decide on password requirements */
-    password: Yup.string().required(t('Password is required')).min(6),
-    confirm_password: Yup.string().oneOf(
-      [Yup.ref('password'), null],
-      t('Passwords must match')
-    ),
+    email: Yup.string()
+      .email(t('Invalid email format'))
+      .required('Email is required'),
   });
   const {
     register,
@@ -39,27 +36,20 @@ const ActivateAccount = () => {
             <div className="container py-4">
               <AuthWrapper
                 heading={t('Reset your password')}
-                description={t('Specify your new password')}
+                description={t(
+                  'Enter your email you signed up with.<br>We will send you a link.'
+                )}
               >
                 <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                   <div className="form-row text-white">
                     <TextInput
-                      label={t('Password')}
-                      name="password"
-                      type="password"
+                      label={t('Email')}
+                      name="email"
+                      type="email"
                       errors={errors}
                       required
                       register={register}
-                    />
-                  </div>
-                  <div className="form-row text-white">
-                    <TextInput
-                      label={t('Confirm password')}
-                      name="confirm_password"
-                      type="password"
-                      errors={errors}
-                      required
-                      register={register}
+                      placeholder="Enter your email"
                     />
                   </div>
                   <div className="mt-8">
@@ -70,7 +60,7 @@ const ActivateAccount = () => {
                       extraClasses="w-full"
                       fullWidth
                     >
-                      {t('Save password')}
+                      {t('Reset password')}
                     </Button>
                   </div>
                 </form>
@@ -83,4 +73,4 @@ const ActivateAccount = () => {
   );
 };
 
-export default ActivateAccount;
+export default ResetRequest;

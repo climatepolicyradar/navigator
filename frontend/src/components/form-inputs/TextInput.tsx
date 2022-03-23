@@ -3,7 +3,7 @@ import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
 import FormFieldError from '../text-blocks/Error';
 
 interface InputProps {
-  label: string;
+  label?: string;
   required?: boolean;
   errors: FieldErrors;
   name: string;
@@ -16,7 +16,7 @@ interface InputProps {
 }
 
 const TextInput = ({
-  label,
+  label = '',
   required = false,
   errors,
   name,

@@ -1,13 +1,13 @@
-import './i18n';
+import '../i18n';
 import { useTranslation } from 'react-i18next';
-import LoaderOverlay from '../components/LoaderOverlay';
-import Layout from '../components/layouts/Auth';
-import AuthWrapper from '../components/auth/AuthWrapper';
+import LoaderOverlay from '../../components/LoaderOverlay';
+import Layout from '../../components/layouts/Auth';
+import AuthWrapper from '../../components/auth/AuthWrapper';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import TextInput from '../components/form-inputs/TextInput';
-import Button from '../components/buttons/Button';
+import TextInput from '../../components/form-inputs/TextInput';
+import Button from '../../components/buttons/Button';
 import Link from 'next/link';
 
 const Login = () => {
@@ -61,7 +61,7 @@ const Login = () => {
                       register={register}
                     />
                     <div className="mt-6">
-                      <Link href="/reset-password">
+                      <Link href="/auth/reset-request">
                         <a className="text-blue-500 hover:text-white transition duration-300">
                           {t('Forgot password?')}
                         </a>
