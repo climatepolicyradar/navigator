@@ -17,10 +17,10 @@ class Backend:
     """Deploys all resources necessary for backend API to function."""
 
     def __init__(
-        self,
-        deployment_resources: DeploymentResources,
-        plumbing: Plumbing,
-        storage: Storage,
+            self,
+            deployment_resources: DeploymentResources,
+            plumbing: Plumbing,
+            storage: Storage,
     ):
         # context has to be one level below 'backend' as backend Dockerfile references '../common'
         docker_context = Path(os.getcwd()) / ".."
@@ -40,6 +40,8 @@ class Backend:
         )
 
         # frontend
+        docker_context = Path(os.getcwd()) / ".." / "frontend"
+        docker_context = docker_context.resolve().as_posix()
         frontend_dockerfile = Path(os.getcwd()) / ".." / "frontend" / "Dockerfile"
         frontend_dockerfile = frontend_dockerfile.resolve().as_posix()
 
@@ -54,6 +56,8 @@ class Backend:
         )
 
         # nginx
+        docker_context = Path(os.getcwd()) / ".." / "nginx"
+        docker_context = docker_context.resolve().as_posix()
         nginx_dockerfile = Path(os.getcwd()) / ".." / "nginx" / "Dockerfile"
         nginx_dockerfile = nginx_dockerfile.resolve().as_posix()
 
@@ -82,9 +86,9 @@ class Backend:
                         "environment": [
                             {
                                 "name": "DATABASE_URL",
-                                "value": storage.backend_database_connection_url,
+                                "value": "%s",
                             },
-                            {"name": "SECRET_KEY", "value": backend_secret_key},
+                            # {"name": "SECRET_KEY", "value": "%s"},
                             {"name": "PORT", "value": "8888"},
                         ],
                     },
@@ -120,10 +124,13 @@ class Backend:
         )
 
         def fill_template(arg):
-            return dockerrun_aws_json_template % (arg[0], arg[1], arg[2])
+            return dockerrun_aws_json_template % (arg[0], arg[1], arg[2], arg[3])  # , arg[4])
 
         dockerrun_file = pulumi.Output.all(
-            self.backend_image, frontend_image, nginx_image
+            self.backend_image.image_name,
+            storage.backend_database_connection_url,
+            # backend_secret_key,
+            frontend_image.image_name, nginx_image.image_name
         ).apply(fill_template)
 
         pulumi.export("dockerrun_file", dockerrun_file)
@@ -137,7 +144,7 @@ class Backend:
                 "backend-beanstalk-docker-manifest",
                 bucket=deployment_resources.deploy_bucket,
                 key=datetime.datetime.today().strftime(
-                    "%Y/%M/%d/%H:%M:%S/Dockerrun.aws.json"
+                    "%Y/%m/%d/%H:%M:%S/Dockerrun.aws.json"
                 ),
                 source=pulumi.asset.FileAsset("Dockerrun.aws.json"),
                 tags=default_tag,
@@ -166,6 +173,7 @@ class Backend:
             # name_regex=r"^64bit Amazon Linux 2 (.*) Docker(.*)$",
             name_regex=r"^64bit Amazon Linux(.*)Multi-container Docker(.*)$",
         )
+        pulumi.export("solution_stack", solution_stack)
 
         backend_eb_env = aws.elasticbeanstalk.Environment(
             "navigator-api-environment",
@@ -234,6 +242,11 @@ class Backend:
                     namespace="aws:elasticbeanstalk:healthreporting:system",
                     name="SystemType",
                     value="enhanced",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:elasticbeanstalk:application:environment",
+                    name="SECRET_KEY",
+                    value=backend_secret_key,
                 ),
             ],
         )
