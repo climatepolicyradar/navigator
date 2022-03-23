@@ -499,11 +499,13 @@ class AdobeDocumentPostProcessor(PostProcessor):
             if type(val) == dict:
                 orig_custom_attributes.update(val)
 
+        # Text list to pass to pprinter.
+
         custom_attributes_new = {
             "paths": paths,
             "text_block_ids": block_ids,
             "custom_bounding_boxes": custom_bounding_boxes,
-            "pretty_list_string": self._pprinter(df),
+            "pretty_list_string": self._pprinter(full_list_text),
             "original_list_text": original_list_text,
         }
 
