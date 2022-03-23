@@ -9,6 +9,7 @@ from english_words import english_words_set
 
 from pipeline.extract.document import Document, TextBlock
 
+
 class PostProcessor:
     @staticmethod
     def _minimal_bounding_box(coords: List[list]) -> list:
@@ -28,12 +29,13 @@ class PostProcessor:
         y_max = max(coord[3][1] for coord in coords)
         return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
 
+
 class HyphenationPostProcessor:
     """
     Post processor to join words that are separated into separate blocks due
     to hyphenation at line breaks.
     """
-    
+
     @staticmethod
     def _rewrap_hyphenated_words(li: list) -> list:
         """
@@ -92,7 +94,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
     HTML style tags inline.
 
     """
-    
+
     def __init__(self):
         super(AdobeTextStylingPostProcessor, self).__init__()
 
@@ -119,7 +121,6 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         else:
             return None
 
-
     @staticmethod
     def findall(pattern, string):
         """
@@ -135,9 +136,9 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             if not match:
                 break
             yield start_ix + match.start(), start_ix + match.end()
-            increment_start_ix = len(string) - len(string[match.end():])
+            increment_start_ix = len(string) - len(string[match.end() :])
             start_ix += increment_start_ix
-            string = string[match.end():]
+            string = string[match.end() :]
             # re.sub(r"<u>(\w+)</u>", r'\1', text_block['text'][0])
 
     @staticmethod
@@ -181,6 +182,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         all_coords = [tuple(text_block["coords"]) for text_block in text_blocks]
         merged_coords = self._minimal_bounding_box(all_coords)
 
+        style_spans = []
         merged_block_text = []
         cumulative_block_len = 0
         for text_block in text_blocks:
@@ -191,6 +193,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
                 self._add_text_styling_markers(line, block_styling)
                 for line in text_block["text"]
             ]
+            new_block_text = [line for line in text_block["text"]]
 
             if merged_block_text == []:
                 merged_block_text = new_block_text
@@ -200,14 +203,23 @@ class AdobeTextStylingPostProcessor(PostProcessor):
 
             # Add new custom attributes to text block here.
             if block_styling:
-                d={"styleSpans": [{"style": block_styling, "start_idx": start_ix, "end_idx": cumulative_block_len}]}
-                print('hi')
+                last_style_ix = len(merged_block_text[0].strip()) - 1
+                style_spans.append(
+                    {
+                        "style": block_styling,
+                        "start_idx": start_ix,
+                        "end_idx": last_style_ix,
+                    }
+                )
+
+        custom_attributes = {"styleSpans": style_spans}
 
         text_block = {
             "text": merged_block_text,
             "coords": merged_coords,
             "path": text_blocks[0]["path"],
             "text_block_id": text_blocks[0]["text_block_id"] + "_merged",
+            "custom_attributes": custom_attributes,
         }
         return text_block
 
