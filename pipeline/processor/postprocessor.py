@@ -1,8 +1,9 @@
 import re
+from abc import ABC, abstractmethod
 from collections import Counter
 from collections import defaultdict
 from copy import deepcopy
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Tuple
 
 import pandas as pd
 from english_words import english_words_set
@@ -10,9 +11,9 @@ from english_words import english_words_set
 from pipeline.extract.document import Document, TextBlock
 
 
-class PostProcessor:
+class PostProcessor(ABC):
     @staticmethod
-    def _minimal_bounding_box(coords: List[list]) -> list:
+    def _minimal_bounding_box(coords: List[List[float]]) -> List[list[float]]:
         """
         Return the minimally enclosing bounding box of bounding boxes.
 
@@ -28,6 +29,19 @@ class PostProcessor:
         x_max = max(coord[1][0] for coord in coords)
         y_max = max(coord[3][1] for coord in coords)
         return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
+
+    @abstractmethod
+    def process(self, document: Document) -> Document:
+        """
+        Process the document.
+
+        Args:
+            document: The document to process.
+
+        Returns:
+            The processed document.
+        """
+        pass
 
 
 class HyphenationPostProcessor:
