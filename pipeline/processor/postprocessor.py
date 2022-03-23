@@ -77,11 +77,15 @@ class HyphenationPostProcessor:
                 current = regex_match[0]
         return li
 
-    def process(self, contents: dict) -> dict:
+    def process(self, contents: Document) -> Document:
+        contents = contents.to_dict()
         for ix, page in enumerate(contents["pages"]):
             for text_block in page["text_blocks"]:
                 text_block["text"] = self._rewrap_hyphenated_words(text_block["text"])
+        contents = Document.from_dict(contents)
         return contents
+
+
 
 
 class AdobeTextStylingPostProcessor(PostProcessor):
@@ -201,7 +205,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         }
         return text_block
 
-    def process(self, document: dict) -> dict:
+    def process(self, document: Document) -> Document:
         """
         Iterate through a document and merge text blocks that have been separated due to styling elements.
 
@@ -212,6 +216,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
                 A new dict object with styling info added.
         """
         new_document = deepcopy(document)
+        new_document = new_document.to_dict()
 
         for page in new_document["pages"]:
             # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
@@ -248,6 +253,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             except TypeError:
                 pass
 
+        new_document = Document.from_dict(new_document)
         return new_document
 
 
@@ -519,7 +525,7 @@ class AdobeDocumentPostProcessor(PostProcessor):
         }
         return new_dict
 
-    def _group_list_elements(self, contents: dict, filename) -> dict:
+    def _group_list_elements(self, contents: dict) -> dict:
         """
         Parse Adobe outputs to group list elements
 
@@ -621,7 +627,8 @@ class AdobeDocumentPostProcessor(PostProcessor):
         new_contents = {"pages": new_pages}
         return new_contents
 
-    def postprocess(self, doc: dict, filename) -> Document:
+
+    def process(self, doc: Document, filename: str) -> Document:
         """
         Parse the elements belonging to a list into a single block, including the list's introductory text.
 
@@ -632,5 +639,6 @@ class AdobeDocumentPostProcessor(PostProcessor):
             A dictionary with values corresponding to a semantic block of a list (introductory context plus the list itself).
         """
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
-        new_contents = self._group_list_elements(doc, filename)
+        doc = doc.to_dict()
+        new_contents = self._group_list_elements(doc)
         return Document(pages=new_contents["pages"], filename=filename)

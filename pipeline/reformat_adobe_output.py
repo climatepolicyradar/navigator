@@ -8,6 +8,8 @@ from processor.postprocessor import (
     HyphenationPostProcessor,
 )
 
+from extract.document import Document
+
 
 def process(in_path, out_path):
     """
@@ -26,13 +28,14 @@ def process(in_path, out_path):
     postprocessor = AdobeDocumentPostProcessor()
     for file in in_path.iterdir():
         if file.suffix == ".json":
-            # Read json file to dict.
-            with open(file, "r") as f:
-                data = json.load(f)
+            # # Read json file to dict.
+            # with open(file, "r") as f:
+            #     data = json.load(f)
             # doc = json_to_document(file)
-            doc = hyphenation_processor.process(data)
+            doc = Document.from_json(file)
+            doc = hyphenation_processor.process(doc)
             doc = text_styling_processor.process(doc)
-            doc = postprocessor.postprocess(doc, file.stem)
+            doc = postprocessor.process(doc, file.stem)
             doc.save_json(out_path / file.stem)
 
 
