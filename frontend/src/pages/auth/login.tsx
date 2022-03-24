@@ -15,7 +15,7 @@ const Login = () => {
   const schema = Yup.object({
     email: Yup.string()
       .email(t('Invalid email format'))
-      .required('Email is required'),
+      .required(t('Email is required')),
     password: Yup.string().required(t('Password is required')),
   });
   const {

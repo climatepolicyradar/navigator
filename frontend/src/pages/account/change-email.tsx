@@ -12,12 +12,12 @@ import Button from '../../components/buttons/Button';
 import ResetRequest from '../auth/reset-request';
 
 const Account = () => {
-  const { t, i18n, ready } = useTranslation(['account']);
+  const { t, i18n, ready } = useTranslation(['account', 'auth']);
 
   const schema = Yup.object({
     email: Yup.string()
-      .email(t('auth:Invalid email format'))
-      .required(t('auth:Email is required')),
+      .email(t('Invalid email format'))
+      .required(t('Email is required')),
   });
   const {
     register,
