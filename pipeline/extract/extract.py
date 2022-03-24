@@ -775,7 +775,8 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             )
 
             pages += temp_doc.pages
-            curr_page_offset = pages[-1].page_id + 1
+            if pages:
+                curr_page_offset = pages[-1].page_id + 1
 
         return Document(
             pages=pages,
