@@ -468,7 +468,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
 
     def _update_custom_attributes(self, blocks: List[Dict]) -> dict:
         """
-        Create custom attributes for a list of text blocks.
+        Create custom attributes for a list of text blocks that are part of the same semantic list.
 
         Args:
             blocks: List of text blocks belonging to a list element.
@@ -476,7 +476,6 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         Returns:
             A dictionary with appended custom attributes for a list element.
         """
-
         df = pd.DataFrame(blocks)
         # Note this drop duplicates step is a bit of a hack to deal with undiagnosed upstream
         # issues leading to duplicates..

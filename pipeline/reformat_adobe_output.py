@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 
 from processor.postprocessor import (
-    AdobeDocumentPostProcessor,
+    AdobeListGroupingPostProcessor,
     AdobeTextStylingPostProcessor,
     HyphenationPostProcessor,
 )
@@ -25,7 +25,7 @@ def process(in_path, out_path):
     # TODO: Add s3 support.
     text_styling_processor = AdobeTextStylingPostProcessor()
     hyphenation_processor = HyphenationPostProcessor()
-    postprocessor = AdobeDocumentPostProcessor()
+    postprocessor = AdobeListGroupingPostProcessor()
     for file in in_path.iterdir():
         if file.suffix == ".json":
             # # Read json file to dict.
@@ -36,6 +36,7 @@ def process(in_path, out_path):
             doc = hyphenation_processor.process(doc)
             doc = text_styling_processor.process(doc)
             doc = postprocessor.process(doc, file.stem)
+            # Write to json file.
             doc.save_json(out_path / file.stem)
 
 
