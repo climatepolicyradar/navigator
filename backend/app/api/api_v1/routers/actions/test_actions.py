@@ -23,7 +23,7 @@ def ensure_lookups(test_db):
     test_db.flush()
 
 
-@patch("app.api.api_v1.routers.actions.get_document_validity")
+@patch("app.api.api_v1.routers.actions.actions.get_document_validity")
 def test_post_action(
     mock_get_document_validity,
     client,
@@ -90,7 +90,7 @@ def test_post_action(
     mock_get_document_validity.assert_not_called()
 
 
-@patch("app.api.api_v1.routers.actions.get_document_validity")
+@patch("app.api.api_v1.routers.actions.actions.get_document_validity")
 def test_null_values(
     mock_get_document_validity, client, user_token_headers, test_db, ensure_lookups
 ):
@@ -149,7 +149,7 @@ def test_null_values(
     mock_get_document_validity.assert_called_once_with("https://valid.com/")
 
 
-@patch("app.api.api_v1.routers.actions.get_document_validity")
+@patch("app.api.api_v1.routers.actions.actions.get_document_validity")
 def test_unsupported_mime_type(
     mock_get_document_validity, client, user_token_headers, test_db, ensure_lookups
 ):
@@ -272,7 +272,7 @@ def test_duplicate_actions(client, user_token_headers, test_db, ensure_lookups):
     assert response.status_code == 409
 
 
-@patch("app.api.api_v1.routers.actions.get_document_validity")
+@patch("app.api.api_v1.routers.actions.actions.get_document_validity")
 def test_listing_with_pagination(
     mock_get_document_validity,
     client,
@@ -392,7 +392,7 @@ def test_listing_with_pagination(
     }
 
 
-@patch("app.api.api_v1.routers.actions.get_document_validity")
+@patch("app.api.api_v1.routers.actions.actions.get_document_validity")
 def test_get_action(
     mock_get_document_validity,
     client,

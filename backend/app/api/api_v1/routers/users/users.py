@@ -46,9 +46,6 @@ async def user_details(
     """Gets any user details"""
     user = get_user(db, user_id)
     return user
-    # return encoders.jsonable_encoder(
-    #     user, skip_defaults=True, exclude_none=True,
-    # )
 
 
 @r.post("/users", response_model=User, response_model_exclude_none=True)

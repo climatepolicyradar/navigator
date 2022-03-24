@@ -9,7 +9,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 auth_router = r = APIRouter()
 
 
-@r.post("/token")
+@r.post("/tokens")
 async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(db, form_data.username, form_data.password)
     if not user:

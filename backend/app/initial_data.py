@@ -24,18 +24,25 @@ def create_superuser(email, password):
 
 
 def init() -> None:
+    superuser_email = os.getenv("SUPERUSER_EMAIL")
     try:
-        create_superuser(os.getenv("SUPERUSER_EMAIL"), os.getenv("SUPERUSER_PASSWORD"))
+        create_superuser(superuser_email, os.getenv("SUPERUSER_PASSWORD"))
     except IntegrityError:
-        print("Skipping - super user already exists")
+        print(
+            f"Skipping - super user already exists with email/username {superuser_email}"
+        )
 
+    machineuser_email = os.getenv("MACHINE_USER_LOADER_EMAIL")
     try:
+
         create_superuser(
-            os.getenv("MACHINE_USER_LOADER_EMAIL"),
+            machineuser_email,
             os.getenv("MACHINE_USER_LOADER_PASSWORD"),
         )
     except IntegrityError:
-        print("Skipping - loader machine user already exists")
+        print(
+            f"Skipping - loader machine user already exists with email/username {machineuser_email}"
+        )
 
 
 if __name__ == "__main__":

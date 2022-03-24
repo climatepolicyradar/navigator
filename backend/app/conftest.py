@@ -175,7 +175,7 @@ def user_token_headers(
         "username": test_user.email,
         "password": test_password,
     }
-    r = client.post("/api/token", data=login_data)
+    r = client.post("/api/tokens", data=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
@@ -192,7 +192,7 @@ def superuser_token_headers(
         "username": test_superuser.email,
         "password": test_password,
     }
-    r = client.post("/api/token", data=login_data)
+    r = client.post("/api/tokens", data=login_data)
     tokens = r.json()
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
