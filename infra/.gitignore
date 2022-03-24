@@ -4,3 +4,4 @@ venv/
 Dockerrun.aws.json
 graph.dot
 output.png
+docker-compose.yml

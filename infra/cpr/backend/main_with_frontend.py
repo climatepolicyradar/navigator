@@ -1,6 +1,5 @@
 """Infra-as-code for CPR stack."""
 import datetime
-import json
 import os
 from pathlib import Path
 
@@ -17,10 +16,10 @@ class Backend:
     """Deploys all resources necessary for backend API to function."""
 
     def __init__(
-            self,
-            deployment_resources: DeploymentResources,
-            plumbing: Plumbing,
-            storage: Storage,
+        self,
+        deployment_resources: DeploymentResources,
+        plumbing: Plumbing,
+        storage: Storage,
     ):
         # context has to be one level below 'backend' as backend Dockerfile references '../common'
         docker_context = Path(os.getcwd()) / ".."
@@ -48,7 +47,9 @@ class Backend:
         frontend_image = docker.Image(
             "frontend-docker-image",
             build=docker.DockerBuild(
-                context=docker_context, dockerfile=frontend_dockerfile
+                context=docker_context,
+                dockerfile=frontend_dockerfile,
+                args={"NEXT_PUBLIC_API_URL": "https://api.climatepolicyradar.org/"},
             ),
             image_name=deployment_resources.ecr_repo.repository_url,
             skip_push=False,
@@ -74,84 +75,68 @@ class Backend:
         config = pulumi.Config()
         backend_secret_key = config.require_secret("backend_secret_key")
 
-        dockerrun_aws_json_template = json.dumps(
-            {
-                "AWSEBDockerrunVersion": "2",
-                "containerDefinitions": [
-                    {
-                        "name": "backend",
-                        "image": "%s",
-                        "essential": True,
-                        "memory": 128,
-                        "environment": [
-                            {
-                                "name": "DATABASE_URL",
-                                "value": "%s",
-                            },
-                            # {"name": "SECRET_KEY", "value": "%s"},
-                            {"name": "PORT", "value": "8888"},
-                        ],
-                    },
-                    {
-                        "name": "frontend",
-                        "image": "%s",
-                        "essential": True,
-                        "memory": 128,
-                        "environment": [
-                            {
-                                "name": "NEXT_PUBLIC_API_URL",
-                                "value": "https://api.climatepolicyradar.com/",
-                            },
-                            {"name": "PORT", "value": "3000"},
-                        ],
-                    },
-                    {
-                        "name": "nginx-proxy",
-                        "image": "%s",
-                        "essential": True,
-                        "memory": 128,
-                        "portMappings": [{"hostPort": 80, "containerPort": 80}],
-                        "links": ["backend", "frontend"],
-                        "mountPoints": [
-                            {
-                                "sourceVolume": "awseb-logs-nginx-proxy",
-                                "containerPath": "/var/log/nginx",
-                            }
-                        ],
-                    },
-                ],
-            }
-        )
+        docker_compose_template = """version: '3.7'
+
+services:
+
+  nginx:
+    image: %s
+    mem_limit: 128m
+    ports:
+      - 80:80
+    volumes:
+      - "${EB_LOG_BASE_DIR}/nginx:/var/log/nginx"
+    depends_on:
+      - backend
+      - frontend
+
+  backend:
+    image: %s
+    mem_limit: 256m
+    command: python app/main.py
+    environment:
+      PYTHONPATH: .
+      DATABASE_URL: %s
+      SECRET_KEY: %s
+
+  frontend:
+    image: %s
+    mem_limit: 256m
+    command: npm run prod
+    volumes:
+      - "${EB_LOG_BASE_DIR}/frontend:/root/.npm/_logs"
+        """
 
         def fill_template(arg):
-            return dockerrun_aws_json_template % (arg[0], arg[1], arg[2], arg[3])  # , arg[4])
+            return docker_compose_template % (arg[0], arg[1], arg[2], arg[3], arg[4])
 
-        dockerrun_file = pulumi.Output.all(
+        docker_compose_file = pulumi.Output.all(
+            nginx_image.image_name,
             self.backend_image.image_name,
             storage.backend_database_connection_url,
-            # backend_secret_key,
-            frontend_image.image_name, nginx_image.image_name
+            backend_secret_key,
+            frontend_image.image_name,
         ).apply(fill_template)
 
-        pulumi.export("dockerrun_file", dockerrun_file)
+        pulumi.export("docker_compose_file", docker_compose_file)
 
         def create_deploy_resource(manifest):
             # TODO delete this file if it exists
-            with open("Dockerrun.aws.json", "w") as json_file:
+            with open("docker-compose.yml", "w") as json_file:
                 json_file.write(manifest)
 
             deploy_resource = aws.s3.BucketObject(
                 "backend-beanstalk-docker-manifest",
                 bucket=deployment_resources.deploy_bucket,
                 key=datetime.datetime.today().strftime(
-                    "%Y/%m/%d/%H:%M:%S/Dockerrun.aws.json"
+                    "%Y/%m/%d/%H:%M:%S/docker-compose.yml"
                 ),
-                source=pulumi.asset.FileAsset("Dockerrun.aws.json"),
+                source=pulumi.asset.FileAsset("docker-compose.yml"),
                 tags=default_tag,
             )
             return deploy_resource
 
-        deploy_resource = dockerrun_file.apply(create_deploy_resource)
+        deploy_resource = docker_compose_file.apply(create_deploy_resource)
 
         # create Elastic Beanstalk app
         backend_eb_app = aws.elasticbeanstalk.Application(
@@ -170,8 +155,8 @@ class Backend:
         # aws elasticbeanstalk list-available-solution-stacks
         solution_stack = aws.elasticbeanstalk.get_solution_stack_output(
             most_recent=True,
-            # name_regex=r"^64bit Amazon Linux 2 (.*) Docker(.*)$",
-            name_regex=r"^64bit Amazon Linux(.*)Multi-container Docker(.*)$",
+            name_regex=r"^64bit Amazon Linux 2 (.*) Docker(.*)$",
+            # name_regex=r"^64bit Amazon Linux(.*)Multi-container Docker(.*)$",
         )
         pulumi.export("solution_stack", solution_stack)
 
