@@ -1,3 +1,4 @@
+import copy
 import re
 from abc import ABC, abstractmethod
 from collections import Counter
@@ -8,12 +9,12 @@ from typing import List, Dict, Optional, Tuple
 import pandas as pd
 from english_words import english_words_set
 
-from pipeline.extract.document import Document, TextBlock
+from extract.document import Document, TextBlock
 
 
 class PostProcessor(ABC):
     @staticmethod
-    def _minimal_bounding_box(coords: List[List[float]]) -> List[list[float]]:
+    def _minimal_bounding_box(coords: List[List[float]]) -> List[List[float]]:
         """
         Return the minimally enclosing bounding box of bounding boxes.
 
@@ -65,6 +66,7 @@ class HyphenationPostProcessor:
 
         """
         current = None
+        new_list = copy.deepcopy(li)
         for ix, l in enumerate(li):
             regex_match = re.search(r"\w+(-|–){1}$", l)
 
@@ -77,19 +79,19 @@ class HyphenationPostProcessor:
                     # without the hyphen (e.g. repair-ing)
                     newline_first_word = word_fragment + l.split(" ")[0].lstrip("-")
                     if newline_first_word in english_words_set:
-                        li[ix] = newline_first_word + l.split(" ")[1:]
+                        new_list[ix] = newline_first_word + l.split(" ")[1:]
                     # Otherwise, keep the hyphenation but put it on a newline e.g. post-processing.
                     else:
-                        li[ix] = word_fragment + "-" + l
+                        new_list[ix] = word_fragment + "-" + l
                 else:
-                    li[ix] = word_fragment + l
+                    new_list[ix] = word_fragment + l
                 # Reset.
                 current = None
             if regex_match:
                 # Strip matching regex from the end of the string.
-                li[ix] = l[: regex_match.start()]
+                new_list[ix] = l[: regex_match.start()]
                 current = regex_match[0]
-        return li
+        return new_list
 
     def process(self, contents: Document) -> Document:
         contents = contents.to_dict()
@@ -269,14 +271,14 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         return new_document
 
 
-class AdobeDocumentPostProcessor(PostProcessor):
+class AdobeListGroupingPostProcessor(PostProcessor):
     """Further processing of processed outputs from the Adobe API (handling cases not easily
     handled by the API itself)."""
 
     regex_pattern = r"L\[?\d?\]?$"
 
     def __init__(self):
-        super(AdobeDocumentPostProcessor, self).__init__()
+        super(AdobeListGroupingPostProcessor, self).__init__()
 
     @staticmethod
     def _find_first_occurrence(regex_pattern: str, list_of_strings):
