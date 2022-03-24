@@ -9,9 +9,9 @@ from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.documents import documents_router
 from app.api.api_v1.routers.lookups import lookups_router
-from app.api.api_v1.routers.users import users_router
+from app.api.api_v1.routers.users import users_router, admin_users_router
 from app.core import config
-from app.core.auth import get_current_active_user
+from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
 from app.db.session import SessionLocal
 from navigator.core.log import get_logger
@@ -52,6 +52,12 @@ app.include_router(
     prefix="/api/v1",
     tags=["Users"],
     dependencies=[Depends(get_current_active_user)],
+)
+app.include_router(
+    admin_users_router,
+    prefix="/api/v1/admin",
+    tags=["Users", "Admin"],
+    dependencies=[Depends(get_current_active_superuser)],
 )
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])
 app.include_router(actions_router, prefix="/api/v1", tags=["Actions"])
