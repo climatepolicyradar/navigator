@@ -336,7 +336,9 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         # Timeouts are in milliseconds. We've set these high as Python requests' None option
         # isn't supported by the Adobe SDK.
         client_config = (
-            ClientConfig.Builder().with_connect_timeout(1e12).with_read_timeout(1e12)
+            ClientConfig.Builder()
+            .with_connect_timeout(int(1e12))
+            .with_read_timeout(int(1e12))
         )
 
         # Create an ExecutionContext using credentials and create a new operation instance.
