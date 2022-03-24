@@ -1,3 +1,21 @@
 {
-    "My account": "My account"
+  "My account": "My account",
+  "My details": "My details",
+  "Full name": "Full name",
+  "Organisation/affiliation": "Organisation/affiliation",
+  "Affiliation type": "Affiliation type",
+  "Job role": "Job role",
+  "Location": "Location",
+  "Geographies of interest": "Geographies of interest",
+  "Update account": "Update account",
+  "Change password": "Change password",
+  "Please enter your current password to change your password": "Please enter your current password to change your password.",
+  "Current password": "Current password",
+  "New password": "New password",
+  "Confirm new password": "Confirm new password",
+  "Update password": "Update password",
+  "Change email": "Change email",
+  "New email": "New email",
+  "You will receive an email to confirm this change. Your email will not be updated until you click the confirm link in the email.": "You will receive an email to confirm this change. Your email will not be updated until you click the confirm link in the email.",
+  "Update email": "Update email"
 }

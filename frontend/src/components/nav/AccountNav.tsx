@@ -1,37 +1,36 @@
 import { useRouter } from 'next/router';
-import AccountNavItem from "./AccountNavItem";
+import AccountNavItem from './AccountNavItem';
 
 const AccountNav = () => {
   const menu = [
     {
-      title: "My Details",
-      href: "/account"
+      title: 'My Details',
+      href: '/account',
     },
     {
-      title: "Password",
-      href: "/account/change-password"
+      title: 'Change password',
+      href: '/account/change-password',
     },
     {
-      title: "Email",
-      href: "/account/change-change"
+      title: 'Change email',
+      href: '/account/change-email',
     },
-    {
-      title: "Preferences",
-      href: "/account/preferences"
-    },
-    {
-      title: "Searches",
-      href: "/account/searches"
-    },
-  ]
-  
+  ];
+
   const router = useRouter();
   return (
-    <div className="border-b border-b-indigo-200">
-      {menu.map((item, index) => (
-        <AccountNavItem key={index} title={item.title} href={item.href} path={router.pathname} />
-      ))}
+    <div className="w-full overflow-x-hidden mt-10 md:mt-20">
+      <div className="border-b border-b-indigo-200 pb-4 flex no-wrap w-auto overflow-x-auto no-scrollbar">
+        {menu.map((item, index) => (
+          <AccountNavItem
+            key={index}
+            title={item.title}
+            href={item.href}
+            path={router.pathname}
+          />
+        ))}
+      </div>
     </div>
-  )
-}
+  );
+};
 export default AccountNav;

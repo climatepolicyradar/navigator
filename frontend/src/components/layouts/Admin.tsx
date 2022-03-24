@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import Header from '../header/Admin';
+import Header from '../headers/Admin';
 import Banner from '../banner/Slim';
 
 type Props = {

@@ -31,7 +31,9 @@ const TextInput = ({
     <div className={className}>
       <label className="">
         {label}
-        {required ? <strong className="text-red-500"> *</strong> : null}
+        {required && label ? (
+          <strong className="text-red-500"> *</strong>
+        ) : null}
       </label>
       <input
         type={type}

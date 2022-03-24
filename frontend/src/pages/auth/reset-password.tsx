@@ -13,7 +13,9 @@ const ActivateAccount = () => {
   const { t, i18n, ready } = useTranslation('auth');
   const schema = Yup.object({
     /* TODO: decide on password requirements */
-    password: Yup.string().required(t('Password is required')).min(6),
+    password: Yup.string()
+      .required(t('Password is required'))
+      .min(8, t('Minimum 8 chars')),
     confirm_password: Yup.string().oneOf(
       [Yup.ref('password'), null],
       t('Passwords must match')
