@@ -15,7 +15,7 @@ RUN cd pdfalto && cmake .
 RUN cd pdfalto && make
 
 RUN pip install --upgrade pip
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_VERSION=1.1.13 python
 ENV PATH = "${PATH}:/root/.poetry/bin"
 
 # Copy files to image
