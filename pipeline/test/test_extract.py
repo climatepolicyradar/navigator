@@ -164,7 +164,7 @@ def test_embedded_text_extractor(test_pdf_path, tmp_path):
 
 
 def get_sample_adobe_fileref(*args, **kwargs):
-    sample_path = Path(__file__).parent / "sample_adobe_output.zip"
+    sample_path = Path(__file__).parent / "data/sample_adobe_output.zip"
     return FileRef.create_from_local_file(str(sample_path))
 
 
@@ -237,6 +237,7 @@ def mock_get_adobe_api_result_raise_exception(
 def test_adobe_text_extractor_with_pdf_split(
     test_pdf_path, tmp_path, test_pdf_no_pages, mocker
 ):
+    """Test that document splitting works in AdobeAPIExtractor.extract as expected."""
     mocker.patch.object(FileRefImpl, "save_as", new=mock_file_ref_impl_save_as)
     mocker.patch.object(
         AdobeAPIExtractor,
@@ -262,6 +263,40 @@ def test_adobe_text_extractor_with_pdf_split(
     assert isinstance(doc, Document)
     assert len(doc.pages) == 8
     assert doc.filename == test_pdf_path.name
+
+
+def mock_get_adobe_pdf_to_data_split_results(*args, **kwargs):
+    return [
+        Path(__file__).parent / "data/split_test_1.json",
+        Path(__file__).parent / "data/split_test_2.json",
+    ]
+
+
+def test_adobe_text_extractor_with_pdf_split_valid_document_returned(
+    test_pdf_path, mocker
+):
+    """Test that AdobePDFExtractor.extract correctly handles a case when it's given two Adobe JSON paths which represent two parts of the same PDF file."""
+    mocker.patch.object(
+        AdobeAPIExtractor, "pdf_to_data", new=mock_get_adobe_pdf_to_data_split_results
+    )
+
+    text_extractor = AdobeAPIExtractor(credentials_path="fake/path")
+    doc = text_extractor.extract(
+        test_pdf_path,
+        data_output_dir=Path(""),
+    )
+
+    # All text block IDs should be unique
+    text_block_ids = [
+        text_block.text_block_id
+        for page in doc.pages
+        for text_block in page.text_blocks
+    ]
+    assert len(set(text_block_ids)) == len(text_block_ids)
+
+    # All page IDs should be unique
+    page_ids = [page.page_id for page in doc.pages]
+    assert len(set(page_ids)) == len(page_ids)
 
 
 def test_split_pdf(test_pdf_path, tmpdir):

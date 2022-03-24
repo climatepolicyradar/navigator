@@ -535,12 +535,15 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         self,
         data_path: Path,
         pdf_filename: str,
+        page_offset: int = 0,
     ) -> Document:
         """Converts an Adobe Extract API JSON into a Document object.
 
         Args:
-            data_path: path to JSON file outputted by Adobe API.
-            pdf_filename: name or identifier for PDF - stored as an attribute in the returned `Document` object.
+            data_path (Path): path to JSON file outputted by Adobe API.
+            pdf_filename (str): name or identifier for PDF - stored as an attribute in the returned `Document` object.
+            page_offset (int, optional): page number to start page count at for the returned `Document` object.
+            Can be used when the data at `data_path` represents part of, rather than all of a PDF document. Defaults to 0.
 
         Returns:
             Document
@@ -555,12 +558,8 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         self._current_data = self._flatten_data(data)
 
         for el in self._current_data["elements"]:
-            # Increment page_id and reset block_counter if starting new page.
             # Elements sometimes don't have page numbers, so in these cases we assume
             # the page hasn't changed.
-            if el.get("Page", page_id) != page_id:
-                block_counter = 1
-
             page_id = el.get("Page", page_id)
 
             # Ignore rotated text elements.
@@ -578,7 +577,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             if not any(
                 [e in self._structure_path(el["Path"]) for e in self._elements_exclude]
             ) and el.get("Text"):
-                block_id = f"p{page_id}_b{block_counter}"
+                block_id = f"p{page_id + page_offset}_b{block_counter}"
                 text_blocks_by_page[page_id].append(
                     self._element_to_text_block(el, block_id)
                 )
@@ -591,7 +590,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             pages.append(
                 Page(
                     text_blocks=page_text_blocks,
-                    page_id=page_id,
+                    page_id=page_id + page_offset,
                     dimensions=(
                         data["pages"][page_id]["width"],
                         data["pages"][page_id]["height"],
@@ -767,12 +766,16 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         )
 
         pages = []
+        curr_page_offset = 0
         for _path in json_paths:
             temp_doc = self.data_to_document(
-                data_path=_path, pdf_filename=pdf_filepath.name
+                data_path=_path,
+                pdf_filename=pdf_filepath.name,
+                page_offset=curr_page_offset,
             )
 
             pages += temp_doc.pages
+            curr_page_offset = pages[-1].page_id + 1
 
         return Document(
             pages=pages,
