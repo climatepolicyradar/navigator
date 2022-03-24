@@ -13,6 +13,8 @@ from extract.document import Document, Page, TextBlock
 from extract.extract import DocumentEmbeddedTextExtractor, AdobeAPIExtractor
 from extract.utils import split_pdf
 
+from processor.postprocessor import HyphenationPostProcessor
+
 
 @pytest.fixture
 def test_pdf_path() -> Path:
@@ -134,11 +136,11 @@ def test_document_save_text(document, tmpdir):
             assert document_lines[line_ix] == line
 
 
-def test_document_from_json(tmp_path):
-    """Test that a document can be created from a json file"""
-
-    with pytest.raises(NotImplementedError):
-        _ = Document.from_json(tmp_path / "test.json")
+# def test_document_from_json(tmp_path):
+#     """Test that a document can be created from a json file"""
+#
+#     with pytest.raises(NotImplementedError):
+#         _ = Document.from_json(tmp_path / "test.json")
 
 
 def test_embedded_text_extractor(test_pdf_path, tmp_path):
