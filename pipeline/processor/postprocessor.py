@@ -4,11 +4,10 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from collections import defaultdict
 from copy import deepcopy
-from typing import List, Dict, Optional, Tuple
+from typing import List, Dict, Optional
 
 import pandas as pd
 from english_words import english_words_set
-
 from extract.document import Document, TextBlock
 
 
@@ -566,12 +565,14 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                     )
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
-                        # TODO: Validate cases where this fails.
-                        # Case 1: We have a new list at the beginning of a page and
-                        # the previous list block is assumed context.
                         block_num = int(
                             re.search(r"b(\d+)", text_block["text_block_id"]).group(1)
                         )
+                        # TODO: Validate cases where this fails. Note, update by Kalyan may
+                        #  add additional cases where this fails because the first block on a page
+                        #   is not always block 1.
+                        # Case 1: We have a new list at the beginning of a page and
+                        # the previous list block is assumed context.
                         if (block_num == 1) and previous_block:
                             text_block = self._update_contiguity_attributes(
                                 text_block, "possibly_contiguous_with_prev_page_context"
@@ -580,7 +581,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                         # a previous list block on the page, prepend it under
                         # the assumption that it is context.
                         if (len(dd[current_list_id]) == 0) and previous_block:
-                            # TODO: Before, we added the previous block to the list but decided to separate this out.
+                            # TODO: We used to add the previous block to the list but decided to separate this out.
                             #  Perhaps it's a good idea to add it back in but to the metadata, so that we can
                             #  validate the assumption that the previous block is context by pretty printing the list
                             #  when coding?
@@ -589,8 +590,8 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                             # list id was unpopulated and the start of this conditional, assume we are on the same
                             # list but on a new page, appending the appropriate metadata to custom attributes. We
                             # likely need to add some logic to handle the case where the list is more than 1 element
-                            # away because of garbage text blocks at the end of the page. But for now this will capture
-                            # many cases.
+                            # away due to garbage text blocks at the end of the pages (which we should remove upstream).
+                            # But for now this will capture many cases.
                             # TODO: Perhaps add some more nuance here, as another possibility is that it's contiguous
                             #  with the previous page but it's context/a list continuation.
                             if prev_list_ix + 1 == blocks_seen:
