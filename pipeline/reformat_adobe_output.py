@@ -28,10 +28,6 @@ def process(in_path, out_path):
     postprocessor = AdobeListGroupingPostProcessor()
     for file in in_path.iterdir():
         if file.suffix == ".json":
-            # # Read json file to dict.
-            # with open(file, "r") as f:
-            #     data = json.load(f)
-            # doc = json_to_document(file)
             doc = Document.from_json(file)
             doc = hyphenation_processor.process(doc)
             doc = text_styling_processor.process(doc, )
