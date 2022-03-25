@@ -9,7 +9,6 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import AccountNav from '../../components/nav/AccountNav';
 import AdminSubhead from '../../components/headers/AdminSubhead';
 import Button from '../../components/buttons/Button';
-import ResetRequest from '../auth/reset-request';
 
 const Account = () => {
   const { t, i18n, ready } = useTranslation(['account', 'auth']);

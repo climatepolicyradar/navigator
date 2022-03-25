@@ -9,6 +9,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from '../../components/form-inputs/TextInput';
 import Button from '../../components/buttons/Button';
 import Link from 'next/link';
+import { signIn } from 'next-auth/react';
 
 const Login = () => {
   const { t, i18n, ready } = useTranslation('auth');
@@ -27,6 +28,15 @@ const Login = () => {
   });
   const submitForm = (data) => {
     console.log(data);
+    const email = data.email;
+    const password = data.password;
+    signIn('credentials', {
+      email,
+      password,
+      // The page where you want to redirect to after a
+      // successful login
+      callbackUrl: `${window.location.origin}/account`,
+    });
   };
   return (
     <>

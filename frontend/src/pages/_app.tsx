@@ -4,6 +4,7 @@ import '../styles/main.scss';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { ReactQueryDevtools } from 'react-query/devtools';
 import { AuthProvider } from '../api/auth';
+import { SessionProvider } from 'next-auth/react';
 
 // Create a client
 const queryClient = new QueryClient();
@@ -18,7 +19,7 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
+      <SessionProvider session={pageProps.session} refetchInterval={0}>
         <Head>
           <title>Policy Search</title>
           <meta
@@ -27,7 +28,7 @@ function MyApp({ Component, pageProps }: AppProps) {
           />
         </Head>
         <Component {...pageProps} />
-      </AuthProvider>
+      </SessionProvider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
