@@ -36,8 +36,7 @@ def adobe_hyphenation_postprocessor() -> HyphenationPostProcessor:
     return HyphenationPostProcessor()
 
 
-def test_hyphenation_postprocessor_rewrap_hyphenated_words(document):
-    hyphenation_postprocessor = HyphenationPostProcessor()
+def test_hyphenation_postprocessor_rewrap_hyphenated_words(adobe_hyphenation_postprocessor):
     # Test case 1: hyphenation for incomplete words. cf pd 2 of cclw-8650-24af4f121de143baa3b633481f7adb78.pdf
     # TODO:
     #  The examples in this test case indicates the presence of a bug (e.g. the word performance is truncated before
@@ -53,7 +52,7 @@ def test_hyphenation_postprocessor_rewrap_hyphenated_words(document):
         "Targets of incentive measures are all new construction of buildings, or extensions, renovations, improvements, ",
         "remodelling, pre-installation/repairs of cooling system equipment that contribute to the improvement of energy conservation perfor",
     ]
-    output = hyphenation_postprocessor._rewrap_hyphenated_words(input)
+    output = adobe_hyphenation_postprocessor._rewrap_hyphenated_words(input)
     assert output == expected
 
     # Test case 2: Keep the hyphenation if the word is a sub-word of the English Language.
@@ -76,7 +75,7 @@ def test_hyphenation_postprocessor_rewrap_hyphenated_words(document):
         "Technical and commercial losses of 24.4% have further ",
         "reduced the availability of electricity. Burundi’s energy envi",
     ]
-    output_2 = hyphenation_postprocessor._rewrap_hyphenated_words(input_2)
+    output_2 = adobe_hyphenation_postprocessor._rewrap_hyphenated_words(input_2)
 
     assert output_2 == expected_2
 
@@ -99,8 +98,7 @@ def test_adobe_list_find_first_occurrence(adobe_list_postprocessor):
     assert not actual_output_3
 
 
-def test_adobe_text_styling_merge_test_blocks(document):
-    processor = AdobeTextStylingPostProcessor()
+def test_adobe_text_styling_merge_test_blocks(adobe_text_styling_postprocessor):
     # Case 1: We can see that the blocks have the same path but are separated due to styling
     # markers such as underlines. We want to merge them.
     # cf. cclw-4974. This is actually a bad case, but for purposes of testing this function is fine.
@@ -187,7 +185,7 @@ def test_adobe_text_styling_merge_test_blocks(document):
         },
     }
 
-    actual_output = processor.merge_text_blocks(example)
+    actual_output = adobe_text_styling_postprocessor.merge_text_blocks(example)
     assert actual_output == expected_output
 
 
