@@ -592,9 +592,9 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                             # Heuristic: If the list block is adjacent to the previous list block and the current
                             # list id was unpopulated and the start of this conditional, assume we are on the same
                             # list but on a new page, appending the appropriate metadata to custom attributes. We
-                            # likely need to add some logic to handle the case where the list is more than 1 element
-                            # away due to garbage text blocks at the end of the pages (which we should remove upstream).
-                            # But for now this will capture many cases.
+                            # likely need to add some logic to handle the case where the previous list is more than 1
+                            # element away solely due to garbage text blocks at the end of the page
+                            # (which we should remove upstream) but for now this will capture many cases.
                             # TODO: Perhaps add some more nuance here, as another possibility is that it's contiguous
                             #  with the previous page but it's context/a list continuation.
                             if prev_list_ix + 1 == blocks_seen:
