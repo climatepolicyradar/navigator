@@ -212,6 +212,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
 
         text_block = {
             "text": merged_block_text,
+            "type": "merged_text_block",
             "coords": merged_coords,
             "path": text_blocks[0]["path"],
             "text_block_id": text_blocks[0]["text_block_id"] + "_merged",
@@ -338,7 +339,8 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                 first_list_ix_bool      bool
                 last_list_ix_bool       bool
         """
-        # TODO: Temporary hack from breakage created by texthyphenation part of pipeline. Messy duplicatation.
+
+        # TODO: Temporary hack from breakage created by text-hyphenation part of pipeline. Messy duplicatation.
         df["type"] = df["path"].apply(lambda x: x[-1])
         # Sometimes label is called ExtraCharSpan, replace it with label
         df["type"] = df["type"].replace(
@@ -530,7 +532,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         custom_attributes_concat = {**orig_custom_attributes, **custom_attributes_new}
 
         new_dict = {
-            "coords": custom_bounding_boxes,
+            "coords": custom_bounding_boxes[0],
             "path": paths[0],
             "text_block_id": block_ids[0],
             "type": "list",
