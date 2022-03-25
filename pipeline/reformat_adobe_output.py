@@ -34,8 +34,8 @@ def process(in_path, out_path):
             # doc = json_to_document(file)
             doc = Document.from_json(file)
             doc = hyphenation_processor.process(doc)
-            doc = text_styling_processor.process(doc)
-            doc = postprocessor.process(doc, file.stem)
+            doc = text_styling_processor.process(doc, )
+            doc = postprocessor.process(doc, f"{file.stem}.pdf")
             # Write to json file.
             doc.save_json(out_path / file.stem)
 

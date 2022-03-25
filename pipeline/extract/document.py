@@ -130,7 +130,8 @@ class Document:
     @classmethod
     def from_dict(cls, json_dict: dict) -> "Document":
         """Load a document from a dictionary"""
-
+        for page in json_dict["pages"]:
+            page["text_blocks"] = [TextBlock(**block) for block in page["text_blocks"]]
         return cls(
             pages=[Page(**page) for page in json_dict["pages"]],
             filename=json_dict["filename"],

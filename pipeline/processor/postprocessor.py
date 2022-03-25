@@ -31,12 +31,13 @@ class PostProcessor(ABC):
         return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
 
     @abstractmethod
-    def process(self, document: Document) -> Document:
+    def process(self, document: Document, filename: Optional) -> Document:
         """
         Process the document.
 
         Args:
             document: The document to process.
+            filename: The filename of the document.
 
         Returns:
             The processed document.
@@ -44,7 +45,7 @@ class PostProcessor(ABC):
         pass
 
 
-class HyphenationPostProcessor:
+class HyphenationPostProcessor(PostProcessor):
     """
     Post processor to join words that are separated into separate blocks due
     to hyphenation at line breaks.
@@ -223,7 +224,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         Iterate through a document and merge text blocks that have been separated due to styling elements.
 
         Args:
-            dict: dict of a pdf doc object.
+            document:
 
         Returns:
                 A new dict object with styling info added.
@@ -647,6 +648,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         Parse the elements belonging to a list into a single block, including the list's introductory text.
 
         Args:
+            filename:
             doc: dict.
 
         Returns:
@@ -655,4 +657,5 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
         doc = doc.to_dict()
         new_contents = self._group_list_elements(doc)
-        return Document(pages=new_contents["pages"], filename=filename)
+        new_contents["filename"] = filename
+        return Document.from_dict(new_contents)
