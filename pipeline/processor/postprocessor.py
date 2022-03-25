@@ -523,7 +523,6 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         custom_attributes_new = {
             "paths": paths,
             "text_block_ids": block_ids,
-            "custom_bounding_boxes": custom_bounding_boxes,
             "pretty_list_string": self._pprinter(full_list_text),
             "original_list_text": original_list_text,
         }
@@ -531,6 +530,8 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         custom_attributes_concat = {**orig_custom_attributes, **custom_attributes_new}
 
         new_dict = {
+            "coords": custom_bounding_boxes,
+            "path": paths[0],
             "text_block_id": block_ids[0],
             "type": "list",
             "text": full_list_text,
