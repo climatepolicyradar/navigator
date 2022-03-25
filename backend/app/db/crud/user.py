@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from app.db.models.user import User
+from app.db.models import User
 import app.db.schemas.user
 from app.core.security import get_password_hash
 

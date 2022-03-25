@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy import and_, exists
 from sqlalchemy.orm import Query, Session, joinedload
 
-from app.db.models.action import Action
+from app.db.models import Action
 from app.db.schemas.action import ActionCreate
 
 

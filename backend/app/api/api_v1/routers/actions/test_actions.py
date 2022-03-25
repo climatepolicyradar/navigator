@@ -3,10 +3,15 @@ from unittest.mock import patch
 
 import pytest
 
-from app.db import models
-from app.db.models.action import Action
-from app.db.models.document import DocumentInvalidReason, Document
-from app.db.models.lookups import Geography, ActionType, Language
+from app.db.models import (
+    Source,
+    Geography,
+    ActionType,
+    Language,
+    Action,
+    DocumentInvalidReason,
+    Document,
+)
 
 
 @pytest.fixture
@@ -16,7 +21,7 @@ def ensure_lookups(test_db):
     # ensure action_type_id 1
     test_db.add(ActionType(type_name="foo"))
     # ensure source_id 1
-    test_db.add(models.Source(name="foo"))
+    test_db.add(Source(name="foo"))
     # ensure language_id 1
     test_db.add(Language(language_code="foo"))
 
