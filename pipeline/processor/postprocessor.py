@@ -13,7 +13,7 @@ from extract.document import Document, TextBlock
 
 class PostProcessor(ABC):
     @staticmethod
-    def _minimal_bounding_box(coords: List[List[float, float]]) -> List[List[float, float]]:
+    def _minimal_bounding_box(coords: List[List[float]]) -> List[List[float]]:
         """
         Return the minimally enclosing bounding box of bounding boxes.
 
