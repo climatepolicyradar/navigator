@@ -14,8 +14,7 @@ from app.index import OpenSearchIndex
 
 logger = get_logger(__name__)
 
-DATABASE_URL = os.environ["DATABASE_URL"]
-postgres_connector = PostgresConnector(DATABASE_URL)
+postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
 
 
 def get_data_from_navigator_tables() -> pd.DataFrame:
@@ -184,6 +183,13 @@ def load_embeddings(embs_path: Path, embedding_dim: int) -> np.ndarray:
 @click.option("--embeddings-path", type=click.Path(exists=True), required=True)
 @click.option("--embedding-dim", "-d", type=int, required=True)
 def run_cli(text_ids_path: Path, embeddings_path: Path, embedding_dim: int) -> None:
+    """Index text and embeddings stores at `text-ids-path` and `embeddings-path` into Opensearch.
+
+    Args:
+        text_ids_path (Path): path to CSV file containing text and IDs.
+        embeddings_path (Path): path to memmap file containing embeddings.
+        embedding_dim (int): embedding dimension.
+    """
     main_dataset = create_dataset()
 
     ids_table = load_text_and_ids_csv(text_ids_path)

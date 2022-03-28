@@ -5,7 +5,7 @@ from tqdm.auto import tqdm
 
 
 class OpenSearchIndex:
-    """TODO: docstring"""
+    """Methods to connect to OpenSearch instance, define an index mapping, and load data into an index."""
 
     def __init__(
         self,

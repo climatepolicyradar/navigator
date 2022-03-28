@@ -4,7 +4,7 @@ import pandas as pd
 
 
 class PostgresConnector:
-    """TODO: docstring"""
+    """Connect to a postgres instance and run a query."""
 
     def __init__(self, postgres_url: str):
         """Initialise DB connector.
