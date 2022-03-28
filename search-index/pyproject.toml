@@ -13,6 +13,7 @@ cloudpathlib = {version = "^0.7.0", extras = ["s3"]}
 sentence-transformers = "^2.2.0"
 click = "^8.0.4"
 navigator = {path = "../common", develop = true}
+psycopg2-binary = "^2.9.3"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"

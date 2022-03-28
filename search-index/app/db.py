@@ -1,42 +1,28 @@
-"""
-class DBConnector:
-- connect to database using env variables
-- provides dataframe given sql query
-"""
-
 from sqlalchemy import create_engine
 from sqlalchemy.engine.base import Engine
 import pandas as pd
 
 
 class PostgresConnector:
-    def __init__(self, username: str, password: str, hostname: str):
+    """TODO: docstring"""
+
+    def __init__(self, postgres_url: str):
         """Initialise DB connector.
 
         Args:
-            username (str): _description_
-            password (str): _description_
-            hostname (str): _description_
+            postgres_url: URL to postgres instance
         """
 
-        self._db_engine = self._create_db_engine(username, password, hostname)
+        self._db_engine = self._create_db_engine(postgres_url)
 
-    @staticmethod
-    def _make_postgres_url(username: str, password: str, hostname: str) -> str:
-        return f"postgresql://{username}:{password}@{hostname}"
-
-    def _create_db_engine(self, username: str, password: str, hostname: str) -> Engine:
+    def _create_db_engine(self, postgres_url: str) -> Engine:
         """Create a SQLAlchemy engine used to connect to the database.
 
         Args:
-            username (str): _description_
-            password (str): _description_
-            hostname (str): _description_
+            postgres_url (str): url to postgres database.
         """
 
-        db_url = self._make_postgres_url(username, password, hostname)
-
-        return create_engine(db_url)
+        return create_engine(postgres_url)
 
     def run_query(self, query: str) -> pd.DataFrame:
         """Run SQL query, returning a dataframe of results.

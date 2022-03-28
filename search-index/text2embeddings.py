@@ -104,7 +104,9 @@ def encode_text(
     required=True,
     help="Directory to save embeddings and IDs to.",
 )
-@click.option("--model-name", type=str, help="Name of the sentence-BERT model to use.")
+@click.option(
+    "--model-name", "-m", type=str, help="Name of the sentence-BERT model to use."
+)
 @click.option("--batch-size", type=int, default=32, help="Batch size for encoding.")
 @click.option(
     "--limit",
@@ -146,10 +148,13 @@ def run_cli(
     embs_output_path = (
         output_dir / f"embeddings_dim_{embs.shape[1]}_{model_name}_{curr_time}.memmap"
     )
-    np.memmap(embs_output_path, dtype="float32", mode="w+", shape=embs.shape)
+    fp = np.memmap(embs_output_path, dtype="float32", mode="w+", shape=embs.shape)
+    fp[:] = embs[:]
+    fp.flush()
 
-    # Drop 'text' column from data and save to CSV
-    pd.DataFrame(text_by_document).drop(columns=0).to_csv(
+    # Save text, text block IDs and document IDs to CSV
+    # TODO: is there a better way to save text than in a CSV?
+    pd.DataFrame(text_and_ids).to_csv(
         output_dir / f"ids_{model_name}_{curr_time}.csv",
         sep=",",
         header=False,
