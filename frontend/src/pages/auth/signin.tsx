@@ -1,3 +1,5 @@
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../../components/LoaderOverlay';
@@ -9,10 +11,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from '../../components/form-inputs/TextInput';
 import Button from '../../components/buttons/Button';
 import Link from 'next/link';
-import { signIn } from 'next-auth/react';
+import { useAuth } from '../../api/auth';
 
 const Login = () => {
   const { t, i18n, ready } = useTranslation('auth');
+  const { user, login } = useAuth();
+  const router = useRouter();
+
   const schema = Yup.object({
     email: Yup.string()
       .email(t('Invalid email format'))
@@ -27,19 +32,15 @@ const Login = () => {
     resolver: yupResolver(schema),
   });
   const submitForm = (data) => {
-    console.log(data);
-    const email = data.email;
-    const password = data.password;
-    signIn('credentials', {
-      email,
-      password,
-      // The page where you want to redirect to after a
-      // successful login
-      callbackUrl: `${window.location.origin}/account`,
-    });
+    // console.log(data);
+    login(data);
   };
+  useEffect(() => {
+    if (user) router.push('/account');
+  }, [user]);
   return (
     <>
+      {console.log(user)}
       {!ready ? (
         <LoaderOverlay />
       ) : (
@@ -50,7 +51,11 @@ const Login = () => {
                 heading={t('Sign in to your account')}
                 description={t('Welcome back! Please enter your details.')}
               >
-                <form className="w-full" onSubmit={handleSubmit(submitForm)}>
+                <form
+                  className="w-full"
+                  onSubmit={handleSubmit(submitForm)}
+                  noValidate
+                >
                   <div className="form-row text-white">
                     <TextInput
                       label={t('Email')}

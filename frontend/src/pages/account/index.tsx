@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/layouts/Admin';
@@ -14,9 +14,13 @@ import Button from '../../components/buttons/Button';
 import { geo_scope, affiliation_types } from '../../constants/formOptions';
 import { EditIcon } from '../../components/Icons';
 import Link from 'next/link';
+import { useAuth } from '../../api/auth';
+import useUpdateAccount from '../../hooks/useUpdateAccount';
 
 const Account = () => {
   const { t, i18n, ready } = useTranslation(['account', 'common']);
+  const { user } = useAuth();
+  const updateAccount = useUpdateAccount();
 
   /* TODO: authentication for this page, static for now 
 			Try Next-Auth + React-query: https://github.com/nextauthjs/react-query
@@ -26,18 +30,19 @@ const Account = () => {
 				handles this automatically anyway) instead of useState
 	*/
   const initialValues = {
-    id: 1,
-    full_name: 'Paula Hightower',
-    email: 'myemail@email.com',
-    is_active: true,
+    id: null,
+    full_name: '',
+    email: '',
+    is_active: false,
     is_superuser: false,
-    affiliation: 'My Affil',
-    affiliation_type: 'NGO',
-    job_role: 'Researcher',
-    location: 'UK',
-    geographies: ['Global'],
+    affiliation: '',
+    affiliation_type: '',
+    job_role: '',
+    location: '',
+    geographies: [],
   };
-  const [user, setUser] = useState(initialValues);
+
+  const [geos, setGeos] = useState(initialValues.geographies);
 
   const schema = Yup.object({
     full_name: Yup.string().required(),
@@ -48,6 +53,7 @@ const Account = () => {
     handleSubmit,
     reset,
     getValues,
+    setValue,
     formState: { isSubmitting, errors, isSubmitSuccessful, isValid, isDirty },
   } = useForm({
     resolver: yupResolver(schema),
@@ -57,21 +63,49 @@ const Account = () => {
     let arr = [];
     const val = e.currentTarget.value;
     if (e.currentTarget.checked) {
-      arr = [...user.geographies, val];
+      arr = [...geos, val];
     } else {
-      arr = user.geographies.filter((geo) => geo != val);
+      arr = geos.filter((geo) => geo != val);
     }
-    setUser({ ...user, geographies: arr });
+    setGeos(arr);
+    // setAccount({ ...account, geographies: arr });
+    // updateAccount.mutate({ ...account, geographies: arr });
   };
   const submitForm = (data) => {
     console.log(data);
+    let newData = {};
+    // for now separate full name into first and last name
+    const first_name = data.full_name.split(' ')[0];
+    const last_name = data.full_name.split(' ')[1];
+    updateAccount.mutate({ ...data, first_name, last_name });
   };
 
   const cancelUpdate = (e) => {
     e.preventDefault();
-    setUser(initialValues);
-    reset();
+    resetAccount();
   };
+
+  const resetAccount = () => {
+    reset({
+      id: user.id,
+      full_name: `${user.first_name} ${user.last_name}`,
+      email: user.email,
+      is_active: user.is_active,
+      is_superuser: user.is_superuser,
+      affiliation: 'My Affil',
+      affiliation_type: 'NGO',
+      job_role: 'Researcher',
+      location: 'UK',
+      geographies: ['Global'],
+    });
+    setGeos(['Global']);
+  };
+
+  useEffect(() => {
+    if (user) {
+      resetAccount();
+    }
+  }, [user]);
 
   return (
     <Layout title={`Navigator | ${t('My account')}`} heading={t('My account')}>
@@ -98,7 +132,7 @@ const Account = () => {
               <label className="flex-shrink-0 md:w-1/4">
                 {t('common:Email')}
               </label>
-              <div className="flex-grow">{user.email}</div>
+              <div className="flex-grow">{user?.email}</div>
               <Link href="/account/change-email">
                 <a>
                   <EditIcon />

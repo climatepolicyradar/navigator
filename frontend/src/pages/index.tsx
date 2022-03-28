@@ -5,20 +5,14 @@ import './i18n';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../components/LoaderOverlay';
 import { useAuth } from '../api/auth';
-import { useSession, signIn, signOut } from 'next-auth/react';
 
 const IndexPage = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
-  // const { user } = useAuth();
-  const user = 'test';
-  const { data: session } = useSession();
+  const { user } = useAuth();
 
   return (
     <>
-      {console.log(session)}
-      {!user ? (
-        <div>Log in screen here</div>
-      ) : !ready ? (
+      {!ready || !user ? (
         <LoaderOverlay />
       ) : (
         <Layout

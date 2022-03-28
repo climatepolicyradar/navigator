@@ -1,49 +1,6 @@
 import axios from 'axios';
 import { storage } from '../utils/storage';
-import ApiClient from './http-common';
-
-const authapi = axios.create({
-  baseURL: 'http://localhost:8000/api/',
-  responseType: 'json',
-  headers: {
-    accept: 'application/json',
-    'Content-Type': 'application/x-www-form-urlencoded',
-  },
-});
-
-// forces a login, temporary until we have proper login
-export const getAuth = async () => {
-  await authapi
-    .post(
-      'token',
-      'grant_type=&username=user%40navigator.com&password=password&scope=&client_id=test&client_secret=super_secret'
-    )
-    .then((response) => {
-      storage.clearToken();
-      storage.setToken(response.data.access_token);
-      return response.statusText == 'OK'
-        ? response.data
-        : Promise.reject(Error('Unsuccessful response'));
-    });
-};
-
-export const postFile = async (req: string, data): Promise<any> => {
-  return await axios({
-    method: 'POST',
-    url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
-    data,
-    headers: {
-      Authorization: `Bearer ${storage.getToken()}`,
-      'Content-Type': 'multipart/form-data',
-    },
-  }).then((response) => {
-    return response.statusText == 'OK'
-      ? response.data
-      : Promise.reject(Error('Unsuccessful response'));
-  });
-};
-
-/* NEW AUTH */
+import { ApiClient, AuthClient } from './http-common';
 
 const apiClient = new ApiClient();
 
@@ -62,10 +19,34 @@ export interface User {
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
-export async function handleApiResponse(response) {
-  const data = await response.json();
+export const signIn = async (credentials) => {
+  return await AuthClient.post(
+    'token',
+    `grant_type=&username=${credentials.email}&password=${credentials.password}&scope=&client_id=test&client_secret=super_secret`
+  ).then(handleApiResponse);
+};
 
-  if (response.ok) {
+export const postFile = async (req: string, data): Promise<any> => {
+  return await axios({
+    method: 'POST',
+    url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
+    data,
+    headers: {
+      Authorization: `Bearer ${storage.getToken()}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  }).then((response) => {
+    return response.statusText == 'OK'
+      ? response.data
+      : Promise.reject(Error('Unsuccessful response'));
+  });
+};
+
+export async function handleApiResponse(response) {
+  const data = await response.data;
+  console.log(data);
+  if (response.statusText === 'OK') {
+    console.log('ok??');
     return data;
   } else {
     return Promise.reject(data);

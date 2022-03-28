@@ -3,11 +3,12 @@ import Logo from '../Logo';
 import Link from 'next/link';
 import ProductName from '../ProductName';
 import { MenuIcon } from '../Icons';
+import { useAuth } from '../../api/auth';
 
 const Header = () => {
   const [fixed, setFixed] = useState(false);
-
   const headerRef = useRef(null);
+  const { logout } = useAuth();
 
   useEffect(() => {
     document.addEventListener('scroll', function (e) {
@@ -39,9 +40,9 @@ const Header = () => {
             <ProductName fixed={fixed} />
           </div>
           <div className="ml-auto">
-              <button>
-                  <MenuIcon />
-              </button>
+            <button>
+              <MenuIcon />
+            </button>
           </div>
           {/* <div>
             <button data-cy="user-icon">

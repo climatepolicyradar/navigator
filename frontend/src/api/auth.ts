@@ -1,34 +1,43 @@
 import { initReactQueryAuth } from 'react-query-auth';
 import {
-  getAuth,
+  signIn,
   getUserProfile,
   registerWithEmailAndPassword,
   loginWithEmailAndPassword,
   User,
 } from '.';
 import { storage } from '../utils/storage';
+import Router from 'next/router';
 
 export async function handleUserResponse(data) {
-  const { jwt, user } = data;
-  storage.setToken(jwt);
-  return user;
+  const { access_token } = data;
+  storage.clearToken();
+  storage.setToken(access_token);
+  //return user;
+  return loadUser();
 }
 
 async function loadUser() {
   let user = null;
 
-  // temporary until we have a real login
-  await getAuth();
-
   if (storage.getToken()) {
-    const data = await getUserProfile();
-    user = data;
+    try {
+      const data = await getUserProfile();
+      user = data;
+    } catch (error) {
+      console.log(error);
+    }
   }
+
+  if (user === null) Router.push('/auth/signin');
+
   return user;
 }
 
 async function loginFn(data) {
-  const response = await loginWithEmailAndPassword(data);
+  // const response = await loginWithEmailAndPassword(data);
+  const response = await signIn(data);
+
   const user = await handleUserResponse(response);
   return user;
 }
@@ -50,7 +59,7 @@ const authConfig = {
   loginFn,
   registerFn,
   logoutFn,
-  waitInitial: false
+  waitInitial: false,
 };
 
 const { AuthProvider, useAuth } = initReactQueryAuth<User>(authConfig);
