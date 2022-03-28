@@ -191,11 +191,11 @@ def run_cli(text_ids_path: Path, embeddings_path: Path, embedding_dim: int) -> N
     doc_generator = get_document_generator(main_dataset, ids_table, embs)
 
     opensearch = OpenSearchIndex(
-        # TODO: convert to env variables
-        url="http://localhost:9200",
-        username="admin",
-        password="admin",
-        index_name="navigator",
+        url=os.environ["OPENSEARCH_URL"],
+        username=os.environ["OPENSEARCH_USER"],
+        password=os.environ["OPENSEARCH_PASSWORD"],
+        index_name=os.environ["OPENSEARCH_INDEX"],
+        # TODO: convert to env variables?
         opensearch_connector_kwargs={
             "use_ssl": False,
             "verify_certs": False,
