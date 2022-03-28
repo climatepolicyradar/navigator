@@ -4,11 +4,20 @@ import Link from 'next/link';
 import ProductName from '../ProductName';
 import { MenuIcon } from '../Icons';
 import { useAuth } from '../../api/auth';
+import AccountMenu from '../menus/AccountMenu';
+import useOutsideAlerter from '../../hooks/useOutsideAlerter';
 
 const Header = () => {
   const [fixed, setFixed] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const headerRef = useRef(null);
+  const menuRef = useRef(null);
   const { logout } = useAuth();
+  useOutsideAlerter(menuRef, () => setShowMenu(false));
+
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
 
   useEffect(() => {
     document.addEventListener('scroll', function (e) {
@@ -39,10 +48,13 @@ const Header = () => {
           <div className="hidden md:block ml-10">
             <ProductName fixed={fixed} />
           </div>
-          <div className="ml-auto">
-            <button>
+          <div ref={menuRef} className="ml-auto relative">
+            <button onClick={toggleMenu}>
               <MenuIcon />
             </button>
+            {showMenu && (
+              <AccountMenu setShowMenu={setShowMenu} logout={logout} />
+            )}
           </div>
           {/* <div>
             <button data-cy="user-icon">
