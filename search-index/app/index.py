@@ -103,13 +103,19 @@ class OpenSearchIndex:
         }
 
     def delete_and_create_index(self):
-        """Creates index. Deletes any existing index of the same name first. #TODO: docstring"""
+        """Create the index, deleting any existing index of the same name first."""
 
         self.opns.indices.delete(index=self.index_name, ignore=[400, 404])
         self.opns.indices.create(index=self.index_name, body=self._index_body())
 
     def bulk_index(self, actions: Iterable[dict]):
-        """Loads data into index. #TODO: docstring"""
+        """Bulk load data into the index.
+
+        # TODO: in future, we may want to expose `streaming_bulk` kwargs to allow for more control over the bulk load.
+
+        Args:
+            actions (Iterable[dict]): a list of documents or actions to be indexed.
+        """
 
         actions = tqdm(actions, unit="docs")
         successes = 0
