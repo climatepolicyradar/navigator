@@ -2,14 +2,17 @@ import { initReactQueryAuth } from 'react-query-auth';
 import {
   signIn,
   getUserProfile,
-  registerWithEmailAndPassword,
-  loginWithEmailAndPassword,
+  // registerWithEmailAndPassword,
+  // loginWithEmailAndPassword,
   User,
 } from '.';
 import { storage } from '../utils/storage';
 import Router from 'next/router';
 
 export async function handleUserResponse(data) {
+  if (data?.error) {
+    return data;
+  }
   const { access_token } = data;
   storage.clearToken();
   storage.setToken(access_token);
@@ -35,7 +38,6 @@ async function loadUser() {
 }
 
 async function loginFn(data) {
-  // const response = await loginWithEmailAndPassword(data);
   const response = await signIn(data);
 
   const user = await handleUserResponse(response);
@@ -43,9 +45,9 @@ async function loginFn(data) {
 }
 
 async function registerFn(data) {
-  const response = await registerWithEmailAndPassword(data);
-  const user = await handleUserResponse(response);
-  return user;
+  // const response = await registerWithEmailAndPassword(data);
+  // const user = await handleUserResponse(response);
+  // return user;
 }
 
 async function logoutFn() {

@@ -36,11 +36,10 @@ const Login = () => {
     login(data);
   };
   useEffect(() => {
-    if (user) router.push('/account');
+    if (user?.first_name) router.push('/account');
   }, [user]);
   return (
     <>
-      {console.log(user)}
       {!ready ? (
         <LoaderOverlay />
       ) : (
@@ -51,6 +50,9 @@ const Login = () => {
                 heading={t('Sign in to your account')}
                 description={t('Welcome back! Please enter your details.')}
               >
+                {user?.error && (
+                  <p className="text-red-500 font-bold mt-4">{user.error}</p>
+                )}
                 <form
                   className="w-full"
                   onSubmit={handleSubmit(submitForm)}

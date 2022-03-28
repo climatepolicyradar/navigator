@@ -22,13 +22,6 @@ const Account = () => {
   const { user } = useAuth();
   const updateAccount = useUpdateAccount();
 
-  /* TODO: authentication for this page, static for now 
-			Try Next-Auth + React-query: https://github.com/nextauthjs/react-query
-			also refer to https://next-auth.js.org/
-
-			TODO: also make sure state is managed with react-query (assuming the above
-				handles this automatically anyway) instead of useState
-	*/
   const initialValues = {
     id: null,
     full_name: '',
@@ -72,8 +65,6 @@ const Account = () => {
     // updateAccount.mutate({ ...account, geographies: arr });
   };
   const submitForm = (data) => {
-    console.log(data);
-    let newData = {};
     // for now separate full name into first and last name
     const first_name = data.full_name.split(' ')[0];
     const last_name = data.full_name.split(' ')[1];

@@ -2,6 +2,7 @@ import { useRouter } from 'next/router';
 import AccountNavItem from './AccountNavItem';
 
 const AccountNav = () => {
+  /* TODO: Internationalize this menu */
   const menu = [
     {
       title: 'My Details',

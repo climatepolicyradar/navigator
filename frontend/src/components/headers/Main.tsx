@@ -2,11 +2,12 @@ import { useEffect, useState, useRef } from 'react';
 import Logo from '../Logo';
 import Link from 'next/link';
 import ProductName from '../ProductName';
-import { MenuIcon } from '../Icons';
+import { useAuth } from '../../api/auth';
+import ToggleAccountMenu from '../menus/ToggleAccountMenu';
 
 const Header = () => {
   const [fixed, setFixed] = useState(false);
-
+  const { logout } = useAuth();
   const headerRef = useRef(null);
 
   useEffect(() => {
@@ -39,9 +40,7 @@ const Header = () => {
             <ProductName fixed={fixed} />
           </div>
           <div>
-            <button>
-              <MenuIcon />
-            </button>
+            <ToggleAccountMenu logout={logout} />
             {/* <button data-cy="user-icon">
               <img
                 className={`${
