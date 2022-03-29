@@ -1,5 +1,6 @@
 import React from 'react';
 import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
+import FormFieldError from '../text-blocks/Error';
 
 interface TextAreaProps {
   id?: string;
@@ -36,9 +37,7 @@ const TextArea = ({
         placeholder={placeholder}
         {...register(name)}
       />
-      {errors[name] && (
-        <div className="error w-full text-red-500">{errors[name].message}</div>
-      )}
+      {errors[name] && <FormFieldError message={errors[name].message} />}
     </div>
   );
 };

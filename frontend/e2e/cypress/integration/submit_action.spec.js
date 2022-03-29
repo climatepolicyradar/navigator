@@ -3,6 +3,7 @@
 describe('Submit Action form', () => {
   beforeEach(() => {
     cy.login();
+    cy.wait(100);
   });
   it('should load all lookups', () => {
     cy.get_lookups();

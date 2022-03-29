@@ -1,32 +1,35 @@
 import axios from 'axios';
 import { storage } from '../utils/storage';
-import ApiClient from './http-common';
+import { ApiClient, AuthClient } from './http-common';
 
-const authapi = axios.create({
-  baseURL: 'http://localhost:8000/api/',
-  responseType: 'json',
-  headers: {
-    accept: 'application/json',
-    'Content-Type': 'application/x-www-form-urlencoded',
-  },
-});
+const apiClient = new ApiClient();
 
-// forces a login, temporary until we have proper login
-export const getAuth = async () => {
-  await authapi
-    .post(
-      'token',
-      'grant_type=&username=user%40navigator.com&password=password&scope=&client_id=test&client_secret=super_secret'
-    )
-    .then((response) => {
-      storage.clearToken();
-      storage.setToken(response.data.access_token);
-      return response.statusText == 'OK'
-        ? response.data
-        : Promise.reject(Error('Unsuccessful response'));
-    });
+interface AuthResponse {
+  jwt: string;
+}
+
+export interface User {
+  id: number;
+  email: string;
+  first_name?: string;
+  last_name?: string;
+  is_active: boolean;
+  is_superuser: boolean;
+  error?: { error: string };
+}
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL;
+
+export const signIn = async (credentials) => {
+  return await AuthClient.post(
+    'token',
+    `grant_type=&username=${credentials.email}&password=${credentials.password}&scope=&client_id=test&client_secret=super_secret`
+  )
+    .then(handleApiSuccess)
+    .catch(handleApiError);
 };
 
+// may not be using this so not rewriting it for now
 export const postFile = async (req: string, data): Promise<any> => {
   return await axios({
     method: 'POST',
@@ -43,55 +46,64 @@ export const postFile = async (req: string, data): Promise<any> => {
   });
 };
 
-/* NEW AUTH */
-
-const apiClient = new ApiClient();
-
-interface AuthResponse {
-  jwt: string;
-}
-
-export interface User {
-  id: number;
-  email: string;
-  first_name?: string;
-  last_name?: string;
-  is_active: boolean;
-  is_superuser: boolean;
-}
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-export async function handleApiResponse(response) {
-  const data = await response.json();
-
-  if (response.ok) {
+export async function handleApiSuccess(response) {
+  const data = await response.data;
+  if (response.statusText === 'OK') {
     return data;
   } else {
     return Promise.reject(data);
   }
+}
+export async function handleApiError(error) {
+  let status = { error: 'There was an error, please try again.' };
+  if (error.response.status === 401) {
+    status = { error: 'Invalid credentials' };
+  }
+  return status;
+}
+export async function handleApiResponse(response) {
+  const data = await response.data;
+  console.log(response.response.status);
+  if (response.statusText === 'OK') {
+    console.log('ok??');
+    return data;
+  } else {
+    // return Promise.reject(data);
+    return { error: true };
+  }
+  // console.log('handle api response?');
+
+  // try {
+  //   const data = await response.data;
+  //   return data;
+  // } catch (error) {
+  //   console.log(error);
+  //   return error;
+  // }
 }
 
 export function getUserProfile() {
   return apiClient.get('/users/me', null);
 }
 
-export async function loginWithEmailAndPassword(data): Promise<AuthResponse> {
-  return window
-    .fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-    .then(handleApiResponse);
-}
+// export async function loginWithEmailAndPassword(data): Promise<AuthResponse> {
+//   return window
+//     .fetch(`${API_URL}/auth/login`, {
+//       method: 'POST',
+//       body: JSON.stringify(data),
+//     })
+//     .then(handleApiResponse);
+// }
 
-export async function registerWithEmailAndPassword(
-  data
-): Promise<AuthResponse> {
-  return window
-    .fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-    .then(handleApiResponse);
-}
+// Not using this (yet), will need to rewrite
+
+// export async function registerWithEmailAndPassword(
+//   data
+// ): Promise<AuthResponse> {
+//   return window
+//     .fetch(`${API_URL}/auth/register`, {
+//       method: 'POST',
+//       body: JSON.stringify(data),
+//     })
+//     .then(handleApiResponse);
+// }

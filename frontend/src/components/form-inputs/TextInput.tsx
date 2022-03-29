@@ -1,8 +1,9 @@
 import React from 'react';
 import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
+import FormFieldError from '../text-blocks/Error';
 
 interface InputProps {
-  label: string;
+  label?: string;
   required?: boolean;
   errors: FieldErrors;
   name: string;
@@ -15,7 +16,7 @@ interface InputProps {
 }
 
 const TextInput = ({
-  label,
+  label = '',
   required = false,
   errors,
   name,
@@ -28,23 +29,23 @@ const TextInput = ({
 }: InputProps): JSX.Element => {
   return (
     <div className={className}>
-      <label className="text-indigo-600">
+      <label className="">
         {label}
-        {required ? <strong className="text-red-500"> *</strong> : null}
+        {required && label ? (
+          <strong className="text-red-500"> *</strong>
+        ) : null}
       </label>
       <input
         type={type}
         placeholder={placeholder}
         accept={accept}
-        className={`border ${
+        className={`mt-1 border ${
           errors[name] ? 'border-red-500' : 'border-gray-300'
         }`}
         onChange={onChange}
         {...register(name)}
       />
-      {errors[name] && (
-        <div className="error w-full text-red-500">{errors[name].message}</div>
-      )}
+      {errors[name] && <FormFieldError message={errors[name].message} />}
     </div>
   );
 };

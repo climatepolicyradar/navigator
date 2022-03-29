@@ -1,13 +1,12 @@
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import Header from '../headers/Main';
-import Banner from '../banner/Main';
+import Banner from '../banner/Auth';
 
 type Props = {
   children?: ReactNode;
   title?: string;
-  heading: string;
+  heading?: string;
 };
 
 const Layout = ({
@@ -21,17 +20,13 @@ const Layout = ({
       <meta charSet="utf-8" />
       <meta name="viewport" content="initial-scale=1.0, width=device-width" />
     </Head>
-    <a className="sr-only" href="#main">
-      Skip to content
-    </a>
-    <Header />
     <main>
-      <Banner heading={heading} />
+      <Banner />
       {children}
     </main>
-    <footer className="my-8">
+    {/* <footer className="my-8">
       <hr />
-    </footer>
+    </footer> */}
   </div>
 );
 

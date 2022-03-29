@@ -43,7 +43,7 @@ Cypress.Commands.add('login', () => {
       client_secret: 'super_secret',
     },
   }).then((resp) => {
-    window.localStorage.setItem('jwt', resp.body.access_token);
+    window.localStorage.setItem('jwt', JSON.stringify(resp.body.access_token));
   });
 });
 

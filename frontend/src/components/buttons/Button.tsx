@@ -5,10 +5,11 @@ interface ButtonProps {
   type?: 'button' | 'submit' | 'reset';
   disabled?: boolean;
   onClick?(event: React.FormEvent<HTMLButtonElement>): void;
-  color?: 'dark' | 'light' | 'clear';
+  color?: 'dark' | 'light' | 'clear' | 'light-hover-dark';
   id?: string;
   extraClasses?: string;
   'data-cy'?: string;
+  fullWidth?: boolean;
 }
 
 const Button = ({
@@ -17,8 +18,9 @@ const Button = ({
   disabled = false,
   onClick = null,
   color = 'light',
-  id = '',
+  id,
   extraClasses = '',
+  fullWidth = false,
   ...props
 }: ButtonProps) => {
   let colorClasses =
@@ -28,19 +30,27 @@ const Button = ({
       colorClasses =
         'bg-blue-500 border border-blue-500 text-white hover:bg-white hover:border-white hover:text-indigo-600';
       break;
+    case 'light-hover-dark':
+      colorClasses =
+        'bg-blue-500 border border-blue-500 text-white hover:bg-indigo-600 hover:border-indigo-600 hover:text-white';
+      break;
     case 'clear':
       colorClasses =
-        'clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100';
+        'clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white';
       break;
   }
+
   return (
     <button
+      id={id}
       onClick={onClick}
       type={type}
       disabled={disabled}
-      id={id}
       data-cy={props['data-cy']}
-      className={`${colorClasses} button transition duration-300 px-4 py-2 rounded-3xl w-full md:w-auto md:px-8 pointer-events-auto ${extraClasses}`}
+      className={`${colorClasses} button transition duration-300 px-4 py-3 rounded-3xl md:px-8 pointer-events-auto w-full ${extraClasses} ${
+        !fullWidth ? 'md:w-auto' : ''
+      }`}
+      {...props}
     >
       {children}
     </button>

@@ -57,13 +57,18 @@ h6 {
 }
 input[type='text'],
 input[type='number'],
+input[type='password'],
+input[type='email'],
 textarea,
 select {
-  @apply p-3 rounded-lg text-lg w-full bg-indigo-100;
+  @apply p-3 rounded-lg text-lg w-full text-indigo-600;
 }
 
 .form-row {
-  @apply my-8;
+  @apply my-6;
+  &__border {
+    @apply border-b border-indigo-200 py-6;
+  }
 }
 
 select {
@@ -74,13 +79,6 @@ select {
   background-position-y: 16px;
   background-position-x: calc(100% - 8px);
   background-size: 16px 16px;
-}
-
-.button {
-  box-shadow: 0 0 32px #1f93ff6f;
-  &.clear {
-    box-shadow: none;
-  }
 }
 
 // radar loader
@@ -141,4 +139,18 @@ input[type='search']::-webkit-search-cancel-button,
 input[type='search']::-webkit-search-results-button,
 input[type='search']::-webkit-search-results-decoration {
   display: none;
+}
+
+.subnav-active {
+  position: relative;
+  @apply z-20;
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -16px;
+    height: 2px;
+    width: 100%;
+    @apply bg-blue-500;
+  }
 }

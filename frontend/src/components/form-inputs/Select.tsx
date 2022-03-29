@@ -1,10 +1,11 @@
 import React from 'react';
 import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
+import FormFieldError from '../text-blocks/Error';
 
 interface SelectProps {
   id?: string;
   name: string;
-  label: string;
+  label?: string;
   children: React.ReactNode;
   classes?: string;
   required?: boolean;
@@ -12,11 +13,12 @@ interface SelectProps {
   onChange?(event: any): any;
   register: any;
   'data-cy'?: string;
+  multiple?: boolean;
 }
 
 const Select = ({
   id,
-  label,
+  label = '',
   name,
   children,
   required = false,
@@ -25,14 +27,19 @@ const Select = ({
   errors,
   register,
   'data-cy': dataCy,
+  multiple = false,
 }: SelectProps) => {
   return (
     <div className={`${classes}`}>
       <label htmlFor={id} className="text-indigo-600">
         {label}
-        {required ? <strong className="text-red-500"> *</strong> : null}
+        {required && label ? (
+          <strong className="text-red-500"> *</strong>
+        ) : null}
       </label>
       <select
+        selected
+        multiple={multiple}
         data-cy={dataCy}
         onChange={onChange}
         className={`border ${
@@ -43,9 +50,7 @@ const Select = ({
         {children}
       </select>
 
-      {errors[name] ? (
-        <div className="error text-red-500 mt-1">{errors[name].message}</div>
-      ) : null}
+      {errors[name] ? <FormFieldError message={errors[name].message} /> : null}
     </div>
   );
 };

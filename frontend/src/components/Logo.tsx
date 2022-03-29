@@ -1,8 +1,8 @@
 interface LogoProps {
-  fixed: boolean;
+  fixed?: boolean;
 }
 
-const Logo = ({ fixed }: LogoProps) => {
+const Logo = ({ fixed = false }: LogoProps) => {
   return (
     <svg
       data-cy="header-logo"

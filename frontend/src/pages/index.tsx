@@ -4,13 +4,15 @@ import SearchForm from '../components/forms/SearchForm';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../components/LoaderOverlay';
+import { useAuth } from '../api/auth';
 
 const IndexPage = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
+  const { user } = useAuth();
 
   return (
     <>
-      {!ready ? (
+      {!ready || !user ? (
         <LoaderOverlay />
       ) : (
         <Layout
