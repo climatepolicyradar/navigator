@@ -523,9 +523,13 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             for text_block in page["text_blocks"]:
                 blocks_seen += 1
                 if text_block["path"]:
-                    list_group = self._find_all_list_occurrences(
+                    list_occurrences = self._find_all_list_occurrences(
                         self.list_regex_pattern, text_block["path"]
-                    )[0]
+                    )
+                    if len(list_occurrences) == 0:
+                        list_group = None
+                    else:
+                        list_group = list_occurrences[0]
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
                         block_num = int(
