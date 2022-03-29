@@ -16,7 +16,6 @@ from navigator.core.log import get_logger
 from navigator.core.utils import get_timestamp
 
 logger = get_logger(__name__)
-curr_time = get_timestamp()
 
 
 def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
@@ -131,6 +130,7 @@ def run_cli(
         limit (Optional[int]): Optionally limit the number of text samples to process. Useful for debugging.
     """
     logger.info(f"Getting text from JSONs in {input_dir}")
+    curr_time = get_timestamp()
     json_filepaths = glob.glob(str(input_dir / "*.json"))
 
     text_and_ids = get_text_from_json_files(json_filepaths)
