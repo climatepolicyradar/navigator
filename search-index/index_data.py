@@ -139,9 +139,16 @@ def get_document_generator(
     ]
 
     for document_id, document_df in text_and_ids_data.groupby("document_id"):
+
         doc_metadata = main_dataset.loc[
             main_dataset["prototype_filename_stem"] == document_id
         ]
+        if len(doc_metadata) == 0:
+            logger.warning(
+                f"Skipping document {document_id} as not in the Navigator database."
+            )
+            continue
+
         doc_metadata_dict = doc_metadata[metadata_columns].iloc[0].to_dict()
         doc_metadata_dict = {
             k: v for k, v in doc_metadata_dict.items() if v and str(v) != "nan"
@@ -178,9 +185,7 @@ def load_text_and_ids_csv(ids_path: Path) -> pd.DataFrame:
     Returns:
         pd.DataFrame: contains columns 'text', 'text_block_id' and 'document_id'
     """
-    return pd.read_csv(
-        ids_path, header=None, names=["text", "text_block_id", "document_id"]
-    )
+    return pd.read_json(ids_path, orient="records")
 
 
 def load_embeddings(embs_path: Path, embedding_dim: int) -> np.ndarray:

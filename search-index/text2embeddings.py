@@ -154,11 +154,11 @@ def run_cli(
 
     # Save text, text block IDs and document IDs to CSV
     # TODO: is there a better way to save text than in a CSV?
-    pd.DataFrame(text_and_ids).to_csv(
-        output_dir / f"ids_{model_name}_{curr_time}.csv",
-        sep=",",
-        header=False,
-        index=False,
+    pd.DataFrame(
+        text_and_ids, columns=["text", "text_block_id", "document_id"]
+    ).to_json(
+        output_dir / f"ids_{model_name}_{curr_time}.json",
+        orient="records",
     )
     logger.info(f"Saved embeddings and IDs to {output_dir}")
 
