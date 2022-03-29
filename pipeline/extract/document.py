@@ -110,6 +110,10 @@ class Document:
         with open(json_filepath, "wt") as f:
             json.dump(asdict(self), f, indent=2)
 
+    def to_dict(self) -> dict:
+        """Return the document as a dictionary"""
+        return asdict(self)
+
     def to_string(self) -> str:
         """Return the document contents as a string"""
 
@@ -124,6 +128,30 @@ class Document:
             f.write(self.to_string())
 
     @classmethod
+    def from_dict(cls, json_dict: dict) -> "Document":
+        """Load a document from a dictionary"""
+        for page in json_dict["pages"]:
+            page["text_blocks"] = [TextBlock(**block) for block in page["text_blocks"]]
+        return cls(
+            pages=[Page(**page) for page in json_dict["pages"]],
+            filename=json_dict["filename"],
+        )
+
+    @classmethod
     def from_json(cls, json_filepath: Path):
         """Create a new Document instance from a given json file"""
-        raise NotImplementedError
+        with open(json_filepath, "r") as f:
+            data = json.load(f)
+
+        new_pages = []
+        for ix, page in enumerate(data["pages"]):
+            new_blocks = []
+            for block in page["text_blocks"]:
+                new_block = TextBlock(**block)
+                new_blocks.append(new_block)
+            page["text_blocks"] = new_blocks
+            page = Page(**page)
+            new_pages.append(page)
+        data["pages"] = new_pages
+        doc = Document(**data)
+        return doc
