@@ -653,8 +653,8 @@ class AdobeListGroupingPostProcessor(PostProcessor):
 
     def process(self, doc: Document, filename: str) -> Document:
         """
-        Parse elements belonging to lists into single blocks, adding metadata on processing where
-        appropriate.
+        Update a document object associated to a pdf by parse elements belonging to lists into single blocks,
+        adding metadata on processing steps where appropriate.
 
         Args:
             filename: The filename of the pdf being processed.
