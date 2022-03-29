@@ -138,7 +138,6 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         else:
             return None
 
-
     def merge_text_blocks(self, text_blocks: List[dict]) -> dict:
         """
         Merge text blocks in the same semantic category (same path) that have been separated due to styling elements.
@@ -249,32 +248,14 @@ class AdobeListGroupingPostProcessor(PostProcessor):
     """Further processing of processed outputs from the Adobe API (handling cases not easily
     handled by the API itself)."""
 
-    regex_pattern = r"L\[?\d?\]?$"
+    list_regex_pattern = r"L\[?\d?\]?$"
 
     def __init__(self):
         super(AdobeListGroupingPostProcessor, self).__init__()
 
-    @staticmethod
-    def _find_first_occurrence(regex_pattern: str, list_of_strings):
-        """
-        Finds the first occurrence of a regular expression in a list of strings.
-
-        Args:
-            regex_pattern: Regular expression to search for in the list of strings.
-            list_of_strings: List of strings to search through.
-
-        Returns:
-            The first occurrence of the regular expression in the list of strings.
-
-        """
-        for string in list_of_strings:
-            if re.search(regex_pattern, string):
-                return string
-        return None
-
     # Find number of occurrences of a regex pattern in a list of strings
     @staticmethod
-    def _find_all_occurrences(regex_pattern: str, list_of_strings):
+    def _find_all_list_occurrences(regex_pattern: str, list_of_strings):
         """
         Finds all occurrences of a regular expression in a list of strings.
 
@@ -465,7 +446,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
         )
         df["list_num"] = df["path"].apply(
-            lambda x: len(self._find_all_occurrences(self.regex_pattern, x))
+            lambda x: len(self._find_all_list_occurrences(self.list_regex_pattern, x))
         )
         # Get the first and last index of each list number in a group of nested lists.
         # This is used to determine if a list element is the first or last element in a group,
@@ -542,9 +523,9 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             for text_block in page["text_blocks"]:
                 blocks_seen += 1
                 if text_block["path"]:
-                    list_group = self._find_first_occurrence(
-                        self.regex_pattern, text_block["path"]
-                    )
+                    list_group = self._find_all_list_occurrences(
+                        self.list_regex_pattern, text_block["path"]
+                    )[0]
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
                         block_num = int(
