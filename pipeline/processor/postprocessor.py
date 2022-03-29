@@ -378,9 +378,15 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         return lst
 
     @staticmethod
-    def _duped_line_reformatting(line: str) -> str:
+    def _line_reformatting(line: str) -> str:
         """
-        Helper to remove duplication in pprinter method.
+        Replaces HTML formatting we don't want displayed in output and replace list labels
+        with a normalised version (bullet points).
+
+        Args:
+            line: String to be reformatted.
+        Returns:
+            Reformatted string.
         """
         line = re.sub(r"<Lbl>.*<\\Lbl>", "*", line)
         line = re.sub(r"<LBody>", " ", line)
@@ -403,7 +409,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         current_tab_level = 0
         for line in text_lst:
             if line.startswith("<Lbl>"):
-                line = self._duped_line_reformatting(line)
+                line = self._line_reformatting(line)
                 end_of_list = re.search(r"<\\li\d+>$", line.strip())
                 line = re.sub(r"<\\li\d+>", "", line)
                 pretty_string += "\t" * current_tab_level + line.strip() + "\n"
@@ -412,7 +418,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                         current_tab_level -= 1
             elif line.strip().startswith("<li"):
                 list_num = int(re.search(r"<li(\d+)>", line.strip()).group(1))
-                line = self._duped_line_reformatting(line)
+                line = self._line_reformatting(line)
                 line = re.sub(r"<li\d+>", "", line)
                 if list_num > 1:
                     current_tab_level += 1
