@@ -745,19 +745,6 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
     assert actual == expected
 
 
-# Tests for each class.
-def test_hyphenation_postprocessor(adobe_hyphenation_postprocessor, test_input_path):
-    raise NotImplementedError
-
-
-def test_list_postprocessor(adobe_list_postprocessor, test_input_path):
-    raise NotImplementedError
-
-
-def test_style_postprocessor(adobe_text_styling_postprocessor, test_input_path):
-    raise NotImplementedError
-
-
 # Integration test.
 def test_postprocessor_integration(
     test_input_path,
