@@ -4,8 +4,14 @@ import sqlalchemy as sa
 from sqlalchemy import BigInteger, SmallInteger, UniqueConstraint
 from sqlalchemy.dialects import postgresql
 from sqlalchemy.orm import relationship
+from sqlalchemy.sql import func
 
 from app.db.session import Base
+
+
+class Auditable:  # noqa: D101
+    created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
+    updated_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
 
 
 class User(Base):  # noqa: D101
@@ -314,3 +320,13 @@ class PassageMetadata(Base):  # noqa: D101
     span_end_pos = sa.Column(sa.SMALLINT(), autoincrement=False, nullable=True)
     source = sa.Column(sa.INTEGER(), sa.ForeignKey(Source.source_id), nullable=False)
     confidence = sa.Column(sa.REAL(), autoincrement=False, nullable=True)
+
+
+class ActivationToken(Auditable, Base):  # noqa: D101
+    __tablename__ = "activation_token"
+
+    id = sa.Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
+    token = sa.Column(sa.Text, nullable=False)
+    expiry_ts = sa.Column(sa.DateTime, nullable=False)
+    is_activated = sa.Column(sa.Boolean, nullable=False, default=False)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey(User.id), nullable=False, unique=True)
