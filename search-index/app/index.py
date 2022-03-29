@@ -43,7 +43,8 @@ class OpenSearchIndex:
         else:
             self.opns = OpenSearch(**self._opensearch_connector_kwargs)
 
-    def _is_connected(self) -> bool:
+    def is_connected(self) -> bool:
+        """Check if we are connected to the OpenSearch instance."""
         return self.opns.ping()
 
     def _index_body(self):
