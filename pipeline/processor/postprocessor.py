@@ -623,8 +623,6 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         """
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
         doc = doc.to_dict()
-        if filename.startswith("cclw-9460"):
-            print('hi')
         new_contents = self._group_list_elements(doc)
         new_contents["filename"] = filename
         return Document.from_dict(new_contents)
