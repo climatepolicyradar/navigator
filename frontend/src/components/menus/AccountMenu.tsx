@@ -3,7 +3,10 @@ import Link from 'next/link';
 
 const AccountMenu = ({ setShowMenu, logout }) => {
   return (
-    <div className="absolute rounded right-0 bg-white shadow-md py-2 w-48">
+    <div
+      data-cy="account-menu"
+      className="absolute rounded right-0 bg-white shadow-md py-2 w-48"
+    >
       <Link href="/account">
         <a
           onClick={() => setShowMenu(false)}

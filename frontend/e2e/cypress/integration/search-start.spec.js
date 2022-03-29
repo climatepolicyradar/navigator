@@ -2,6 +2,8 @@
 
 describe('Dashboard', () => {
   beforeEach(() => {
+    cy.login();
+    cy.wait(100);
     cy.visit('http://localhost:3000');
   });
   it('Dashboard should show three panels', () => {
@@ -17,6 +19,8 @@ describe('Dashboard', () => {
 
 describe('Search Input', () => {
   beforeEach(() => {
+    cy.login();
+    cy.wait(100);
     cy.visit('http://localhost:3000');
   });
   it('Search input placeholder text should be set', () => {

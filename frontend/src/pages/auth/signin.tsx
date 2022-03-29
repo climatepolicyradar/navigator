@@ -58,7 +58,7 @@ const Login = () => {
                   onSubmit={handleSubmit(submitForm)}
                   noValidate
                 >
-                  <div className="form-row text-white">
+                  <div data-cy="signin-email" className="form-row text-white">
                     <TextInput
                       label={t('Email')}
                       name="email"
@@ -68,7 +68,10 @@ const Login = () => {
                       register={register}
                     />
                   </div>
-                  <div className="form-row text-white">
+                  <div
+                    data-cy="signin-password"
+                    className="form-row text-white"
+                  >
                     <TextInput
                       label={t('Password')}
                       name="password"
@@ -85,7 +88,7 @@ const Login = () => {
                       </Link>
                     </div>
                   </div>
-                  <div className="form-row">
+                  <div data-cy="signin-submit" className="form-row">
                     <Button
                       type="submit"
                       color="light"
