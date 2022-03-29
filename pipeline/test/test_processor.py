@@ -82,22 +82,26 @@ def test_hyphenation_postprocessor_rewrap_hyphenated_words(
     assert output_2 == expected_2
 
 
-def test_adobe_list_find_first_occurrence(adobe_list_postprocessor):
-    regex = adobe_list_postprocessor.regex_pattern
+def test_adobe_list_find_all_list_occurrences(adobe_list_postprocessor):
+    regex = adobe_list_postprocessor.list_regex_pattern
     # Case 1:
     input = ["Document", "L[3]", "LI", "LBody", "Span[2]"]
-    expected_output = "L[3]"
-    actual_output = adobe_list_postprocessor._find_first_occurrence(regex, input)
+    expected_output = ["L[3]"]
+    actual_output = adobe_list_postprocessor._find_all_list_occurrences(regex, input)
     assert actual_output == expected_output
     # Case 2:
-    input_2 = ["Document", "L", "LI", "LBody", "Span[2]"]
-    expected_output_2 = "L"
-    actual_output_2 = adobe_list_postprocessor._find_first_occurrence(regex, input_2)
+    input_2 = ["Document", "L", "LI", "LBody", "Span[2]", "L[1]"]
+    expected_output_2 = ["L", "L[1]"]
+    actual_output_2 = adobe_list_postprocessor._find_all_list_occurrences(
+        regex, input_2
+    )
     assert actual_output_2 == expected_output_2
     # Case 3: No matching regex.
     input_3 = ["Document", "P"]
-    actual_output_3 = adobe_list_postprocessor._find_first_occurrence(regex, input_3)
-    assert not actual_output_3
+    actual_output_3 = adobe_list_postprocessor._find_all_list_occurrences(
+        regex, input_3
+    )
+    assert actual_output_3 == []
 
 
 def test_adobe_text_styling_merge_test_blocks(adobe_text_styling_postprocessor):
