@@ -1,7 +1,7 @@
 module.exports = {
-  i18n: {
+i18n: {
     locales: ['en', 'fr'],
     defaultLocale: 'en',
   },
-  pageExtensions: ['tsx', 'ts'],
+pageExtensions: ['tsx', 'ts'],
 };
