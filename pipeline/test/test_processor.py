@@ -175,6 +175,7 @@ def test_adobe_text_styling_merge_test_blocks(adobe_text_styling_postprocessor):
         "text": [
             "You are here: PacLII Databases Palau Net Metering Act of 2009, RPPL 8-39 2012 "
         ],
+        "type": "merged_text_block",
         "coords": [
             [44.00700378417969, 133.54104614257812],
             [544.6615600585938, 133.54104614257812],
