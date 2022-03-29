@@ -107,6 +107,9 @@ def get_document_generator(
 ) -> Generator[dict, None, None]:
     """Get generator of documents to index in Opensearch.
 
+    An Opensearch document is created for each text block in each document. For each document, an
+    Opensearch document is also created for its title and description.
+
     Args:
         main_dataset (pd.DataFrame): dataframe returned by `create_dataset` function.
         text_and_ids_data (pd.DataFrame): dataframe returned by `load_text_and_ids_csv` function.
@@ -121,12 +124,18 @@ def get_document_generator(
         "document_language_id",
         "document_name",
         "action_id",
-        "name",
-        "description",
         "action_date",
         "country_code",
         "action_source_name",
         "action_type_name",
+    ]
+
+    # These columns are used to create one Opensearch document per CPR document, so that they're
+    # searchable over as well as the text. Methods for these to be searched should be defined in
+    # the index mapping.
+    extra_text_columns = [
+        "name",
+        "description",
     ]
 
     for document_id, document_df in text_and_ids_data.groupby("document_id"):
@@ -140,6 +149,15 @@ def get_document_generator(
         doc_metadata_dict["action_date"] = doc_metadata_dict["action_date"].strftime(
             "%d/%m/%Y"
         )
+
+        for text_col_name in extra_text_columns:
+            text_col_dict = {
+                text_col_name: doc_metadata.iloc[
+                    0, doc_metadata.columns.get_loc(text_col_name)
+                ]
+            }
+
+            yield dict(doc_metadata_dict, **text_col_dict)
 
         for idx, row in document_df.iterrows():
             text_block_dict = {
