@@ -653,14 +653,15 @@ class AdobeListGroupingPostProcessor(PostProcessor):
 
     def process(self, doc: Document, filename: str) -> Document:
         """
-        Parse the elements belonging to a list into a single block, including the list's introductory text.
+        Parse elements belonging to lists into single blocks, adding metadata on processing where
+        appropriate.
 
         Args:
-            filename:
-            doc: dict.
+            filename: The filename of the pdf being processed.
+            doc: Document for a single pdf.
 
         Returns:
-            A dictionary with values corresponding to a semantic block of a list (introductory context plus the list itself).
+            A Document object with elements that are associated to lists grouped together.
         """
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
         doc = doc.to_dict()
