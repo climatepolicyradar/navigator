@@ -7,8 +7,14 @@ class UserBase(BaseModel):  # noqa: D101
     email: str
     is_active: bool = True
     is_superuser: bool = False
-    first_name: t.Optional[str] = None
-    last_name: t.Optional[str] = None
+    names: t.Optional[str] = None
+    job_role: t.Optional[str] = None
+    location: t.Optional[str] = None
+    affiliation_organisation: t.Optional[str] = None
+    affiliation_type: t.Optional[t.List[str]] = None
+    policy_type_of_interest: t.Optional[t.List[str]] = None
+    geographies_of_interest: t.Optional[t.List[str]] = None
+    data_focus_of_interest: t.Optional[t.List[str]] = None
 
 
 class UserOut(UserBase):  # noqa: D101
@@ -20,6 +26,10 @@ class UserCreate(UserBase):  # noqa: D101
 
     class Config:  # noqa: D106
         orm_mode = True
+
+
+class UserCreateWithActivationToken(UserCreate):  # noqa: D101
+    with_activation_token: t.Optional[bool]
 
 
 class UserEdit(UserBase):  # noqa: D101

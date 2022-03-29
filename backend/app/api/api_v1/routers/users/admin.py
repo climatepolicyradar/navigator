@@ -4,7 +4,7 @@ from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
 from app.db.crud.user import create_user, delete_user, edit_user, get_user, get_users
-from app.db.schemas.user import User, UserCreate, UserEdit
+from app.db.schemas.user import User, UserCreateWithActivationToken, UserEdit
 from app.db.session import get_db
 
 admin_users_router = r = APIRouter()
@@ -46,11 +46,14 @@ async def user_details(
 @r.post("/users", response_model=User, response_model_exclude_none=True)
 async def user_create(
     request: Request,
-    user: UserCreate,
+    user: UserCreateWithActivationToken,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """Creates a new user"""
+    if user.with_activation_token:
+        # TODO create activation entry
+        pass
     return create_user(db, user)
 
 
