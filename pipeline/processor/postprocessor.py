@@ -108,9 +108,8 @@ class AdobeTextStylingPostProcessor(PostProcessor):
     as underlines, superscripts and subscripts. We want to group such cases
     into single contiguous blocks. However, we want to keep the styling information
     because it's often relevant to semantics. For example, CO2 is often represented
-    using a subscript. For now, we keep everything and indicate the styling with
-    HTML style tags inline.
-
+    using a subscript. For now, we keep everything and indicate the styling with custom
+    style span attributes.
     """
 
     def __init__(self):
@@ -218,7 +217,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
                 [tuple(block["path"]) for block in page["text_blocks"]]
             )
 
-            # TODO: This logic does not always work. For instance, cclw-9460 separates
+            # TODO: This logic does not always work. For instance, cclw-9460.
             duplicated_paths = [
                 path for path, count in path_counts.items() if count > 1
             ]
