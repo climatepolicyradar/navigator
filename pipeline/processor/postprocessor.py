@@ -79,7 +79,8 @@ class HyphenationPostProcessor(PostProcessor):
                     # without the hyphen (e.g. repair-ing)
                     newline_first_word = word_fragment + l.split(" ")[0].lstrip("-")
                     if newline_first_word in english_words_set:
-                        new_list[ix] = newline_first_word + l.split(" ")[1:]
+                        new_list[ix] = newline_first_word + ' '.join(l.split(" ")[1:])
+
                     # Otherwise, keep the hyphenation but put it on a newline e.g. post-processing.
                     else:
                         new_list[ix] = word_fragment + "-" + l
@@ -208,8 +209,12 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         for page in new_document["pages"]:
             # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
             # TODO: This is a hack. We should be able to handle this better.
-            if page["text_blocks"][0]["path"] is None:
+            if len(page['text_blocks'])==0:
                 continue
+            else:
+                if (page["text_blocks"][0]["path"] is None):
+                    continue
+
             # Count repeated paths since blocks with custom styling (subscript, superscript, underline)
             # have separate elements in the same text block.
             path_counts = Counter(
@@ -222,21 +227,26 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             ]
             try:
                 for path in duplicated_paths:
-                    text_block_idxs, text_blocks_to_merge = list(
-                        zip(
-                            *[
-                                (idx, block)
-                                for idx, block in enumerate(page["text_blocks"])
-                                if tuple(block["path"]) == path
-                            ]
+                    try:
+                        text_block_idxs, text_blocks_to_merge = list(
+                            zip(
+                                *[
+                                    (idx, block)
+                                    for idx, block in enumerate(page["text_blocks"])
+                                    if tuple(block["path"]) == path # Sometimes no matches. Why?
+                                ]
+                            )
                         )
-                    )
-                    merged_text_block = self.merge_text_blocks(text_blocks_to_merge)
-                    page["text_blocks"] = (
-                        page["text_blocks"][0 : text_block_idxs[0]]
-                        + [merged_text_block]
-                        + page["text_blocks"][text_block_idxs[-1] + 1 :]
-                    )
+                        merged_text_block = self.merge_text_blocks(text_blocks_to_merge)
+                        page["text_blocks"] = (
+                            page["text_blocks"][0 : text_block_idxs[0]]
+                            + [merged_text_block]
+                            + page["text_blocks"][text_block_idxs[-1] + 1 :]
+                        )
+                    # TODO: Fix this rare exception.
+                    except ValueError: # Occasional failure.
+                        print('Failure to merge text blocks at path:', path)
+
             except TypeError:
                 pass
 

@@ -142,6 +142,7 @@ class Document:
         """Create a new Document instance from a given json file"""
         with open(json_filepath, "r") as f:
             data = json.load(f)
+
         new_pages = []
         for ix, page in enumerate(data["pages"]):
             new_blocks = []
