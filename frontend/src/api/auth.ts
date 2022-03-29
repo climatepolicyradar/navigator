@@ -8,6 +8,9 @@ import {
 } from '.';
 import { storage } from '../utils/storage';
 import Router from 'next/router';
+import LoaderOverlay from '../components/LoaderOverlay';
+
+const protectedUrls = ['/add-action', '/account', '/actions', '/'];
 
 export async function handleUserResponse(data) {
   if (data?.error) {
@@ -32,7 +35,9 @@ async function loadUser() {
     }
   }
 
-  if (user === null) Router.push('/auth/signin');
+  if (user === null && protectedUrls.indexOf(Router.router.pathname) > -1) {
+    Router.push('/auth/signin');
+  }
 
   return user;
 }
@@ -54,13 +59,14 @@ async function logoutFn() {
   await storage.clearToken();
 }
 
-// const loaderComponent = () => null;
+const loaderComponent = LoaderOverlay;
 
 const authConfig = {
   loadUser,
   loginFn,
   registerFn,
   logoutFn,
+  loaderComponent,
   waitInitial: false,
 };
 
