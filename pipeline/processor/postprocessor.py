@@ -139,32 +139,6 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         else:
             return None
 
-    @staticmethod
-    def _add_text_styling_markers(text: str, styling: str) -> str:
-        """
-        Add inline styling markers to text.
-
-        Args:
-            text: raw text without styling.
-            styling: styling to apply.
-
-        Returns:
-
-        """
-        leading_spaces = " " * (len(text) - len(text.lstrip(" ")))
-        trailing_spaces = " " * (len(text) - len(text.rstrip(" ")))
-
-        if styling == "subscript":
-            # Keep subscripts as they may be semantically relevant (as in CO2)
-            return f"{leading_spaces}<sub>{text.strip()}</sub>{trailing_spaces}"
-        elif styling == "superscript":
-            # Superscripts not semantically relevant, remove them.
-            return f"{leading_spaces + trailing_spaces}"
-        elif styling == "underline":
-            # TODO: What is the semantic relevance of underlines?
-            return f"{leading_spaces}<u>{text.strip()}</u>{trailing_spaces}"
-        else:
-            return text
 
     def merge_text_blocks(self, text_blocks: List[dict]) -> dict:
         """
