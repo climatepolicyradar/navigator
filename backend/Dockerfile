@@ -22,4 +22,8 @@ RUN poetry install
 
 ENV PYTHONPATH=/app
 
+ARG PORT=8888
+ENV PORT $PORT
+EXPOSE $PORT
+
 CMD python app/main.py
