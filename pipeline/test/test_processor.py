@@ -36,7 +36,9 @@ def adobe_hyphenation_postprocessor() -> HyphenationPostProcessor:
     return HyphenationPostProcessor()
 
 
-def test_hyphenation_postprocessor_rewrap_hyphenated_words(adobe_hyphenation_postprocessor):
+def test_hyphenation_postprocessor_rewrap_hyphenated_words(
+    adobe_hyphenation_postprocessor,
+):
     # Test case 1: hyphenation for incomplete words. cf pd 2 of cclw-8650-24af4f121de143baa3b633481f7adb78.pdf
     # TODO:
     #  The examples in this test case indicates the presence of a bug (e.g. the word performance is truncated before
@@ -433,14 +435,15 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             "text": [
                 "Legislation has been presented to Parliament to increase penalties for drivers using a handheld mobile. This came into effect on 1st March 2017, alongside a major Think! Campaign. "
             ],
+            "text_block_id": "p34_b2_merged",
             "coords": [
                 [88.80000305175781, 71.8079833984375],
                 [507.3838653564453, 71.8079833984375],
                 [88.80000305175781, 115.37997436523438],
                 [507.3838653564453, 115.37997436523438],
             ],
+            "type": "merged_text_block",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[2]", "LBody"],
-            "text_block_id": "p34_b2_merged",
             "custom_attributes": {
                 "styleSpans": [
                     {"style": "superscript", "start_idx": 130, "end_idx": 131}
@@ -644,8 +647,14 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             "custom_attributes": None,
         },
     ]
-
     expected = {
+        "coords": [
+            [70.91999816894531, 71.8079833984375],
+            [524.0879211425781, 71.8079833984375],
+            [70.91999816894531, 758.9399719238281],
+            [524.0879211425781, 758.9399719238281],
+        ],
+        "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[2]", "Lbl"],
         "text_block_id": "p34_b1",
         "type": "list",
         "text": [
@@ -695,14 +704,6 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
                 "p34_b11",
                 "p34_b12",
                 "p34_b13",
-            ],
-            "custom_bounding_boxes": [
-                [
-                    [70.91999816894531, 71.8079833984375],
-                    [524.0879211425781, 71.8079833984375],
-                    [70.91999816894531, 758.9399719238281],
-                    [524.0879211425781, 758.9399719238281],
-                ]
             ],
             "pretty_list_string": "* Legislation has been presented to Parliament to increase penalties for drivers using a handheld mobile. This came into effect on 1st March 2017, alongside a major Think! Campaign.\n* A major piece of research on young driver safety has been commissioned.\n* We have consulted on improving compulsory basic training for motorcyclists and allowing learner drivers on motorways.\n* We have continued to push forward on drug driving, which has led to around 10,000 arrests.\n* The Driving and Vehicle Standards Agency has trialled a new practical car driving test, to improve new driver safety.\n* Work is continuing to refine the approach to appraising, monitoring and evaluating cycling investment opportunities, to ensure that good quality schemes are delivered. In turn this will help inform a review of Highways England’s cycling performance indicators, to ensure they are meaningful and easily understood. The new approach will be tested in 2017-18 to ensure it is fit for purpose.\n* Highways England continues to work closely with a range of stakeholders representing the views of vulnerable users, including cyclists. This includes national engagement on development of their overall approach, as well as local engagement regarding specific scheme opportunities and issues.\n* Highways England recognises the need for cycling investment to positively contribute to local cycle networks. To support this they have been testing network planning approaches with specific local highways authorities to ensure that Highway England’s investment supports the ambitions of local authorities, as set out in their Local Cycling and Walking Infrastructure Plans (LCWIPs), as well as Government. Once fully developed they will implement this approach more widely.\n",
             "original_list_text": [
@@ -756,7 +757,9 @@ def test_postprocessor_integration(
     # run postprocessors
     hyphenation_doc = adobe_hyphenation_postprocessor.process(in_doc)
     text_styling_doc = adobe_text_styling_postprocessor.process(hyphenation_doc)
-    out_doc = adobe_list_postprocessor.process(text_styling_doc, f"{test_input_path.stem}.pdf")
+    out_doc = adobe_list_postprocessor.process(
+        text_styling_doc, f"{test_input_path.stem}.pdf"
+    )
     # Basic tests to ensure that nothing has gone wrong.
 
     # Check that 6 pages have been returned in the document
