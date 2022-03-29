@@ -176,16 +176,23 @@ def get_document_generator(
             yield dict(doc_metadata_dict, **text_block_dict)
 
 
-def load_text_and_ids_csv(ids_path: Path) -> pd.DataFrame:
-    """Load CSV file containing text and IDs that's produced alongside the embeddings.
+def load_text_and_ids_json(ids_path: Path) -> pd.DataFrame:
+    """Load JSON file containing text and IDs that's produced alongside the embeddings.
 
     Args:
-        ids_path (Path): path to CSV file.
+        ids_path (Path): path to JSON file.
 
     Returns:
         pd.DataFrame: contains columns 'text', 'text_block_id' and 'document_id'
     """
-    return pd.read_json(ids_path, orient="records")
+
+    data = pd.read_json(ids_path, orient="records")
+
+    if isinstance(data, pd.DataFrame):
+        return data
+
+    else:
+        raise ValueError("Expected dataframe")  # Won't happen due to our data format
 
 
 def load_embeddings(embs_path: Path, embedding_dim: int) -> np.ndarray:
@@ -215,7 +222,7 @@ def run_cli(text_ids_path: Path, embeddings_path: Path, embedding_dim: int) -> N
     """
     main_dataset = create_dataset()
 
-    ids_table = load_text_and_ids_csv(text_ids_path)
+    ids_table = load_text_and_ids_json(text_ids_path)
     embs = load_embeddings(embeddings_path, embedding_dim=embedding_dim)
     doc_generator = get_document_generator(main_dataset, ids_table, embs)
 
