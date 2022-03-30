@@ -3,7 +3,7 @@
 - tidy up
 """
 
-from abc import ABC
+from abc import ABC, abstractmethod
 from typing import List
 
 from sentence_transformers import SentenceTransformer
@@ -13,10 +13,12 @@ import numpy as np
 class SentenceEncoder(ABC):
     """Base class for a sentence encoder"""
 
+    @abstractmethod
     def encode(self, text: str) -> np.ndarray:
         """Encode a string, return a numpy array."""
         raise NotImplementedError
 
+    @abstractmethod
     def encode_batch(self, text_batch: List[str], batch_size: int) -> np.ndarray:
         """Encode a batch of strings, return a numpy array."""
         raise NotImplementedError

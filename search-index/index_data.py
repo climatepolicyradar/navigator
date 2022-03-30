@@ -216,7 +216,7 @@ def run_cli(text_ids_path: Path, embeddings_path: Path, embedding_dim: int) -> N
     """Index text and embeddings stores at `text-ids-path` and `embeddings-path` into Opensearch.
 
     Args:
-        text_ids_path (Path): path to CSV file containing text and IDs.
+        text_ids_path (Path): path to JSON file containing text and IDs.
         embeddings_path (Path): path to memmap file containing embeddings.
         embedding_dim (int): embedding dimension.
     """
