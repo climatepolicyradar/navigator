@@ -43,7 +43,10 @@ build_loader:
 build_pipeline:
 	docker build -f pipeline/Dockerfile -t navigator_pipeline .
 
-build: build_backend build_frontend build_loader build_pipeline
+build_search_index:
+	docker-compose build search-index
+
+build: build_backend build_frontend build_loader build_search_index build_pipeline
 
 # ----------------------------------
 # testing
@@ -68,3 +71,7 @@ test: test_backend test_frontend test_loader test_pipeline
 
 run_loader:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader python app/main.py
+
+# Check OpenSearch running on localhost
+check_opensearch_local:
+	curl -XGET http://localhost:9200 -u 'admin:admin' --insecure
