@@ -32,8 +32,7 @@ def get_users(
 def create_user(db: Session, user: app.db.schemas.user.UserCreate):
     hashed_password = get_password_hash(user.password)
     db_user = User(
-        first_name=user.first_name,
-        last_name=user.last_name,
+        names=user.names,
         email=user.email,
         is_active=user.is_active,
         is_superuser=user.is_superuser,

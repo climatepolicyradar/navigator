@@ -1,3 +1,5 @@
+import logging.config
+
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -23,7 +25,7 @@ app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api
 # Add CORS middleware to allow cross origin requests from any port
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:3000"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -66,6 +68,36 @@ app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
 
 # add pagination support to all routes that ask for it
 add_pagination(app)
+
+DEFAULT_LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "formatters": {
+        "standard": {"format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"},
+    },
+    "handlers": {
+        "default": {
+            "level": "INFO",
+            "formatter": "standard",
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",  # Default is stderr
+        },
+    },
+    "loggers": {
+        "": {  # root logger
+            "handlers": ["default"],
+            "level": "INFO",
+        },
+        "__main__": {  # if __name__ == '__main__'
+            "handlers": ["default"],
+            "level": "DEBUG",
+            "propagate": False,
+        },
+        # also "uvicorn", "uvicorn.error", "uvicorn.access" etc
+    },
+}
+
+logging.config.dictConfig(DEFAULT_LOGGING)
 
 if __name__ == "__main__":
     uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)
