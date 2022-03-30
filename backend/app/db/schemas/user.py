@@ -28,8 +28,20 @@ class UserCreate(UserBase):  # noqa: D101
         orm_mode = True
 
 
-class UserCreateWithActivationToken(UserCreate):  # noqa: D101
+class UserCreateWithActivationToken(UserBase):
+    """A payload to create a user, normally submitted by admins."""
+
     with_activation_token: t.Optional[bool]
+
+
+class UserCreateFromActivationToken(BaseModel):
+    """A payload to activate an account and set a password.
+
+    Normally submitted by regular users, having received an invitation token.
+    """
+
+    activation_token: str
+    password: str
 
 
 class UserEdit(UserBase):  # noqa: D101

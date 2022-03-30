@@ -8,7 +8,6 @@ Create Date: 2022-03-29 15:26:59.117936
 from alembic import op
 import sqlalchemy as sa
 
-
 # revision identifiers, used by Alembic.
 revision = "0010"
 down_revision = "0009"
@@ -36,6 +35,7 @@ def upgrade():
             ["user_id"], ["user.id"], name=op.f("fk_activation_token__user_id__user")
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_activation_token")),
+        sa.UniqueConstraint("token", name=op.f("uq_activation_token__token")),
         sa.UniqueConstraint("user_id", name=op.f("uq_activation_token__user_id")),
     )
     # ### end Alembic commands ###

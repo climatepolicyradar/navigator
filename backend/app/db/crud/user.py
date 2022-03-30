@@ -4,7 +4,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from app.db.models import User
+from app.db.models import User, ActivationToken
 import app.db.schemas.user
 from app.core.security import get_password_hash
 
@@ -72,3 +72,27 @@ def edit_user(
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def activate_user(
+    db: Session,
+    user: User,
+    activation_token: ActivationToken,
+    password: str,
+) -> User:
+    """Activate a user.
+
+    Sets a password, and toggles activation flags on user and activation_token.
+    """
+
+    user.hashed_password = get_password_hash(password)
+    user.is_active = True
+    db.add(user)
+
+    activation_token.is_activated = True
+    db.add(activation_token)
+
+    db.commit()
+    db.refresh(user)
+
+    return user

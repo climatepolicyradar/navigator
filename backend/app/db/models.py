@@ -326,7 +326,7 @@ class ActivationToken(Auditable, Base):  # noqa: D101
     __tablename__ = "activation_token"
 
     id = sa.Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
-    token = sa.Column(sa.Text, nullable=False)
+    token = sa.Column(sa.Text, unique=True, nullable=False)
     expiry_ts = sa.Column(sa.DateTime, nullable=False)
     is_activated = sa.Column(sa.Boolean, nullable=False, default=False)
     user_id = sa.Column(sa.Integer, sa.ForeignKey(User.id), nullable=False, unique=True)
