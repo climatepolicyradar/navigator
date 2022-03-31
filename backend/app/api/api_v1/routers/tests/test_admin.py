@@ -153,6 +153,36 @@ def test_create_user(
     db_user = test_db.query(User).filter(User.id == 2).first()
     mock_send_email.assert_called_once_with(EmailType.account_new, db_user, prt)
 
+
+@patch("app.db.crud.user.get_password_reset_token_expiry_ts")
+@patch("app.api.api_v1.routers.admin.send_email")
+def test_reset_password(
+    mock_send_email,
+    mock_get_password_reset_token_expiry_ts,
+    client,
+    superuser_token_headers,
+    test_db,
+    test_user,
+):
+    mock_get_password_reset_token_expiry_ts.return_value = datetime.datetime(2099, 1, 1)
+
+    response = client.delete(
+        f"/api/v1/admin/passwords/{test_user.id}",
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == 200
+    assert response.json()
+
+    prt: PasswordResetToken = test_db.query(PasswordResetToken).first()
+    assert prt.user_id == test_user.id
+    assert prt.expiry_ts == datetime.datetime(2099, 1, 1)
+    assert not prt.is_redeemed
+    mock_get_password_reset_token_expiry_ts.assert_called_once()
+
+    mock_send_email.assert_called_once_with(
+        EmailType.password_reset_requested, test_user, prt
+    )
+
     """
         if activation_token is None:
         raise HTTPException(status_code=404, detail="Token not found")
