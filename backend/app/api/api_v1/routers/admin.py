@@ -23,6 +23,7 @@ admin_users_router = r = APIRouter()
     response_model=t.List[User],
     response_model_exclude_none=True,
 )
+# TODO paginate
 async def users_list(
     response: Response,
     db=Depends(get_db),

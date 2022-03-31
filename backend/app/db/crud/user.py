@@ -6,7 +6,7 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from app.core.security import get_password_hash
+from app.core.security import get_password_hash, get_password_reset_token_expiry_ts
 from app.core.util import random_string
 from app.db.models import User, PasswordResetToken
 from app.db.schemas.user import UserBase, User as UserSchema
@@ -113,7 +113,7 @@ def create_password_reset_token(
     user_id: int,
 ) -> PasswordResetToken:
     # TODO make configurable
-    future_date = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
+    future_date = get_password_reset_token_expiry_ts()
 
     row = PasswordResetToken(
         user_id=user_id, token=random_string(), expiry_ts=future_date

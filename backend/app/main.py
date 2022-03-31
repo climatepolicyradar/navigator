@@ -62,7 +62,7 @@ app.include_router(
 app.include_router(
     admin_users_router,
     prefix="/api/v1/admin",
-    tags=["Users", "Admin"],
+    tags=["Admin"],
     dependencies=[Depends(get_current_active_superuser)],
 )
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])

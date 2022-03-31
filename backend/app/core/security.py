@@ -32,3 +32,7 @@ def create_access_token(*, data: dict, expires_delta: Optional[timedelta] = None
     to_encode.update({"exp": expire})
     encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
     return encoded_jwt
+
+
+def get_password_reset_token_expiry_ts() -> datetime:
+    return datetime.utcnow() + timedelta(weeks=1)

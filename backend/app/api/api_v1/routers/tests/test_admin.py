@@ -1,4 +1,8 @@
-from app.db.models import User
+import datetime
+
+from app.core.email import EmailType
+from app.db.models import User, PasswordResetToken
+from unittest.mock import patch
 
 
 def test_get_users(client, test_superuser, superuser_token_headers):
@@ -43,7 +47,6 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
         "is_active": False,
         "is_superuser": True,
         "names": "Joe Smith",
-        "password": "new_password",
     }
 
     response = client.put(
@@ -53,7 +56,6 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     )
     assert response.status_code == 200
     new_user["id"] = test_superuser.id
-    new_user.pop("password")
     assert response.json() == new_user
 
 
@@ -108,3 +110,54 @@ def test_unauthorized_routes(client, user_token_headers):
     assert response.status_code == 403
     response = client.get("/api/v1/admin/users/123", headers=user_token_headers)
     assert response.status_code == 403
+
+
+@patch("app.db.crud.user.get_password_reset_token_expiry_ts")
+@patch("app.api.api_v1.routers.admin.send_email")
+def test_create_user(
+    mock_send_email,
+    mock_get_password_reset_token_expiry_ts,
+    client,
+    superuser_token_headers,
+    test_db,
+):
+    mock_get_password_reset_token_expiry_ts.return_value = datetime.datetime(2099, 1, 1)
+    new_user = {
+        "email": "newemail@email.com",
+        "is_active": False,
+        "is_superuser": True,
+        "names": "Joe Smith",
+        "password": "new_password",
+    }
+
+    response = client.post(
+        "/api/v1/admin/users",
+        json=new_user,
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "id": 2,
+        "is_active": False,
+        "is_superuser": True,
+        "names": new_user["names"],
+        "email": new_user["email"],
+    }
+
+    prt: PasswordResetToken = test_db.query(PasswordResetToken).first()
+    assert prt.user_id == 2
+    assert prt.expiry_ts == datetime.datetime(2099, 1, 1)
+    assert not prt.is_redeemed
+    mock_get_password_reset_token_expiry_ts.assert_called_once()
+
+    db_user = test_db.query(User).filter(User.id == 2).first()
+    mock_send_email.assert_called_once_with(EmailType.account_new, db_user, prt)
+
+    """
+        if activation_token is None:
+        raise HTTPException(status_code=404, detail="Token not found")
+    if activation_token.expiry_ts > datetime.datetime.utcnow():
+        raise HTTPException(status_code=404, detail="Token expired")
+    if activation_token.is_redeemed:
+        raise HTTPException(status_code=404, detail="Token already redeemed")
+    """
