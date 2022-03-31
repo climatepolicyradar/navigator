@@ -39,7 +39,7 @@ def create_user(db: Session, user: UserBase):
     return db_user
 
 
-def deactivate_user(db: Session, user_id: int):
+def deactivate_user(db: Session, user_id: int) -> User:
     user = get_user(db, user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")

@@ -54,7 +54,8 @@ async def reset_password(
     reset_token = get_password_reset_token(db, payload.token)
     user = get_user(db, reset_token.user_id)
     send_email(EmailType.password_changed, user)
-    return activate_user(db, user, reset_token, payload.password)
+    activated_user = activate_user(db, user, reset_token, payload.password)
+    return activated_user
 
 
 @r.delete("/passwords/me", response_model=bool, response_model_exclude_none=True)
