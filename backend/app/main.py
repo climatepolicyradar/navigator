@@ -13,7 +13,8 @@ from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.documents import documents_router
 from app.api.api_v1.routers.lookups import lookups_router
-from app.api.api_v1.routers.users import users_router, admin_users_router
+from app.api.api_v1.routers.users import users_router
+from app.api.api_v1.routers.admin import admin_users_router
 from app.core import config
 from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
