@@ -21,34 +21,11 @@ class UserOut(UserBase):  # noqa: D101
     pass
 
 
-class UserCreate(UserBase):  # noqa: D101
+class ResetPassword(BaseModel):
+    """Resets a password with a token (latter usu. sent to requester's inbox)."""
+
+    token: str
     password: str
-
-    class Config:  # noqa: D106
-        orm_mode = True
-
-
-class UserCreateWithActivationToken(UserBase):
-    """A payload to create a user, normally submitted by admins."""
-
-    with_activation_token: t.Optional[bool]
-
-
-class UserCreateFromActivationToken(BaseModel):
-    """A payload to activate an account and set a password.
-
-    Normally submitted by regular users, having received an invitation token.
-    """
-
-    activation_token: str
-    password: str
-
-
-class UserEdit(UserBase):  # noqa: D101
-    password: t.Optional[str] = None
-
-    class Config:  # noqa: D106
-        orm_mode = True
 
 
 class User(UserBase):  # noqa: D101

@@ -1,17 +1,21 @@
-import logging
 import typing as t
 
 from fastapi import APIRouter, Depends, Request, Response
 
 from app.core.auth import get_current_active_superuser
-from app.db.crud.activation_token import create_activation_token
-from app.db.crud.user import create_user, delete_user, edit_user, get_user, get_users
-from app.db.schemas.user import User, UserEdit, UserBase
+from app.core.email import send_email, EmailType
+from app.db.crud.user import (
+    create_user,
+    deactivate_user,
+    edit_user,
+    get_user,
+    get_users,
+    create_password_reset_token,
+)
+from app.db.schemas.user import User, UserBase
 from app.db.session import get_db
 
 admin_users_router = r = APIRouter()
-
-logger = logging.getLogger(__file__)
 
 
 @r.get(
@@ -56,12 +60,9 @@ async def user_create(
 ):
     """Creates a new user"""
     db_user = create_user(db, user)
-    activation_token = create_activation_token(db, db_user.id)
-    logger.info("Account created with activation token")
-    db_user.is_active = False
+    activation_token = create_password_reset_token(db, db_user.id)
 
-    # TODO send email (then remove logging the token, as it's effectively a one-time password)
-    logger.debug(f"TODO send token={activation_token.token} in email")
+    send_email(EmailType.account_new, db_user, activation_token)
 
     return db_user
 
@@ -70,12 +71,16 @@ async def user_create(
 async def user_edit(
     request: Request,
     user_id: int,
-    user: UserEdit,
+    user: UserBase,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """Updates existing user"""
-    return edit_user(db, user_id, user)
+    updated_user = edit_user(db, user_id, user)
+
+    send_email(EmailType.account_changed, updated_user)
+
+    return updated_user
 
 
 @r.delete("/users/{user_id}", response_model=User, response_model_exclude_none=True)
@@ -86,4 +91,19 @@ async def user_delete(
     current_user=Depends(get_current_active_superuser),
 ):
     """Deletes existing user"""
-    return delete_user(db, user_id)
+    return deactivate_user(db, user_id)
+
+
+@r.delete("/passwords/{user_id}", response_model=bool, response_model_exclude_none=True)
+async def delete_password(
+    request: Request,
+    user_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Deletes a password for a user, and kicks off password-reset flow."""
+
+    deactivated_user = deactivate_user(db, user_id)
+    activation_token = create_password_reset_token(db, user_id)
+    send_email(EmailType.password_reset_requested, deactivated_user, activation_token)
+    return True

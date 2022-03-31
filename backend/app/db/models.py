@@ -322,11 +322,11 @@ class PassageMetadata(Base):  # noqa: D101
     confidence = sa.Column(sa.REAL(), autoincrement=False, nullable=True)
 
 
-class ActivationToken(Auditable, Base):  # noqa: D101
-    __tablename__ = "activation_token"
+class PasswordResetToken(Auditable, Base):  # noqa: D101
+    __tablename__ = "password_reset_token"
 
     id = sa.Column(BigInteger, primary_key=True, autoincrement=True, nullable=False)
     token = sa.Column(sa.Text, unique=True, nullable=False)
     expiry_ts = sa.Column(sa.DateTime, nullable=False)
-    is_activated = sa.Column(sa.Boolean, nullable=False, default=False)
+    is_redeemed = sa.Column(sa.Boolean, nullable=False, default=False)
     user_id = sa.Column(sa.Integer, sa.ForeignKey(User.id), nullable=False, unique=True)
