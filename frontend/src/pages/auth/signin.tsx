@@ -36,7 +36,7 @@ const Login = () => {
     login(data);
   };
   useEffect(() => {
-    if (user?.first_name) router.push('/account');
+    if (user?.email) router.push('/account');
   }, [user]);
   return (
     <>

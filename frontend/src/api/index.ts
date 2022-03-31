@@ -63,23 +63,11 @@ export async function handleApiError(error) {
 }
 export async function handleApiResponse(response) {
   const data = await response.data;
-  console.log(response.response.status);
   if (response.statusText === 'OK') {
-    console.log('ok??');
     return data;
   } else {
-    // return Promise.reject(data);
     return { error: true };
   }
-  // console.log('handle api response?');
-
-  // try {
-  //   const data = await response.data;
-  //   return data;
-  // } catch (error) {
-  //   console.log(error);
-  //   return error;
-  // }
 }
 
 export function getUserProfile() {
@@ -97,13 +85,13 @@ export function getUserProfile() {
 
 // Not using this (yet), will need to rewrite
 
-// export async function registerWithEmailAndPassword(
-//   data
-// ): Promise<AuthResponse> {
-//   return window
-//     .fetch(`${API_URL}/auth/register`, {
-//       method: 'POST',
-//       body: JSON.stringify(data),
-//     })
-//     .then(handleApiResponse);
-// }
+export async function registerWithEmailAndPassword(
+  data
+): Promise<AuthResponse> {
+  return window
+    .fetch(`${API_URL}/auth/register`, {
+      method: 'POST',
+      body: JSON.stringify(data),
+    })
+    .then(handleApiResponse);
+}

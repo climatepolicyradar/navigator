@@ -1,4 +1,3 @@
-import { useRef } from 'react';
 import Link from 'next/link';
 
 const AccountMenu = ({ setShowMenu, logout }) => {
