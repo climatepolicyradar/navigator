@@ -24,6 +24,7 @@ SQLAlchemy-Utils = "^0.38.2"
 fastapi-health = "^0.4.0"
 uvicorn = {extras = ["standard"], version = "^0.17.6"}
 slowapi = "^0.1.5"
+boto = "^2.49.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"

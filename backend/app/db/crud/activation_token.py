@@ -30,10 +30,10 @@ def create_activation_token(
     db: Session,
     user_id: int,
 ) -> ActivationToken:
-    row = ActivationToken(
-        user_id=user_id,
-        token=random_string(),
-    )
+    # TODO make configurable
+    future_date = datetime.datetime.utcnow() + datetime.timedelta(weeks=1)
+
+    row = ActivationToken(user_id=user_id, token=random_string(), expiry_ts=future_date)
 
     db.add(row)
     db.commit()

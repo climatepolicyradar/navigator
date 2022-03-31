@@ -6,7 +6,7 @@ from fastapi import APIRouter, Depends, Request, Response
 from app.core.auth import get_current_active_superuser
 from app.db.crud.activation_token import create_activation_token
 from app.db.crud.user import create_user, delete_user, edit_user, get_user, get_users
-from app.db.schemas.user import User, UserCreateWithActivationToken, UserEdit
+from app.db.schemas.user import User, UserEdit, UserBase
 from app.db.session import get_db
 
 admin_users_router = r = APIRouter()
@@ -50,17 +50,19 @@ async def user_details(
 @r.post("/users", response_model=User, response_model_exclude_none=True)
 async def user_create(
     request: Request,
-    user: UserCreateWithActivationToken,
+    user: UserBase,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """Creates a new user"""
     db_user = create_user(db, user)
-    if user.with_activation_token:
-        activation_token = create_activation_token(db, db_user.id)
-        logger.info(f"Account created with activation token={activation_token.token}")
-        db_user.is_active = False
-        # TODO send email
+    activation_token = create_activation_token(db, db_user.id)
+    logger.info("Account created with activation token")
+    db_user.is_active = False
+
+    # TODO send email (then remove logging the token, as it's effectively a one-time password)
+    logger.debug(f"TODO send token={activation_token.token} in email")
+
     return db_user
 
 

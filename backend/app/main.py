@@ -76,6 +76,19 @@ add_pagination(app)
 app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
+
+def is_cloud() -> bool:
+    from boto.utils import get_instance_metadata
+
+    try:
+        m = get_instance_metadata(timeout=1, num_retries=1)
+        if m:
+            return len(m.keys()) > 0
+    except:  # noqa: E722
+        pass
+    return False
+
+
 DEFAULT_LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -84,7 +97,7 @@ DEFAULT_LOGGING = {
     },
     "handlers": {
         "default": {
-            "level": "INFO",
+            "level": "DEBUG",
             "formatter": "standard",
             "class": "logging.StreamHandler",
             "stream": "ext://sys.stdout",  # Default is stderr
@@ -93,7 +106,7 @@ DEFAULT_LOGGING = {
     "loggers": {
         "": {  # root logger
             "handlers": ["default"],
-            "level": "INFO",
+            "level": "INFO" if is_cloud() else "DEBUG",
         },
         "__main__": {  # if __name__ == '__main__'
             "handlers": ["default"],

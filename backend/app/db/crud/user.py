@@ -4,9 +4,13 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from app.db.models import User, ActivationToken
-import app.db.schemas.user
 from app.core.security import get_password_hash
+from app.db.models import User, ActivationToken
+from app.db.schemas.user import (
+    UserEdit,
+    UserCreate,
+    UserBase,
+)
 
 
 def get_user(db: Session, user_id: int):
@@ -20,24 +24,21 @@ def get_user_by_email(db: Session, email: str) -> t.Optional[User]:
     return db.query(User).filter(User.email == email).first()
 
 
-def get_users(
-    db: Session, skip: int = 0, limit: int = 100
-) -> t.List[app.db.schemas.user.User]:
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> t.List[User]:
     return [
-        app.db.schemas.user.User.from_orm(user)
-        for user in db.query(User).offset(skip).limit(limit).all()
+        User.from_orm(user) for user in db.query(User).offset(skip).limit(limit).all()
     ]
 
 
-def create_user(db: Session, user: app.db.schemas.user.UserCreate):
-    hashed_password = get_password_hash(user.password)
-    db_user = User(
-        names=user.names,
-        email=user.email,
-        is_active=user.is_active,
-        is_superuser=user.is_superuser,
-        hashed_password=hashed_password,
-    )
+def create_user(db: Session, user: t.Union[UserCreate, UserBase]):
+    """Create a user.
+
+    Allows creating a user without a password (e.g. by admins)
+    """
+    hashed_password = None
+    if isinstance(user, UserCreate):
+        hashed_password = get_password_hash(user.password)
+    db_user = User(**user.dict(), hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
@@ -53,9 +54,7 @@ def delete_user(db: Session, user_id: int):
     return user
 
 
-def edit_user(
-    db: Session, user_id: int, user: app.db.schemas.user.UserEdit
-) -> app.db.schemas.user.User:
+def edit_user(db: Session, user_id: int, user: UserEdit) -> User:
     db_user = get_user(db, user_id)
     if not db_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
