@@ -1,9 +1,3 @@
-# =====================================
-# Run `make git_hooks` first to see
-# if anyone's already fixed the problem
-# you're currently having.
-# =====================================
-
 repos:
   - repo: https://github.com/ambv/black
     rev: 21.8b0
