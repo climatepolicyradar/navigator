@@ -15,6 +15,7 @@ from app.api.api_v1.routers.documents import documents_router
 from app.api.api_v1.routers.lookups import lookups_router
 from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.admin import admin_users_router
+from app.api.api_v1.routers.unauthenticated import unauthenticated_router
 from app.core import config
 from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
@@ -53,6 +54,11 @@ async def root():
 
 
 # Routers
+app.include_router(
+    unauthenticated_router,
+    prefix="/api/v1",
+    tags=["Unauthenticated"],  # or Public?
+)
 app.include_router(
     users_router,
     prefix="/api/v1",

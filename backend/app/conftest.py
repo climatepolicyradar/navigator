@@ -1,3 +1,4 @@
+import datetime
 import os
 import typing as t
 
@@ -9,7 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
-from app.db.models import User
+from app.db.models import User, PasswordResetToken
 from app.db.session import Base, get_db
 from app.main import app
 from navigator.core.aws import S3Client, get_s3_client
@@ -148,6 +149,20 @@ def test_user(test_db) -> User:
 
 
 @pytest.fixture
+def test_inactive_user(test_db) -> User:
+    """Make a test inactive/password-less user in the database"""
+
+    user = User(
+        email="inactive@email.com",
+        hashed_password=None,
+        is_active=False,
+    )
+    test_db.add(user)
+    test_db.commit()
+    return user
+
+
+@pytest.fixture
 def test_superuser(test_db) -> User:
     """Superuser for testing"""
 
@@ -197,3 +212,18 @@ def superuser_token_headers(
     a_token = tokens["access_token"]
     headers = {"Authorization": f"Bearer {a_token}"}
     return headers
+
+
+@pytest.fixture
+def test_password_reset_token(test_db, test_user) -> PasswordResetToken:
+    """Password Reset Token for testing"""
+
+    prt = PasswordResetToken(
+        token="test-token",
+        expiry_ts=datetime.datetime(2099, 1, 1),
+        is_redeemed=False,
+        user_id=test_user.id,
+    )
+    test_db.add(prt)
+    test_db.commit()
+    return prt

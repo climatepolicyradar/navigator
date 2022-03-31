@@ -38,7 +38,7 @@ def test_edit_user(mock_send_email, client, test_user, user_token_headers, test_
 
 @patch("app.db.crud.user.get_password_reset_token_expiry_ts")
 @patch("app.api.api_v1.routers.users.send_email")
-def test_password_reset(
+def test_password_reset_request(
     mock_send_email,
     mock_get_password_reset_token_expiry_ts,
     client,
@@ -63,3 +63,34 @@ def test_password_reset(
     mock_send_email.assert_called_once_with(
         EmailType.password_reset_requested, test_user, prt
     )
+
+
+@patch("app.api.api_v1.routers.unauthenticated.send_email")
+def test_reset_password(
+    mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
+):
+    # ensure password reset token is pointing to the right user
+    test_password_reset_token.user_id = test_inactive_user.id
+    test_db.add(test_password_reset_token)
+    test_db.commit()
+
+    response = client.post(
+        "/api/v1/activations",
+        json={
+            "token": test_password_reset_token.token,
+            "password": "some-password",
+        },
+    )
+    assert response.status_code == 200
+    assert response.json() == {
+        "email": test_inactive_user.email,
+        "id": test_inactive_user.id,
+        "is_active": True,
+        "is_superuser": test_inactive_user.is_superuser,
+    }
+
+    db_user = test_db.query(User).filter(User.id == test_inactive_user.id).first()
+    assert db_user.is_active
+    assert db_user.hashed_password is not None
+
+    mock_send_email.assert_called_once_with(EmailType.password_changed, db_user)
