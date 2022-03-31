@@ -77,16 +77,22 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-def is_cloud() -> bool:
+def get_log_level() -> str:
     from boto.utils import get_instance_metadata
+    import sys
+
+    # if this is being run by a test
+    if "pytest" in sys.modules:
+        return "INFO"
 
     try:
         m = get_instance_metadata(timeout=1, num_retries=1)
-        if m:
-            return len(m.keys()) > 0
+        if m and len(m.keys()) > 0:
+            # not DEBUG level in the cloud
+            return "INFO"
     except:  # noqa: E722
         pass
-    return False
+    return "DEBUG"
 
 
 DEFAULT_LOGGING = {
@@ -106,7 +112,7 @@ DEFAULT_LOGGING = {
     "loggers": {
         "": {  # root logger
             "handlers": ["default"],
-            "level": "INFO" if is_cloud() else "DEBUG",
+            "level": get_log_level(),
         },
         "__main__": {  # if __name__ == '__main__'
             "handlers": ["default"],
