@@ -57,13 +57,20 @@ class OpenSearchIndex:
                     "knn.algo_param.ef_search": 100,  # TODO: tune me. see https://opensearch.org/docs/latest/search-plugins/knn/knn-index#index-settings
                 },
                 "analysis": {
-                    "normalizer": {
-                        "lowercase_asciifold": {
-                            "type": "custom",
-                            "char_filter": [],
-                            "filter": ["lowercase", "asciifolding"],
+                    "filter": {
+                        "ascii_folding_preserve_original": {
+                            "type": "asciifolding",
+                            "preserve_original": True,
                         }
-                    }
+                    },
+                    # This analyser folds non-ASCII characters into ASCII equivalents, but preserves the original.
+                    # E.g. a search for "é" will return results for "e" and "é".
+                    "analyzer": {
+                        "folding": {
+                            "tokenizer": "standard",
+                            "filter": ["lowercase", "ascii_folding_preserve_original"],
+                        }
+                    },
                 },
             },
             "mappings": {
@@ -72,20 +79,21 @@ class OpenSearchIndex:
                     "document_name": {"type": "text"},
                     "name": {
                         "type": "text",
-                        "fields": {
-                            "normalized": {
-                                "type": "keyword",
-                                "normalizer": "lowercase_asciifold",
-                            }
-                        },
+                        "analyzer": "folding",
                     },
-                    "description": {"type": "text"},
+                    "description": {
+                        "type": "text",
+                        "analyzer": "folding",
+                    },
                     "action_date": {"type": "date", "format": "dd/MM/yyyy"},
                     "country_code": {"type": "keyword"},
                     "action_source_name": {"type": "keyword"},
                     "action_type_name": {"type": "keyword"},
                     "text_block_id": {"type": "keyword"},
-                    "text": {"type": "text"},
+                    "text": {
+                        "type": "text",
+                        "analyzer": "folding",
+                    },
                     "text_embedding": {
                         "type": "knn_vector",
                         "dimension": self.embedding_dim,
