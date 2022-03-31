@@ -69,11 +69,6 @@ def test_password_reset_request(
 def test_reset_password(
     mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
 ):
-    # ensure password reset token is pointing to the right user
-    test_password_reset_token.user_id = test_inactive_user.id
-    test_db.add(test_password_reset_token)
-    test_db.commit()
-
     response = client.post(
         "/api/v1/activations",
         json={

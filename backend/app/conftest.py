@@ -215,14 +215,14 @@ def superuser_token_headers(
 
 
 @pytest.fixture
-def test_password_reset_token(test_db, test_user) -> PasswordResetToken:
-    """Password Reset Token for testing"""
+def test_password_reset_token(test_db, test_inactive_user) -> PasswordResetToken:
+    """Password Reset Token associated with test_inactive_user, for testing"""
 
     prt = PasswordResetToken(
         token="test-token",
         expiry_ts=datetime.datetime(2099, 1, 1),
         is_redeemed=False,
-        user_id=test_user.id,
+        user_id=test_inactive_user.id,
     )
     test_db.add(prt)
     test_db.commit()
