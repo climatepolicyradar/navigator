@@ -182,12 +182,3 @@ def test_reset_password(
     mock_send_email.assert_called_once_with(
         EmailType.password_reset_requested, test_user, prt
     )
-
-    """
-        if activation_token is None:
-        raise HTTPException(status_code=404, detail="Token not found")
-    if activation_token.expiry_ts > datetime.datetime.utcnow():
-        raise HTTPException(status_code=404, detail="Token expired")
-    if activation_token.is_redeemed:
-        raise HTTPException(status_code=404, detail="Token already redeemed")
-    """

@@ -63,29 +63,3 @@ def test_password_reset_request(
     mock_send_email.assert_called_once_with(
         EmailType.password_reset_requested, test_user, prt
     )
-
-
-@patch("app.api.api_v1.routers.unauthenticated.send_email")
-def test_reset_password(
-    mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
-):
-    response = client.post(
-        "/api/v1/activations",
-        json={
-            "token": test_password_reset_token.token,
-            "password": "some-password",
-        },
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "email": test_inactive_user.email,
-        "id": test_inactive_user.id,
-        "is_active": True,
-        "is_superuser": test_inactive_user.is_superuser,
-    }
-
-    db_user = test_db.query(User).filter(User.id == test_inactive_user.id).first()
-    assert db_user.is_active
-    assert db_user.hashed_password is not None
-
-    mock_send_email.assert_called_once_with(EmailType.password_changed, db_user)
