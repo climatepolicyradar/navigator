@@ -14,12 +14,20 @@ def test_get_users(client, test_superuser, superuser_token_headers):
     ]
 
 
-def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
+def test_deactivate_user(client, test_superuser, test_db, superuser_token_headers):
     response = client.delete(
         f"/api/v1/admin/users/{test_superuser.id}", headers=superuser_token_headers
     )
     assert response.status_code == 200
-    assert test_db.query(User).all() == []
+    assert response.json() == {
+        "id": test_superuser.id,
+        "email": test_superuser.email,
+        "is_active": False,
+        "is_superuser": test_superuser.is_superuser,
+    }
+
+    user_in_db = test_db.query(User).first()
+    assert not user_in_db.is_active
 
 
 def test_delete_user_not_found(client, superuser_token_headers):
@@ -34,8 +42,7 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
         "email": "newemail@email.com",
         "is_active": False,
         "is_superuser": True,
-        "first_name": "Joe",
-        "last_name": "Smith",
+        "names": "Joe Smith",
         "password": "new_password",
     }
 

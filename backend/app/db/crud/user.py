@@ -9,7 +9,7 @@ from starlette import status
 from app.core.security import get_password_hash
 from app.core.util import random_string
 from app.db.models import User, PasswordResetToken
-from app.db.schemas.user import UserBase
+from app.db.schemas.user import UserBase, User as UserSchema
 
 
 def get_user(db: Session, user_id: int) -> User:
@@ -23,9 +23,10 @@ def get_user_by_email(db: Session, email: str) -> t.Optional[User]:
     return db.query(User).filter(User.email == email).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100) -> t.List[User]:
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> t.List[UserSchema]:
     return [
-        User.from_orm(user) for user in db.query(User).offset(skip).limit(limit).all()
+        UserSchema.from_orm(user)
+        for user in db.query(User).offset(skip).limit(limit).all()
     ]
 
 
