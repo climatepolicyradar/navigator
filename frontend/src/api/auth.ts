@@ -2,7 +2,7 @@ import { initReactQueryAuth } from 'react-query-auth';
 import {
   signIn,
   getUserProfile,
-  // registerWithEmailAndPassword,
+  registerWithEmailAndPassword,
   // loginWithEmailAndPassword,
   User,
 } from '.';
@@ -10,7 +10,7 @@ import { storage } from '../utils/storage';
 import Router from 'next/router';
 import LoaderOverlay from '../components/LoaderOverlay';
 
-const protectedUrls = ['/add-action', '/account', '/actions', '/'];
+const protectedUrls = ['/add-action', '/account', '/actions', '/search', '/'];
 
 export async function handleUserResponse(data) {
   if (data?.error) {
@@ -25,7 +25,6 @@ export async function handleUserResponse(data) {
 
 async function loadUser() {
   let user = null;
-
   if (storage.getToken()) {
     try {
       const data = await getUserProfile();
@@ -50,16 +49,17 @@ async function loginFn(data) {
 }
 
 async function registerFn(data) {
-  // const response = await registerWithEmailAndPassword(data);
-  // const user = await handleUserResponse(response);
-  // return user;
+  const response = await registerWithEmailAndPassword(data);
+  const user = await handleUserResponse(response);
+  return user;
 }
 
 async function logoutFn() {
   await storage.clearToken();
+  Router.push('/auth/signin');
 }
 
-const loaderComponent = LoaderOverlay;
+const loaderComponent = () => LoaderOverlay;
 
 const authConfig = {
   loadUser,
