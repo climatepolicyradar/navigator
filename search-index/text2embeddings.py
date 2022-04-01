@@ -64,28 +64,34 @@ def get_text_from_json_files(filepaths: List[str]) -> List[Tuple[str, str, str]]
     return text_by_document
 
 
-def encode_text(
-    text_list: List[str], encoder: SentenceEncoder, batch_size: int
-) -> np.ndarray:
-    """Encode list of text strings using a SentenceEncoder, in batches of `batch_size`
+def encode_text_to_memmap(
+    text_list: List[str],
+    encoder: SentenceEncoder,
+    batch_size: int,
+    memmap_path: Path,
+):
+    """Encode list of text strings to a memmap file using a SentenceEncoder, in batches of `batch_size`.
 
     Args:
         text_list (List[str]): list of strings to encode.
         encoder (SentenceEncoder): sentence encoder.
         batch_size (int): size of batches to encode text in.
-
-    Returns:
-        np.ndarray: each row of the array corresponds to the embedding of a string in `text_list`
+        memmap_path (Path): path to memmap file to write text embeddings to.
     """
     text_list_batched = paginate_list(text_list, batch_size)
 
-    emb_list = []
+    fp = np.memmap(
+        memmap_path,
+        dtype="float32",
+        mode="w+",
+        shape=(len(text_list), encoder.dimension),
+    )
 
-    for batch in tqdm(text_list_batched, unit="batch"):
+    for idx, batch in tqdm(enumerate(text_list_batched), unit="batch"):
         embeddings = encoder.encode_batch(batch, batch_size)
-        emb_list.append(embeddings)
+        fp[idx * batch_size : (idx + 1) * batch_size, :] = embeddings
 
-    return np.vstack(emb_list)
+    fp.flush()
 
 
 @click.command()
@@ -142,15 +148,12 @@ def run_cli(
 
     logger.info(f"Encoding text in batches of {batch_size}")
     text_by_document = [i[0] for i in text_and_ids]
-    embs = encode_text(text_by_document, encoder, batch_size=batch_size)
-
     # Export embeddings to numpy memmap file
     embs_output_path = (
-        output_dir / f"embeddings_dim_{embs.shape[1]}_{model_name}_{curr_time}.memmap"
+        output_dir
+        / f"embeddings_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
-    fp = np.memmap(embs_output_path, dtype="float32", mode="w+", shape=embs.shape)
-    fp[:] = embs[:]
-    fp.flush()
+    encode_text_to_memmap(text_by_document, encoder, batch_size, embs_output_path)
 
     # Save text, text block IDs and document IDs to CSV
     # TODO: is there a better way to save text than in a CSV?

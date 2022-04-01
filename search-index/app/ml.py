@@ -23,6 +23,12 @@ class SentenceEncoder(ABC):
         """Encode a batch of strings, return a numpy array."""
         raise NotImplementedError
 
+    @property
+    @abstractmethod
+    def dimension(self) -> int:
+        """Return the dimension of the embeddings produced by the encoder."""
+        raise NotImplementedError
+
 
 class SBERTEncoder(SentenceEncoder):
     """Encoder which uses the sentence-transformers library.
@@ -57,3 +63,8 @@ class SBERTEncoder(SentenceEncoder):
             np.ndarray
         """
         return self.encoder.encode(text_batch, batch_size=batch_size)
+
+    @property
+    def dimension(self) -> int:
+        """Return the dimension of the embedding."""
+        return self.encoder.get_sentence_embedding_dimension()
