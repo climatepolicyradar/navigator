@@ -10,10 +10,14 @@ from app.db.crud.user import (
     edit_user,
     get_user,
     get_users,
+)
+from app.db.crud.password_reset import (
     create_password_reset_token,
+    invalidate_existing_password_reset_tokens,
 )
 from app.db.schemas.user import User, UserBase
 from app.db.session import get_db
+from app.core.ratelimit import limiter
 
 admin_users_router = r = APIRouter()
 
@@ -95,16 +99,28 @@ async def user_delete(
     return deactivate_user(db, user_id)
 
 
-@r.delete("/passwords/{user_id}", response_model=bool, response_model_exclude_none=True)
-async def delete_password(
+@r.post(
+    "/password-reset/{user_id}", response_model=bool, response_model_exclude_none=True
+)
+@limiter.limit("6/minute")
+async def request_password_reset(
     request: Request,
     user_id: int,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
-    """Deletes a password for a user, and kicks off password-reset flow."""
+    """Deletes a password for a user, and kicks off password-reset flow.
+
+    As this flow is initiated by admins, it always
+    - cancels existing tokens
+    - creates a new token
+    - sends an email
+
+    Also see the equivalent unauthenticated endpoint.
+    """
 
     deactivated_user = deactivate_user(db, user_id)
+    invalidate_existing_password_reset_tokens(db, user_id)
     activation_token = create_password_reset_token(db, user_id)
     send_email(EmailType.password_reset_requested, deactivated_user, activation_token)
     return True

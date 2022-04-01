@@ -1,4 +1,4 @@
-"""add table activation_token
+"""add table password_reset_token
 
 Revision ID: 0010
 Revises: 0009
@@ -30,6 +30,7 @@ def upgrade():
         sa.Column("token", sa.Text(), nullable=False),
         sa.Column("expiry_ts", sa.DateTime(), nullable=False),
         sa.Column("is_redeemed", sa.Boolean(), nullable=False),
+        sa.Column("is_cancelled", sa.Boolean(), nullable=False),
         sa.Column("user_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["user_id"],
@@ -38,7 +39,6 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_password_reset_token")),
         sa.UniqueConstraint("token", name=op.f("uq_password_reset_token__token")),
-        sa.UniqueConstraint("user_id", name=op.f("uq_password_reset_token__user_id")),
     )
     # ### end Alembic commands ###
 

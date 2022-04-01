@@ -329,4 +329,5 @@ class PasswordResetToken(Auditable, Base):  # noqa: D101
     token = sa.Column(sa.Text, unique=True, nullable=False)
     expiry_ts = sa.Column(sa.DateTime, nullable=False)
     is_redeemed = sa.Column(sa.Boolean, nullable=False, default=False)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey(User.id), nullable=False, unique=True)
+    is_cancelled = sa.Column(sa.Boolean, nullable=False, default=False)
+    user_id = sa.Column(sa.Integer, sa.ForeignKey(User.id), nullable=False)

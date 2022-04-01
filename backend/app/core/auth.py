@@ -55,7 +55,10 @@ async def get_current_active_superuser(
 
 
 def authenticate_user(db, email: str, password: str):
-    user = get_user_by_email(db, email)
+    try:
+        user = get_user_by_email(db, email)
+    except HTTPException:
+        return False
     if not user:
         return False
     if not security.verify_password(password, user.hashed_password):

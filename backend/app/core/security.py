@@ -35,4 +35,5 @@ def create_access_token(*, data: dict, expires_delta: Optional[timedelta] = None
 
 
 def get_password_reset_token_expiry_ts() -> datetime:
-    return datetime.utcnow() + timedelta(weeks=1)
+    minutes = float(os.getenv("PASSWORD_RESET_TOKEN_EXPIRY_MINUTES", "30"))
+    return datetime.utcnow() + timedelta(minutes=minutes)
