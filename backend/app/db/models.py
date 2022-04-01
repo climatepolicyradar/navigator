@@ -21,7 +21,7 @@ class User(Base):  # noqa: D101
     email = sa.Column(sa.String, unique=True, index=True, nullable=False)
     names = sa.Column(sa.String)
     hashed_password = sa.Column(sa.String)
-    is_active = sa.Column(sa.Boolean, default=True, nullable=False)
+    is_active = sa.Column(sa.Boolean, default=False, nullable=False)
     is_superuser = sa.Column(sa.Boolean, default=False, nullable=False)
     job_role = sa.Column(sa.String, nullable=True)
     location = sa.Column(sa.String, nullable=True)
