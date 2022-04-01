@@ -21,8 +21,8 @@ def test_edit_user(mock_send_email, client, test_user, user_token_headers, test_
         json={
             "email": test_user.email,
             "names": "New name",
-            "is_active": test_user.is_active,  # TODO prevent user from setting these flags
-            "is_superuser": test_user.is_superuser,  # TODO prevent user from setting these flags
+            "is_active": not test_user.is_active,
+            "is_superuser": not test_user.is_superuser,
         },
         headers=user_token_headers,
     )
@@ -32,4 +32,6 @@ def test_edit_user(mock_send_email, client, test_user, user_token_headers, test_
 
     db_user = test_db.query(User).filter(User.id == test_user.id).first()
     assert db_user.names == "New name"
+    assert db_user.is_active == test_user.is_active
+    assert db_user.is_superuser == test_user.is_superuser
     mock_send_email.assert_called_once_with(EmailType.account_changed, db_user)

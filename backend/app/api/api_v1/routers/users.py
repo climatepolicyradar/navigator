@@ -31,6 +31,10 @@ async def user_edit(
 ):
     """Updates existing user"""
 
+    # prevent users from setting flags
+    del user.is_superuser
+    del user.is_active
+
     updated_user = edit_user(db, current_user.id, user)
     send_email(EmailType.account_changed, updated_user)
     return updated_user
