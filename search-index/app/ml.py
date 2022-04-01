@@ -1,7 +1,4 @@
-"""From prototype
-
-- tidy up
-"""
+"""Text encoders."""
 
 from abc import ABC, abstractmethod
 from typing import List
