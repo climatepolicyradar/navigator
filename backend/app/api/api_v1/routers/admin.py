@@ -15,7 +15,7 @@ from app.db.crud.password_reset import (
     create_password_reset_token,
     invalidate_existing_password_reset_tokens,
 )
-from app.db.schemas.user import User, UserBase
+from app.db.schemas.user import User, UserCreateAdmin
 from app.db.session import get_db
 from app.core.ratelimit import limiter
 
@@ -59,7 +59,7 @@ async def user_details(
 @r.post("/users", response_model=User, response_model_exclude_none=True)
 async def user_create(
     request: Request,
-    user: UserBase,
+    user: UserCreateAdmin,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
@@ -76,7 +76,7 @@ async def user_create(
 async def user_edit(
     request: Request,
     user_id: int,
-    user: UserBase,
+    user: UserCreateAdmin,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
