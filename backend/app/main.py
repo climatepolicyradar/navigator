@@ -50,7 +50,7 @@ async def db_session_middleware(request: Request, call_next):
 
 @app.get("/api/v1", include_in_schema=False)
 async def root():
-    return {"message": "CPR API"}
+    return {"message": "CPR API v1"}
 
 
 # Routers
