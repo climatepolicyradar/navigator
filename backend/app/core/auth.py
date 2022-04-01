@@ -6,9 +6,8 @@ from jwt import PyJWTError
 
 from app.core import security
 from app.db import session
-from app.db.crud.user import create_user, get_user_by_email
-from app.db.models.user import User
-from app.db.schemas.user import UserCreate
+from app.db.crud.user import get_user_by_email
+from app.db.models import User
 
 
 async def get_current_user(
@@ -56,25 +55,12 @@ async def get_current_active_superuser(
 
 
 def authenticate_user(db, email: str, password: str):
-    user = get_user_by_email(db, email)
+    try:
+        user = get_user_by_email(db, email)
+    except HTTPException:
+        return False
     if not user:
         return False
     if not security.verify_password(password, user.hashed_password):
         return False
     return user
-
-
-def sign_up_new_user(db, email: str, password: str):
-    user = get_user_by_email(db, email)
-    if user:
-        return False  # User already exists
-    new_user = create_user(
-        db,
-        UserCreate(
-            email=email,
-            password=password,
-            is_active=True,
-            is_superuser=False,
-        ),
-    )
-    return new_user

@@ -1,85 +1,36 @@
-import typing as t
+import logging
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
-from app.db.crud.user import create_user, delete_user, edit_user, get_user, get_users
-from app.db.schemas.user import User, UserCreate, UserEdit
+from fastapi import APIRouter, Depends, Request
+
+from app.core.auth import get_current_active_user
+from app.core.email import send_email, EmailType
+from app.db.crud.user import (
+    edit_user,
+)
+from app.db.schemas.user import User, UserBase
 from app.db.session import get_db
-from fastapi import APIRouter, Depends, Request, Response
 
 users_router = r = APIRouter()
 
-
-@r.get(
-    "/users",
-    response_model=t.List[User],
-    response_model_exclude_none=True,
-)
-async def users_list(
-    response: Response,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
-):
-    """Gets all users"""
-    users = get_users(db)
-    # This is necessary for react-admin to work
-    response.headers["Content-Range"] = f"0-9/{len(users)}"
-    return users
+logger = logging.getLogger(__file__)
 
 
 @r.get("/users/me", response_model=User, response_model_exclude_none=True)
 async def user_me(current_user=Depends(get_current_active_user)):
     """Gets own user"""
+
     return current_user
 
 
-@r.get(
-    "/users/{user_id}",
-    response_model=User,
-    response_model_exclude_none=True,
-)
-async def user_details(
-    request: Request,
-    user_id: int,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
-):
-    """Gets any user details"""
-    user = get_user(db, user_id)
-    return user
-    # return encoders.jsonable_encoder(
-    #     user, skip_defaults=True, exclude_none=True,
-    # )
-
-
-@r.post("/users", response_model=User, response_model_exclude_none=True)
-async def user_create(
-    request: Request,
-    user: UserCreate,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
-):
-    """Creates a new user"""
-    return create_user(db, user)
-
-
-@r.put("/users/{user_id}", response_model=User, response_model_exclude_none=True)
+@r.put("/users/me", response_model=User, response_model_exclude_none=True)
 async def user_edit(
     request: Request,
-    user_id: int,
-    user: UserEdit,
+    user: UserBase,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_user),
 ):
     """Updates existing user"""
-    return edit_user(db, user_id, user)
 
-
-@r.delete("/users/{user_id}", response_model=User, response_model_exclude_none=True)
-async def user_delete(
-    request: Request,
-    user_id: int,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
-):
-    """Deletes existing user"""
-    return delete_user(db, user_id)
+    updated_user = edit_user(db, current_user.id, user)
+    send_email(EmailType.account_changed, updated_user)
+    return updated_user

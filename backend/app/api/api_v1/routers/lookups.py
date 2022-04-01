@@ -3,8 +3,7 @@ from typing import Dict, List
 from fastapi import APIRouter, Depends, Request
 
 from app.core.auth import get_current_active_user
-from app.db.models import Source
-from app.db.models.lookups import Geography, Language, ActionType
+from app.db.models import Geography, Language, ActionType, Source
 from app.db.session import Base, SessionLocal, get_db
 
 lookups_router = r = APIRouter()

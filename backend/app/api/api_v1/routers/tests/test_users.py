@@ -1,86 +1,7 @@
-from app.db.models.user import User
+from unittest.mock import patch
 
-
-def test_get_users(client, test_superuser, superuser_token_headers):
-    response = client.get("/api/v1/users", headers=superuser_token_headers)
-    assert response.status_code == 200
-    assert response.json() == [
-        {
-            "id": test_superuser.id,
-            "email": test_superuser.email,
-            "is_active": test_superuser.is_active,
-            "is_superuser": test_superuser.is_superuser,
-        }
-    ]
-
-
-def test_delete_user(client, test_superuser, test_db, superuser_token_headers):
-    response = client.delete(
-        f"/api/v1/users/{test_superuser.id}", headers=superuser_token_headers
-    )
-    assert response.status_code == 200
-    assert test_db.query(User).all() == []
-
-
-def test_delete_user_not_found(client, superuser_token_headers):
-    response = client.delete("/api/v1/users/4321", headers=superuser_token_headers)
-    assert response.status_code == 404
-
-
-def test_edit_user(client, test_superuser, superuser_token_headers):
-    new_user = {
-        "email": "newemail@email.com",
-        "is_active": False,
-        "is_superuser": True,
-        "first_name": "Joe",
-        "last_name": "Smith",
-        "password": "new_password",
-    }
-
-    response = client.put(
-        f"/api/v1/users/{test_superuser.id}",
-        json=new_user,
-        headers=superuser_token_headers,
-    )
-    assert response.status_code == 200
-    new_user["id"] = test_superuser.id
-    new_user.pop("password")
-    assert response.json() == new_user
-
-
-def test_edit_user_not_found(client, test_db, superuser_token_headers):
-    new_user = {
-        "email": "newemail@email.com",
-        "is_active": False,
-        "is_superuser": False,
-        "password": "new_password",
-    }
-    response = client.put(
-        "/api/v1/users/1234", json=new_user, headers=superuser_token_headers
-    )
-    assert response.status_code == 404
-
-
-def test_get_user(
-    client,
-    test_user,
-    superuser_token_headers,
-):
-    response = client.get(
-        f"/api/v1/users/{test_user.id}", headers=superuser_token_headers
-    )
-    assert response.status_code == 200
-    assert response.json() == {
-        "id": test_user.id,
-        "email": test_user.email,
-        "is_active": bool(test_user.is_active),
-        "is_superuser": test_user.is_superuser,
-    }
-
-
-def test_user_not_found(client, superuser_token_headers):
-    response = client.get("/api/v1/users/123", headers=superuser_token_headers)
-    assert response.status_code == 404
+from app.core.email import EmailType
+from app.db.models import User
 
 
 def test_authenticated_user_me(client, user_token_headers):
@@ -91,18 +12,24 @@ def test_authenticated_user_me(client, user_token_headers):
 def test_unauthenticated_routes(client):
     response = client.get("/api/v1/users/me")
     assert response.status_code == 401
-    response = client.get("/api/v1/users")
-    assert response.status_code == 401
-    response = client.get("/api/v1/users/123")
-    assert response.status_code == 401
-    response = client.put("/api/v1/users/123")
-    assert response.status_code == 401
-    response = client.delete("/api/v1/users/123")
-    assert response.status_code == 401
 
 
-def test_unauthorized_routes(client, user_token_headers):
-    response = client.get("/api/v1/users", headers=user_token_headers)
-    assert response.status_code == 403
-    response = client.get("/api/v1/users/123", headers=user_token_headers)
-    assert response.status_code == 403
+@patch("app.api.api_v1.routers.users.send_email")
+def test_edit_user(mock_send_email, client, test_user, user_token_headers, test_db):
+    response = client.put(
+        "/api/v1/users/me",
+        json={
+            "email": test_user.email,
+            "names": "New name",
+            "is_active": test_user.is_active,  # TODO prevent user from setting these flags
+            "is_superuser": test_user.is_superuser,  # TODO prevent user from setting these flags
+        },
+        headers=user_token_headers,
+    )
+    assert response.status_code == 200
+    updated_user = response.json()
+    assert updated_user["names"] == "New name"
+
+    db_user = test_db.query(User).filter(User.id == test_user.id).first()
+    assert db_user.names == "New name"
+    mock_send_email.assert_called_once_with(EmailType.account_changed, db_user)

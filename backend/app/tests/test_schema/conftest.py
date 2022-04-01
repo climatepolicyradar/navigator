@@ -16,9 +16,8 @@ def create_test_db():
     test_db_url = os.environ.get("DATABASE_URL") + "_test"
 
     # Create the test database
-    assert not database_exists(
-        test_db_url
-    ), "Test database already exists. Aborting tests."
+    if database_exists(test_db_url):
+        drop_database(test_db_url)
     create_database(test_db_url)
     test_engine = create_engine(test_db_url)
     Base.metadata.create_all(test_engine)

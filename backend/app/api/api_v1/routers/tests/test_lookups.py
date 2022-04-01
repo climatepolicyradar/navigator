@@ -1,5 +1,4 @@
-from app.db import models
-from app.db.models.lookups import Geography, Language, ActionType
+from app.db.models import Geography, Language, ActionType, Source
 
 
 def test_get_lookups(client, user_token_headers, test_db):
@@ -7,7 +6,7 @@ def test_get_lookups(client, user_token_headers, test_db):
         ("geographies", Geography),
         ("languages", Language),
         ("action_types", ActionType),
-        ("sources", models.Source),
+        ("sources", Source),
     ]
 
     for path, table in lookup_api_paths:
