@@ -96,6 +96,7 @@ async def user_delete(
     current_user=Depends(get_current_active_superuser),
 ):
     """Deletes existing user"""
+    # TODO send email?
     return deactivate_user(db, user_id)
 
 
