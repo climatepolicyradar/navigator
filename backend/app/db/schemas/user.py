@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 class UserBase(BaseModel):  # noqa: D101
     email: str
-    is_active: bool = True
+    is_active: bool = False
     is_superuser: bool = False
     names: t.Optional[str] = None
     job_role: t.Optional[str] = None
