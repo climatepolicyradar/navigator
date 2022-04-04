@@ -1,14 +1,12 @@
 import argparse
-import json
 from pathlib import Path
 
+from extract.document import Document
 from processor.postprocessor import (
     AdobeListGroupingPostProcessor,
     AdobeTextStylingPostProcessor,
     HyphenationPostProcessor,
 )
-
-from extract.document import Document
 
 
 def process(in_path, out_path):
