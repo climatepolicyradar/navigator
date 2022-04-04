@@ -169,13 +169,15 @@ class AdobeTextStylingPostProcessor(PostProcessor):
 
             # Append style metadata that will later be added to custom attributes for text block.
             if block_styling:
-                last_style_ix = len(merged_block_text[0].strip()) - 1
-                style_spans.append(
-                    {
+                # The last style index here is the index of the block with sentences joined.
+                last_style_ix = len(''.join((text for text in merged_block_text)).strip()) - 1
+                style_span = {
                         "style": block_styling,
                         "start_idx": start_ix,
                         "end_idx": last_style_ix,
                     }
+                style_spans.append(
+                    style_span
                 )
 
         if style_spans:
