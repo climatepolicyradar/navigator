@@ -498,6 +498,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             "text_block_ids": block_ids,
             "pretty_list_string": self._pprinter(full_list_text),
             "original_list_text": original_list_text,
+            "num_nesting_levels": df["list_num"].nunique()
         }
 
         custom_attributes_concat = {**orig_custom_attributes, **custom_attributes_new}
