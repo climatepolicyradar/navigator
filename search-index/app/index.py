@@ -87,6 +87,7 @@ class OpenSearchIndex:
                     "document_id": {"type": "keyword"},
                     "document_name": {"type": "text"},
                     "action_name": {"type": "keyword", "normalizer": "folding"},
+                    "action_description": {"type": "keyword", "normalizer": "folding"},
                     "action_name_and_id": {"type": "keyword", "normalizer": "folding"},
                     "action_date": {"type": "date", "format": "dd/MM/yyyy"},
                     "action_country_code": {"type": "keyword"},

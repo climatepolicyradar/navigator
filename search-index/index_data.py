@@ -142,6 +142,7 @@ def get_document_generator(
         "action_id",
         "action_date",
         "action_name",
+        "action_description",
         "action_name_and_id",
         "action_country_code",
         "action_geography_english_shortname",
