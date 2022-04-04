@@ -310,7 +310,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         df["type"] = df["path"].apply(lambda x: x[-1])
         # Sometimes label is called ExtraCharSpan, replace it with label
         df["type"] = df["type"].replace(
-            {"ExtraCharSpan": "Lbl", "ParagraphSpan": "LBody"}
+            {"ExtraCharSpan": "Lbl", "ParagraphSpan": "LBody", "Span": "Lbl"}
         )
 
         # TODO: fix this!
@@ -332,7 +332,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                     new_string += f"{label_string}"
             # TODO: Test more thoroughly.
             #  Assume that if the list element isn't a label and the type hasnt been
-            #  handled above, it's part ofa list body. This is a bit of a hack to get around the fact that there are
+            #  handled above, it's part of a list body. This is a bit of a hack to get around the fact that there are
             #  sometimes other types e.g. Span or Paragraph span that (due to italics and such) that should really be
             #  part of a list body. Tested this and works so far, but there may be some difficult edge cases.
             else:
