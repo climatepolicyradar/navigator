@@ -25,7 +25,8 @@ def get_data_from_navigator_tables() -> pd.DataFrame:
     """
     query = """
         SELECT document_id, source_url, s3_url, document.language_id as document_language_id, document.name AS document_name, action.*, language.language_id, language.language_code, language.name as language_name, \
-        geography.*, source.source_id, source.name as action_source_name, action_type.action_type_id, action_type.type_name as action_type_name
+        geography.*, source.source_id, source.name as action_source_name, action_type.action_type_id, action_type.type_name as action_type_name, action.name as action_name, action.description as action_description, \
+        geography.country_code as action_country_code
         FROM document
         INNER JOIN action ON (document.action_id = action.action_id)
         LEFT JOIN language on (document.language_id = language.language_id)
@@ -119,13 +120,22 @@ def get_document_generator(
         Generator[dict, None, None]: generator of dictionaries per text passage to index.
     """
 
+    # Create name_and_id field to group by and sort on in Elasticsearch aggregation.
+    # TODO: this needs to be a combination of document name and document ID when we remove
+    # the concept of actions.
+    main_dataset["action_name_and_id"] = (
+        main_dataset["action_name"] + " " + main_dataset["document_id"].astype(str)
+    )
+
     metadata_columns = [
         "document_id",
         "document_language_id",
         "document_name",
         "action_id",
         "action_date",
-        "country_code",
+        "action_name",
+        "action_name_and_id",
+        "action_country_code",
         "action_source_name",
         "action_type_name",
     ]
@@ -134,8 +144,8 @@ def get_document_generator(
     # searchable over as well as the text. Methods for these to be searched should be defined in
     # the index mapping.
     extra_text_columns = [
-        "name",
-        "description",
+        "action_name",
+        "action_description",
     ]
 
     for document_id, document_df in text_and_ids_data.groupby("document_id"):
@@ -157,9 +167,11 @@ def get_document_generator(
             "%d/%m/%Y"
         )
 
+        # We add the `for_search_` prefix to extra text fields we want made available to search,
+        # as some of these will also be repeated over documents so they can be aggregated on.
         for text_col_name in extra_text_columns:
             text_col_dict = {
-                text_col_name: doc_metadata.iloc[
+                f"for_search_{text_col_name}": doc_metadata.iloc[
                     0, doc_metadata.columns.get_loc(text_col_name)
                 ]
             }

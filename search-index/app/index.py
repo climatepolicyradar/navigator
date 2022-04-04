@@ -71,24 +71,36 @@ class OpenSearchIndex:
                             "filter": ["lowercase", "ascii_folding_preserve_original"],
                         }
                     },
+                    # This normalizer does the same as the folding analyser, but is used for keyword fields.
+                    "normalizer": {
+                        "folding": {
+                            "type": "custom",
+                            "char_filter": [],
+                            "filter": ["lowercase", "asciifolding"],
+                        }
+                    },
                 },
             },
             "mappings": {
                 "properties": {
+                    # Document metadata. This will be revised once we remove the concept of actions.
                     "document_id": {"type": "keyword"},
                     "document_name": {"type": "text"},
-                    "name": {
-                        "type": "text",
-                        "analyzer": "folding",
-                    },
-                    "description": {
-                        "type": "text",
-                        "analyzer": "folding",
-                    },
+                    "action_name": {"type": "keyword", "normalizer": "folding"},
+                    "action_name_and_id": {"type": "keyword", "normalizer": "folding"},
                     "action_date": {"type": "date", "format": "dd/MM/yyyy"},
-                    "country_code": {"type": "keyword"},
+                    "action_country_code": {"type": "keyword"},
                     "action_source_name": {"type": "keyword"},
                     "action_type_name": {"type": "keyword"},
+                    # Searchable
+                    "for_search_action_name": {
+                        "type": "text",
+                        "analyzer": "folding",
+                    },
+                    "for_search_action_description": {
+                        "type": "text",
+                        "analyzer": "folding",
+                    },
                     "text_block_id": {"type": "keyword"},
                     "text": {
                         "type": "text",
