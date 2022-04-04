@@ -90,6 +90,7 @@ class OpenSearchIndex:
                     "action_name_and_id": {"type": "keyword", "normalizer": "folding"},
                     "action_date": {"type": "date", "format": "dd/MM/yyyy"},
                     "action_country_code": {"type": "keyword"},
+                    "action_geography_english_shortname": {"type": "keyword"},
                     "action_source_name": {"type": "keyword"},
                     "action_type_name": {"type": "keyword"},
                     # Searchable

@@ -26,7 +26,7 @@ def get_data_from_navigator_tables() -> pd.DataFrame:
     query = """
         SELECT document_id, source_url, s3_url, document.language_id as document_language_id, document.name AS document_name, action.*, language.language_id, language.language_code, language.name as language_name, \
         geography.*, source.source_id, source.name as action_source_name, action_type.action_type_id, action_type.type_name as action_type_name, action.name as action_name, action.description as action_description, \
-        geography.country_code as action_country_code
+        geography.country_code as action_country_code, geography.english_shortname as action_geography_english_shortname
         FROM document
         INNER JOIN action ON (document.action_id = action.action_id)
         LEFT JOIN language on (document.language_id = language.language_id)
@@ -120,12 +120,20 @@ def get_document_generator(
         Generator[dict, None, None]: generator of dictionaries per text passage to index.
     """
 
+    # DATA TRANSFORMATION STEPS. We may want to put these in another method.
     # Create name_and_id field to group by and sort on in Elasticsearch aggregation.
     # TODO: this needs to be a combination of document name and document ID when we remove
     # the concept of actions.
     main_dataset["action_name_and_id"] = (
         main_dataset["action_name"] + " " + main_dataset["document_id"].astype(str)
     )
+
+    main_dataset["action_date"] = main_dataset["action_date"].apply(
+        lambda i: i.strftime("%d/%m/%Y")
+    )
+    main_dataset["action_description"] = main_dataset["action_description"].str.strip()
+
+    # --------------------------------------------------------------------------------------------
 
     metadata_columns = [
         "document_id",
@@ -136,6 +144,7 @@ def get_document_generator(
         "action_name",
         "action_name_and_id",
         "action_country_code",
+        "action_geography_english_shortname",
         "action_source_name",
         "action_type_name",
     ]
@@ -163,9 +172,6 @@ def get_document_generator(
         doc_metadata_dict = {
             k: v for k, v in doc_metadata_dict.items() if v and str(v) != "nan"
         }
-        doc_metadata_dict["action_date"] = doc_metadata_dict["action_date"].strftime(
-            "%d/%m/%Y"
-        )
 
         # We add the `for_search_` prefix to extra text fields we want made available to search,
         # as some of these will also be repeated over documents so they can be aggregated on.
