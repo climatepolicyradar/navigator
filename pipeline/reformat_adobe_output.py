@@ -33,7 +33,7 @@ def process(in_path, out_path):
             doc = text_styling_processor.process(doc, )
             doc = postprocessor.process(doc, f"{file.stem}.pdf")
             # Write to json file.
-            doc.save_json(out_path / file.stem)
+            doc.save_json(out_path / f"{file.stem}.json")
 
 
 if __name__ == "__main__":
