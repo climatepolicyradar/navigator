@@ -406,10 +406,9 @@ class AdobeListGroupingPostProcessor(PostProcessor):
 
         """
         new_custom_attributes = {new_attribute: True}
-        try:
-            if text_block["custom_attributes"] is not None:
-                text_block["custom_attributes"].update(new_custom_attributes)
-        except KeyError:
+        if text_block["custom_attributes"] is not None:
+            text_block["custom_attributes"].update(new_custom_attributes)
+        else:
             text_block["custom_attributes"] = new_custom_attributes
         return text_block
 
@@ -578,11 +577,11 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                                     text_block,
                                     "possibly_contiguous_with_previous_page_list",
                                 )
-                            else:
-                                text_block = self._update_contiguity_attributes(
-                                    text_block,
-                                    "possibly_contiguous_with_same_page_context",
-                                )
+                        else:
+                            text_block = self._update_contiguity_attributes(
+                                text_block,
+                                "possibly_contiguous_with_same_page_context",
+                            )
 
                         dd[current_list_id].append(text_block)
                         prev_list_ix += 1
