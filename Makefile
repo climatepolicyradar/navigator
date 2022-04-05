@@ -1,3 +1,4 @@
+include .env
 include ./makefile-local.defs
 include ./makefile-docker.defs
 

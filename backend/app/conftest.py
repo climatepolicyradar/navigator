@@ -10,6 +10,7 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
 from app.core import config, security
+from app.core.search import OpenSearchConnection, OpenSearchConfig
 from app.db.models import User, PasswordResetToken
 from app.db.session import Base, get_db
 from app.main import app
@@ -48,6 +49,20 @@ def test_s3_client(s3_document_bucket_names):
         yield s3_client
 
 
+@pytest.fixture(scope="session")
+def test_opensearch():
+    """Provide a test OpenSearch DB"""
+    connection = OpenSearchConnection(
+        OpenSearchConfig(
+            url=os.environ["OPENSEARCH_URL"],
+            username=os.environ["OPENSEARCH_USER"],
+            password=os.environ["OPENSEARCH_PASSWORD"],
+            index_name=f"{os.environ['OPENSEARCH_INDEX']}_test",
+        )
+    )
+    yield connection
+
+
 def get_test_db_url() -> str:
     return f"{config.SQLALCHEMY_DATABASE_URI}_test"
 
@@ -65,7 +80,7 @@ def create_test_db():
     create_database(test_db_url)
     try:
         test_engine = create_engine(test_db_url)
-        Base.metadata.create_all(test_engine)
+        Base.metadata.create_all(test_engine)  # type: ignore
 
         # Run the tests
         yield
@@ -223,7 +238,7 @@ def test_password_reset_token(test_db, test_inactive_user) -> PasswordResetToken
         expiry_ts=datetime.datetime(2099, 1, 1),
         is_redeemed=False,
         user_id=test_inactive_user.id,
-    )
+    )  # type: ignore
     test_db.add(prt)
     test_db.commit()
     return prt

@@ -36,6 +36,7 @@ services:
       - .env
     depends_on:
       - "postgres"
+      - "search-index"
 
   loader:
     build:
@@ -126,7 +127,18 @@ services:
       - 5601:5601
     expose:
       - "5601"
-    
+
+  opensearch-test-loader:
+    image: elasticdump/elasticsearch-dump
+    container_name: opensearch-test-loader
+    volumes:
+      - ./search-index:/app/:cached
+    env_file:
+      - .env
+    depends_on:
+      - search-index
+      - opensearch-node1
+
 volumes:
   db-data:
   opensearch-data1:
