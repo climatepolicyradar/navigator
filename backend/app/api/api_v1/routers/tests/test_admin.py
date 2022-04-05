@@ -41,7 +41,8 @@ def test_delete_user_not_found(client, superuser_token_headers):
     assert response.status_code == 404
 
 
-def test_edit_user(client, test_superuser, superuser_token_headers):
+@patch("app.api.api_v1.routers.admin.send_email")
+def test_edit_user(mock_send_email, client, test_superuser, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
@@ -57,6 +58,26 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     assert response.status_code == 200
     new_user["id"] = test_superuser.id
     assert response.json() == new_user
+    mock_send_email.assert_called_with(EmailType.account_changed, test_superuser)
+
+
+@patch("app.api.api_v1.routers.admin.send_email")
+def test_edit_other_user(
+    mock_send_email, client, test_superuser, superuser_token_headers, test_user, test_db
+):
+    old_is_active = test_user.is_active
+
+    response = client.put(
+        f"/api/v1/admin/users/{test_user.id}",
+        json={
+            "email": test_user.email,
+            "is_active": not test_user.is_active,
+        },
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == 200
+    assert test_user.is_active is not old_is_active
+    mock_send_email.assert_called_with(EmailType.account_changed, test_user)
 
 
 def test_edit_user_not_found(client, test_db, superuser_token_headers):

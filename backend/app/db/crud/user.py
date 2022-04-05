@@ -6,7 +6,7 @@ from starlette import status
 
 from app.core.security import get_password_hash
 from app.db.models import User, PasswordResetToken
-from app.db.schemas.user import UserBase, User as UserSchema
+from app.db.schemas.user import User as UserSchema, UserCreate, UserCreateAdmin
 
 
 def get_user(db: Session, user_id: int) -> User:
@@ -30,7 +30,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100) -> t.List[UserSchema
     ]
 
 
-def create_user(db: Session, user: UserBase):
+def create_user(db: Session, user: t.Union[UserCreate, UserCreateAdmin]):
     """Create a user."""
     db_user = User(**user.dict())
     db.add(db_user)
@@ -50,7 +50,9 @@ def deactivate_user(db: Session, user_id: int) -> User:
     return user
 
 
-def edit_user(db: Session, user_id: int, user: UserBase) -> User:
+def edit_user(
+    db: Session, user_id: int, user: t.Union[UserCreate, UserCreateAdmin]
+) -> User:
     db_user = get_user(db, user_id)
     if not db_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")

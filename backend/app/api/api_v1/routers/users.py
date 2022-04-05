@@ -7,7 +7,7 @@ from app.core.email import send_email, EmailType
 from app.db.crud.user import (
     edit_user,
 )
-from app.db.schemas.user import User, UserBase
+from app.db.schemas.user import User, UserCreate
 from app.db.session import get_db
 
 users_router = r = APIRouter()
@@ -25,7 +25,7 @@ async def user_me(current_user=Depends(get_current_active_user)):
 @r.put("/users/me", response_model=User, response_model_exclude_none=True)
 async def user_edit(
     request: Request,
-    user: UserBase,
+    user: UserCreate,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):

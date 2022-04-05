@@ -90,6 +90,27 @@ def test_reset_password_used_token(
     mock_send_email.assert_not_called()
 
 
+@patch("app.api.api_v1.routers.unauthenticated.send_email")
+def test_reset_password_cancelled_token(
+    mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
+):
+    test_password_reset_token.is_cancelled = True
+    test_db.add(test_password_reset_token)
+    test_db.commit()
+
+    response = client.post(
+        "/api/v1/activations",
+        json={
+            "token": test_password_reset_token.token,
+            "password": "some-password",
+        },
+    )
+    assert response.status_code == 404
+    assert response.json()["detail"] == "Token is not valid"
+
+    mock_send_email.assert_not_called()
+
+
 @patch("app.db.crud.password_reset.get_password_reset_token_expiry_ts")
 @patch("app.api.api_v1.routers.unauthenticated.send_email")
 def test_password_reset_request(

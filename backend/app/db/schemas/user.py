@@ -3,10 +3,8 @@ import typing as t
 from pydantic import BaseModel
 
 
-class UserBase(BaseModel):  # noqa: D101
+class UserBaseWithoutFlags(BaseModel):  # noqa: D101
     email: str
-    is_active: bool = False
-    is_superuser: bool = False
     names: t.Optional[str] = None
     job_role: t.Optional[str] = None
     location: t.Optional[str] = None
@@ -15,6 +13,19 @@ class UserBase(BaseModel):  # noqa: D101
     policy_type_of_interest: t.Optional[t.List[str]] = None
     geographies_of_interest: t.Optional[t.List[str]] = None
     data_focus_of_interest: t.Optional[t.List[str]] = None
+
+
+class UserBase(UserBaseWithoutFlags):  # noqa: D101
+    is_active: bool = False
+    is_superuser: bool = False
+
+
+class UserCreate(UserBaseWithoutFlags):  # noqa: D101
+    """Used by regular users"""
+
+
+class UserCreateAdmin(UserBase):  # noqa: D101
+    """Used by admin"""
 
 
 class UserOut(UserBase):  # noqa: D101
