@@ -41,3 +41,13 @@ jobs:
         run: make build_pipeline
       - name: Test pipeline
         run: make test_pipeline
+  test_search_index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build search_index
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: make build_search_index
+      - name: Test search_index
+        run: make test_search_index
