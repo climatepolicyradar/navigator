@@ -121,6 +121,19 @@ class OpenSearchIndex:
                             },
                         },
                     },
+                    "action_description_embedding": {
+                        "type": "knn_vector",
+                        "dimension": self.embedding_dim,
+                        "method": {
+                            "name": "hnsw",
+                            "space_type": "innerproduct",
+                            "engine": "nmslib",  # TODO: decide between faiss and nmslib and tune params
+                            "parameters": {
+                                "ef_construction": 128,  # TODO: tune me
+                                "m": 12,  # TODO: tune me
+                            },
+                        },
+                    },
                 }
             },
         }

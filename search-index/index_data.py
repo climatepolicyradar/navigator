@@ -2,7 +2,7 @@
 
 import os
 from pathlib import Path
-from typing import Generator
+from typing import Generator, Dict
 
 import pandas as pd
 import numpy as np
@@ -11,100 +11,16 @@ import click
 from navigator.core.log import get_logger
 from app.db import PostgresConnector
 from app.index import OpenSearchIndex
+from app.load_data import create_dataset
 
 logger = get_logger(__name__)
 
-postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
-
-
-def get_data_from_navigator_tables() -> pd.DataFrame:
-    """Get data from Navigator tables. Includes documents, actions, countries, languages, action sources and action types.
-
-    Returns:
-        pd.DataFrame: one row per document.
-    """
-    query = """
-        SELECT document_id, source_url, s3_url, document.language_id as document_language_id, document.name AS document_name, action.*, language.language_id, language.language_code, language.name as language_name, \
-        geography.*, source.source_id, source.name as action_source_name, action_type.action_type_id, action_type.type_name as action_type_name, action.name as action_name, action.description as action_description, \
-        geography.country_code as action_country_code, geography.english_shortname as action_geography_english_shortname
-        FROM document
-        INNER JOIN action ON (document.action_id = action.action_id)
-        LEFT JOIN language on (document.language_id = language.language_id)
-        LEFT JOIN geography on (action.geography_id = geography.geography_id)
-        LEFT JOIN source on (action.action_source_id = source.source_id)
-        LEFT JOIN action_type on (action.action_type_id = action_type.action_type_id);
-        """
-
-    return postgres_connector.run_query(query)
-
-
-def ensure_safe(url: str) -> str:
-    """Ensure a URL is safe.
-
-    Some documents use http, not https. Instead of just ignoring those,
-    we'll try download a doc securely, if possible.
-
-    # TODO: this function is also used in the loader. We use it here to repeat that transformation for a successful join. Do we care that it's copy & pasted?
-    """
-    if "https://" not in url:
-        url = url.replace("http://", "https://")
-    return url
-
-
-def make_url_filename_join_table_from_prototype_data() -> pd.DataFrame:
-    """Make a join table which joins document URLs in the navigator database with filenames used in the prototype.
-
-    # TODO: this is temporary and should be removed once the PDFs are hosted somewhere.
-
-    Returns:
-        pd.DataFrame: join table
-    """
-
-    url_old_id_join = (
-        pd.read_csv(
-            "./data/processed_policies.csv",
-            index_col=0,
-            usecols=["policy_content_file", "url"],
-        )
-        .reset_index()
-        .dropna()
-    )
-    url_old_id_join["prototype_filename_stem"] = url_old_id_join[
-        "policy_content_file"
-    ].apply(lambda filename: Path(filename).stem)
-    url_old_id_join = url_old_id_join.drop(columns=["policy_content_file"])
-    url_old_id_join = url_old_id_join.loc[
-        url_old_id_join["prototype_filename_stem"].str.startswith("cclw"), :
-    ]
-    # Convert http URLs to https, as this is what the loader does
-    url_old_id_join["url"] = url_old_id_join["url"].apply(ensure_safe)
-
-    return url_old_id_join
-
-
-def create_dataset() -> pd.DataFrame:
-    """Create a dataset which joins data from Navigator tables with filenames from the prototype.
-
-    # TODO: once PDFs are hosted somewhere, we can refactor this pipeline to remove its dependency on the processed_policies.csv file.
-
-    Returns:
-        pd.DataFrame: _description_
-    """
-
-    navigator_data = get_data_from_navigator_tables()
-    prototype_url_join = make_url_filename_join_table_from_prototype_data()
-
-    return pd.merge(
-        left=navigator_data,
-        right=prototype_url_join,
-        how="left",
-        left_on="source_url",
-        right_on="url",
-    )
-
 
 def get_document_generator(
-    main_dataset: pd.DataFrame, text_and_ids_data: pd.DataFrame, embeddings: np.ndarray
+    main_dataset: pd.DataFrame,
+    text_and_ids_data: pd.DataFrame,
+    embeddings: np.ndarray,
+    description_embeddings_dict: Dict[str, np.ndarray],
 ) -> Generator[dict, None, None]:
     """Get generator of documents to index in Opensearch.
 
@@ -115,6 +31,7 @@ def get_document_generator(
         main_dataset (pd.DataFrame): dataframe returned by `create_dataset` function.
         text_and_ids_data (pd.DataFrame): dataframe returned by `load_text_and_ids_csv` function.
         embeddings (np.ndarray): numpy array returned by `load_embeddings` function.
+        description_embeddings_dict (Dict[str, np.ndarray]): dictionary of description IDs and embeddings.
 
     Yields:
         Generator[dict, None, None]: generator of dictionaries per text passage to index.
@@ -174,6 +91,12 @@ def get_document_generator(
             k: v for k, v in doc_metadata_dict.items() if v and str(v) != "nan"
         }
 
+        doc_description_embedding = description_embeddings_dict.get(document_id)
+        if doc_description_embedding is None:
+            logger.warning(
+                f"No description embedding has been generated for document {document_id}. Skipping adding the embedding to Opensearch, which will likely result in unexpected search results."
+            )
+
         # We add the `for_search_` prefix to extra text fields we want made available to search,
         # as some of these will also be repeated over documents so they can be aggregated on.
         for text_col_name in extra_text_columns:
@@ -182,6 +105,13 @@ def get_document_generator(
                     0, doc_metadata.columns.get_loc(text_col_name)
                 ]
             }
+
+            if (text_col_name == "action_description") and (
+                doc_description_embedding is not None
+            ):
+                text_col_dict[
+                    "action_description_embedding"
+                ] = doc_description_embedding.tolist()
 
             yield dict(doc_metadata_dict, **text_col_dict)
 
@@ -227,23 +157,64 @@ def load_embeddings(embs_path: Path, embedding_dim: int) -> np.ndarray:
     return np.memmap(embs_path, dtype="float32", mode="r").reshape((-1, embedding_dim))
 
 
+def load_description_embeddings_and_metadata(
+    embs_path: Path, ids_path: Path, embedding_dim: int
+) -> Dict[str, np.ndarray]:
+    """Load description embeddings and metadata from memmap and CSV files outputted by the text2embeddings CLI.
+
+    Args:
+        embs_path (Path): path to memmap file containing description embeddings.
+        ids_path (Path): path to CSV file containing a document ID for each description.
+        embedding_dim (int): embedding dimension.
+
+    Returns:
+        Dict[str, np.ndarray]: {'document_id': [embeddings], ...}
+    """
+
+    embs = load_embeddings(embs_path, embedding_dim)
+    metadata = pd.read_csv(ids_path, header=None, names=["document_id"])
+
+    output_dict = dict()
+
+    for idx, doc_id in metadata["document_id"].items():
+        output_dict[doc_id] = embs[idx, :]
+
+    return output_dict
+
+
 @click.command()
 @click.option("--text-ids-path", type=click.Path(exists=True), required=True)
 @click.option("--embeddings-path", type=click.Path(exists=True), required=True)
+@click.option("--desc-ids-path", type=click.Path(exists=True), required=True)
+@click.option("--desc-embeddings-path", type=click.Path(exists=True), required=True)
 @click.option("--embedding-dim", "-d", type=int, required=True)
-def run_cli(text_ids_path: Path, embeddings_path: Path, embedding_dim: int) -> None:
+def run_cli(
+    text_ids_path: Path,
+    embeddings_path: Path,
+    desc_ids_path: Path,
+    desc_embeddings_path: Path,
+    embedding_dim: int,
+) -> None:
     """Index text and embeddings stores at `text-ids-path` and `embeddings-path` into Opensearch.
 
     Args:
         text_ids_path (Path): path to JSON file containing text and IDs.
         embeddings_path (Path): path to memmap file containing embeddings.
+        desc_ids_path (Path): path to CSV file containing a document ID for each description.
+        desc_embeddings_path (Path): path to memmap file containing description embeddings.
         embedding_dim (int): embedding dimension.
     """
-    main_dataset = create_dataset()
+    postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
+    main_dataset = create_dataset(postgres_connector)
 
     ids_table = load_text_and_ids_json(text_ids_path)
     embs = load_embeddings(embeddings_path, embedding_dim=embedding_dim)
-    doc_generator = get_document_generator(main_dataset, ids_table, embs)
+    description_embs_dict = load_description_embeddings_and_metadata(
+        desc_embeddings_path, desc_ids_path, embedding_dim=embedding_dim
+    )
+    doc_generator = get_document_generator(
+        main_dataset, ids_table, embs, description_embs_dict
+    )
 
     opensearch = OpenSearchIndex(
         url=os.environ["OPENSEARCH_URL"],

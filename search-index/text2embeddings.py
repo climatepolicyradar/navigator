@@ -4,6 +4,7 @@ from pathlib import Path
 import glob
 import json
 from typing import List, Tuple, Optional
+import os
 
 from tqdm.auto import tqdm
 import numpy as np
@@ -12,6 +13,8 @@ import click
 
 from app.ml import SBERTEncoder, SentenceEncoder
 from app.utils import paginate_list
+from app.load_data import create_dataset
+from app.db import PostgresConnector
 from navigator.core.log import get_logger
 from navigator.core.utils import get_timestamp
 
@@ -87,9 +90,12 @@ def encode_text_to_memmap(
         shape=(len(text_list), encoder.dimension),
     )
 
-    for idx, batch in tqdm(enumerate(text_list_batched), unit="batch"):
-        embeddings = encoder.encode_batch(batch, batch_size)
-        fp[idx * batch_size : (idx + 1) * batch_size, :] = embeddings
+    for idx, batch in tqdm(
+        enumerate(text_list_batched), unit="batch", total=len(text_list_batched)
+    ):
+        fp[idx * batch_size : (idx + 1) * batch_size, :] = encoder.encode_batch(
+            batch, batch_size
+        )
 
     fp.flush()
 
@@ -155,15 +161,44 @@ def run_cli(
     )
     encode_text_to_memmap(text_by_document, encoder, batch_size, embs_output_path)
 
-    # Save text, text block IDs and document IDs to CSV
-    # TODO: is there a better way to save text than in a CSV?
+    # Save text, text block IDs and document IDs to JSON file
     pd.DataFrame(
         text_and_ids, columns=["text", "text_block_id", "document_id"]
     ).to_json(
         output_dir / f"ids_{model_name}_{curr_time}.json",
         orient="records",
     )
-    logger.info(f"Saved embeddings and IDs to {output_dir}")
+
+    # Encode action descriptions
+    postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
+    navigator_dataset = create_dataset(postgres_connector)
+    document_ids_processed = [i[2] for i in text_and_ids]
+    description_data_to_encode = navigator_dataset.loc[
+        navigator_dataset["prototype_filename_stem"].isin(document_ids_processed)
+    ]
+
+    logger.info(
+        f"Encoding {len(description_data_to_encode)} descriptions in batches of {batch_size}"
+    )
+    description_embs_output_path = (
+        output_dir
+        / f"description_embs_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
+    )
+    encode_text_to_memmap(
+        description_data_to_encode["description"].tolist(),
+        encoder,
+        batch_size,
+        description_embs_output_path,
+    )
+
+    description_ids_output_path = (
+        output_dir / f"description_ids_{model_name}_{curr_time}.csv"
+    )
+    description_data_to_encode["prototype_filename_stem"].to_csv(
+        description_ids_output_path, sep="\t", index=False, header=False
+    )
+
+    logger.info(f"Saved embeddings and IDs for text and descriptions to {output_dir}")
 
 
 if __name__ == "__main__":
