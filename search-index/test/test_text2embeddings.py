@@ -42,7 +42,10 @@ def test_get_text_from_merged_block():
         },
     }
 
-    expected_2 = ("It is this government's priority to reduce carbon emissions by 2030.", "p6_b3_merged")
+    expected_2 = (
+        "It is this government's priority to reduce carbon emissions by 2030.",
+        "p6_b3_merged",
+    )
 
     result_2 = text2embeddings.get_text_from_merged_block(input_2)
     assert result_2 == expected_2
@@ -50,9 +53,7 @@ def test_get_text_from_merged_block():
     # Case 3: Do not remove subscripts! (e.g. CO2). Made up input for readability and illustrative purposes.
     # We can see that the 2 in co2 is a subscript.
     input_3 = {
-        "text": [
-            "CO2 has risen by 0.5% since the last year. "
-        ],
+        "text": ["CO2 has risen by 0.5% since the last year. "],
         "text_block_id": "p6_b3_merged",
         "type": "merged_text_block",
         "custom_attributes": {
@@ -68,9 +69,7 @@ def test_get_text_from_merged_block():
     # Case 4: Do not remove superscripts if they match regex such as 1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th, 9th, 10th.
     # In this case, there is semantics in the superscript that LLMs may be able to understand.
     input_4 = {
-        "text": [
-            "On the 1st April. "
-        ],
+        "text": ["On the 1st April. "],
         "text_block_id": "p6_b3_merged",
         "type": "merged_text_block",
         "custom_attributes": {

@@ -85,9 +85,9 @@ def get_text_from_merged_block(text_block: dict) -> str:
                 remove_end = style_span["end_idx"]
                 # if superscript is of the form st, nd, rd, th, do not remove as this can potentially
                 # be used by language models.
-                delete_substr = text_output[0][remove_start:remove_end + 1]
+                delete_substr = text_output[0][remove_start : remove_end + 1]
                 if re.match(r"(st|nd|rd|th)$", delete_substr):
-                    continue # don't remove
+                    continue  # don't remove
                 delete_indices.extend([remove_start, remove_end])
 
         # The indices are relative to the whole block, not just elements in the block.
@@ -170,7 +170,7 @@ def get_text_from_json_files(filepaths: List[str]) -> List[Tuple[str, str, str]]
 
 
 def encode_text(
-        text_list: List[str], encoder: SentenceEncoder, batch_size: int
+    text_list: List[str], encoder: SentenceEncoder, batch_size: int
 ) -> np.ndarray:
     """Encode list of text strings using a SentenceEncoder, in batches of `batch_size`
 
@@ -219,11 +219,11 @@ def encode_text(
     help="Optionally limit the number of text samples to process. Useful for debugging.",
 )
 def run_cli(
-        input_dir: Path,
-        output_dir: Path,
-        model_name: str,
-        batch_size: int,
-        limit: Optional[int],
+    input_dir: Path,
+    output_dir: Path,
+    model_name: str,
+    batch_size: int,
+    limit: Optional[int],
 ):
     """Run CLI to produce embeddings from pdf2text JSON outputs. Encoding will automatically run on the GPU if one is available.
 
@@ -252,7 +252,7 @@ def run_cli(
 
     # Export embeddings to numpy memmap file
     embs_output_path = (
-            output_dir / f"embeddings_dim_{embs.shape[1]}_{model_name}_{curr_time}.memmap"
+        output_dir / f"embeddings_dim_{embs.shape[1]}_{model_name}_{curr_time}.memmap"
     )
     fp = np.memmap(embs_output_path, dtype="float32", mode="w+", shape=embs.shape)
     fp[:] = embs[:]
