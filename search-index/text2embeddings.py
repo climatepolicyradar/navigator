@@ -70,8 +70,6 @@ def get_text_from_merged_block(text_block: dict) -> str:
 
     """
     # Text output with no processing.
-    if len(text_block["text"]) >1:
-        breakpoint()
     text_output = (
         "".join(text_block["text"]).strip(),
         text_block["text_block_id"],

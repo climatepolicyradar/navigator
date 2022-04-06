@@ -143,6 +143,9 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         """
         Merge text blocks in the same semantic category (same path) that have been separated due to styling elements.
 
+        Note, the indexing style is slightly un-pythonic here (a single digit superscript has start and end indices (144, 144)
+        instead of (144, 145). See TODO below.
+
         Args:
             text_blocks:
 
@@ -171,6 +174,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             if block_styling:
                 # The last style index here is the index of the block with sentences joined.
                 last_style_ix = len(''.join((text for text in merged_block_text)).strip()) - 1
+                # TODO: Make indexing more pythonic. See docstring.
                 style_span = {
                         "style": block_styling,
                         "start_idx": start_ix,
