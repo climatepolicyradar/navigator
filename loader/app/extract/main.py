@@ -5,12 +5,12 @@ import pandas as pd
 from pandas import DataFrame
 
 policy_fe_column_map = {
-    'Title': 'policy_name',
-    'Geography ISO': 'country_code',
-    'Documents': 'document_list',
-    'Description': 'policy_description',
-    'Events': 'events',
-    'Type': 'policy_type',
+    "Title": "policy_name",
+    "Geography ISO": "country_code",
+    "Documents": "document_list",
+    "Description": "policy_description",
+    "Events": "events",
+    "Type": "policy_type",
 }
 
 
@@ -33,9 +33,7 @@ def extract(data_dir: PathLike) -> DataFrame:
         raise Exception(f"CSV not found at path {data_dir}")
 
     cclw_policy_fe_df = pd.read_csv(
-        csv_file,
-        usecols=policy_fe_column_map.keys(),
-        index_col=False
+        csv_file, usecols=policy_fe_column_map.keys(), index_col=False
     )
 
     # rename the CSV columns as per the provided mappings

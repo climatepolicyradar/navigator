@@ -3,38 +3,43 @@ from typing import Dict, Tuple, Optional
 
 mappings = [
     {
-        'country_code': 'BGD',
-        'policy_name': 'Bangladesh National Action Plan (NAP) for Reducing Short Lived Climate Pollutants (SLCPs)',
-        'year': 2018,
+        "country_code": "BGD",
+        "policy_name": "Bangladesh National Action Plan (NAP) for Reducing Short Lived Climate Pollutants (SLCPs)",
+        "year": 2018,
     },
     {
-        'country_code': 'ETH',
-        'policy_name': 'Climate Resilient Transport Sector Strategy',
-        'year': 2017,
+        "country_code": "ETH",
+        "policy_name": "Climate Resilient Transport Sector Strategy",
+        "year": 2017,
     },
     {
-        'country_code': 'ETH',
-        'policy_name': 'Climate Resilience Strategy: Water and Energy',
-        'year': 2015,
+        "country_code": "ETH",
+        "policy_name": "Climate Resilience Strategy: Water and Energy",
+        "year": 2015,
     },
     {
-        'country_code': 'PAN',
-        'policy_name': 'Law no 6 of 3 February 1997 on the regulatory and institutional framework of the public electricity service',
-        'year': 1997,
+        "country_code": "PAN",
+        "policy_name": "Law no 6 of 3 February 1997 on the regulatory and institutional framework of the public electricity service",
+        "year": 1997,
     },
     {
-        'country_code': 'KOR',
-        'policy_name': 'Clean Air Conservation Act (No. 10615)',
-        'year': 2007,
+        "country_code": "KOR",
+        "policy_name": "Clean Air Conservation Act (No. 10615)",
+        "year": 2007,
     },
 ]
 
 mapping: Dict[Tuple[str, str], int] = {
-    ("BGD", "Bangladesh National Action Plan (NAP) for Reducing Short Lived Climate Pollutants (SLCPs)"): 2018,
+    (
+        "BGD",
+        "Bangladesh National Action Plan (NAP) for Reducing Short Lived Climate Pollutants (SLCPs)",
+    ): 2018,
     ("ETH", "Climate Resilient Transport Sector Strategy"): 2017,
     ("ETH", "Climate Resilience Strategy: Water and Energy"): 2015,
-    ("PAN",
-     "Law no 6 of 3 February 1997 on the regulatory and institutional framework of the public electricity service"): 1997,
+    (
+        "PAN",
+        "Law no 6 of 3 February 1997 on the regulatory and institutional framework of the public electricity service",
+    ): 1997,
     ("KOR", "Clean Air Conservation Act (No. 10615)"): 2007,
 }
 

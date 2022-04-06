@@ -46,9 +46,7 @@ def upgrade():
             nullable=False,
         ),
         sa.Column("name", sa.VARCHAR(length=255), autoincrement=False, nullable=False),
-        sa.PrimaryKeyConstraint(
-            "passage_type_id", name="pk_passage_type"
-        ),
+        sa.PrimaryKeyConstraint("passage_type_id", name="pk_passage_type"),
     )
 
     # Create metadata lookup tables
@@ -73,9 +71,7 @@ def upgrade():
             autoincrement=False,
             nullable=True,
         ),
-        sa.PrimaryKeyConstraint(
-            "metadata_type_id", name="pk_metadata_type"
-        ),
+        sa.PrimaryKeyConstraint("metadata_type_id", name="pk_metadata_type"),
     )
     op.create_table(
         "metadata_value",
@@ -105,9 +101,7 @@ def upgrade():
             ["metadata_type.metadata_type_id"],
             name="fk_metadata_value__metadata_type_id__metadata_type",
         ),
-        sa.PrimaryKeyConstraint(
-            "metadata_value_id", name="pk_metadata_value"
-        ),
+        sa.PrimaryKeyConstraint("metadata_value_id", name="pk_metadata_value"),
     )
     op.create_table(
         "metadata_value_keywords",
@@ -134,7 +128,7 @@ def upgrade():
 
     op.create_table(
         "language",
-        sa.Column('language_id', sa.SmallInteger(), autoincrement=True, nullable=False),
+        sa.Column("language_id", sa.SmallInteger(), autoincrement=True, nullable=False),
         sa.Column(
             "language_code", sa.CHAR(length=3), autoincrement=False, nullable=False
         ),
@@ -238,7 +232,9 @@ def upgrade():
             "description", sa.VARCHAR(length=2048), autoincrement=False, nullable=True
         ),
         sa.Column("action_date", sa.DATE(), autoincrement=False, nullable=False),
-        sa.Column("geography_id", sa.SmallInteger(), autoincrement=False, nullable=False),
+        sa.Column(
+            "geography_id", sa.SmallInteger(), autoincrement=False, nullable=False
+        ),
         sa.Column("action_type_id", sa.INTEGER(), autoincrement=False, nullable=False),
         sa.Column(
             "action_mod_date",
@@ -250,13 +246,19 @@ def upgrade():
             "action_source_id", sa.BigInteger(), autoincrement=False, nullable=False
         ),
         sa.ForeignKeyConstraint(
-            ["action_source_id"], ["source.source_id"], name="fk_action__action_source_id__source"
+            ["action_source_id"],
+            ["source.source_id"],
+            name="fk_action__action_source_id__source",
         ),
         sa.ForeignKeyConstraint(
-            ["action_type_id"], ["action_type.action_type_id"], name="fk_action__action_type_id__action_type"
+            ["action_type_id"],
+            ["action_type.action_type_id"],
+            name="fk_action__action_type_id__action_type",
         ),
         sa.ForeignKeyConstraint(
-            ["geography_id"], ["geography.geography_id"], name="fk_action__geography_id__geography"
+            ["geography_id"],
+            ["geography.geography_id"],
+            name="fk_action__geography_id__geography",
         ),
         sa.PrimaryKeyConstraint("action_id", name="pk_action"),
     )
@@ -272,15 +274,17 @@ def upgrade():
         sa.Column(
             "metadata_value_id", sa.INTEGER(), autoincrement=False, nullable=False
         ),
-        sa.ForeignKeyConstraint(["action_id"], ["action.action_id"], name="fk_action_metadata__action_id__action"),
+        sa.ForeignKeyConstraint(
+            ["action_id"],
+            ["action.action_id"],
+            name="fk_action_metadata__action_id__action",
+        ),
         sa.ForeignKeyConstraint(
             ["metadata_value_id"],
             ["metadata_value.metadata_value_id"],
             name="fk_action_metadata__metadata_value_id__metadata_value",
         ),
-        sa.PrimaryKeyConstraint(
-            "action_metadata_id", name="pk_action_metadata"
-        ),
+        sa.PrimaryKeyConstraint("action_metadata_id", name="pk_action_metadata"),
     )
 
     # Create action source metadata table
@@ -300,7 +304,11 @@ def upgrade():
             "value", sa.VARCHAR(length=1024), autoincrement=False, nullable=False
         ),
         sa.Column("action_id", sa.INTEGER(), autoincrement=False, nullable=False),
-        sa.ForeignKeyConstraint(["action_id"], ["action.action_id"], name="fk_action_source_metadata__action_id__action"),
+        sa.ForeignKeyConstraint(
+            ["action_id"],
+            ["action.action_id"],
+            name="fk_action_source_metadata__action_id__action",
+        ),
         sa.ForeignKeyConstraint(
             ["metadata_type_id"],
             ["metadata_type.metadata_type_id"],
@@ -339,7 +347,9 @@ def upgrade():
             ["action_id"], ["action.action_id"], name="fk_document__action_id__action"
         ),
         sa.ForeignKeyConstraint(
-            ["language_id"], ["language.language_id"], name="fk_document__language_id__language"
+            ["language_id"],
+            ["language.language_id"],
+            name="fk_document__language_id__language",
         ),
         sa.PrimaryKeyConstraint("document_id", name="pk_document"),
     )
@@ -356,15 +366,19 @@ def upgrade():
         sa.Column("language_id", sa.SmallInteger(), autoincrement=False, nullable=True),
         sa.Column("text", sa.TEXT(), autoincrement=False, nullable=False),
         sa.ForeignKeyConstraint(
-            ["document_id"], ["document.document_id"], name="fk_passage__document_id__document"
+            ["document_id"],
+            ["document.document_id"],
+            name="fk_passage__document_id__document",
         ),
         sa.ForeignKeyConstraint(
-            ["language_id"], ["language.language_id"], name="fk_passage__language_id__language"
+            ["language_id"],
+            ["language.language_id"],
+            name="fk_passage__language_id__language",
         ),
         sa.ForeignKeyConstraint(
-            ['parent_passage_id'],
-            ['passage.passage_id'],
-            name=op.f('fk_passage__parent_passage_id__passage')
+            ["parent_passage_id"],
+            ["passage.passage_id"],
+            name=op.f("fk_passage__parent_passage_id__passage"),
         ),
         sa.ForeignKeyConstraint(
             ["passage_type_id"],
@@ -392,9 +406,9 @@ def upgrade():
             name="fk_passage_metadata__metadata_value_id__metadata_value",
         ),
         sa.ForeignKeyConstraint(
-            ['source'],
-            ['source.source_id'],
-            name=op.f('fk_passage_metadata__source__source')
+            ["source"],
+            ["source.source_id"],
+            name=op.f("fk_passage_metadata__source__source"),
         ),
         sa.PrimaryKeyConstraint(
             "passage_id",

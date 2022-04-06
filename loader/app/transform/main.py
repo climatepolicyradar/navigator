@@ -10,12 +10,12 @@ logger = logging.getLogger(__file__)
 
 def transform(cclw_policy_fe_df: DataFrame) -> PolicyLookup:
     # Drop entries with no policy document list
-    cclw_policy_fe_df.dropna(subset=['document_list'], inplace=True)
+    cclw_policy_fe_df.dropna(subset=["document_list"], inplace=True)
 
     policies: PolicyLookup = {}
 
     for d_ix, d in cclw_policy_fe_df.iterrows():
-        result = get_policy_data(d, sep=';', sub_sep='|')
+        result = get_policy_data(d, sep=";", sub_sep="|")
         if result is None:
             continue
         key, policy_data = result

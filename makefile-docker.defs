@@ -10,11 +10,15 @@ start_containers:
 show_logs:
 	docker-compose logs -f
 
-migrations_docker:
+migrations_docker_backend:
 	# Run database migrations when using docker for development
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic upgrade head
 	# Create initial data in database
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 app/initial_data.py
+
+migrations_docker_loader:
+	# Run database migrations when using docker for development
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic upgrade head
 
 start: start_containers
 	make migrations_docker
