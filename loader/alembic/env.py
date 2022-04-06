@@ -31,7 +31,7 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    return os.environ["LOADER_DATABASE_URL"]
+    return os.environ["DATABASE_URL"]
 
 
 def generate_incremental_revision_id(context, revision, directives) -> None:

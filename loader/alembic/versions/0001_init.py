@@ -94,7 +94,7 @@ def upgrade():
         sa.Column("loaded_ts", sa.DateTime(timezone=True), nullable=True),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("source_url", sa.Text(), nullable=True),
-        sa.Column("source_id", sa.BigInteger(), nullable=False),
+        sa.Column("source_id", sa.Integer(), nullable=False),
         sa.Column("url", sa.Text(), nullable=True),
         sa.Column("is_valid", sa.Boolean(), nullable=False),
         sa.Column(
@@ -132,7 +132,7 @@ def upgrade():
         sa.Column("parent_id", sa.Integer(), nullable=True),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("description", sa.Text(), nullable=False),
-        sa.Column("source_id", sa.BigInteger(), nullable=False),
+        sa.Column("source_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["parent_id"],
             ["instrument.id"],
@@ -149,7 +149,7 @@ def upgrade():
         sa.Column("parent_id", sa.Integer(), nullable=True),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("description", sa.Text(), nullable=False),
-        sa.Column("source_id", sa.BigInteger(), nullable=False),
+        sa.Column("source_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["parent_id"], ["sector.id"], name=op.f("fk_sector__parent_id__sector")
         ),

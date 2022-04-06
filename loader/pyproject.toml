@@ -10,6 +10,7 @@ python = "^3.9"
 pandas = "^1.4.1"
 requests = "^2.27.1"
 psycopg2-binary = "^2.9.3"
+SQLAlchemy-Utils = "^0.38.2"
 
 [tool.poetry.dev-dependencies]
 python-dotenv = "^0.19.2"

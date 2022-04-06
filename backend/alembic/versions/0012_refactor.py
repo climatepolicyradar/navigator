@@ -52,7 +52,7 @@ def upgrade():
         sa.Column("parent_id", sa.Integer(), nullable=True),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("description", sa.Text(), nullable=False),
-        sa.Column("source_id", sa.BigInteger(), nullable=False),
+        sa.Column("source_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["parent_id"],
             ["instrument.id"],
@@ -69,7 +69,7 @@ def upgrade():
         sa.Column("parent_id", sa.Integer(), nullable=True),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("description", sa.Text(), nullable=False),
-        sa.Column("source_id", sa.BigInteger(), nullable=False),
+        sa.Column("source_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["parent_id"], ["sector.id"], name=op.f("fk_sector__parent_id__sector")
         ),
@@ -201,14 +201,14 @@ def upgrade():
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_event")),
     )
-    op.drop_table("metadata_value")
-    op.drop_table("action")
-    op.drop_table("metadata_type")
-    op.drop_table("action_type")
-    op.drop_table("passage_metadata")
     op.drop_table("metadata_value_keywords")
+    op.drop_table("metadata_value")
+    op.drop_table("action_type")
+    op.drop_table("metadata_type")
+    op.drop_table("passage_metadata")
     op.drop_table("action_source_metadata")
     op.drop_table("action_metadata")
+    op.drop_table("action")
     op.add_column(
         "document",
         sa.Column(
@@ -227,7 +227,7 @@ def upgrade():
     op.add_column(
         "document", sa.Column("loaded_ts", sa.DateTime(timezone=True), nullable=True)
     )
-    op.add_column("document", sa.Column("source_id", sa.BigInteger(), nullable=False))
+    op.add_column("document", sa.Column("source_id", sa.Integer(), nullable=False))
     op.add_column("document", sa.Column("url", sa.Text(), nullable=True))
     op.add_column(
         "document", sa.Column("geography_id", sa.SmallInteger(), nullable=False)
@@ -238,6 +238,13 @@ def upgrade():
         "fk_document__language_id__language", "document", type_="foreignkey"
     )
     op.create_foreign_key(
+        op.f("fk_document__type_id__document_type"),
+        "document",
+        "document_type",
+        ["type_id"],
+        ["id"],
+    )
+    op.create_foreign_key(
         op.f("fk_document__source_id__source"),
         "document",
         "source",
@@ -245,17 +252,10 @@ def upgrade():
         ["id"],
     )
     op.create_foreign_key(
-        op.f("fk_document__updated_by__user"),
+        op.f("fk_document__created_by__user"),
         "document",
         "user",
-        ["updated_by"],
-        ["id"],
-    )
-    op.create_foreign_key(
-        op.f("fk_document__type_id__document_type"),
-        "document",
-        "document_type",
-        ["type_id"],
+        ["created_by"],
         ["id"],
     )
     op.create_foreign_key(
@@ -266,20 +266,20 @@ def upgrade():
         ["id"],
     )
     op.create_foreign_key(
-        op.f("fk_document__created_by__user"),
+        op.f("fk_document__updated_by__user"),
         "document",
         "user",
-        ["created_by"],
+        ["updated_by"],
         ["id"],
     )
-    op.drop_column("document", "is_valid")
-    op.drop_column("document", "document_date")
     op.drop_column("document", "s3_url")
-    op.drop_column("document", "document_mod_date")
+    op.drop_column("document", "document_date")
     op.drop_column("document", "language_id")
-    op.drop_column("document", "action_id")
-    op.drop_column("document", "invalid_reason")
+    op.drop_column("document", "document_mod_date")
     op.drop_column("document", "document_id")
+    op.drop_column("document", "action_id")
+    op.drop_column("document", "is_valid")
+    op.drop_column("document", "invalid_reason")
     op.add_column("geography", sa.Column("id", sa.SmallInteger(), nullable=False))
     op.add_column("geography", sa.Column("value", sa.Text(), nullable=True))
     op.add_column("geography", sa.Column("official_value", sa.Text(), nullable=True))
@@ -292,24 +292,38 @@ def upgrade():
         ["parent_id"],
         ["id"],
     )
-    op.drop_column("geography", "geography_id")
-    op.drop_column("geography", "french_shortname")
-    op.drop_column("geography", "country_code")
     op.drop_column("geography", "english_shortname")
+    op.drop_column("geography", "country_code")
+    op.drop_column("geography", "french_shortname")
+    op.drop_column("geography", "geography_id")
     op.add_column("language", sa.Column("id", sa.SmallInteger(), nullable=False))
     op.drop_column("language", "language_id")
     op.add_column("passage", sa.Column("id", sa.BigInteger(), nullable=False))
     op.drop_constraint(
-        "fk_passage__passage_type_id__passage_type", "passage", type_="foreignkey"
+        "fk_passage__document_id__document", "passage", type_="foreignkey"
     )
     op.drop_constraint(
-        "fk_passage__document_id__document", "passage", type_="foreignkey"
+        "fk_passage__language_id__language", "passage", type_="foreignkey"
+    )
+    op.drop_constraint(
+        "fk_passage__passage_type_id__passage_type", "passage", type_="foreignkey"
     )
     op.drop_constraint(
         "fk_passage__parent_passage_id__passage", "passage", type_="foreignkey"
     )
-    op.drop_constraint(
-        "fk_passage__language_id__language", "passage", type_="foreignkey"
+    op.create_foreign_key(
+        op.f("fk_passage__passage_type_id__passage_type"),
+        "passage",
+        "passage_type",
+        ["passage_type_id"],
+        ["id"],
+    )
+    op.create_foreign_key(
+        op.f("fk_passage__document_id__document"),
+        "passage",
+        "document",
+        ["document_id"],
+        ["id"],
     )
     op.create_foreign_key(
         op.f("fk_passage__parent_passage_id__passage"),
@@ -325,29 +339,9 @@ def upgrade():
         ["language_id"],
         ["id"],
     )
-    op.create_foreign_key(
-        op.f("fk_passage__document_id__document"),
-        "passage",
-        "document",
-        ["document_id"],
-        ["id"],
-    )
-    op.create_foreign_key(
-        op.f("fk_passage__passage_type_id__passage_type"),
-        "passage",
-        "passage_type",
-        ["passage_type_id"],
-        ["id"],
-    )
     op.drop_column("passage", "passage_id")
     op.add_column("passage_type", sa.Column("id", sa.Integer(), nullable=False))
     op.drop_column("passage_type", "passage_type_id")
-    op.add_column(
-        "password_reset_token", sa.Column("is_cancelled", sa.Boolean(), nullable=False)
-    )
-    op.drop_constraint(
-        "uq_password_reset_token__user_id", "password_reset_token", type_="unique"
-    )
     op.add_column("source", sa.Column("id", sa.Integer(), nullable=False))
     op.drop_column("source", "source_id")
     op.add_column(
@@ -380,13 +374,17 @@ def downgrade():
         ),
     )
     op.drop_column("source", "id")
-    op.create_unique_constraint(
-        "uq_password_reset_token__user_id", "password_reset_token", ["user_id"]
-    )
-    op.drop_column("password_reset_token", "is_cancelled")
     op.add_column(
         "passage_type",
-        sa.Column("passage_type_id", sa.INTEGER(), autoincrement=True, nullable=False),
+        sa.Column(
+            "passage_type_id",
+            sa.INTEGER(),
+            server_default=sa.text(
+                "nextval('passage_type_passage_type_id_seq'::regclass)"
+            ),
+            autoincrement=True,
+            nullable=False,
+        ),
     )
     op.drop_column("passage_type", "id")
     op.add_column(
@@ -394,23 +392,16 @@ def downgrade():
         sa.Column("passage_id", sa.BIGINT(), autoincrement=True, nullable=False),
     )
     op.drop_constraint(
-        op.f("fk_passage__passage_type_id__passage_type"), "passage", type_="foreignkey"
-    )
-    op.drop_constraint(
-        op.f("fk_passage__document_id__document"), "passage", type_="foreignkey"
-    )
-    op.drop_constraint(
         op.f("fk_passage__language_id__language"), "passage", type_="foreignkey"
     )
     op.drop_constraint(
         op.f("fk_passage__parent_passage_id__passage"), "passage", type_="foreignkey"
     )
-    op.create_foreign_key(
-        "fk_passage__language_id__language",
-        "passage",
-        "language",
-        ["language_id"],
-        ["language_id"],
+    op.drop_constraint(
+        op.f("fk_passage__document_id__document"), "passage", type_="foreignkey"
+    )
+    op.drop_constraint(
+        op.f("fk_passage__passage_type_id__passage_type"), "passage", type_="foreignkey"
     )
     op.create_foreign_key(
         "fk_passage__parent_passage_id__passage",
@@ -420,18 +411,25 @@ def downgrade():
         ["passage_id"],
     )
     op.create_foreign_key(
-        "fk_passage__document_id__document",
-        "passage",
-        "document",
-        ["document_id"],
-        ["document_id"],
-    )
-    op.create_foreign_key(
         "fk_passage__passage_type_id__passage_type",
         "passage",
         "passage_type",
         ["passage_type_id"],
         ["passage_type_id"],
+    )
+    op.create_foreign_key(
+        "fk_passage__language_id__language",
+        "passage",
+        "language",
+        ["language_id"],
+        ["language_id"],
+    )
+    op.create_foreign_key(
+        "fk_passage__document_id__document",
+        "passage",
+        "document",
+        ["document_id"],
+        ["document_id"],
     )
     op.drop_column("passage", "id")
     op.add_column(
@@ -448,16 +446,11 @@ def downgrade():
     op.add_column(
         "geography",
         sa.Column(
-            "english_shortname",
-            sa.VARCHAR(length=128),
-            autoincrement=False,
+            "geography_id",
+            sa.SMALLINT(),
+            server_default=sa.text("nextval('geography_geography_id_seq'::regclass)"),
+            autoincrement=True,
             nullable=False,
-        ),
-    )
-    op.add_column(
-        "geography",
-        sa.Column(
-            "country_code", sa.CHAR(length=3), autoincrement=False, nullable=False
         ),
     )
     op.add_column(
@@ -472,10 +465,15 @@ def downgrade():
     op.add_column(
         "geography",
         sa.Column(
-            "geography_id",
-            sa.SMALLINT(),
-            server_default=sa.text("nextval('geography_geography_id_seq'::regclass)"),
-            autoincrement=True,
+            "country_code", sa.CHAR(length=3), autoincrement=False, nullable=False
+        ),
+    )
+    op.add_column(
+        "geography",
+        sa.Column(
+            "english_shortname",
+            sa.VARCHAR(length=128),
+            autoincrement=False,
             nullable=False,
         ),
     )
@@ -487,10 +485,6 @@ def downgrade():
     op.drop_column("geography", "official_value")
     op.drop_column("geography", "value")
     op.drop_column("geography", "id")
-    op.add_column(
-        "document",
-        sa.Column("document_id", sa.INTEGER(), autoincrement=True, nullable=False),
-    )
     op.add_column(
         "document",
         sa.Column(
@@ -509,11 +503,15 @@ def downgrade():
     )
     op.add_column(
         "document",
+        sa.Column("is_valid", sa.BOOLEAN(), autoincrement=False, nullable=False),
+    )
+    op.add_column(
+        "document",
         sa.Column("action_id", sa.INTEGER(), autoincrement=False, nullable=False),
     )
     op.add_column(
         "document",
-        sa.Column("language_id", sa.SMALLINT(), autoincrement=False, nullable=True),
+        sa.Column("document_id", sa.INTEGER(), autoincrement=True, nullable=False),
     )
     op.add_column(
         "document",
@@ -526,9 +524,7 @@ def downgrade():
     )
     op.add_column(
         "document",
-        sa.Column(
-            "s3_url", sa.VARCHAR(length=1024), autoincrement=False, nullable=True
-        ),
+        sa.Column("language_id", sa.SMALLINT(), autoincrement=False, nullable=True),
     )
     op.add_column(
         "document",
@@ -538,22 +534,24 @@ def downgrade():
     )
     op.add_column(
         "document",
-        sa.Column("is_valid", sa.BOOLEAN(), autoincrement=False, nullable=False),
-    )
-    op.drop_constraint(
-        op.f("fk_document__created_by__user"), "document", type_="foreignkey"
-    )
-    op.drop_constraint(
-        op.f("fk_document__geography_id__geography"), "document", type_="foreignkey"
-    )
-    op.drop_constraint(
-        op.f("fk_document__type_id__document_type"), "document", type_="foreignkey"
+        sa.Column(
+            "s3_url", sa.VARCHAR(length=1024), autoincrement=False, nullable=True
+        ),
     )
     op.drop_constraint(
         op.f("fk_document__updated_by__user"), "document", type_="foreignkey"
     )
     op.drop_constraint(
+        op.f("fk_document__geography_id__geography"), "document", type_="foreignkey"
+    )
+    op.drop_constraint(
+        op.f("fk_document__created_by__user"), "document", type_="foreignkey"
+    )
+    op.drop_constraint(
         op.f("fk_document__source_id__source"), "document", type_="foreignkey"
+    )
+    op.drop_constraint(
+        op.f("fk_document__type_id__document_type"), "document", type_="foreignkey"
     )
     op.create_foreign_key(
         "fk_document__language_id__language",
@@ -579,6 +577,59 @@ def downgrade():
     op.drop_column("document", "id")
     op.drop_column("document", "updated_ts")
     op.drop_column("document", "created_ts")
+    op.create_table(
+        "action",
+        sa.Column(
+            "action_id",
+            sa.INTEGER(),
+            server_default=sa.text("nextval('action_action_id_seq'::regclass)"),
+            autoincrement=True,
+            nullable=False,
+        ),
+        sa.Column(
+            "action_source_json",
+            postgresql.JSONB(astext_type=sa.Text()),
+            autoincrement=False,
+            nullable=True,
+        ),
+        sa.Column("name", sa.TEXT(), autoincrement=False, nullable=False),
+        sa.Column("description", sa.TEXT(), autoincrement=False, nullable=True),
+        sa.Column("action_date", sa.DATE(), autoincrement=False, nullable=False),
+        sa.Column("geography_id", sa.SMALLINT(), autoincrement=False, nullable=False),
+        sa.Column("action_type_id", sa.INTEGER(), autoincrement=False, nullable=False),
+        sa.Column(
+            "action_mod_date",
+            postgresql.TIMESTAMP(),
+            autoincrement=False,
+            nullable=True,
+        ),
+        sa.Column("action_source_id", sa.BIGINT(), autoincrement=False, nullable=False),
+        sa.ForeignKeyConstraint(
+            ["action_source_id"],
+            ["source.source_id"],
+            name="fk_action__action_source_id__source",
+        ),
+        sa.ForeignKeyConstraint(
+            ["action_type_id"],
+            ["action_type.action_type_id"],
+            name="fk_action__action_type_id__action_type",
+        ),
+        sa.ForeignKeyConstraint(
+            ["geography_id"],
+            ["geography.geography_id"],
+            name="fk_action__geography_id__geography",
+        ),
+        sa.PrimaryKeyConstraint("action_id", name="pk_action"),
+        sa.UniqueConstraint(
+            "name",
+            "action_date",
+            "geography_id",
+            "action_type_id",
+            "action_source_id",
+            name="uq_action__name",
+        ),
+        postgresql_ignore_search_path=False,
+    )
     op.create_table(
         "action_metadata",
         sa.Column("action_id", sa.INTEGER(), autoincrement=False, nullable=False),
@@ -630,26 +681,6 @@ def downgrade():
         ),
     )
     op.create_table(
-        "metadata_value_keywords",
-        sa.Column(
-            "metadata_keyword_id", sa.INTEGER(), autoincrement=True, nullable=False
-        ),
-        sa.Column(
-            "metadata_value_id", sa.INTEGER(), autoincrement=False, nullable=False
-        ),
-        sa.Column(
-            "keyword", sa.VARCHAR(length=255), autoincrement=False, nullable=False
-        ),
-        sa.ForeignKeyConstraint(
-            ["metadata_value_id"],
-            ["metadata_value.metadata_value_id"],
-            name="fk_metadata_value_keywords__metadata_value_id__metadata_value",
-        ),
-        sa.PrimaryKeyConstraint(
-            "metadata_keyword_id", name="pk_metadata_value_keywords"
-        ),
-    )
-    op.create_table(
         "passage_metadata",
         sa.Column("passage_id", sa.BIGINT(), autoincrement=False, nullable=False),
         sa.Column(
@@ -670,32 +701,6 @@ def downgrade():
         sa.PrimaryKeyConstraint(
             "passage_id", "metadata_value_id", name="pk_passage_metadata"
         ),
-    )
-    op.create_table(
-        "action_type",
-        sa.Column(
-            "action_type_id",
-            sa.INTEGER(),
-            server_default=sa.text(
-                "nextval('action_type_action_type_id_seq'::regclass)"
-            ),
-            autoincrement=True,
-            nullable=False,
-        ),
-        sa.Column(
-            "action_parent_type_id", sa.INTEGER(), autoincrement=False, nullable=True
-        ),
-        sa.Column(
-            "type_name", sa.VARCHAR(length=255), autoincrement=False, nullable=False
-        ),
-        sa.Column(
-            "type_description",
-            sa.VARCHAR(length=2048),
-            autoincrement=False,
-            nullable=True,
-        ),
-        sa.PrimaryKeyConstraint("action_type_id", name="pk_action_type"),
-        postgresql_ignore_search_path=False,
     )
     op.create_table(
         "metadata_type",
@@ -721,55 +726,32 @@ def downgrade():
         postgresql_ignore_search_path=False,
     )
     op.create_table(
-        "action",
-        sa.Column("action_id", sa.INTEGER(), autoincrement=True, nullable=False),
+        "action_type",
+        sa.Column("action_type_id", sa.INTEGER(), autoincrement=True, nullable=False),
         sa.Column(
-            "action_source_json",
-            postgresql.JSONB(astext_type=sa.Text()),
+            "action_parent_type_id", sa.INTEGER(), autoincrement=False, nullable=True
+        ),
+        sa.Column(
+            "type_name", sa.VARCHAR(length=255), autoincrement=False, nullable=False
+        ),
+        sa.Column(
+            "type_description",
+            sa.VARCHAR(length=2048),
             autoincrement=False,
             nullable=True,
         ),
-        sa.Column("name", sa.TEXT(), autoincrement=False, nullable=False),
-        sa.Column("description", sa.TEXT(), autoincrement=False, nullable=True),
-        sa.Column("action_date", sa.DATE(), autoincrement=False, nullable=False),
-        sa.Column("geography_id", sa.SMALLINT(), autoincrement=False, nullable=False),
-        sa.Column("action_type_id", sa.INTEGER(), autoincrement=False, nullable=False),
-        sa.Column(
-            "action_mod_date",
-            postgresql.TIMESTAMP(),
-            autoincrement=False,
-            nullable=True,
-        ),
-        sa.Column("action_source_id", sa.BIGINT(), autoincrement=False, nullable=False),
-        sa.ForeignKeyConstraint(
-            ["action_source_id"],
-            ["source.source_id"],
-            name="fk_action__action_source_id__source",
-        ),
-        sa.ForeignKeyConstraint(
-            ["action_type_id"],
-            ["action_type.action_type_id"],
-            name="fk_action__action_type_id__action_type",
-        ),
-        sa.ForeignKeyConstraint(
-            ["geography_id"],
-            ["geography.geography_id"],
-            name="fk_action__geography_id__geography",
-        ),
-        sa.PrimaryKeyConstraint("action_id", name="pk_action"),
-        sa.UniqueConstraint(
-            "name",
-            "action_date",
-            "geography_id",
-            "action_type_id",
-            "action_source_id",
-            name="uq_action__name",
-        ),
+        sa.PrimaryKeyConstraint("action_type_id", name="pk_action_type"),
     )
     op.create_table(
         "metadata_value",
         sa.Column(
-            "metadata_value_id", sa.INTEGER(), autoincrement=True, nullable=False
+            "metadata_value_id",
+            sa.INTEGER(),
+            server_default=sa.text(
+                "nextval('metadata_value_metadata_value_id_seq'::regclass)"
+            ),
+            autoincrement=True,
+            nullable=False,
         ),
         sa.Column(
             "metadata_type_id", sa.INTEGER(), autoincrement=False, nullable=False
@@ -789,6 +771,27 @@ def downgrade():
             name="fk_metadata_value__metadata_type_id__metadata_type",
         ),
         sa.PrimaryKeyConstraint("metadata_value_id", name="pk_metadata_value"),
+        postgresql_ignore_search_path=False,
+    )
+    op.create_table(
+        "metadata_value_keywords",
+        sa.Column(
+            "metadata_keyword_id", sa.INTEGER(), autoincrement=True, nullable=False
+        ),
+        sa.Column(
+            "metadata_value_id", sa.INTEGER(), autoincrement=False, nullable=False
+        ),
+        sa.Column(
+            "keyword", sa.VARCHAR(length=255), autoincrement=False, nullable=False
+        ),
+        sa.ForeignKeyConstraint(
+            ["metadata_value_id"],
+            ["metadata_value.metadata_value_id"],
+            name="fk_metadata_value_keywords__metadata_value_id__metadata_value",
+        ),
+        sa.PrimaryKeyConstraint(
+            "metadata_keyword_id", name="pk_metadata_value_keywords"
+        ),
     )
     op.drop_table("event")
     op.drop_table("document_sector")

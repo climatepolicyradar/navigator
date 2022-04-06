@@ -108,7 +108,7 @@ class Document(Auditable, Base):
     loaded_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
     name = sa.Column(sa.Text, nullable=False)
     source_url = sa.Column(sa.Text)
-    source_id = sa.Column(sa.BigInteger, sa.ForeignKey(Source.id), nullable=False)
+    source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
     url = sa.Column(sa.Text)
 
     # this will be in the loader DB
@@ -128,7 +128,7 @@ class Sector(Base):  # noqa: D101
     parent_id = sa.Column(sa.Integer, sa.ForeignKey("sector.id"))
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    source_id = sa.Column(sa.BigInteger, sa.ForeignKey(Source.id), nullable=False)
+    source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
 
 
 class DocumentSector(Base):  # noqa: D101
@@ -146,7 +146,7 @@ class Instrument(Base):  # noqa: D101
     parent_id = sa.Column(sa.Integer, sa.ForeignKey("instrument.id"))
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    source_id = sa.Column(sa.BigInteger, sa.ForeignKey(Source.id), nullable=False)
+    source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
 
 
 class DocumentInstrument(Base):  # noqa: D101

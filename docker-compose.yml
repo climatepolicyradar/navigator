@@ -36,7 +36,7 @@ services:
       - ./backend:/app/:cached
     environment:
       PYTHONPATH: .
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${BACKEND_DATABASE_URL}
     env_file:
       - .env
     depends_on:
@@ -66,6 +66,7 @@ services:
     environment:
       PYTHONPATH: .
       DATA_DIR: /app/data
+      DATABASE_URL: ${LOADER_DATABASE_URL}
       ENV: production
     env_file:
       - .env
@@ -114,7 +115,7 @@ services:
     environment:
       PYTHONPATH: .
       ENV: production
-      DATABASE_URL: ${DATABASE_URL}
+      DATABASE_URL: ${LOADER_DATABASE_URL}
     env_file:
       - .env
     depends_on:
