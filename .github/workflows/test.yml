@@ -44,6 +44,7 @@ jobs:
   test_search_index:
     runs-on: ubuntu-latest
     steps:
+      - uses: actions/checkout@v2
       - name: Build docker-compose stack using .env.example
         run: cp .env.example .env && make start
       - uses: actions/checkout@v2
