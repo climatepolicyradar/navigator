@@ -2,7 +2,7 @@
 
 Revision ID: 0001
 Revises:
-Create Date: 2022-04-06 10:45:58.436966
+Create Date: 2022-04-06 12:59:44.456122
 
 """
 from alembic import op
@@ -82,31 +82,6 @@ def upgrade():
         sa.PrimaryKeyConstraint("id", name=op.f("pk_source")),
     )
     op.create_table(
-        "user",
-        sa.Column(
-            "created_ts",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=True,
-        ),
-        sa.Column("updated_ts", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("email", sa.String(), nullable=False),
-        sa.Column("names", sa.String(), nullable=True),
-        sa.Column("hashed_password", sa.String(), nullable=True),
-        sa.Column("is_active", sa.Boolean(), nullable=False),
-        sa.Column("is_superuser", sa.Boolean(), nullable=False),
-        sa.Column("job_role", sa.String(), nullable=True),
-        sa.Column("location", sa.String(), nullable=True),
-        sa.Column("affiliation_organisation", sa.String(), nullable=True),
-        sa.Column("affiliation_type", sa.ARRAY(sa.Text()), nullable=True),
-        sa.Column("policy_type_of_interest", sa.ARRAY(sa.Text()), nullable=True),
-        sa.Column("geographies_of_interest", sa.ARRAY(sa.Text()), nullable=True),
-        sa.Column("data_focus_of_interest", sa.ARRAY(sa.Text()), nullable=True),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_user")),
-    )
-    op.create_index(op.f("ix_user_email"), "user", ["email"], unique=True)
-    op.create_table(
         "document",
         sa.Column(
             "created_ts",
@@ -116,18 +91,26 @@ def upgrade():
         ),
         sa.Column("updated_ts", sa.DateTime(timezone=True), nullable=True),
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("created_by", sa.Integer(), nullable=True),
-        sa.Column("updated_by", sa.Integer(), nullable=True),
         sa.Column("loaded_ts", sa.DateTime(timezone=True), nullable=True),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("source_url", sa.Text(), nullable=True),
         sa.Column("source_id", sa.BigInteger(), nullable=False),
         sa.Column("url", sa.Text(), nullable=True),
+        sa.Column("is_valid", sa.Boolean(), nullable=False),
+        sa.Column(
+            "invalid_reason",
+            sa.Enum(
+                "unsupported_content_type",
+                "net_ssl_error",
+                "net_read_error",
+                "net_connection_error",
+                "net_too_many_redirects",
+                name="documentinvalidreason",
+            ),
+            nullable=True,
+        ),
         sa.Column("geography_id", sa.SmallInteger(), nullable=False),
         sa.Column("type_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["created_by"], ["user.id"], name=op.f("fk_document__created_by__user")
-        ),
         sa.ForeignKeyConstraint(
             ["geography_id"],
             ["geography.id"],
@@ -140,9 +123,6 @@ def upgrade():
             ["type_id"],
             ["document_type.id"],
             name=op.f("fk_document__type_id__document_type"),
-        ),
-        sa.ForeignKeyConstraint(
-            ["updated_by"], ["user.id"], name=op.f("fk_document__updated_by__user")
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_document")),
     )
@@ -162,29 +142,6 @@ def upgrade():
             ["source_id"], ["source.id"], name=op.f("fk_instrument__source_id__source")
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_instrument")),
-    )
-    op.create_table(
-        "password_reset_token",
-        sa.Column(
-            "created_ts",
-            sa.DateTime(timezone=True),
-            server_default=sa.text("now()"),
-            nullable=True,
-        ),
-        sa.Column("updated_ts", sa.DateTime(timezone=True), nullable=True),
-        sa.Column("id", sa.BigInteger(), nullable=False),
-        sa.Column("token", sa.Text(), nullable=False),
-        sa.Column("expiry_ts", sa.DateTime(), nullable=False),
-        sa.Column("is_redeemed", sa.Boolean(), nullable=False),
-        sa.Column("is_cancelled", sa.Boolean(), nullable=False),
-        sa.Column("user_id", sa.Integer(), nullable=False),
-        sa.ForeignKeyConstraint(
-            ["user_id"],
-            ["user.id"],
-            name=op.f("fk_password_reset_token__user_id__user"),
-        ),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_password_reset_token")),
-        sa.UniqueConstraint("token", name=op.f("uq_password_reset_token__token")),
     )
     op.create_table(
         "sector",
@@ -369,11 +326,8 @@ def downgrade():
     op.drop_table("document_framework")
     op.drop_table("association")
     op.drop_table("sector")
-    op.drop_table("password_reset_token")
     op.drop_table("instrument")
     op.drop_table("document")
-    op.drop_index(op.f("ix_user_email"), table_name="user")
-    op.drop_table("user")
     op.drop_table("source")
     op.drop_table("response")
     op.drop_table("passage_type")
