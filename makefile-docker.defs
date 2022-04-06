@@ -63,10 +63,7 @@ test_loader:
 test_pipeline:
 	docker run navigator_pipeline python -m pytest
 
-test_search_index:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index pytest
-
-test: test_backend test_frontend test_loader test_pipeline test_search_index
+test: test_backend test_frontend test_loader test_pipeline
 
 # ----------------------------------
 # tasks

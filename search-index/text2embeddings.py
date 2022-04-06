@@ -9,8 +9,6 @@ from tqdm.auto import tqdm
 import numpy as np
 import pandas as pd
 import click
-import re
-import codecs
 
 from app.ml import SBERTEncoder, SentenceEncoder
 from app.utils import paginate_list
@@ -20,113 +18,10 @@ from navigator.core.utils import get_timestamp
 logger = get_logger(__name__)
 
 
-def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str:
-    """
-    Format a list text block and prepend it to the previous text block, assuming it is the context of the list.
-    This is a fairly strong assumption, but works most of the time. Code to handle more complex cases has been started.
-
-    Args:
-        text_block (dict): text block dict.
-        prev_processed_text_block (dict): previous text block dict.
-
-    Returns:
-        str: Formatted list text block that is useful for indexing semantics.
-    """
-    text = text_block["custom_attributes"]["pretty_list_string"]
-    # Note, it was decided to leave most of the formatting and use custom analysers in elasticsearch to handle
-    # formatting. This makes this function unnecessary, but I've left it here in case we want something more later.
-    text = text.strip()
-    # This snippet is ugly/non pythonic. It's used to get around some upstream bad code with html tags. Really, this
-    # was a bad way of doing things in the first place so not overly concerned with fixing it for now. This will do.
-    text = codecs.decode(text, 'unicode_escape')
-    text = "\n".join([s for s in text.split("\n") if s])
-    # Always append previous text block as context. This is a fairly strong assumption, and the code to make this
-    # better has been started, in postprocessor.py, but is not yet completely robust, so we are not using it for now.
-    # TODO: Note, we can potentially do this in a more robust way by using the text block custom attributes created
-    #  in postprocessor.py, which I've updated. This will allow us to deal with edge cases, for example where the
-    #  previous block is not either context or part of the same list from the previous page. This would be the case
-    #  when, for example, there are random elements between pages that the postprocessors haven't been able to catch.
-    #  But I've ignored this for now because it seems that the postprocessing in postprocessor.py has dealt with the
-    #  vast majority of edge cases (as indicated by the rarity of certain debugging metadata).
-    text = prev_processed_text_block + "\n" + text
-    return text
-
-
-def delete_string_indices(data: str, indices: List[int]) -> str:
-    """Delete a list of indices from a string.
-    Args:
-        data (str): string to delete indices from.
-        indices (List[int]): list of indices to delete.
-    Returns:
-        str: string with indices deleted.
-    """
-    return "".join([char for idx, char in enumerate(data) if idx not in indices])
-
-
-def get_text_from_merged_block(text_block: dict) -> str:
-    """
-    Remove unnecessary styling from merged text blocks (superscripts).
-
-    Args:
-        text_block: A block of text that has been merged.
-
-    Returns:
-        str: The text block with styling that is not related to semantics removed.
-
-    """
-    # Text output with no processing.
-    text_output = (
-        "".join(text_block["text"]).strip(),
-        text_block["text_block_id"],
-    )
-    # Remove superscripts only. Bolding has no impact on the block's content once merged, so we don't need to remove
-    # anything. Subscripts are kept because, for example, we want to keep CO2 even when it is subscripted).
-    # Superscripts are almost always references not related to semantics, so we can remove them.
-    try:
-        style_spans = text_block["custom_attributes"]["styleSpans"]
-        delete_indices = []
-        for style_span in style_spans:
-            if style_span["style"] == "superscript":
-                remove_start = style_span["start_idx"]
-                remove_end = style_span["end_idx"]
-                # if superscript is of the form st, nd, rd, th, do not remove as this can potentially
-                # be used by language models.
-                delete_substr = text_output[0][remove_start : remove_end + 1]
-                if re.match(r"(st|nd|rd|th)$", delete_substr):
-                    continue  # don't remove
-                delete_indices.extend(list(range(remove_start, remove_end + 1)))
-
-        # The indices are relative to the whole block, not just elements in the block.
-        # Remove the indices from deleted_indices from text_output.
-        if delete_indices:  # There will only be indices to delete in superscript case.
-            text_output_amended = delete_string_indices(text_output[0], delete_indices)
-            text_output = (text_output_amended, text_block["text_block_id"])
-            return text_output
-        else:
-            return text_output
-    # Blocks are sometimes merged by the styling processor for rare reasons other
-    # than style, in which case there is no stylespan attribute, hence this exception handling.
-    # This happens when, for example, there is a block with a unique path between two blocks with the same path.
-    # For example, italicized text often has a different path to the block it is part of because it
-    # is considered a span element. The styling processor as is does not handle this case, as for some
-    # reason Adobe doesn't consider italicization a style, and so the code is not robust to this. This
-    # is something that is probably easy to fix, but it's relatively rare so is left for now and is caught
-    # by the exception.
-    except KeyError:
-        # TODO: Fix problem that creates need for this exception (see comment above) handling (low priority).
-        #  c.f page 17 of cclw-9460 first block for an example.
-        logger.debug(
-            f"No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
-            f"italics). "
-        )
-        return text_output
-
-
 def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
     """Get the text and ID from each text block in a .json file created from a `Document` object.
 
-    A string is created for a text block by removing unnecessary styling elements, and removing
-    semantically irrelevant content from list types.
+    A string is created for a text block by newline-joining its list of text.
 
     Args:
         document (dict): dict created from a `Document` object, e.g. imported from a JSON file.
@@ -136,18 +31,12 @@ def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
     """
 
     text_output = []
-    prev_block_processed_text = None
+
     for page in document["pages"]:
         for text_block in page["text_blocks"]:
-            if text_block["type"] == "merged_text_block":
-                text = get_text_from_merged_block(text_block)
-            elif text_block["type"] == "list":
-                text = get_text_from_list(text_block, prev_block_processed_text)
-            else:
-                text = "".join(text_block["text"]).strip()
-            text_output.append((text, text_block["text_block_id"]))
-            # Keep previous text block in case we need to prepend it to a list as context.
-            prev_block_processed_text = text
+            text_output.append(
+                ("\n".join(text_block["text"]).strip(), text_block["text_block_id"])
+            )
 
     return text_output
 
@@ -252,7 +141,6 @@ def run_cli(
     encoder = SBERTEncoder(model_name)
 
     logger.info(f"Encoding text in batches of {batch_size}")
-
     text_by_document = [i[0] for i in text_and_ids]
     embs = encode_text(text_by_document, encoder, batch_size=batch_size)
 
