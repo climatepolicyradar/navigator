@@ -317,7 +317,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             {"ExtraCharSpan": "Lbl", "ParagraphSpan": "LBody", "Span": "Lbl"}
         )
 
-        # TODO: Deleting stylespans at this stage of the pipleine is a bit of a hack to handle the fact
+        # TODO: Deleting stylespans at this stage of the pipeline is a bit of a hack to handle the fact
         #  that there are sometimes trailing stylespan elements that we weren't dealt with properly upstream due
         #   to rare error cases e.g. if there are two style spans in a row. General assumption is that this doesn't
         #    affect the list structure.
@@ -335,11 +335,11 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                     new_string += f"\n<li{list_number}>\n{label_string}"
                 else:
                     new_string += f"{label_string}"
-            # TODO: Test more thoroughly.
-            #  Assume that if the list element isn't a label and the type hasnt been
-            #  handled above, it's part of a list body. This is a bit of a hack to get around the fact that there are
-            #  sometimes other types e.g. Span or Paragraph span that (due to italics and such) that should really be
-            #  part of a list body. Tested this and works so far, but there may be some difficult edge cases.
+
+            #  TODO: Test more thoroughly. Assume that if the list element isn't a label and the type hasn't been
+            # # handled above, it's part of a list body. This is a bit of a hack to get around the fact that there are
+            # # sometimes other types e.g. Span or Paragraph span that (due to italics and such) that should really be
+            # # part of a list body. Tested this and works so far, but there may be some difficult edge cases.
             else:
                 if row["last_list_ix_bool"]:
                     new_string += fr"<LBody>{text}<\LBody>\n" + fr"\n<\li{list_number}>\n"
