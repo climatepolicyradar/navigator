@@ -68,8 +68,10 @@ def get_text_from_merged_block(text_block: dict) -> str:
 
     """
     # Text output with no processing.
+    if len(text_block["text"]) >1:
+        breakpoint()
     text_output = (
-        "\n".join(text_block["text"]).strip(),
+        "".join(text_block["text"]).strip(),
         text_block["text_block_id"],
     )
     # Remove superscripts only. Bolding has no impact on the block's content once merged, so we don't need to remove
@@ -137,7 +139,7 @@ def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
             elif text_block["type"] == "list":
                 text = get_text_from_list(text_block, prev_block_processed_text)
             else:
-                text = "\n".join(text_block["text"]).strip()
+                text = "".join(text_block["text"]).strip()
             text_output.append((text, text_block["text_block_id"]))
             # Keep previous text block in case we need to prepend it to a list as context.
             prev_block_processed_text = text
