@@ -6,7 +6,7 @@ def test_get_text_from_merged_block():
     # Case 1: Single superscript. c.f cclw-10007. Superscript has been removed.
     input_1 = {
         "text": [
-            "The central indicator for measuring the depletion of natural resources at the macroeconomic level is the environmentally adjusted GDP: GDP \u2013 GDPE . It is the adjustment of GDP by the depletion (depreciation) of natural capital, which is the consumption of environmental products. Consumption of environmental products means quantitative reduction of minerals, bio-resources and the observed reduction in ecosystem services.  "
+            "The central indicator for measuring the depletion of natural resources at the macroeconomic level is the environmentally adjusted GDP: GDP – GDPE . It is the adjustment of GDP by the depletion (depreciation) of natural capital, which is the consumption of environmental products. Consumption of environmental products means quantitative reduction of minerals, bio-resources and the observed reduction in ecosystem services.  "
         ],
         "text_block_id": "p6_b91_merged",
         "coords": [
