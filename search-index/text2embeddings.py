@@ -3,12 +3,11 @@
 from pathlib import Path
 import glob
 import json
-from typing import List, Tuple, Optional
+from typing import List, Optional, Dict
 import os
 
 from tqdm.auto import tqdm
 import numpy as np
-import pandas as pd
 import click
 
 from app.ml import SBERTEncoder, SentenceEncoder
@@ -21,7 +20,7 @@ from navigator.core.utils import get_timestamp
 logger = get_logger(__name__)
 
 
-def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
+def get_text_from_document_dict(document: dict) -> List[Dict[str, str]]:
     """Get the text and ID from each text block in a .json file created from a `Document` object.
 
     A string is created for a text block by newline-joining its list of text.
@@ -30,7 +29,7 @@ def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
         document (dict): dict created from a `Document` object, e.g. imported from a JSON file.
 
     Returns:
-        List[Tuple[str, str]]: list of (text, text_block_id) tuples.
+        List[Dict[str, str]]: dicts are {"text": "", "text_block_id": ""}.
     """
 
     text_output = []
@@ -38,20 +37,23 @@ def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
     for page in document["pages"]:
         for text_block in page["text_blocks"]:
             text_output.append(
-                ("\n".join(text_block["text"]).strip(), text_block["text_block_id"])
+                {
+                    "text": "\n".join(text_block["text"]).strip(),
+                    "text_block_id": text_block["text_block_id"],
+                }
             )
 
     return text_output
 
 
-def get_text_from_json_files(filepaths: List[str]) -> List[Tuple[str, str, str]]:
+def get_text_from_json_files(filepaths: List[str]) -> List[Dict[str, str]]:
     """Extract text, text block IDs and document IDs from JSON files created by the PDF parsing pipeline.
 
     Args:
         filepaths (List[str]): list of paths to JSON files outputted by the pdf2text CLI.
 
     Returns:
-        List[Tuple[str, str, str]]: tuples of (text, text_id, document_filename).
+        List[Dict[str, str]]: dicts are {"text": "", "text_block_id": "", "document_id": ""}.
     """
     text_by_document = []
 
@@ -60,9 +62,10 @@ def get_text_from_json_files(filepaths: List[str]) -> List[Tuple[str, str, str]]
             document = json.load(f)
 
         document_text_and_ids = get_text_from_document_dict(document)
-        document_filename = document["filename"]
-        for text, _id in document_text_and_ids:
-            text_by_document.append((text, _id, document_filename))
+
+        for text_and_id in document_text_and_ids:
+            text_and_id.update({"document_id": document["filename"]})
+            text_by_document.append(text_and_id)
 
     return text_by_document
 
@@ -153,7 +156,7 @@ def run_cli(
     encoder = SBERTEncoder(model_name)
 
     logger.info(f"Encoding text in batches of {batch_size}")
-    text_by_document = [i[0] for i in text_and_ids]
+    text_by_document = [i["text"] for i in text_and_ids]
     # Export embeddings to numpy memmap file
     embs_output_path = (
         output_dir
@@ -162,17 +165,13 @@ def run_cli(
     encode_text_to_memmap(text_by_document, encoder, batch_size, embs_output_path)
 
     # Save text, text block IDs and document IDs to JSON file
-    pd.DataFrame(
-        text_and_ids, columns=["text", "text_block_id", "document_id"]
-    ).to_json(
-        output_dir / f"ids_{model_name}_{curr_time}.json",
-        orient="records",
-    )
+    with open(output_dir / f"ids_{model_name}_{curr_time}.json", "w") as f:
+        json.dump(text_and_ids, f)
 
     # Encode action descriptions
     postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
     navigator_dataset = create_dataset(postgres_connector)
-    document_ids_processed = [i[2] for i in text_and_ids]
+    document_ids_processed = set([i["document_id"] for i in text_and_ids])
     description_data_to_encode = navigator_dataset.loc[
         navigator_dataset["prototype_filename_stem"].isin(document_ids_processed)
     ]
