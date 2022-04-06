@@ -10,6 +10,7 @@ import numpy as np
 import pandas as pd
 import click
 import re
+import codecs
 
 from app.ml import SBERTEncoder, SentenceEncoder
 from app.utils import paginate_list
@@ -35,6 +36,10 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
     # Note, it was decided to leave most of the formatting and use custom analysers in elasticsearch to handle
     # formatting. This makes this function unnecessary, but I've left it here in case we want something more later.
     text = text.strip()
+    # This snippet is ugly/non pythonic. It's used to get around some upstream bad code with html tags. Really, this
+    # was a bad way of doing things in the first place so not overly concerned with fixing it for now. This will do.
+    text = codecs.decode(text, 'unicode_escape')
+    text = "\n".join([s for s in text.split("\n") if s])
     # Always append previous text block as context. This is a fairly strong assumption, and the code to make this
     # better has been started, in postprocessor.py, but is not yet completely robust, so we are not using it for now.
     # TODO: Note, we can potentially do this in a more robust way by using the text block custom attributes created
