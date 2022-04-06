@@ -33,7 +33,6 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
     """
     text = text_block["custom_attributes"]["pretty_list_string"]
     text = text.strip()
-    text = text.replace("*", "")  # Remove bullet points.
     # Always append previous text block as context. This is a fairly strong assumption, and the code to make this
     # better has been started, in postprocessor.py, but is not yet completely robust, so we are not using it for now.
     # TODO: Note, we can potentially do this in a more robust way by using the text block custom attributes created
