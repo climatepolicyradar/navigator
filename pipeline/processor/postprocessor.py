@@ -337,7 +337,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             #  part of a list body. Tested this and works so far, but there may be some difficult edge cases.
             else:
                 if row["last_list_ix_bool"]:
-                    new_string += fr"<LBody>{text}<\LBody>\n" + f"\n<\li{list_number}>\n"
+                    new_string += fr"<LBody>{text}<\LBody>\n" + fr"\n<\li{list_number}>\n"
                 else:
                     new_string += fr"<LBody>{text}<\LBody>\n"
                 lst.append(new_string)
