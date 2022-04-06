@@ -325,7 +325,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             list_number = row["list_num"]
             if text_type == "Lbl":
                 new_string = ""
-                label_string = f"<Lbl>{text}<\Lbl>"
+                label_string = fr"<Lbl>{text}<\Lbl>"
                 if row["first_list_ix_bool"]:
                     new_string += f"\n<li{list_number}>\n{label_string}"
                 else:
@@ -337,9 +337,9 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             #  part of a list body. Tested this and works so far, but there may be some difficult edge cases.
             else:
                 if row["last_list_ix_bool"]:
-                    new_string += f"<LBody>{text}<\LBody>\n" + f"\n<\li{list_number}>\n"
+                    new_string += fr"<LBody>{text}<\LBody>\n" + f"\n<\li{list_number}>\n"
                 else:
-                    new_string += f"<LBody>{text}<\LBody>\n"
+                    new_string += fr"<LBody>{text}<\LBody>\n"
                 lst.append(new_string)
         return lst
 
@@ -426,7 +426,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         """
         df = pd.DataFrame(text_blocks)
         df["page_num"] = df["text_block_id"].str.split("_b").str[0]
-        df["block_num"] = df["text_block_id"].str.extract("b(\d+)").astype(int)
+        df["block_num"] = df["text_block_id"].str.extract(r"b(\d+)").astype(int)
         # Remove all but the last block for each id, as this is unsorted with
         # the last block being the grouped list element we want to keep.
         new_text_blocks = (
@@ -454,7 +454,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         # issues leading to duplicates..
         df = df.loc[df.astype(str).drop_duplicates().index]
         df["page_num"] = (
-            df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
+            df["text_block_id"].str.split("_").str[0].str.extract(r"(\d+)").astype(int)
         )
         df["list_num"] = df["path"].apply(
             lambda x: len(self._find_all_list_occurrences(self.list_regex_pattern, x))
