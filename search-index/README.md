@@ -14,6 +14,10 @@ Build using `docker-compose`: see [quickstart](../docs/quickstart.md).
 ### 2. Creating embeddings
 Use the following command to run the pdf2text cli using model `msmarco-distilbert-dot-v5` with the default batch size and no limit. Run `docker-compose run search-index python /app/text2embeddings.py --help` for a full set of options.
 
+> :warning: this command currently fails with a memory error in docker-compose, but works fine when run on Python directly on the host machine. To get this running you can `poetry install` this folder and pass the database URL directly to python.
+> e.g. `DATABASE_URL=postgres://blabla poetry run python /app/text2embeddings.py --args`
+> This has been raised as a [bug issue](https://github.com/climatepolicyradar/navigator/issues/438).
+
 ```
 docker-compose run -v /path/to/pdf2text/outputs:/dir-in -v /path/to/output/directory:/dir-out search-index python /app/text2embeddings.py -i /dir-in -o /dir-out -m "msmarco-distilbert-dot-v5"
 ```
