@@ -91,7 +91,7 @@ def get_text_from_merged_block(text_block: dict) -> str:
                 delete_substr = text_output[0][remove_start : remove_end + 1]
                 if re.match(r"(st|nd|rd|th)$", delete_substr):
                     continue  # don't remove
-                delete_indices.extend([remove_start, remove_end])
+                delete_indices.extend(list(range(remove_start, remove_end)))
 
         # The indices are relative to the whole block, not just elements in the block.
         # Remove the indices from deleted_indices from text_output.
