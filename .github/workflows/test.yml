@@ -45,7 +45,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Build docker-compose stack using .env.example
-        run: ls -la
+        run: |
+          ls -la
       - uses: actions/checkout@v2
       - name: Build search_index
         env:
