@@ -32,6 +32,8 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
         str: Formatted list text block that is useful for indexing semantics.
     """
     text = text_block["custom_attributes"]["pretty_list_string"]
+    # Note, it was decided to leave most of the formatting and use custom analysers in elasticsearch to handle
+    # formatting. This makes this function unnecessary, but I've left it here in case we want something more later.
     text = text.strip()
     # Always append previous text block as context. This is a fairly strong assumption, and the code to make this
     # better has been started, in postprocessor.py, but is not yet completely robust, so we are not using it for now.
