@@ -3,22 +3,27 @@
 from pathlib import Path
 import glob
 import json
-from typing import List, Tuple, Optional
+from typing import List, Optional, Dict, Union
+import os
+import re
 
 from tqdm.auto import tqdm
 import numpy as np
-import pandas as pd
 import click
 
 from app.ml import SBERTEncoder, SentenceEncoder
 from app.utils import paginate_list
+from app.load_data import create_dataset
+from app.db import PostgresConnector
 from navigator.core.log import get_logger
 from navigator.core.utils import get_timestamp
 
 logger = get_logger(__name__)
 
 
-def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
+def get_text_from_document_dict(
+    document: dict,
+) -> List[Dict[str, Union[str, int, List[List[float]]]]]:
     """Get the text and ID from each text block in a .json file created from a `Document` object.
 
     A string is created for a text block by newline-joining its list of text.
@@ -27,7 +32,7 @@ def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
         document (dict): dict created from a `Document` object, e.g. imported from a JSON file.
 
     Returns:
-        List[Tuple[str, str]]: list of (text, text_block_id) tuples.
+        List[Dict[str, Union[str, int, List[List[float]]]]]: dicts have keys 'text', 'text_block_id', 'coords', 'page_num'.
     """
 
     text_output = []
@@ -35,20 +40,27 @@ def get_text_from_document_dict(document: dict) -> List[Tuple[str, str]]:
     for page in document["pages"]:
         for text_block in page["text_blocks"]:
             text_output.append(
-                ("\n".join(text_block["text"]).strip(), text_block["text_block_id"])
+                {
+                    "text": "\n".join(text_block["text"]).strip(),
+                    "text_block_id": text_block["text_block_id"],
+                    "coords": text_block["coords"],
+                    "page_num": int(
+                        re.findall(r"p(\d+)_.*", text_block["text_block_id"])[0]
+                    ),
+                }
             )
 
     return text_output
 
 
-def get_text_from_json_files(filepaths: List[str]) -> List[Tuple[str, str, str]]:
+def get_text_from_json_files(filepaths: List[str]) -> List[Dict[str, str]]:
     """Extract text, text block IDs and document IDs from JSON files created by the PDF parsing pipeline.
 
     Args:
         filepaths (List[str]): list of paths to JSON files outputted by the pdf2text CLI.
 
     Returns:
-        List[Tuple[str, str, str]]: tuples of (text, text_id, document_filename).
+        List[Dict[str, str]]: dicts are {"text": "", "text_block_id": "", "document_id": ""}.
     """
     text_by_document = []
 
@@ -57,35 +69,45 @@ def get_text_from_json_files(filepaths: List[str]) -> List[Tuple[str, str, str]]
             document = json.load(f)
 
         document_text_and_ids = get_text_from_document_dict(document)
-        document_filename = document["filename"]
-        for text, _id in document_text_and_ids:
-            text_by_document.append((text, _id, document_filename))
+
+        for text_and_id in document_text_and_ids:
+            text_and_id.update({"document_id": document["filename"]})
+            text_by_document.append(text_and_id)
 
     return text_by_document
 
 
-def encode_text(
-    text_list: List[str], encoder: SentenceEncoder, batch_size: int
-) -> np.ndarray:
-    """Encode list of text strings using a SentenceEncoder, in batches of `batch_size`
+def encode_text_to_memmap(
+    text_list: List[str],
+    encoder: SentenceEncoder,
+    batch_size: int,
+    memmap_path: Path,
+):
+    """Encode list of text strings to a memmap file using a SentenceEncoder, in batches of `batch_size`.
 
     Args:
         text_list (List[str]): list of strings to encode.
         encoder (SentenceEncoder): sentence encoder.
         batch_size (int): size of batches to encode text in.
-
-    Returns:
-        np.ndarray: each row of the array corresponds to the embedding of a string in `text_list`
+        memmap_path (Path): path to memmap file to write text embeddings to.
     """
     text_list_batched = paginate_list(text_list, batch_size)
 
-    emb_list = []
+    fp = np.memmap(
+        memmap_path,
+        dtype="float32",
+        mode="w+",
+        shape=(len(text_list), encoder.dimension),
+    )
 
-    for batch in tqdm(text_list_batched, unit="batch"):
-        embeddings = encoder.encode_batch(batch, batch_size)
-        emb_list.append(embeddings)
+    for idx, batch in tqdm(
+        enumerate(text_list_batched), unit="batch", total=len(text_list_batched)
+    ):
+        fp[idx * batch_size : (idx + 1) * batch_size, :] = encoder.encode_batch(
+            batch, batch_size
+        )
 
-    return np.vstack(emb_list)
+    fp.flush()
 
 
 @click.command()
@@ -141,26 +163,48 @@ def run_cli(
     encoder = SBERTEncoder(model_name)
 
     logger.info(f"Encoding text in batches of {batch_size}")
-    text_by_document = [i[0] for i in text_and_ids]
-    embs = encode_text(text_by_document, encoder, batch_size=batch_size)
-
+    text_by_document = [i["text"] for i in text_and_ids]
     # Export embeddings to numpy memmap file
     embs_output_path = (
-        output_dir / f"embeddings_dim_{embs.shape[1]}_{model_name}_{curr_time}.memmap"
+        output_dir
+        / f"embeddings_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
-    fp = np.memmap(embs_output_path, dtype="float32", mode="w+", shape=embs.shape)
-    fp[:] = embs[:]
-    fp.flush()
+    encode_text_to_memmap(text_by_document, encoder, batch_size, embs_output_path)
 
-    # Save text, text block IDs and document IDs to CSV
-    # TODO: is there a better way to save text than in a CSV?
-    pd.DataFrame(
-        text_and_ids, columns=["text", "text_block_id", "document_id"]
-    ).to_json(
-        output_dir / f"ids_{model_name}_{curr_time}.json",
-        orient="records",
+    # Save text, text block IDs and document IDs to JSON file
+    with open(output_dir / f"ids_{model_name}_{curr_time}.json", "w") as f:
+        json.dump(text_and_ids, f)
+
+    # Encode action descriptions
+    postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
+    navigator_dataset = create_dataset(postgres_connector)
+    document_ids_processed = set([i["document_id"] for i in text_and_ids])
+    description_data_to_encode = navigator_dataset.loc[
+        navigator_dataset["prototype_filename_stem"].isin(document_ids_processed)
+    ]
+
+    logger.info(
+        f"Encoding {len(description_data_to_encode)} descriptions in batches of {batch_size}"
     )
-    logger.info(f"Saved embeddings and IDs to {output_dir}")
+    description_embs_output_path = (
+        output_dir
+        / f"description_embs_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
+    )
+    encode_text_to_memmap(
+        description_data_to_encode["description"].tolist(),
+        encoder,
+        batch_size,
+        description_embs_output_path,
+    )
+
+    description_ids_output_path = (
+        output_dir / f"description_ids_{model_name}_{curr_time}.csv"
+    )
+    description_data_to_encode["prototype_filename_stem"].to_csv(
+        description_ids_output_path, sep="\t", index=False, header=False
+    )
+
+    logger.info(f"Saved embeddings and IDs for text and descriptions to {output_dir}")
 
 
 if __name__ == "__main__":
