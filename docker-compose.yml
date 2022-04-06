@@ -7,8 +7,8 @@ services:
     ports:
       - 8000:80
     depends_on:
-      - backend
-      - frontend
+      - "backend"
+      - "frontend"
 
   backend_db:
     image: postgres:12
@@ -71,8 +71,8 @@ services:
     env_file:
       - .env
     depends_on:
-      - backend
-      - loader_db
+      - "backend"
+      - "loader_db"
 
   frontend:
     #    user: node

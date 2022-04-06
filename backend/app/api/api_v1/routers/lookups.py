@@ -3,7 +3,7 @@ from typing import Dict, List
 from fastapi import APIRouter, Depends, Request
 
 from app.core.auth import get_current_active_user
-from app.db.models import Geography, Language, ActionType, Source
+from app.db.models import Geography, Language, Source
 from app.db.session import Base, SessionLocal, get_db
 
 lookups_router = r = APIRouter()
@@ -51,18 +51,6 @@ def lookup_languages(
         for item in table_to_json(table=Language, db=db)
         if item["part1_code"] is not None
     ]
-
-
-@r.get(
-    "/action_types",
-)
-def lookup_action_types(
-    request: Request,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
-):
-    """Get list of action types and associated metadata."""
-    return table_to_json(table=ActionType, db=db)
 
 
 @r.get(
