@@ -317,9 +317,10 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             {"ExtraCharSpan": "Lbl", "ParagraphSpan": "LBody", "Span": "Lbl"}
         )
 
-        # TODO: fix this!
-        # Bit of a hack here to handle the fact that there are sometimes trailing stylespan elements that haven't
-        # been dealt with upstream e.g. if there is more than one style span in a row.
+        # TODO: Deleting stylespans at this stage of the pipleine is a bit of a hack to handle the fact
+        #  that there are sometimes trailing stylespan elements that we weren't dealt with properly upstream due
+        #   to rare error cases e.g. if there are two style spans in a row. General assumption is that this doesn't
+        #    affect the list structure.
         df = df[df.type != "StyleSpan"]
         lst = []
         new_string = ""
