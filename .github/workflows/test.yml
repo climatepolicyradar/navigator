@@ -47,7 +47,6 @@ jobs:
       - uses: actions/checkout@v2
       - name: Build docker-compose stack using .env.example
         run: cp .env.example .env && make start
-      - uses: actions/checkout@v2
       - name: Build search_index
         env:
           SSH_AUTH_SOCK: /tmp/ssh_agent.sock
