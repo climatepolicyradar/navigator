@@ -1,6 +1,6 @@
 import datetime
 
-from app.db.models.document import Document
+from app.db.models import Document
 from app.db.schemas.document import DocumentCreateInternal
 from sqlalchemy.orm import Session
 

@@ -143,9 +143,6 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         """
         Merge text blocks in the same semantic category (same path) that have been separated due to styling elements.
 
-        Note, the indexing style is slightly un-pythonic here (a single digit superscript has start and end indices (144, 144)
-        instead of (144, 145). See TODO below.
-
         Args:
             text_blocks:
 
@@ -172,16 +169,13 @@ class AdobeTextStylingPostProcessor(PostProcessor):
 
             # Append style metadata that will later be added to custom attributes for text block.
             if block_styling:
-                # The last style index here is the index of the block with sentences joined.
-                last_style_ix = len(''.join((text for text in merged_block_text)).strip()) - 1
-                # TODO: Make indexing more pythonic. See docstring.
-                style_span = {
+                last_style_ix = len(merged_block_text[0].strip()) - 1
+                style_spans.append(
+                    {
                         "style": block_styling,
                         "start_idx": start_ix,
                         "end_idx": last_style_ix,
                     }
-                style_spans.append(
-                    style_span
                 )
 
         if style_spans:
@@ -314,7 +308,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         df["type"] = df["path"].apply(lambda x: x[-1])
         # Sometimes label is called ExtraCharSpan, replace it with label
         df["type"] = df["type"].replace(
-            {"ExtraCharSpan": "Lbl", "ParagraphSpan": "LBody", "Span": "Lbl"}
+            {"ExtraCharSpan": "Lbl", "ParagraphSpan": "LBody"}
         )
 
         # TODO: Deleting stylespans at this stage of the pipeline is a bit of a hack to handle the fact
@@ -330,7 +324,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             list_number = row["list_num"]
             if text_type == "Lbl":
                 new_string = ""
-                label_string = fr"<Lbl>{text}<\Lbl>"
+                label_string = f"<Lbl>{text}<\Lbl>"
                 if row["first_list_ix_bool"]:
                     new_string += f"\n<li{list_number}>\n{label_string}"
                 else:
@@ -342,9 +336,9 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             # # part of a list body. Tested this and works so far, but there may be some difficult edge cases.
             else:
                 if row["last_list_ix_bool"]:
-                    new_string += fr"<LBody>{text}<\LBody>\n" + fr"\n<\li{list_number}>\n"
+                    new_string += f"<LBody>{text}<\LBody>\n" + f"\n<\li{list_number}>\n"
                 else:
-                    new_string += fr"<LBody>{text}<\LBody>\n"
+                    new_string += f"<LBody>{text}<\LBody>\n"
                 lst.append(new_string)
         return lst
 
@@ -411,9 +405,10 @@ class AdobeListGroupingPostProcessor(PostProcessor):
 
         """
         new_custom_attributes = {new_attribute: True}
-        if text_block["custom_attributes"] is not None:
-            text_block["custom_attributes"].update(new_custom_attributes)
-        else:
+        try:
+            if text_block["custom_attributes"] is not None:
+                text_block["custom_attributes"].update(new_custom_attributes)
+        except KeyError:
             text_block["custom_attributes"] = new_custom_attributes
         return text_block
 
@@ -431,7 +426,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         """
         df = pd.DataFrame(text_blocks)
         df["page_num"] = df["text_block_id"].str.split("_b").str[0]
-        df["block_num"] = df["text_block_id"].str.extract(r"b(\d+)").astype(int)
+        df["block_num"] = df["text_block_id"].str.extract("b(\d+)").astype(int)
         # Remove all but the last block for each id, as this is unsorted with
         # the last block being the grouped list element we want to keep.
         new_text_blocks = (
@@ -459,7 +454,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         # issues leading to duplicates..
         df = df.loc[df.astype(str).drop_duplicates().index]
         df["page_num"] = (
-            df["text_block_id"].str.split("_").str[0].str.extract(r"(\d+)").astype(int)
+            df["text_block_id"].str.split("_").str[0].str.extract("(\d+)").astype(int)
         )
         df["list_num"] = df["path"].apply(
             lambda x: len(self._find_all_list_occurrences(self.list_regex_pattern, x))
@@ -503,7 +498,6 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             "text_block_ids": block_ids,
             "pretty_list_string": self._pprinter(full_list_text),
             "original_list_text": original_list_text,
-            "num_nesting_levels": df["list_num"].nunique()
         }
 
         custom_attributes_concat = {**orig_custom_attributes, **custom_attributes_new}
@@ -583,11 +577,11 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                                     text_block,
                                     "possibly_contiguous_with_previous_page_list",
                                 )
-                        else:
-                            text_block = self._update_contiguity_attributes(
-                                text_block,
-                                "possibly_contiguous_with_same_page_context",
-                            )
+                            else:
+                                text_block = self._update_contiguity_attributes(
+                                    text_block,
+                                    "possibly_contiguous_with_same_page_context",
+                                )
 
                         dd[current_list_id].append(text_block)
                         prev_list_ix += 1

@@ -3,7 +3,7 @@ import typing as t
 
 from pydantic import BaseModel, HttpUrl
 
-from app.db.models.document import DocumentInvalidReason
+from app.db.models import DocumentInvalidReason
 from app.db.schemas import _ValidatedDateComponents
 
 

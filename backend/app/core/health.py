@@ -1,7 +1,7 @@
 from fastapi import Depends
 from sqlalchemy.orm import Session
 
-# from app.db.models.lookups import Geography
+# from app.db.models import Geography
 from app.db.session import get_db
 
 

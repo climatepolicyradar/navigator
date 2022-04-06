@@ -4,67 +4,59 @@ from fastapi import HTTPException
 from sqlalchemy.orm import Session
 from starlette import status
 
-from app.db.models.user import User
-import app.db.schemas.user
 from app.core.security import get_password_hash
+from app.db.models import User, PasswordResetToken
+from app.db.schemas.user import User as UserSchema, UserCreate, UserCreateAdmin
 
 
-def get_user(db: Session, user_id: int):
+def get_user(db: Session, user_id: int) -> User:
     user = db.query(User).filter(User.id == user_id).first()
     if not user:
         raise HTTPException(status_code=404, detail="User not found")
     return user
 
 
-def get_user_by_email(db: Session, email: str) -> t.Optional[User]:
-    return db.query(User).filter(User.email == email).first()
+def get_user_by_email(db: Session, email: str) -> User:
+    user = db.query(User).filter(User.email == email).first()
+    if not user:
+        raise HTTPException(status_code=404, detail="User not found")
+    return user
 
 
-def get_users(
-    db: Session, skip: int = 0, limit: int = 100
-) -> t.List[app.db.schemas.user.User]:
+def get_users(db: Session, skip: int = 0, limit: int = 100) -> t.List[UserSchema]:
     return [
-        app.db.schemas.user.User.from_orm(user)
+        UserSchema.from_orm(user)
         for user in db.query(User).offset(skip).limit(limit).all()
     ]
 
 
-def create_user(db: Session, user: app.db.schemas.user.UserCreate):
-    hashed_password = get_password_hash(user.password)
-    db_user = User(
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email=user.email,
-        is_active=user.is_active,
-        is_superuser=user.is_superuser,
-        hashed_password=hashed_password,
-    )
+def create_user(db: Session, user: t.Union[UserCreate, UserCreateAdmin]):
+    """Create a user."""
+    db_user = User(**user.dict())
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
     return db_user
 
 
-def delete_user(db: Session, user_id: int):
+def deactivate_user(db: Session, user_id: int) -> User:
     user = get_user(db, user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
-    db.delete(user)
+    user.is_active = False
+    user.hashed_password = None
+    db.add(user)
     db.commit()
     return user
 
 
 def edit_user(
-    db: Session, user_id: int, user: app.db.schemas.user.UserEdit
-) -> app.db.schemas.user.User:
+    db: Session, user_id: int, user: t.Union[UserCreate, UserCreateAdmin]
+) -> User:
     db_user = get_user(db, user_id)
     if not db_user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
     update_data = user.dict(exclude_unset=True)
-
-    if user.password:
-        update_data["hashed_password"] = get_password_hash(user.password)
-        del update_data["password"]
 
     for key, value in update_data.items():
         setattr(db_user, key, value)
@@ -73,3 +65,27 @@ def edit_user(
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def activate_user(
+    db: Session,
+    user: User,
+    password_reset_token: PasswordResetToken,
+    password: str,
+) -> User:
+    """Activate a user.
+
+    Sets a password, and toggles activation flags on user and password_reset_token.
+    """
+
+    user.hashed_password = get_password_hash(password)
+    user.is_active = True
+    db.add(user)
+
+    password_reset_token.is_redeemed = True
+    db.add(password_reset_token)
+
+    db.commit()
+    db.refresh(user)
+
+    return user

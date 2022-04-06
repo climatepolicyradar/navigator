@@ -16,7 +16,7 @@ from app.db.crud.action import (
     get_action,
 )
 from app.db.crud.document import create_document
-from app.db.models.document import DocumentInvalidReason
+from app.db.models import DocumentInvalidReason
 from app.db.schemas.action import ActionCreate, ActionInDB
 from app.db.schemas.document import DocumentCreateInternal
 from app.db.session import get_db
