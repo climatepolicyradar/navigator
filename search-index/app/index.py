@@ -121,6 +121,10 @@ class OpenSearchIndex:
                             },
                         },
                     },
+                    "text_block_coords": {"type": "keyword"},
+                    "text_block_page": {
+                        "type": "integer",
+                    },
                     "action_description_embedding": {
                         "type": "knn_vector",
                         "dimension": self.embedding_dim,

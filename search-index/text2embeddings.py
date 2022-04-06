@@ -3,8 +3,9 @@
 from pathlib import Path
 import glob
 import json
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, Union
 import os
+import re
 
 from tqdm.auto import tqdm
 import numpy as np
@@ -20,7 +21,9 @@ from navigator.core.utils import get_timestamp
 logger = get_logger(__name__)
 
 
-def get_text_from_document_dict(document: dict) -> List[Dict[str, str]]:
+def get_text_from_document_dict(
+    document: dict,
+) -> List[Dict[str, Union[str, int, List[List[float]]]]]:
     """Get the text and ID from each text block in a .json file created from a `Document` object.
 
     A string is created for a text block by newline-joining its list of text.
@@ -29,7 +32,7 @@ def get_text_from_document_dict(document: dict) -> List[Dict[str, str]]:
         document (dict): dict created from a `Document` object, e.g. imported from a JSON file.
 
     Returns:
-        List[Dict[str, str]]: dicts are {"text": "", "text_block_id": ""}.
+        List[Dict[str, Union[str, int, List[List[float]]]]]: dicts have keys 'text', 'text_block_id', 'coords', 'page_num'.
     """
 
     text_output = []
@@ -40,6 +43,10 @@ def get_text_from_document_dict(document: dict) -> List[Dict[str, str]]:
                 {
                     "text": "\n".join(text_block["text"]).strip(),
                     "text_block_id": text_block["text_block_id"],
+                    "coords": text_block["coords"],
+                    "page_num": int(
+                        re.findall(r"p(\d+)_.*", text_block["text_block_id"])[0]
+                    ),
                 }
             )
 

@@ -120,6 +120,8 @@ def get_document_generator(
                 "text_block_id": row.text_block_id,
                 "text": row.text,
                 "text_embedding": embeddings[idx, :].tolist(),
+                "text_block_coords": row.coords,
+                "text_block_page": row.page_num,
             }
 
             yield dict(doc_metadata_dict, **text_block_dict)
