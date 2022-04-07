@@ -21,7 +21,8 @@ logger = get_logger(__name__)
 
 
 def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str:
-    """
+    """Grab text from list text block and reformat slightly.
+
     Format a list text block and prepend it to the previous text block, assuming it is the context of the list.
     This is a fairly strong assumption, but works most of the time. Code to handle more complex cases has been started.
 
@@ -38,7 +39,7 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
     text = text.strip()
     # This snippet is ugly/non pythonic. It's used to get around some upstream bad code with html tags. Really, this
     # was a bad way of doing things in the first place so not overly concerned with fixing it for now. This will do.
-    text = codecs.decode(text, 'unicode_escape')
+    text = codecs.decode(text, "unicode_escape")
     text = "\n".join([s for s in text.split("\n") if s])
     # Always append previous text block as context. This is a fairly strong assumption, and the code to make this
     # better has been started, in postprocessor.py, but is not yet completely robust, so we are not using it for now.
@@ -54,9 +55,11 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
 
 def delete_string_indices(data: str, indices: List[int]) -> str:
     """Delete a list of indices from a string.
+
     Args:
         data (str): string to delete indices from.
         indices (List[int]): list of indices to delete.
+
     Returns:
         str: string with indices deleted.
     """
@@ -64,8 +67,7 @@ def delete_string_indices(data: str, indices: List[int]) -> str:
 
 
 def get_text_from_merged_block(text_block: dict) -> str:
-    """
-    Remove unnecessary styling from merged text blocks (superscripts).
+    """Remove unnecessary styling from merged text blocks (superscripts).
 
     Args:
         text_block: A block of text that has been merged.
