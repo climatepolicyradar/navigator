@@ -30,9 +30,11 @@ class Geography(Base):  # noqa: D101
 
     id = sa.Column(sa.SmallInteger, primary_key=True)
     # to display to end-users
-    value = sa.Column(sa.Text)
+    display_value = sa.Column(sa.Text, unique=True)
     # e.g. ISO code, World Bank, etc - not necessarily for display
-    official_value = sa.Column(sa.Text)
+    # non-unique, as some unrecognised territories might share the same code, e.g.
+    # at the time of writing, "Sahrawi Republic" and "Western Sahara" both share "ESH"
+    value = sa.Column(sa.Text)
     type = sa.Column(sa.Text)
     parent_id = sa.Column(sa.Integer, sa.ForeignKey("geography.id"))
 

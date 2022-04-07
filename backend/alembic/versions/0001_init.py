@@ -35,8 +35,8 @@ def upgrade():
     op.create_table(
         "geography",
         sa.Column("id", sa.SmallInteger(), nullable=False),
+        sa.Column("display_value", sa.Text(), nullable=True),
         sa.Column("value", sa.Text(), nullable=True),
-        sa.Column("official_value", sa.Text(), nullable=True),
         sa.Column("type", sa.Text(), nullable=True),
         sa.Column("parent_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
@@ -45,6 +45,7 @@ def upgrade():
             name=op.f("fk_geography__parent_id__geography"),
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_geography")),
+        sa.UniqueConstraint("display_value", name=op.f("uq_geography__display_value")),
     )
     op.create_table(
         "hazard",
