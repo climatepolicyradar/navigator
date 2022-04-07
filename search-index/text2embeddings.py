@@ -116,8 +116,8 @@ def get_text_from_merged_block(text_block: dict) -> str:
         # TODO: Fix problem that creates need for this exception (see comment above) handling (low priority).
         #  c.f page 17 of cclw-9460 first block for an example.
         logger.debug(
-            f"No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
-            f"italics). "
+            "No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
+            "italics). "
         )
         return text_output
 
