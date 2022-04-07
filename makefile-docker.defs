@@ -75,3 +75,11 @@ run_loader:
 # Check OpenSearch running on localhost
 check_opensearch_local:
 	curl -XGET http://localhost:9200 -u 'admin:admin' --insecure
+
+populate_opensearch_test: run_loader
+	docker-compose run \
+	-v ${PWD}/search-index/test/data/ids_msmarco-distilbert-dot-v5_20220407-1003.json:/text-ids-path \
+	-v ${PWD}/search-index/test/data/embeddings_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/embeddings-path \
+	-v ${PWD}/search-index/test/data/description_ids_msmarco-distilbert-dot-v5_20220407-1003.csv:/desc-ids-path \
+	-v ${PWD}/search-index/test/data/description_embs_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/desc-embeddings-path \
+	search-index python /app/index_data.py --text-ids-path /text-ids-path --embeddings-path /embeddings-path --desc-ids-path /desc-ids-path --desc-embeddings-path /desc-embeddings-path -d 768
