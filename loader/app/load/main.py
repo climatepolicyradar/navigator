@@ -1,15 +1,23 @@
+import asyncio
 import logging
+import ssl
 from datetime import datetime
-from json import JSONDecodeError
+from typing import Optional
 
-from app.load.api_client import get_type_id, get_geography_id, post_action
-from app.load.language import get_language_id_for_doc
+import httpx
+
+from app.db.models import Document
+from app.db.models import DocumentInvalidReason
+from app.db.session import get_db
+from app.load.api_client import get_type_id, get_geography_id
 from app.model import PolicyLookup
 
 logger = logging.getLogger(__file__)
 
 
 def load(policies: PolicyLookup):
+    db = get_db()
+
     imported_count = 0
     for key, policy_data in policies.items():
 
@@ -33,58 +41,64 @@ def load(policies: PolicyLookup):
         if policy_date is None:
             logger.warning("Date is null for policy", key)
 
-        action_payload = {
-            "name": key.policy_name,
-            "description": policy_data.policy_description,
-            "year": policy_date.year,
-            "month": policy_date.month,
-            "day": policy_date.day,
-            "geography_id": geography_id,
-            "action_type_id": action_type_id,
-            "action_source_id": 1,  # CCLW is source_id 1
-            "documents": [
-                {
-                    "name": doc.doc_name,
-                    "language_id": get_language_id_for_doc(doc),
-                    "source_url": doc.doc_url,
-                    "s3_url": None,  # TODO is this supposed to be doc.doc_url?
-                    # This defaults to action date for now, as it's not in the CSV.
-                    # In future, we parse the date out of the doc, and update accordingly
-                    # Marcus: I think for cases with only one document per action (most cases),
-                    # taking the action date as the document date will be a pretty reliable approach.
-                    "year": policy_date.year,
-                    "month": policy_date.month,
-                    "day": policy_date.day,
-                }
-                for doc in policy_data.docs
-            ],
-        }
+        # this was the loader before the change to own-db:
+        # https://github.com/climatepolicyradar/navigator/blob/17491aceaf9a5a852e0a6d51a1e8f88b07675801/backend/app/api/api_v1/routers/actions.py
+        for doc in policy_data.docs:
 
-        response = post_action(action_payload)
-        if response.status_code < 400:
-            imported_count += 1
-            name = response.json()["name"]
-            logger.info(f"Added action to database: {name}")
-        else:
-            message = "Unknown error"
-            try:
-                message = str(response.json())
-            except JSONDecodeError:
-                message = str(response.content)
-            finally:
-                if "already exists" in message:
-                    logger.warning(f"Skipping duplicate item, policy={key}")
-                elif "unsupported mimetype" in message:
-                    logger.warning(
-                        f"Skipping unsupported/unfetchable doc, policy={key}"
-                    )
-                elif "date of the action provided is in the future" in message:
-                    logger.warning(f"Skipping future action, policy={key}")
-                else:
-                    logger.error(
-                        f"Error importing action and document(s) for policy={policy_data}, error={message}"
-                    )
+            # check doc validity
+            is_valid = True
+
+            # TODO async one day
+            # invalid_reason = await get_document_validity(document_create.source_url)
+            invalid_reason = asyncio.run(get_document_validity(doc.doc_url))
+
+            if invalid_reason:
+                is_valid = False
+                logger.warning(
+                    f"Invalid document, name={key.policy_name}, reason={invalid_reason} "
+                    f"url={doc.doc_url}"
+                )
+
+            db_user = Document(
+                loaded_ts=datetime.utcnow(),
+                name=key.policy_name,
+                source_url=doc.doc_url,
+                source_id=1,
+                # url=None,  # TODO: upload to S3
+                is_valid=is_valid,
+                invalid_reason=invalid_reason,
+                geography_id=1,  # TODO
+                type_id=1,  # TODO
+            )
+            db.add(db_user)
+            db.commit()
 
     logger.info(
         f"Done, {imported_count} policies imported out of {len(policies.items())} total"
     )
+
+
+transport = httpx.AsyncHTTPTransport(retries=3)
+supported_content_types = ["application/pdf", "text/html"]
+
+
+async def get_document_validity(source_url: str) -> Optional[DocumentInvalidReason]:
+    try:
+        async with httpx.AsyncClient(transport=transport, timeout=10) as client:
+            response = await client.head(source_url, follow_redirects=True)
+            content_type = response.headers.get("content-type")
+            if content_type not in supported_content_types:
+                return DocumentInvalidReason.unsupported_content_type
+            else:
+                return None  # no reason needed
+
+    except (ssl.SSLCertVerificationError, ssl.SSLError):
+        # we do not want to download insecurely
+        return DocumentInvalidReason.net_ssl_error
+    except (httpx.ConnectError, httpx.ConnectTimeout):
+        # not sure if this is worth retrying, as there's probably nothing listening on the other side
+        return DocumentInvalidReason.net_connection_error
+    except (httpx.ReadError, httpx.ReadTimeout):
+        return DocumentInvalidReason.net_read_error
+    except httpx.TooManyRedirects:
+        return DocumentInvalidReason.net_too_many_redirects

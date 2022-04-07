@@ -34,3 +34,11 @@ def make_declarative_base():
 
 
 Base = make_declarative_base()
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
