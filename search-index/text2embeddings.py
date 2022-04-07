@@ -74,8 +74,7 @@ def get_text_from_merged_block(text_block: dict) -> str:
         str: The text block with styling that is not related to semantics removed.
 
     """
-    # Text output with no processing. Note here that we do not need to join with a space as this is already
-    # done upstream, where each list item in a text block has a space at the end before text blocks are merged.
+    # Text output with no processing.
     text_output = (
         "".join(text_block["text"]).strip(),
         text_block["text_block_id"],
