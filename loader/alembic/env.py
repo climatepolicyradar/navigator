@@ -31,7 +31,9 @@ target_metadata = Base.metadata
 
 
 def get_url():
-    return os.environ["DATABASE_URL"]
+    db_url = os.environ["DATABASE_URL"]
+    print(f"DATABASE_URL={db_url}")
+    return db_url
 
 
 def generate_incremental_revision_id(context, revision, directives) -> None:

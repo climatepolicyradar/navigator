@@ -20,6 +20,7 @@ def create_test_db():
         drop_database(test_db_url)
     create_database(test_db_url)
     test_engine = create_engine(test_db_url)
+    assert len(Base.metadata.sorted_tables) > 1, "sqlalchemy didn't find your model"
     Base.metadata.create_all(test_engine)
 
     # Run the tests

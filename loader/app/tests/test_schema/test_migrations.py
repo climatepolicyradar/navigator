@@ -1,4 +1,5 @@
 from app.tests.test_schema.helpers import PytestHelpers
+import app.db.models  # noqa: F401
 
 
 def test_upgrading_to_head_creates_same_schema_as_model(engine):
