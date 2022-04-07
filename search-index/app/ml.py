@@ -1,7 +1,4 @@
-"""From prototype
-
-- tidy up
-"""
+"""Text encoders."""
 
 from abc import ABC, abstractmethod
 from typing import List
@@ -21,6 +18,12 @@ class SentenceEncoder(ABC):
     @abstractmethod
     def encode_batch(self, text_batch: List[str], batch_size: int) -> np.ndarray:
         """Encode a batch of strings, return a numpy array."""
+        raise NotImplementedError
+
+    @property
+    @abstractmethod
+    def dimension(self) -> int:
+        """Return the dimension of the embeddings produced by the encoder."""
         raise NotImplementedError
 
 
@@ -57,3 +60,8 @@ class SBERTEncoder(SentenceEncoder):
             np.ndarray
         """
         return self.encoder.encode(text_batch, batch_size=batch_size)
+
+    @property
+    def dimension(self) -> int:
+        """Return the dimension of the embedding."""
+        return self.encoder.get_sentence_embedding_dimension()

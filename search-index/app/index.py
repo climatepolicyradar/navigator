@@ -57,36 +57,75 @@ class OpenSearchIndex:
                     "knn.algo_param.ef_search": 100,  # TODO: tune me. see https://opensearch.org/docs/latest/search-plugins/knn/knn-index#index-settings
                 },
                 "analysis": {
+                    "filter": {
+                        "ascii_folding_preserve_original": {
+                            "type": "asciifolding",
+                            "preserve_original": True,
+                        }
+                    },
+                    # This analyser folds non-ASCII characters into ASCII equivalents, but preserves the original.
+                    # E.g. a search for "é" will return results for "e" and "é".
+                    "analyzer": {
+                        "folding": {
+                            "tokenizer": "standard",
+                            "filter": ["lowercase", "ascii_folding_preserve_original"],
+                        }
+                    },
+                    # This normalizer does the same as the folding analyser, but is used for keyword fields.
                     "normalizer": {
-                        "lowercase_asciifold": {
+                        "folding": {
                             "type": "custom",
                             "char_filter": [],
                             "filter": ["lowercase", "asciifolding"],
                         }
-                    }
+                    },
                 },
             },
             "mappings": {
                 "properties": {
+                    # Document metadata. This will be revised once we remove the concept of actions.
                     "document_id": {"type": "keyword"},
                     "document_name": {"type": "text"},
-                    "name": {
-                        "type": "text",
-                        "fields": {
-                            "normalized": {
-                                "type": "keyword",
-                                "normalizer": "lowercase_asciifold",
-                            }
-                        },
-                    },
-                    "description": {"type": "text"},
+                    "action_name": {"type": "keyword", "normalizer": "folding"},
+                    "action_description": {"type": "keyword", "normalizer": "folding"},
+                    "action_name_and_id": {"type": "keyword", "normalizer": "folding"},
                     "action_date": {"type": "date", "format": "dd/MM/yyyy"},
-                    "country_code": {"type": "keyword"},
+                    "action_country_code": {"type": "keyword"},
+                    "action_geography_english_shortname": {"type": "keyword"},
                     "action_source_name": {"type": "keyword"},
                     "action_type_name": {"type": "keyword"},
+                    # Searchable
+                    "for_search_action_name": {
+                        "type": "text",
+                        "analyzer": "folding",
+                    },
+                    "for_search_action_description": {
+                        "type": "text",
+                        "analyzer": "folding",
+                    },
                     "text_block_id": {"type": "keyword"},
-                    "text": {"type": "text"},
+                    "text": {
+                        "type": "text",
+                        "analyzer": "folding",
+                    },
                     "text_embedding": {
+                        "type": "knn_vector",
+                        "dimension": self.embedding_dim,
+                        "method": {
+                            "name": "hnsw",
+                            "space_type": "innerproduct",
+                            "engine": "nmslib",  # TODO: decide between faiss and nmslib and tune params
+                            "parameters": {
+                                "ef_construction": 128,  # TODO: tune me
+                                "m": 12,  # TODO: tune me
+                            },
+                        },
+                    },
+                    "text_block_coords": {"type": "keyword"},
+                    "text_block_page": {
+                        "type": "integer",
+                    },
+                    "action_description_embedding": {
                         "type": "knn_vector",
                         "dimension": self.embedding_dim,
                         "method": {
