@@ -9,7 +9,7 @@ import httpx
 from app.db.models import Document
 from app.db.models import DocumentInvalidReason
 from app.db.session import get_db
-from app.load.api_client import get_type_id, get_geography_id
+from app.loader.load.api_client import get_type_id, get_geography_id
 from app.model import PolicyLookup
 
 logger = logging.getLogger(__file__)

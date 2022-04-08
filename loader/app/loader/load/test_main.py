@@ -1,7 +1,7 @@
 from datetime import datetime
 from unittest.mock import patch
 
-from app.load import load
+from app.loader.load import load
 from app.model import Key, PolicyData, Doc, PolicyLookup
 
 

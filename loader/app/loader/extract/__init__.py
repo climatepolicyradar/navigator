@@ -2,5 +2,3 @@
 
 These URLs are then passed onto a downloader which will fetch the actions.
 """
-
-from app.extract.main import extract

@@ -2,9 +2,7 @@ import logging.config
 import os
 from pathlib import Path
 
-from app.extract import extract
-from app.load import load
-from app.transform import transform
+from app.loader import extract, load, transform
 
 DEFAULT_LOGGING = {
     "version": 1,

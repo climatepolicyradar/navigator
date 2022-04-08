@@ -9,7 +9,7 @@ from dateutil.parser import parse
 
 from app.mapping import CCLWActionType
 from app.model import Key, Doc, PolicyData
-from app.transform.datafixes import get_missing_date
+from app.loader.transform.datafixes import get_missing_date
 
 DEFAULT_POLICY_DATE = datetime(1900, 1, 1)
 

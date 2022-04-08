@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app.extract import extract
+from app.loader.extract import extract
 
 
 def test_extract():

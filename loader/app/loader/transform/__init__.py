@@ -6,5 +6,3 @@ The CSVs contain hints (URLs) where actions and documents can be found.
 These hints would normally
 
 """
-
-from app.transform.main import transform
