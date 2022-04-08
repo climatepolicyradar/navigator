@@ -1,30 +1,30 @@
 """CLI to convert JSON documents outputted by the PDF parsing pipeline to embeddings."""
 
-from pathlib import Path
+import codecs
 import glob
 import json
-from typing import List, Optional, Dict, Union
 import os
 import re
+from pathlib import Path
+from typing import List, Optional, Dict, Union
 
-from tqdm.auto import tqdm
-import numpy as np
 import click
-import re
-import codecs
-
-from app.ml import SBERTEncoder, SentenceEncoder
-from app.utils import paginate_list
-from app.load_data import create_dataset
-from app.db import PostgresConnector
+import numpy as np
 from navigator.core.log import get_logger
 from navigator.core.utils import get_timestamp
+from tqdm.auto import tqdm
+
+from app.db import PostgresConnector
+from app.load_data import create_dataset
+from app.ml import SBERTEncoder, SentenceEncoder
+from app.utils import paginate_list
 
 logger = get_logger(__name__)
 
 
 def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str:
-    """
+    """Get text from list type and apply some decoding and minimal formatting.
+
     Format a list text block and prepend it to the previous text block, assuming it is the context of the list.
     This is a fairly strong assumption, but works most of the time. Code to handle more complex cases has been started.
 
@@ -57,18 +57,19 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
 
 def delete_string_indices(data: str, indices: List[int]) -> str:
     """Delete a list of indices from a string.
+
     Args:
         data (str): string to delete indices from.
         indices (List[int]): list of indices to delete.
+
     Returns:
-        str: string with indices deleted.
+         str: string with indices deleted.
     """
     return "".join([char for idx, char in enumerate(data) if idx not in indices])
 
 
 def get_text_from_merged_block(text_block: dict) -> str:
-    """
-    Remove unnecessary styling from merged text blocks (superscripts).
+    """Remove unnecessary styling from merged text blocks (superscripts).
 
     Args:
         text_block: A block of text that has been merged.
@@ -119,8 +120,8 @@ def get_text_from_merged_block(text_block: dict) -> str:
         # TODO: Fix problem that creates need for this exception (see comment above) handling (low priority).
         #  c.f page 17 of cclw-9460 first block for an example.
         logger.debug(
-            f"No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
-            f"italics). "
+            "No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
+            "italics). "
         )
         return text_output
 
