@@ -226,16 +226,16 @@ def test_adobe_list_processor_semantic_lists(adobe_list_postprocessor):
                 ],
             },
             "text_block_id": {
-                0: "p3_b8",
-                1: "p3_b9",
-                2: "p3_b10",
-                3: "p3_b11",
-                4: "p3_b12",
-                5: "p3_b13",
-                6: "p3_b14",
-                7: "p3_b15",
-                8: "p3_b16",
-                9: "p3_b17",
+                0: "p3_b86",
+                1: "p3_b87",
+                2: "p3_b88",
+                3: "p3_b89",
+                4: "p3_b90",
+                5: "p3_b91",
+                6: "p3_b92",
+                7: "p3_b93",
+                8: "p3_b94",
+                9: "p3_b95",
             },
             "coords": {
                 0: [
@@ -325,15 +325,15 @@ def test_adobe_list_processor_semantic_lists(adobe_list_postprocessor):
             },
             "custom_attributes": {
                 0: None,
-                1: None,
-                2: None,
-                3: None,
-                4: None,
-                5: None,
-                6: None,
-                7: None,
-                8: None,
-                9: None,
+                1: {"possibly_contiguous_with_same_page_context": True},
+                2: {"possibly_contiguous_with_same_page_context": True},
+                3: {"possibly_contiguous_with_same_page_context": True},
+                4: {"possibly_contiguous_with_same_page_context": True},
+                5: {"possibly_contiguous_with_same_page_context": True},
+                6: {"possibly_contiguous_with_same_page_context": True},
+                7: {"possibly_contiguous_with_same_page_context": True},
+                8: {"possibly_contiguous_with_same_page_context": True},
+                9: {"possibly_contiguous_with_same_page_context": True},
             },
             "page_num": {0: 3, 1: 3, 2: 3, 3: 3, 4: 3, 5: 3, 6: 3, 7: 3, 8: 3, 9: 3},
             "list_num": {0: 1, 1: 1, 2: 1, 3: 1, 4: 2, 5: 2, 6: 2, 7: 2, 8: 1, 9: 1},
@@ -389,11 +389,11 @@ def test_adobe_list_processor_semantic_lists(adobe_list_postprocessor):
     )
 
     expected_out = [
-        "\n<li1>\n<Lbl>(a)<\\Lbl><LBody>shall develop a standard contract providing for net energy metering, and shall, upon request, make this contract available to eligible customer-generators;<\\LBody>\n",
-        "<Lbl>(b)<\\Lbl><LBody>shall prepare appropriate technical standards for grid connection of renewable energy systems, and inspect and provide a license for those renewable energy installations that meet the technical standards developed by P.P.U.C. and the other provisions of this legislation. Issuance of a license shall be solely to show that the P.P.U.C. has approved the interconnection of the customer=s renewable energy system and the P.P.U.C. grid and shall not be interpreted to impose liability or approval by the P.P.U.C. for any part of the renewable energy system, its design, or its method of implementation. The technical standards imposed will be based solely on those necessary to ensure the safety of P.P.U.C. personnel and for the maintenance of P.P.U.C, power quality. Standards and technical requirements shall be consistent with existing technical practices for similar types of installations in the United States, Australia, or the European Union.<\\LBody>\n",
-        "\n<li2>\n<Lbl>(1)<\\Lbl><LBody>A licensee shall inform the P.P.U.C. of any proposed technical changes to the renewable energy system that affects either the maximum power output or the components that provide the interconnection between the renewable energy system and the P.P.U.C. grid and will, under the licensing agreement, not make those changes without P.P.U.C. approval.<\\LBody>\n",
-        "<Lbl>(2)<\\Lbl><LBody>The failure of a licensee to promptly inform the P.P.U.C. in writing of any technical changes to the renewable energy system that affects any of the above may, at the P.P.U.C. discretion, result in a fine of not more than two hundred dollars ($200).<\\LBody>\n\n<\\li2>\n",
-        "<Lbl>(c)<\\Lbl><LBody>shall, at its own-expense, make available to each of its eligible customer generators who have installed a net metering system the meter (or set of meters) that is needed to determine the net flow of electricity both into and out of the electricity grid;<\\LBody>\n\n<\\li1>\n",
+        "\n<li1>\n<Lbl>(a)<\\Lbl><LBody>shall develop a standard contract providing for net energy metering, and shall, upon request, make this contract available to eligible customer-generators;<\\LBody>\\n",
+        "<Lbl>(b)<\\Lbl><LBody>shall prepare appropriate technical standards for grid connection of renewable energy systems, and inspect and provide a license for those renewable energy installations that meet the technical standards developed by P.P.U.C. and the other provisions of this legislation. Issuance of a license shall be solely to show that the P.P.U.C. has approved the interconnection of the customer=s renewable energy system and the P.P.U.C. grid and shall not be interpreted to impose liability or approval by the P.P.U.C. for any part of the renewable energy system, its design, or its method of implementation. The technical standards imposed will be based solely on those necessary to ensure the safety of P.P.U.C. personnel and for the maintenance of P.P.U.C, power quality. Standards and technical requirements shall be consistent with existing technical practices for similar types of installations in the United States, Australia, or the European Union.<\\LBody>\\n",
+        "\n<li2>\n<Lbl>(1)<\\Lbl><LBody>A licensee shall inform the P.P.U.C. of any proposed technical changes to the renewable energy system that affects either the maximum power output or the components that provide the interconnection between the renewable energy system and the P.P.U.C. grid and will, under the licensing agreement, not make those changes without P.P.U.C. approval.<\\LBody>\\n",
+        "<Lbl>(2)<\\Lbl><LBody>The failure of a licensee to promptly inform the P.P.U.C. in writing of any technical changes to the renewable energy system that affects any of the above may, at the P.P.U.C. discretion, result in a fine of not more than two hundred dollars ($200).<\\LBody>\\n\\n<\\li2>\\n",
+        "<Lbl>(c)<\\Lbl><LBody>shall, at its own-expense, make available to each of its eligible customer generators who have installed a net metering system the meter (or set of meters) that is needed to determine the net flow of electricity both into and out of the electricity grid;<\\LBody>\\n\\n<\\li1>\\n",
     ]
 
     actual_out = adobe_list_postprocessor._format_semantic_lists(in_df)
@@ -425,7 +425,7 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
     input_blocks = [
         {
             "text": ["• "],
-            "text_block_id": "p34_b1",
+            "text_block_id": "p34_b466",
             "coords": [
                 [70.91999816894531, 71.81997680664062],
                 [79.44000244140625, 71.81997680664062],
@@ -434,13 +434,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "Lbl",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[2]", "Lbl"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": [
                 "Legislation has been presented to Parliament to increase penalties for drivers using a handheld mobile. This came into effect on 1st March 2017, alongside a major Think! Campaign. "
             ],
-            "text_block_id": "p34_b2_merged",
+            "text_block_id": "p34_b467_merged",
             "coords": [
                 [88.80000305175781, 71.8079833984375],
                 [507.3838653564453, 71.8079833984375],
@@ -452,12 +452,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             "custom_attributes": {
                 "styleSpans": [
                     {"style": "superscript", "start_idx": 130, "end_idx": 131}
-                ]
+                ],
+                "possibly_contiguous_with_same_page_context": True,
             },
         },
         {
             "text": ["• "],
-            "text_block_id": "p34_b5",
+            "text_block_id": "p34_b470",
             "coords": [
                 [70.91999816894531, 120.05998229980469],
                 [79.44000244140625, 120.05998229980469],
@@ -466,13 +467,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "Lbl",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[3]", "Lbl"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": [
                 "A major piece of research on young driver safety has been commissioned. "
             ],
-            "text_block_id": "p34_b6",
+            "text_block_id": "p34_b471",
             "coords": [
                 [88.80000305175781, 120.0479736328125],
                 [486.1919250488281, 120.0479736328125],
@@ -481,11 +482,11 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "LBody",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[3]", "LBody"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": ["• "],
-            "text_block_id": "p34_b7",
+            "text_block_id": "p34_b472",
             "coords": [
                 [70.91999816894531, 140.57997131347656],
                 [79.44000244140625, 140.57997131347656],
@@ -494,13 +495,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "Lbl",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[4]", "Lbl"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": [
                 "We have consulted on improving compulsory basic training for motorcyclists and allowing learner drivers on motorways. "
             ],
-            "text_block_id": "p34_b8",
+            "text_block_id": "p34_b473",
             "coords": [
                 [88.80000305175781, 140.56797790527344],
                 [518.3038787841797, 140.56797790527344],
@@ -509,11 +510,11 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "LBody",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[4]", "LBody"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": ["• "],
-            "text_block_id": "p34_b9",
+            "text_block_id": "p34_b474",
             "coords": [
                 [70.91999816894531, 175.0199737548828],
                 [79.44000244140625, 175.0199737548828],
@@ -522,13 +523,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "Lbl",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[5]", "Lbl"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": [
                 "We have continued to push forward on drug driving, which has led to around 10,000 arrests. "
             ],
-            "text_block_id": "p34_b10",
+            "text_block_id": "p34_b475",
             "coords": [
                 [88.80000305175781, 175.0079803466797],
                 [497.3039093017578, 175.0079803466797],
@@ -537,11 +538,11 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "LBody",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[5]", "LBody"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": ["• "],
-            "text_block_id": "p34_b11",
+            "text_block_id": "p34_b476",
             "coords": [
                 [70.91999816894531, 209.45997619628906],
                 [79.44000244140625, 209.45997619628906],
@@ -550,13 +551,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "Lbl",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[6]", "Lbl"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": [
                 "The Driving and Vehicle Standards Agency has trialled a new practical car driving test, to improve new driver safety. "
             ],
-            "text_block_id": "p34_b12",
+            "text_block_id": "p34_b477",
             "coords": [
                 [88.80000305175781, 209.44798278808594],
                 [524.0879211425781, 209.44798278808594],
@@ -565,11 +566,11 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "LBody",
             "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[6]", "LBody"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": ["• "],
-            "text_block_id": "p34_b8",
+            "text_block_id": "p34_b485",
             "coords": [
                 [78.0, 522.4199829101562],
                 [86.52000427246094, 522.4199829101562],
@@ -578,13 +579,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "Lbl",
             "path": ["Document", "L[48]", "LI[3]", "LBody", "L", "LI", "Lbl"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": [
                 "Work is continuing to refine the approach to appraising, monitoring and evaluating cycling investment opportunities, to ensure that good quality schemes are delivered. In turn this will help inform a review of Highways England’s cycling performance indicators, to ensure they are meaningful and easily understood. The new approach will be tested in 2017-18 to ensure it is fit for purpose. "
             ],
-            "text_block_id": "p34_b9",
+            "text_block_id": "p34_b486",
             "coords": [
                 [92.27999877929688, 522.4079742431641],
                 [523.1759185791016, 522.4079742431641],
@@ -593,11 +594,11 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "LBody",
             "path": ["Document", "L[48]", "LI[3]", "LBody", "L", "LI", "LBody"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": ["• "],
-            "text_block_id": "p34_b10",
+            "text_block_id": "p34_b487",
             "coords": [
                 [78.0, 598.2599792480469],
                 [86.52000427246094, 598.2599792480469],
@@ -606,13 +607,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "Lbl",
             "path": ["Document", "L[48]", "LI[3]", "LBody", "L", "LI[2]", "Lbl"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": [
                 "Highways England continues to work closely with a range of stakeholders representing the views of vulnerable users, including cyclists. This includes national engagement on development of their overall approach, as well as local engagement regarding specific scheme opportunities and issues. "
             ],
-            "text_block_id": "p34_b11",
+            "text_block_id": "p34_b488",
             "coords": [
                 [92.27999877929688, 598.2479705810547],
                 [515.8799133300781, 598.2479705810547],
@@ -621,11 +622,11 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "LBody",
             "path": ["Document", "L[48]", "LI[3]", "LBody", "L", "LI[2]", "LBody"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": ["• "],
-            "text_block_id": "p34_b12",
+            "text_block_id": "p34_b489",
             "coords": [
                 [70.91999816894531, 660.1799774169922],
                 [79.44000244140625, 660.1799774169922],
@@ -634,13 +635,13 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "Lbl",
             "path": ["Document", "L[48]", "LI[3]", "LBody", "L", "LI[3]", "Lbl"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
         {
             "text": [
                 "Highways England recognises the need for cycling investment to positively contribute to local cycle networks. To support this they have been testing network planning approaches with specific local highways authorities to ensure that Highway England’s investment supports the ambitions of local authorities, as set out in their Local Cycling and Walking Infrastructure Plans (LCWIPs), as well as Government. Once fully developed they will implement this approach more widely. "
             ],
-            "text_block_id": "p34_b13",
+            "text_block_id": "p34_b490",
             "coords": [
                 [70.91999816894531, 660.1679840087891],
                 [523.4159545898438, 660.1679840087891],
@@ -649,7 +650,7 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             ],
             "type": "LI",
             "path": ["Document", "L[48]", "LI[3]", "LBody", "L", "LI[3]"],
-            "custom_attributes": None,
+            "custom_attributes": {"possibly_contiguous_with_same_page_context": True},
         },
     ]
     expected = {
@@ -660,19 +661,20 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
             [524.0879211425781, 758.9399719238281],
         ],
         "path": ["Document", "L[47]", "LI", "LBody", "L", "LI[2]", "Lbl"],
-        "text_block_id": "p34_b1",
+        "text_block_id": "p34_b466",
         "type": "list",
         "text": [
-            "\n<li1>\n<Lbl>•<\\Lbl><LBody>Legislation has been presented to Parliament to increase penalties for drivers using a handheld mobile. This came into effect on 1st March 2017, alongside a major Think! Campaign.<\\LBody>\n",
-            "<Lbl>•<\\Lbl><LBody>A major piece of research on young driver safety has been commissioned.<\\LBody>\n",
-            "<Lbl>•<\\Lbl><LBody>We have consulted on improving compulsory basic training for motorcyclists and allowing learner drivers on motorways.<\\LBody>\n",
-            "<Lbl>•<\\Lbl><LBody>We have continued to push forward on drug driving, which has led to around 10,000 arrests.<\\LBody>\n",
-            "<Lbl>•<\\Lbl><LBody>The Driving and Vehicle Standards Agency has trialled a new practical car driving test, to improve new driver safety.<\\LBody>\n",
-            "<Lbl>•<\\Lbl><LBody>Work is continuing to refine the approach to appraising, monitoring and evaluating cycling investment opportunities, to ensure that good quality schemes are delivered. In turn this will help inform a review of Highways England’s cycling performance indicators, to ensure they are meaningful and easily understood. The new approach will be tested in 2017-18 to ensure it is fit for purpose.<\\LBody>\n",
-            "<Lbl>•<\\Lbl><LBody>Highways England continues to work closely with a range of stakeholders representing the views of vulnerable users, including cyclists. This includes national engagement on development of their overall approach, as well as local engagement regarding specific scheme opportunities and issues.<\\LBody>\n",
-            "<Lbl>•<\\Lbl><LBody>Highways England recognises the need for cycling investment to positively contribute to local cycle networks. To support this they have been testing network planning approaches with specific local highways authorities to ensure that Highway England’s investment supports the ambitions of local authorities, as set out in their Local Cycling and Walking Infrastructure Plans (LCWIPs), as well as Government. Once fully developed they will implement this approach more widely.<\\LBody>\n\n<\\li1>\n",
+            "\n<li1>\n<Lbl>•<\\Lbl><LBody>Legislation has been presented to Parliament to increase penalties for drivers using a handheld mobile. This came into effect on 1st March 2017, alongside a major Think! Campaign.<\\LBody>\\n",
+            "<Lbl>•<\\Lbl><LBody>A major piece of research on young driver safety has been commissioned.<\\LBody>\\n",
+            "<Lbl>•<\\Lbl><LBody>We have consulted on improving compulsory basic training for motorcyclists and allowing learner drivers on motorways.<\\LBody>\\n",
+            "<Lbl>•<\\Lbl><LBody>We have continued to push forward on drug driving, which has led to around 10,000 arrests.<\\LBody>\\n",
+            "<Lbl>•<\\Lbl><LBody>The Driving and Vehicle Standards Agency has trialled a new practical car driving test, to improve new driver safety.<\\LBody>\\n",
+            "<Lbl>•<\\Lbl><LBody>Work is continuing to refine the approach to appraising, monitoring and evaluating cycling investment opportunities, to ensure that good quality schemes are delivered. In turn this will help inform a review of Highways England’s cycling performance indicators, to ensure they are meaningful and easily understood. The new approach will be tested in 2017-18 to ensure it is fit for purpose.<\\LBody>\\n",
+            "<Lbl>•<\\Lbl><LBody>Highways England continues to work closely with a range of stakeholders representing the views of vulnerable users, including cyclists. This includes national engagement on development of their overall approach, as well as local engagement regarding specific scheme opportunities and issues.<\\LBody>\\n",
+            "<Lbl>•<\\Lbl><LBody>Highways England recognises the need for cycling investment to positively contribute to local cycle networks. To support this they have been testing network planning approaches with specific local highways authorities to ensure that Highway England’s investment supports the ambitions of local authorities, as set out in their Local Cycling and Walking Infrastructure Plans (LCWIPs), as well as Government. Once fully developed they will implement this approach more widely.<\\LBody>\\n\\n<\\li1>\\n",
         ],
         "custom_attributes": {
+            "possibly_contiguous_with_same_page_context": True,
             "styleSpans": [{"style": "superscript", "start_idx": 130, "end_idx": 131}],
             "paths": [
                 ["Document", "L[47]", "LI", "LBody", "L", "LI[2]", "Lbl"],
@@ -693,24 +695,24 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
                 ["Document", "L[48]", "LI[3]", "LBody", "L", "LI[3]"],
             ],
             "text_block_ids": [
-                "p34_b1",
-                "p34_b2_merged",
-                "p34_b5",
-                "p34_b6",
-                "p34_b7",
-                "p34_b8",
-                "p34_b9",
-                "p34_b10",
-                "p34_b11",
-                "p34_b12",
-                "p34_b8",
-                "p34_b9",
-                "p34_b10",
-                "p34_b11",
-                "p34_b12",
-                "p34_b13",
+                "p34_b466",
+                "p34_b467_merged",
+                "p34_b470",
+                "p34_b471",
+                "p34_b472",
+                "p34_b473",
+                "p34_b474",
+                "p34_b475",
+                "p34_b476",
+                "p34_b477",
+                "p34_b485",
+                "p34_b486",
+                "p34_b487",
+                "p34_b488",
+                "p34_b489",
+                "p34_b490",
             ],
-            "pretty_list_string": "* Legislation has been presented to Parliament to increase penalties for drivers using a handheld mobile. This came into effect on 1st March 2017, alongside a major Think! Campaign.\n* A major piece of research on young driver safety has been commissioned.\n* We have consulted on improving compulsory basic training for motorcyclists and allowing learner drivers on motorways.\n* We have continued to push forward on drug driving, which has led to around 10,000 arrests.\n* The Driving and Vehicle Standards Agency has trialled a new practical car driving test, to improve new driver safety.\n* Work is continuing to refine the approach to appraising, monitoring and evaluating cycling investment opportunities, to ensure that good quality schemes are delivered. In turn this will help inform a review of Highways England’s cycling performance indicators, to ensure they are meaningful and easily understood. The new approach will be tested in 2017-18 to ensure it is fit for purpose.\n* Highways England continues to work closely with a range of stakeholders representing the views of vulnerable users, including cyclists. This includes national engagement on development of their overall approach, as well as local engagement regarding specific scheme opportunities and issues.\n* Highways England recognises the need for cycling investment to positively contribute to local cycle networks. To support this they have been testing network planning approaches with specific local highways authorities to ensure that Highway England’s investment supports the ambitions of local authorities, as set out in their Local Cycling and Walking Infrastructure Plans (LCWIPs), as well as Government. Once fully developed they will implement this approach more widely.\n",
+            "pretty_list_string": "* Legislation has been presented to Parliament to increase penalties for drivers using a handheld mobile. This came into effect on 1st March 2017, alongside a major Think! Campaign.\\n\n* A major piece of research on young driver safety has been commissioned.\\n\n* We have consulted on improving compulsory basic training for motorcyclists and allowing learner drivers on motorways.\\n\n* We have continued to push forward on drug driving, which has led to around 10,000 arrests.\\n\n* The Driving and Vehicle Standards Agency has trialled a new practical car driving test, to improve new driver safety.\\n\n* Work is continuing to refine the approach to appraising, monitoring and evaluating cycling investment opportunities, to ensure that good quality schemes are delivered. In turn this will help inform a review of Highways England’s cycling performance indicators, to ensure they are meaningful and easily understood. The new approach will be tested in 2017-18 to ensure it is fit for purpose.\\n\n* Highways England continues to work closely with a range of stakeholders representing the views of vulnerable users, including cyclists. This includes national engagement on development of their overall approach, as well as local engagement regarding specific scheme opportunities and issues.\\n\n* Highways England recognises the need for cycling investment to positively contribute to local cycle networks. To support this they have been testing network planning approaches with specific local highways authorities to ensure that Highway England’s investment supports the ambitions of local authorities, as set out in their Local Cycling and Walking Infrastructure Plans (LCWIPs), as well as Government. Once fully developed they will implement this approach more widely.\\n\\n\\n\n",
             "original_list_text": [
                 ["• "],
                 [
@@ -745,6 +747,7 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
                     "Highways England recognises the need for cycling investment to positively contribute to local cycle networks. To support this they have been testing network planning approaches with specific local highways authorities to ensure that Highway England’s investment supports the ambitions of local authorities, as set out in their Local Cycling and Walking Infrastructure Plans (LCWIPs), as well as Government. Once fully developed they will implement this approach more widely. "
                 ],
             ],
+            "num_nesting_levels": 1,
         },
     }
     actual = adobe_list_postprocessor._update_custom_attributes(input_blocks)
