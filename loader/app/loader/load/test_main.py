@@ -1,24 +1,32 @@
+from dataclasses import dataclass
 from datetime import datetime
-from unittest.mock import patch
+from unittest.mock import patch, MagicMock
 
-from app.loader.load import load
+from app.loader.load.main import load
 from app.model import Key, PolicyData, Doc, PolicyLookup
 
 
-@patch("app.load.main.get_language_id_for_doc")
-@patch("app.load.main.get_geography_id")
-@patch("app.load.main.get_type_id")
-@patch("app.load.main.post_action")
+@dataclass
+class MockDb:
+    """Mock SessionLocal for testing."""
+
+    add = MagicMock()
+    commit = MagicMock()
+
+
+@patch("app.loader.load.main.get_document_validity_sync")
+@patch("app.loader.load.main.get_geography_id")
+@patch("app.loader.load.main.get_type_id")
 def test_load(
-    mock_post_action,
     mock_get_type_id,
     mock_get_geography_id,
-    mock_get_language_id_for_doc,
+    mock_get_document_validity_sync,
 ):
-    mock_post_action.return_value.status_code = 200
     mock_get_type_id.return_value = 123
     mock_get_geography_id.return_value = 456
-    mock_get_language_id_for_doc.return_value = 789
+    mock_get_document_validity_sync.return_value = None
+
+    mock_db = MockDb()
 
     policy_key = Key(
         policy_name="foo",
@@ -40,31 +48,21 @@ def test_load(
         policy_key: policy_data,
     }
 
-    load(policies)
+    load(mock_db, policies)
 
-    mock_post_action.assert_called_once_with(
-        {
-            "name": policy_data.policy_name,
-            "description": policy_data.policy_description,
-            "year": policy_data.policy_date.year,
-            "month": policy_data.policy_date.month,
-            "day": policy_data.policy_date.day,
-            "geography_id": 456,
-            "type_id": 123,
-            "source_id": 1,  # CCLW is source_id 1
-            "documents": [
-                {
-                    "name": doc.doc_name,
-                    "language_id": 789,
-                    "source_url": doc.doc_url,
-                    "s3_url": None,
-                    "year": policy_data.policy_date.year,
-                    "month": policy_data.policy_date.month,
-                    "day": policy_data.policy_date.day,
-                },
-            ],
-        }
-    )
-    mock_get_type_id.assert_called_once_with(policy_data.policy_type)
-    mock_get_geography_id.assert_called_once_with(policy_data.country_code)
-    mock_get_language_id_for_doc.assert_called_once_with(doc)
+    mock_get_type_id.assert_called_once_with(mock_db, policy_data.policy_type)
+    mock_get_geography_id.assert_called_once_with(mock_db, policy_data.country_code)
+    mock_get_document_validity_sync.assert_called_once_with("http://doc")
+
+    called_doc = mock_db.add.call_args[0][0]
+    mock_db.add.assert_called_once()
+    assert called_doc.name == "foo"
+    assert called_doc.source_url == "http://doc"
+    assert called_doc.source_id == 1
+    # assert called_doc.url ==  # TODO: upload to S3
+    assert called_doc.is_valid
+    assert called_doc.invalid_reason is None
+    assert called_doc.geography_id == 456
+    assert called_doc.type_id == 123
+
+    mock_db.commit.assert_called_once()

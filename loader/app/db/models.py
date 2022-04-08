@@ -82,7 +82,7 @@ class Document(Auditable, Base):
     id = sa.Column(sa.Integer, primary_key=True)
     # created_by = sa.Column(sa.Integer, sa.ForeignKey(User.id))
     # updated_by = sa.Column(sa.Integer, sa.ForeignKey(User.id))
-    loaded_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
+    loaded_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
     name = sa.Column(sa.Text, nullable=False)
     source_url = sa.Column(sa.Text)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)

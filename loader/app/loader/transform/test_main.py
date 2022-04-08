@@ -4,7 +4,7 @@ from typing import List
 import pandas as pd
 
 from app.model import PolicyLookup, PolicyData, Key, Doc
-from app.loader.transform import transform
+from app.loader.transform.main import transform
 
 
 def test_transform():

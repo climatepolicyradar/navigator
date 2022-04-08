@@ -92,7 +92,12 @@ def upgrade():
         ),
         sa.Column("updated_ts", sa.DateTime(timezone=True), nullable=True),
         sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("loaded_ts", sa.DateTime(timezone=True), nullable=True),
+        sa.Column(
+            "loaded_ts",
+            sa.DateTime(timezone=True),
+            server_default=sa.text("now()"),
+            nullable=True,
+        ),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("source_url", sa.Text(), nullable=True),
         sa.Column("source_id", sa.Integer(), nullable=False),

@@ -1,22 +1,16 @@
-import asyncio
 import logging
-import ssl
 from datetime import datetime
-from typing import Optional
-
-import httpx
 
 from app.db.models import Document
-from app.db.models import DocumentInvalidReason
-from app.db.session import get_db
-from app.service.lookups import get_type_id, get_geography_id
+from app.db.session import SessionLocal
 from app.model import PolicyLookup
+from app.service.lookups import get_type_id, get_geography_id
+from app.service.validation import get_document_validity_sync
 
 logger = logging.getLogger(__file__)
 
 
-def load(policies: PolicyLookup):
-    db = next(get_db())
+def load(db: SessionLocal, policies: PolicyLookup):
 
     imported_count = 0
     for key, policy_data in policies.items():
@@ -50,7 +44,7 @@ def load(policies: PolicyLookup):
 
             # TODO async one day
             # invalid_reason = await get_document_validity(document_create.source_url)
-            invalid_reason = asyncio.run(get_document_validity(doc.doc_url))
+            invalid_reason = get_document_validity_sync(doc.doc_url)
 
             if invalid_reason:
                 is_valid = False
@@ -59,8 +53,7 @@ def load(policies: PolicyLookup):
                     f"url={doc.doc_url}"
                 )
 
-            db_user = Document(
-                loaded_ts=datetime.utcnow(),
+            doc = Document(
                 name=key.policy_name,
                 source_url=doc.doc_url,
                 source_id=1,
@@ -70,35 +63,11 @@ def load(policies: PolicyLookup):
                 geography_id=geography_id,
                 type_id=document_type_id,
             )
-            db.add(db_user)
+            db.add(doc)
             db.commit()
+            # TODO also save event (and possible other things)
+            imported_count += 1
 
     logger.info(
         f"Done, {imported_count} policies imported out of {len(policies.items())} total"
     )
-
-
-transport = httpx.AsyncHTTPTransport(retries=3)
-supported_content_types = ["application/pdf", "text/html"]
-
-
-async def get_document_validity(source_url: str) -> Optional[DocumentInvalidReason]:
-    try:
-        async with httpx.AsyncClient(transport=transport, timeout=10) as client:
-            response = await client.head(source_url, follow_redirects=True)
-            content_type = response.headers.get("content-type")
-            if content_type not in supported_content_types:
-                return DocumentInvalidReason.unsupported_content_type
-            else:
-                return None  # no reason needed
-
-    except (ssl.SSLCertVerificationError, ssl.SSLError):
-        # we do not want to download insecurely
-        return DocumentInvalidReason.net_ssl_error
-    except (httpx.ConnectError, httpx.ConnectTimeout):
-        # not sure if this is worth retrying, as there's probably nothing listening on the other side
-        return DocumentInvalidReason.net_connection_error
-    except (httpx.ReadError, httpx.ReadTimeout):
-        return DocumentInvalidReason.net_read_error
-    except httpx.TooManyRedirects:
-        return DocumentInvalidReason.net_too_many_redirects
