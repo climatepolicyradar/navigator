@@ -9,7 +9,7 @@ import httpx
 from app.db.models import Document
 from app.db.models import DocumentInvalidReason
 from app.db.session import get_db
-from app.loader.load.api_client import get_type_id, get_geography_id
+from app.service.api_client import get_type_id, get_geography_id
 from app.model import PolicyLookup
 
 logger = logging.getLogger(__file__)
@@ -30,8 +30,8 @@ def load(policies: PolicyLookup):
             continue
 
         policy_type = key.policy_type
-        action_type_id = get_type_id(policy_type)
-        if not action_type_id:
+        document_type_id = get_type_id(policy_type)
+        if not document_type_id:
             logger.warning(
                 f"No action type found in lookup for policy type {policy_type}"
             )
@@ -67,8 +67,8 @@ def load(policies: PolicyLookup):
                 # url=None,  # TODO: upload to S3
                 is_valid=is_valid,
                 invalid_reason=invalid_reason,
-                geography_id=1,  # TODO
-                type_id=1,  # TODO
+                geography_id=geography_id,
+                type_id=document_type_id,
             )
             db.add(db_user)
             db.commit()

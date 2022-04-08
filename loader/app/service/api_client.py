@@ -1,3 +1,10 @@
+"""An API client.
+
+The loader previously used lookups from the backend API,
+but as it now has it's own database, use app.service.lookups instead.
+Then delete this later.
+"""
+
 import os
 from functools import lru_cache
 from typing import Callable

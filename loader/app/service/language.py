@@ -1,6 +1,6 @@
 from typing import Optional
 
-from app.loader.load.api_client import get_language_id, get_language_id_by_part1_code
+from app.service.lookups import get_language_id, get_language_id_by_part1_code
 from app.model import Doc
 
 
