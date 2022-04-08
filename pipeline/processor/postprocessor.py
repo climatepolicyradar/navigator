@@ -17,7 +17,7 @@ class PostProcessor(ABC):
     @staticmethod
     def _minimal_bounding_box(
         coords: Sequence[Sequence[Sequence[float]]],
-    ) -> Sequence[Sequence[float]]:
+    ) -> List[List[float]]:
         """Return the minimally enclosing bounding box of bounding boxes.
 
         Args: coords: A list of coordinates for each bounding box formatted [x1,y1,x2,y2] with the bottom left as the
