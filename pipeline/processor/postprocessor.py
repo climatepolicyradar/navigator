@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from collections import defaultdict
 from copy import deepcopy
-from typing import List, Dict, Optional
+from typing import List, Dict, Optional, Sequence
 
 import pandas as pd
 from english_words import english_words_set
@@ -12,10 +12,13 @@ from extract.document import Document, TextBlock
 
 
 class PostProcessor(ABC):
+    """Abstract class for post-processing the extracted data."""
+
     @staticmethod
-    def _minimal_bounding_box(coords: List[List[float]]) -> List[List[float]]:
-        """
-        Return the minimally enclosing bounding box of bounding boxes.
+    def _minimal_bounding_box(
+        coords: Sequence[Sequence[Sequence[float]]],
+    ) -> Sequence[Sequence[float]]:
+        """Return the minimally enclosing bounding box of bounding boxes.
 
         Args: coords: A list of coordinates for each bounding box formatted [x1,y1,x2,y2] with the bottom left as the
         origin.
@@ -31,9 +34,8 @@ class PostProcessor(ABC):
         return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
 
     @abstractmethod
-    def process(self, document: Document, filename: Optional) -> Document:
-        """
-        Process the document.
+    def process(self, document: Document, filename: Optional[str]) -> Document:
+        """Process the document.
 
         Args:
             document: The document to process.
@@ -46,14 +48,12 @@ class PostProcessor(ABC):
 
 
 class HyphenationPostProcessor(PostProcessor):
-    """
-    Post processor to join words that are separated into separate blocks due
-    to hyphenation at line breaks.
-    """
+    """Join words in separate blocks to hyphenation."""
 
     @staticmethod
     def _rewrap_hyphenated_words(li: list) -> list:
-        """
+        """Join hyphenated word if result is a real word.
+
         Reorganise a list of strings so that word fragments separated
         by hyphens or em dashes to start new lines are joined into a single
         word if the word fragments have no meaning by themselves.
@@ -94,7 +94,8 @@ class HyphenationPostProcessor(PostProcessor):
                 current = regex_match[0]
         return new_list
 
-    def process(self, contents: Document) -> Document:
+    def process(self, contents: Document, filename: str = None) -> Document:
+        """Join hyphenated words if they are real words, otherwise keep hyphenation."""
         contents = contents.to_dict()
         for ix, page in enumerate(contents["pages"]):
             for text_block in page["text_blocks"]:
@@ -104,7 +105,8 @@ class HyphenationPostProcessor(PostProcessor):
 
 
 class AdobeTextStylingPostProcessor(PostProcessor):
-    """
+    """Handle separation of semantics due to bold, underline, superscript, subscript, etc.
+
     Some semantic passages have separate blocks for styling markers such
     as underlines, superscripts and subscripts. We want to group such cases
     into single contiguous blocks. However, we want to keep the styling information
@@ -118,14 +120,10 @@ class AdobeTextStylingPostProcessor(PostProcessor):
 
     @staticmethod
     def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
-        """
-        Get text block styling, if present.
+        """Get text block styling, if present.
 
         Args:
-            text_block:
-
-        Returns:
-
+            text_block: a block of text.
         """
         if not text_block["custom_attributes"]:
             return None
@@ -140,8 +138,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             return None
 
     def merge_text_blocks(self, text_blocks: List[dict]) -> dict:
-        """
-        Merge text blocks in the same semantic category (same path) that have been separated due to styling elements.
+        """Merge text blocks in the same semantic category (same path) that have been separated due to styling elements.
 
         Note, the indexing style is slightly un-pythonic here (a single digit superscript has start and end indices (144, 144)
         instead of (144, 145). See TODO below.
@@ -157,7 +154,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         merged_coords = self._minimal_bounding_box(all_coords)
 
         style_spans = []
-        merged_block_text = []
+        merged_block_text = []  # type: List[str]
         cumulative_block_len = 0
         for text_block in text_blocks:
             start_ix = cumulative_block_len
@@ -199,12 +196,11 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         }
         return text_block
 
-    def process(self, document: Document) -> Document:
-        """
-        Iterate through a document and merge text blocks that have been separated due to styling elements.
+    def process(self, document: Document, filename=None) -> Document:
+        """Iterate through a document and merge text blocks that have been separated due to styling elements.
 
         Args:
-            document:
+            document: document object associated with a PDF.
 
         Returns:
                 A new dict object with styling info added.
@@ -262,8 +258,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
 
 
 class AdobeListGroupingPostProcessor(PostProcessor):
-    """Further processing of processed outputs from the Adobe API (handling cases not easily
-    handled by the API itself)."""
+    """Group semantically related list elements."""
 
     list_regex_pattern = r"L\[?\d?\]?$"
 
@@ -273,8 +268,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
     # Find number of occurrences of a regex pattern in a list of strings
     @staticmethod
     def _find_all_list_occurrences(regex_pattern: str, list_of_strings):
-        """
-        Finds all occurrences of a regular expression in a list of strings.
+        """Finds all occurrences of a regular expression in a list of strings.
 
         Args:
             regex_pattern: Regular expression to search for in the list of strings.
@@ -288,8 +282,9 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             string for string in list_of_strings if re.search(regex_pattern, string)
         ]
 
-    def _format_semantic_lists(self, df: pd.DataFrame) -> List[List[str]]:
-        """
+    def _format_semantic_lists(self, df: pd.DataFrame) -> List[str]:
+        """Add HTML styling to list elements.
+
         Takes a dataframe with list elements and associated metadata and
         parses the list text into a more formatted list of strings with html-esque
         tags. Best attempt is made to keep the right semantics and assign
@@ -330,7 +325,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             list_number = row["list_num"]
             if text_type == "Lbl":
                 new_string = ""
-                label_string = fr"<Lbl>{text}<\Lbl>"
+                label_string = rf"<Lbl>{text}<\Lbl>"
                 if row["first_list_ix_bool"]:
                     new_string += f"\n<li{list_number}>\n{label_string}"
                 else:
@@ -343,21 +338,20 @@ class AdobeListGroupingPostProcessor(PostProcessor):
             else:
                 if row["last_list_ix_bool"]:
                     new_string += (
-                        fr"<LBody>{text}<\LBody>\n" + fr"\n<\li{list_number}>\n"
+                        rf"<LBody>{text}<\LBody>\n" + rf"\n<\li{list_number}>\n"
                     )
                 else:
-                    new_string += fr"<LBody>{text}<\LBody>\n"
+                    new_string += rf"<LBody>{text}<\LBody>\n"
                 lst.append(new_string)
         return lst
 
     @staticmethod
     def _line_reformatting(line: str) -> str:
-        """
-        Replaces HTML formatting we don't want displayed in output and replace list labels
-        with a normalised version (bullet points).
+        """Replace things we wouldn't want in UI with normalised versions.
 
         Args:
             line: String to be reformatted.
+
         Returns:
             Reformatted string.
         """
@@ -367,7 +361,8 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         return line
 
     def _pprinter(self, text_lst: List[str]) -> str:
-        """
+        """Convert list of strings belonging to a list into a pretty string.
+
         Pretty prints a list of strings for API/Python access, handling nested lists gracefully
         with tabulation. This can be used for debugging purposes.
 
@@ -390,7 +385,9 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                     if current_tab_level > 0:
                         current_tab_level -= 1
             elif line.strip().startswith("<li"):
-                list_num = int(re.search(r"<li(\d+)>", line.strip()).group(1))
+                match = re.search(r"<li(\d+)>", line.strip())
+                if match:
+                    list_num = int(match.group(1))
                 line = self._line_reformatting(line)
                 line = re.sub(r"<li\d+>", "", line)
                 if list_num > 1:
@@ -400,9 +397,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
 
     @staticmethod
     def _update_contiguity_attributes(text_block: dict, new_attribute: str) -> dict:
-        """
-        Helper method to update custom attributes with metadata to inform that a block
-        is contiguous with the previous element, which may be of a different type.
+        """Update custom attributes (e.g. indicating if list elements are contiguous with prev blocks)..
 
         Args:
             text_block: The text block that is contiguous from the previous page.
@@ -420,9 +415,8 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         return text_block
 
     @staticmethod
-    def _remove_unmerged_lists(text_blocks: List[dict]) -> dict:
-        """
-        Remove list elements on a page that are not part of a list group.
+    def _remove_unmerged_lists(text_blocks: List[dict]) -> List[dict]:
+        """Remove list elements on a page that are not part of a list group.
 
         Args:
             text_blocks: All text blocks on a page.
@@ -447,8 +441,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         return new_text_blocks
 
     def _update_custom_attributes(self, blocks: List[Dict]) -> dict:
-        """
-        Create custom attributes for a list of text blocks that are part of the same semantic list.
+        """Create custom attributes for a list of text blocks that are part of the same semantic list.
 
         Args:
             blocks: List of text blocks belonging to a list element.
@@ -521,8 +514,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         return new_dict
 
     def _group_list_elements(self, contents: dict) -> dict:
-        """
-        Parse Adobe outputs to group list elements
+        """Parse Adobe outputs to group list elements.
 
         Args:
             contents: A dict of the processed adobe output for a particular pdf.
@@ -538,7 +530,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         for ix, page in enumerate(contents["pages"]):
             previous_block = None
             new_text_blocks = []
-            dd = defaultdict(list)
+            dd = defaultdict(list)  # type: ignore
             for text_block in page["text_blocks"]:
                 blocks_seen += 1
                 if text_block["path"]:
@@ -551,9 +543,9 @@ class AdobeListGroupingPostProcessor(PostProcessor):
                         list_group = list_occurrences[0]
                     if list_group:
                         current_list_id = f"{ix}_{list_group}"
-                        block_num = int(
-                            re.search(r"b(\d+)", text_block["text_block_id"]).group(1)
-                        )
+                        match = re.search(r"b(\d+)", text_block["text_block_id"])
+                        if match:
+                            block_num = int(match.group(1))
                         # TODO: Validate cases where this fails. Note, update by Kalyan may
                         #  add additional cases where this fails because the first block on a page
                         #   is not always block 1.
@@ -628,20 +620,18 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         new_contents = {"pages": new_pages}
         return new_contents
 
-    def process(self, doc: Document, filename: str) -> Document:
-        """
-        Update a document object associated to a pdf by parse elements belonging to lists into single blocks,
-        adding metadata on processing steps where appropriate.
+    def process(self, document: Document, filename: Optional[str]) -> Document:
+        """Parse elements belonging to lists into single semantic blocks.
 
         Args:
             filename: The filename of the pdf being processed.
-            doc: Document for a single pdf.
+            document: Document for a single pdf.
 
         Returns:
             A Document object with elements that are associated to lists grouped together.
         """
         # Return original content dict and the grouped list blocks to overwrite original list elements with.
-        doc = doc.to_dict()
+        doc = document.to_dict()
         new_contents = self._group_list_elements(doc)
         new_contents["filename"] = filename
         return Document.from_dict(new_contents)

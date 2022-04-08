@@ -1,4 +1,3 @@
-import pytest
 import text2embeddings
 
 
@@ -85,12 +84,33 @@ def test_get_text_from_merged_block():
 
 def test_get_text_from_list():
     # Case 1: A nice complex nested list example with context.
-    previous_context_block = """The P.P.U.C.-
-* shall develop a standard contract providing for net energy metering, and shall, upon request, make this contract available to eligible customer-generators;
-* shall prepare appropriate technical standards for grid connection of renewable energy systems, and inspect and provide a license for those renewable energy installations that meet the technical standards developed by P.P.U.C. and the other provisions of this legislation. Issuance of a license shall be solely to show that the P.P.U.C. has approved the interconnection of the customer=s renewable energy system and the P.P.U.C. grid and shall not be interpreted to impose liability or approval by the P.P.U.C. for any part of the renewable energy system, its design, or its method of implementation. The technical standards imposed will be based solely on those necessary to ensure the safety of P.P.U.C. personnel and for the maintenance of P.P.U.C, power quality. Standards and technical requirements shall be consistent with existing technical practices for similar types of installations in the United States, Australia, or the European Union.
-	* A licensee shall inform the P.P.U.C. of any proposed technical changes to the renewable energy system that affects either the maximum power output or the components that provide the interconnection between the renewable energy system and the P.P.U.C. grid and will, under the licensing agreement, not make those changes without P.P.U.C. approval.
-	* The failure of a licensee to promptly inform the P.P.U.C. in writing of any technical changes to the renewable energy system that affects any of the above may, at the P.P.U.C. discretion, result in a fine of not more than two hundred dollars ($200).
-	* shall, at its own-expense, make available to each of its eligible customer generators who have installed a net metering system the meter (or set of meters) that is needed to determine the net flow of electricity both into and out of the electricity grid;"""
+    previous_context_block = (
+        "The P.P.U.C.-\n* shall develop a standard contract providing for net energy metering, "
+        "and shall, upon request, make this contract available to eligible "
+        "customer-generators;\n* shall prepare appropriate technical standards for grid "
+        "connection of renewable energy systems, and inspect and provide a license for those "
+        "renewable energy installations that meet the technical standards developed by P.P.U.C. "
+        "and the other provisions of this legislation. Issuance of a license shall be solely to "
+        "show that the P.P.U.C. has approved the interconnection of the customer=s renewable "
+        "energy system and the P.P.U.C. grid and shall not be interpreted to impose liability or "
+        "approval by the P.P.U.C. for any part of the renewable energy system, its design, "
+        "or its method of implementation. The technical standards imposed will be based solely "
+        "on those necessary to ensure the safety of P.P.U.C. personnel and for the maintenance "
+        "of P.P.U.C, power quality. Standards and technical requirements shall be consistent "
+        "with existing technical practices for similar types of installations in the United "
+        "States, Australia, or the European Union.\n\t* A licensee shall inform the P.P.U.C. of "
+        "any proposed technical changes to the renewable energy system that affects either the "
+        "maximum power output or the components that provide the interconnection between the "
+        "renewable energy system and the P.P.U.C. grid and will, under the licensing agreement, "
+        "not make those changes without P.P.U.C. approval.\n\t* The failure of a licensee to "
+        "promptly inform the P.P.U.C. in writing of any technical changes to the renewable "
+        "energy system that affects any of the above may, at the P.P.U.C. discretion, "
+        "result in a fine of not more than two hundred dollars ($200).\n\t* shall, "
+        "at its own-expense, make available to each of its eligible customer generators who have "
+        "installed a net metering system the meter (or set of meters) that is needed to "
+        "determine the net flow of electricity both into and out of the electricity grid;"
+    )
+
     input_text_block = {
         "text": [
             "\n<li1>\n<Lbl>(d)<\\Lbl><LBody>shall, at its own expense, annually inspect grid-connected renewable energy installations to ensure that unauthorized changes have not been made and to ensure that the grid interconnection arrangements remain adequate for maintaining safety and power quality.<\\LBody>\\n",
@@ -146,14 +166,36 @@ def test_get_text_from_list():
         input_text_block, previous_context_block
     )
 
-    expected = """The P.P.U.C.-
-* shall develop a standard contract providing for net energy metering, and shall, upon request, make this contract available to eligible customer-generators;
-* shall prepare appropriate technical standards for grid connection of renewable energy systems, and inspect and provide a license for those renewable energy installations that meet the technical standards developed by P.P.U.C. and the other provisions of this legislation. Issuance of a license shall be solely to show that the P.P.U.C. has approved the interconnection of the customer=s renewable energy system and the P.P.U.C. grid and shall not be interpreted to impose liability or approval by the P.P.U.C. for any part of the renewable energy system, its design, or its method of implementation. The technical standards imposed will be based solely on those necessary to ensure the safety of P.P.U.C. personnel and for the maintenance of P.P.U.C, power quality. Standards and technical requirements shall be consistent with existing technical practices for similar types of installations in the United States, Australia, or the European Union.
-	* A licensee shall inform the P.P.U.C. of any proposed technical changes to the renewable energy system that affects either the maximum power output or the components that provide the interconnection between the renewable energy system and the P.P.U.C. grid and will, under the licensing agreement, not make those changes without P.P.U.C. approval.
-	* The failure of a licensee to promptly inform the P.P.U.C. in writing of any technical changes to the renewable energy system that affects any of the above may, at the P.P.U.C. discretion, result in a fine of not more than two hundred dollars ($200).
-	* shall, at its own-expense, make available to each of its eligible customer generators who have installed a net metering system the meter (or set of meters) that is needed to determine the net flow of electricity both into and out of the electricity grid;
-* shall, at its own expense, annually inspect grid-connected renewable energy installations to ensure that unauthorized changes have not been made and to ensure that the grid interconnection arrangements remain adequate for maintaining safety and power quality.
-* shall not charge the customer any additional standby, capacity, interconnection, or other fee or charge that is greater than such fees charged to all members of that customer class; and
-* may, at its own expense, and with the written consent of the customer, install one or more additional meters to monitor the flow of electricity in each direction. The additional metering shall be used only to provide the information necessary to accurately bill or credit the customer-generator or to collect renewable energy generating system performance information for research purposes."""
+    expected = (
+        "The P.P.U.C.-\n* shall develop a standard contract providing for net energy metering, and shall, "
+        "upon request, make this contract available to eligible customer-generators;\n* shall prepare "
+        "appropriate technical standards for grid connection of renewable energy systems, and inspect and "
+        "provide a license for those renewable energy installations that meet the technical standards "
+        "developed by P.P.U.C. and the other provisions of this legislation. Issuance of a license shall be "
+        "solely to show that the P.P.U.C. has approved the interconnection of the customer=s renewable energy "
+        "system and the P.P.U.C. grid and shall not be interpreted to impose liability or approval by the "
+        "P.P.U.C. for any part of the renewable energy system, its design, or its method of implementation. "
+        "The technical standards imposed will be based solely on those necessary to ensure the safety of "
+        "P.P.U.C. personnel and for the maintenance of P.P.U.C, power quality. Standards and technical "
+        "requirements shall be consistent with existing technical practices for similar types of installations "
+        "in the United States, Australia, or the European Union.\n\t* A licensee shall inform the P.P.U.C. of "
+        "any proposed technical changes to the renewable energy system that affects either the maximum power "
+        "output or the components that provide the interconnection between the renewable energy system and the "
+        "P.P.U.C. grid and will, under the licensing agreement, not make those changes without P.P.U.C. "
+        "approval.\n\t* The failure of a licensee to promptly inform the P.P.U.C. in writing of any technical "
+        "changes to the renewable energy system that affects any of the above may, at the P.P.U.C. discretion, "
+        "result in a fine of not more than two hundred dollars ($200).\n\t* shall, at its own-expense, "
+        "make available to each of its eligible customer generators who have installed a net metering system "
+        "the meter (or set of meters) that is needed to determine the net flow of electricity both into and "
+        "out of the electricity grid;\n* shall, at its own expense, annually inspect grid-connected renewable "
+        "energy installations to ensure that unauthorized changes have not been made and to ensure that the "
+        "grid interconnection arrangements remain adequate for maintaining safety and power quality.\n* shall "
+        "not charge the customer any additional standby, capacity, interconnection, or other fee or charge "
+        "that is greater than such fees charged to all members of that customer class; and\n* may, at its own "
+        "expense, and with the written consent of the customer, install one or more additional meters to "
+        "monitor the flow of electricity in each direction. The additional metering shall be used only to "
+        "provide the information necessary to accurately bill or credit the customer-generator or to collect "
+        "renewable energy generating system performance information for research purposes."
+    )
 
     assert actual == expected
