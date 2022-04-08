@@ -14,6 +14,7 @@ sentence-transformers = "^2.2.0"
 click = "^8.0.4"
 navigator = {path = "../common", develop = true}
 psycopg2-binary = "^2.9.3"
+pytest = "^7.1.1"
 
 [tool.poetry.dev-dependencies]
 black = "^22.1.0"
