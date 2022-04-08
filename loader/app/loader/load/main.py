@@ -9,20 +9,20 @@ import httpx
 from app.db.models import Document
 from app.db.models import DocumentInvalidReason
 from app.db.session import get_db
-from app.service.api_client import get_type_id, get_geography_id
+from app.service.lookups import get_type_id, get_geography_id
 from app.model import PolicyLookup
 
 logger = logging.getLogger(__file__)
 
 
 def load(policies: PolicyLookup):
-    db = get_db()
+    db = next(get_db())
 
     imported_count = 0
     for key, policy_data in policies.items():
 
         country_code = key.country_code
-        geography_id = get_geography_id(country_code)
+        geography_id = get_geography_id(db, country_code)
         if not geography_id:
             logger.warning(
                 f"No geography found in lookup for country code {country_code}"
@@ -30,7 +30,7 @@ def load(policies: PolicyLookup):
             continue
 
         policy_type = key.policy_type
-        document_type_id = get_type_id(policy_type)
+        document_type_id = get_type_id(db, policy_type)
         if not document_type_id:
             logger.warning(
                 f"No action type found in lookup for policy type {policy_type}"
