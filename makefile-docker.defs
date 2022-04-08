@@ -21,7 +21,8 @@ migrations_docker_loader:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic upgrade head
 
 start: start_containers
-	make migrations_docker
+	make migrations_docker_backend
+	make migrations_docker_loader
 
 stop:
 	docker-compose stop
