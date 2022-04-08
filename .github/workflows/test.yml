@@ -46,7 +46,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - name: Build docker-compose stack using .env.example
-        run: cp .env.example .env && make start
+        run: cp .env.example .env
       - name: Build search_index
         run: make build_search_index
       - name: Test search_index
