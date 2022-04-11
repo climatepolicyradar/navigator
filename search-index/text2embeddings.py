@@ -1,7 +1,6 @@
 """CLI to convert JSON documents outputted by the PDF parsing pipeline to embeddings."""
 
 import codecs
-import glob
 import json
 import os
 import re
@@ -13,6 +12,7 @@ import numpy as np
 from navigator.core.log import get_logger
 from navigator.core.utils import get_timestamp
 from tqdm.auto import tqdm
+from cloudpathlib import CloudPath
 
 from app.db import PostgresConnector
 from app.load_data import create_dataset
@@ -51,7 +51,10 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
     #  when, for example, there are random elements between pages that the postprocessors haven't been able to catch.
     #  But I've ignored this for now because it seems that the postprocessing in postprocessor.py has dealt with the
     #  vast majority of edge cases (as indicated by the rarity of certain debugging metadata).
-    text = prev_processed_text_block + "\n" + text
+    try:
+        text = prev_processed_text_block + "\n" + text
+    except TypeError:
+        breakpoint()
     return text
 
 
@@ -232,14 +235,33 @@ def encode_text_to_memmap(
     "--input-dir",
     "-i",
     type=click.Path(exists=True, path_type=Path),
-    required=True,
+    required=False,
     help="Directory containing JSON files.",
 )
 @click.option(
     "--output-dir",
     "-o",
     type=click.Path(exists=True, path_type=Path),
-    required=True,
+    required=False,
+    help="Directory to save embeddings and IDs to.",
+)
+@click.option(
+    "--s3",
+    "-s",
+    is_flag=True,
+    required=False,
+    help="Whether or not we are reading from and writing to S3.",
+)
+@click.option(
+    "--s3-input-dir",
+    type=str,
+    required=False,
+    help="Directory containing JSON files.",
+)
+@click.option(
+    "--s3-output-dir",
+    type=str,
+    required=False,
     help="Directory to save embeddings and IDs to.",
 )
 @click.option(
@@ -255,6 +277,9 @@ def encode_text_to_memmap(
 def run_cli(
     input_dir: Path,
     output_dir: Path,
+    s3: Optional[str],
+    s3_input_dir: Optional[str],
+    s3_output_dir: Optional[str],
     model_name: str,
     batch_size: int,
     limit: Optional[int],
@@ -264,13 +289,22 @@ def run_cli(
     Args:
         input_dir (Path): Directory containing JSON files
         output_dir (Path): Directory to save embeddings and IDs to
+        s3 (Optional[str]): Whether or not we are reading from and writing to S3.
+        s3_input_dir (Optional[str]): Directory containing JSON files.
+        s3_output_dir (Optional[str]): Directory to save embeddings and IDs to.
         model_name (str): Name of the sentence-BERT model to use. See https://www.sbert.net/docs/pretrained_models.html.
         batch_size (int): Batch size for encoding.
         limit (Optional[int]): Optionally limit the number of text samples to process. Useful for debugging.
     """
     logger.info(f"Getting text from JSONs in {input_dir}")
+    if s3:
+        assert s3_input_dir.startswith("s3://")
+        input_dir = CloudPath(s3_input_dir)
+        # output_dir = CloudPath(s3_output_dir)
+    # else:
+    #     input_dir = Path(input_dir)
     curr_time = get_timestamp()
-    json_filepaths = glob.glob(str(input_dir / "*.json"))
+    json_filepaths = input_dir.glob("*.json")  # glob.glob(str(input_dir / "*.json"))
 
     text_and_ids = get_text_from_json_files(json_filepaths)
     if limit:
