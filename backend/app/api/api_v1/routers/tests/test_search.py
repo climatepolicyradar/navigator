@@ -269,7 +269,7 @@ def test_time_taken(test_opensearch, monkeypatch, client, user_token_headers):
 
 
 def test_empty_search_term(test_opensearch, monkeypatch, client, user_token_headers):
-    """Make sure that query time taken is sensible."""
+    """Make sure that empty search terms return no results."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
@@ -282,7 +282,7 @@ def test_empty_search_term(test_opensearch, monkeypatch, client, user_token_head
 
     response = client.post(
         "/api/v1/searches",
-        json={"query_string": "", "exact_match": False},
+        json={"query_string": "", "exact_match": True},
         headers=user_token_headers,
     )
     assert response.status_code == 200

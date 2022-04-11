@@ -4,6 +4,9 @@ from typing import Dict, List, Optional, Tuple
 from pydantic import BaseModel
 
 
+Coord = Tuple[float, float]
+
+
 class SortEnum(str, Enum):
     """Sort ordering for use building OpenSearch query body."""
 
@@ -44,7 +47,7 @@ class SearchResponseDocumentPassage(BaseModel):
     text: str
     text_block_id: str
     text_block_page: int
-    text_block_coords: List[List[int]]
+    text_block_coords: List[Coord]
 
 
 class SearchResponseDocument(BaseModel):
@@ -59,8 +62,6 @@ class SearchResponseDocument(BaseModel):
     document_description: str
     document_type_name: str
 
-    # TODO: add document associations
-    # associated_documents: List[int]?
     # TODO: add PDF s3 location for serving
     # document_location: str
 
@@ -112,4 +113,4 @@ class OpenSearchResponsePassageMatch(OpenSearchResponseMatchBase):
     text: str
     text_block_id: str
     text_block_page: int
-    text_block_coords: List[List[int]]
+    text_block_coords: List[Coord]

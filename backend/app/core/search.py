@@ -5,6 +5,30 @@ from typing import Any, Dict, List, Optional, Tuple
 from opensearchpy import OpenSearch
 from sentence_transformers import SentenceTransformer
 
+from app.core.config import (
+    OPENSEARCH_INDEX_INNER_PRODUCT_THRESHOLD,
+    OPENSEARCH_INDEX_MAX_DOC_COUNT,
+    OPENSEARCH_INDEX_MAX_PASSAGES_PER_DOC,
+    OPENSEARCH_INDEX_KNN_K_VALUE,
+    OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD,
+    OPENSEARCH_INDEX_NAME_BOOST,
+    OPENSEARCH_INDEX_DESCRIPTION_BOOST,
+    OPENSEARCH_INDEX_NAME_KEY,
+    OPENSEARCH_INDEX_DESCRIPTION_KEY,
+    OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY,
+    OPENSEARCH_INDEX_INDEX_KEY,
+    OPENSEARCH_INDEX_TEXT_BLOCK_KEY,
+    OPENSEARCH_INDEX_ENCODER,
+    OPENSEARCH_URL,
+    OPENSEARCH_INDEX,
+    OPENSEARCH_USERNAME,
+    OPENSEARCH_PASSWORD,
+    OPENSEARCH_REQUEST_TIMEOUT,
+    OPENSEARCH_PREFERENCE,
+    OPENSEARCH_USE_SSL,
+    OPENSEARCH_VERIFY_CERTS,
+    OPENSEARCH_SSL_WARNINGS,
+)
 from app.db.schemas.search import (
     OpenSearchResponseDescriptionMatch,
     OpenSearchResponseNameMatch,
@@ -16,41 +40,22 @@ from app.db.schemas.search import (
     SearchResponseDocumentPassage,
 )
 
-_DEFAULT_INNER_PRODUCT_THRESHOLD: float = 70.0
-_DEFAULT_MAX_DOC_COUNT: int = 100
-_DEFAULT_MAX_PASSAGES_PER_DOC: int = 10
-_DEFAULT_N_PASSAGES_TO_SAMPLE_PER_SHARD: int = 5000
-_DEFAULT_NAME_BOOST: int = 100
-_DEFAULT_DESCRIPTION_BOOST: int = 100
-_DEFAULT_OPENSEARCH_INDEX = "navigator"
-_DEFAULT_OPENSEARCH_REQUEST_TIMEOUT = 30
-_DEFAULT_OPENSEARCH_PREFERENCE = "prototype_user"  # TODO: document what this means
-_DEFAULT_OPENSEARCH_EMBEDDING_DIM = 768
-
-# TODO: Allow this to be configured
-_ENCODER = SentenceTransformer(model_name_or_path="msmarco-distilbert-dot-v5")
-
-_OPENSEARCH_NAME_KEY = "for_search_action_name"
-_OPENSEARCH_DESCRIPTION_KEY = "for_search_action_description"
-_OPENSEARCH_DESCRIPTION_EMBEDDING_KEY = "action_description_embedding"
-_OPENSEARCH_INDEX_KEY = "action_name_and_id"
-_OPENSEARCH_TEXT_BLOCK_KEY = "text_block_id"
+_ENCODER = SentenceTransformer(model_name_or_path=OPENSEARCH_INDEX_ENCODER)
 
 
 @dataclass
 class OpenSearchConfig:
     """Config for accessing an OpenSearch instance."""
 
-    url: str
-    username: str
-    password: str
-    index_name: str = _DEFAULT_OPENSEARCH_INDEX
-    embedding_dim: int = _DEFAULT_OPENSEARCH_EMBEDDING_DIM
-    request_timeout: int = _DEFAULT_OPENSEARCH_REQUEST_TIMEOUT
-    preference: str = _DEFAULT_OPENSEARCH_PREFERENCE
-    use_ssl: bool = False
-    verify_certs: bool = False
-    ssl_show_warnings: bool = False
+    url: str = OPENSEARCH_URL
+    username: str = OPENSEARCH_USERNAME
+    password: str = OPENSEARCH_PASSWORD
+    index_name: str = OPENSEARCH_INDEX
+    request_timeout: int = OPENSEARCH_REQUEST_TIMEOUT
+    preference: str = OPENSEARCH_PREFERENCE
+    use_ssl: bool = OPENSEARCH_USE_SSL
+    verify_certs: bool = OPENSEARCH_VERIFY_CERTS
+    ssl_show_warnings: bool = OPENSEARCH_SSL_WARNINGS
 
 
 @dataclass
@@ -155,27 +160,27 @@ def _year_range_filter(
 
 
 @dataclass(frozen=True)
-class SearchConfig:
+class OpenSearchQueryConfig:
     """Configuration for searches sent to OpenSearch."""
 
-    name_boost: int = _DEFAULT_NAME_BOOST
-    description_boost: int = _DEFAULT_DESCRIPTION_BOOST
+    name_boost: int = OPENSEARCH_INDEX_NAME_BOOST
+    description_boost: int = OPENSEARCH_INDEX_DESCRIPTION_BOOST
     lucene_threshold: float = _innerproduct_threshold_to_lucene_threshold(
-        _DEFAULT_INNER_PRODUCT_THRESHOLD
+        OPENSEARCH_INDEX_INNER_PRODUCT_THRESHOLD
     )  # TODO: tune me separately for descriptions?
-    max_doc_count: int = _DEFAULT_MAX_DOC_COUNT
-    max_passages_per_doc: int = _DEFAULT_MAX_PASSAGES_PER_DOC
-    n_passages_to_sample_per_shard = _DEFAULT_N_PASSAGES_TO_SAMPLE_PER_SHARD
-    k = 10000  # TODO: tune me
+    max_doc_count: int = OPENSEARCH_INDEX_MAX_DOC_COUNT
+    max_passages_per_doc: int = OPENSEARCH_INDEX_MAX_PASSAGES_PER_DOC
+    n_passages_to_sample_per_shard = OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
+    k = OPENSEARCH_INDEX_KNN_K_VALUE
 
 
 def build_opensearch_request_body(
     search_request: SearchRequestBody,
-    search_internal_config: Optional[SearchConfig] = None,
+    search_internal_config: Optional[OpenSearchQueryConfig] = None,
 ) -> Dict[str, Any]:
     """Build a complete OpenSearch request body."""
 
-    search_config = search_internal_config or SearchConfig()
+    search_config = search_internal_config or OpenSearchQueryConfig()
     builder = QueryBuilder(search_config)
 
     if search_request.exact_match:
@@ -214,7 +219,7 @@ class QueryBuilder:
                     "aggs": {
                         "top_docs": {
                             "terms": {
-                                "field": _OPENSEARCH_INDEX_KEY,
+                                "field": OPENSEARCH_INDEX_INDEX_KEY,
                                 # TODO: Other ordering options
                                 "order": {"top_hit": "desc"},
                                 "size": self._search_config.max_doc_count,
@@ -225,7 +230,7 @@ class QueryBuilder:
                                         "_source": {
                                             "excludes": [
                                                 "text_embedding",
-                                                _OPENSEARCH_DESCRIPTION_EMBEDDING_KEY,
+                                                OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY,
                                             ]
                                         },
                                         "size": self._search_config.max_passages_per_doc,
@@ -265,14 +270,14 @@ class QueryBuilder:
                     "should": [
                         {
                             "match": {
-                                _OPENSEARCH_NAME_KEY: {
+                                OPENSEARCH_INDEX_NAME_KEY: {
                                     "query": query_string,
                                 }
                             }
                         },
                         {
                             "match_phrase": {
-                                _OPENSEARCH_NAME_KEY: {
+                                OPENSEARCH_INDEX_NAME_KEY: {
                                     "query": query_string,
                                     "boost": 2,  # TODO: configure?
                                 }
@@ -287,7 +292,7 @@ class QueryBuilder:
                     "should": [
                         {
                             "match": {
-                                _OPENSEARCH_DESCRIPTION_KEY: {
+                                OPENSEARCH_INDEX_DESCRIPTION_KEY: {
                                     "query": query_string,
                                     "boost": 3,  # TODO: configure?
                                 }
@@ -297,7 +302,7 @@ class QueryBuilder:
                             "function_score": {
                                 "query": {
                                     "knn": {
-                                        _OPENSEARCH_DESCRIPTION_EMBEDDING_KEY: {
+                                        OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY: {
                                             "vector": embedding,
                                             "k": self._search_config.k,
                                         },
@@ -347,7 +352,7 @@ class QueryBuilder:
             # Document title matching
             {
                 "match_phrase": {
-                    _OPENSEARCH_NAME_KEY: {
+                    OPENSEARCH_INDEX_NAME_KEY: {
                         "query": query_string,
                         "boost": self._search_config.name_boost,
                     },
@@ -356,7 +361,7 @@ class QueryBuilder:
             # Document description matching
             {
                 "match_phrase": {
-                    _OPENSEARCH_DESCRIPTION_KEY: {
+                    OPENSEARCH_INDEX_DESCRIPTION_KEY: {
                         "query": query_string,
                         "boost": self._search_config.description_boost,
                     },
@@ -406,7 +411,7 @@ def process_opensearch_response_body(
     for result_doc in result_docs:
         for document_match in result_doc["top_passage_hits"]["hits"]["hits"]:
             document_match_source = document_match["_source"]
-            if _OPENSEARCH_NAME_KEY in document_match_source:
+            if OPENSEARCH_INDEX_NAME_KEY in document_match_source:
                 # Validate as a title match
                 name_match = OpenSearchResponseNameMatch(**document_match_source)
                 if search_response_document is None:
@@ -414,7 +419,7 @@ def process_opensearch_response_body(
                         name_match
                     )
                 search_response_document.document_title_match = True
-            elif _OPENSEARCH_DESCRIPTION_KEY in document_match_source:
+            elif OPENSEARCH_INDEX_DESCRIPTION_KEY in document_match_source:
                 # Validate as a description match
                 desc_match = OpenSearchResponseDescriptionMatch(**document_match_source)
                 if search_response_document is None:
@@ -422,7 +427,7 @@ def process_opensearch_response_body(
                         desc_match
                     )
                 search_response_document.document_description_match = True
-            elif _OPENSEARCH_TEXT_BLOCK_KEY in document_match_source:
+            elif OPENSEARCH_INDEX_TEXT_BLOCK_KEY in document_match_source:
                 # Process as a text block
                 passage_match = OpenSearchResponsePassageMatch(**document_match_source)
                 if search_response_document is None:
@@ -433,7 +438,7 @@ def process_opensearch_response_body(
                 response_passage = SearchResponseDocumentPassage(
                     text=passage_match.text,
                     text_block_id=passage_match.text_block_id,
-                    text_block_page=passage_match.text_block_page,
+                    text_block_page=passage_match.text_block_page + 1,
                     text_block_coords=passage_match.text_block_coords,
                 )
                 search_response_document.document_passage_matches.append(
