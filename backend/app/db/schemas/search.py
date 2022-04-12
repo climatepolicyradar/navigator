@@ -7,7 +7,7 @@ from pydantic import BaseModel
 Coord = Tuple[float, float]
 
 
-class SortEnum(str, Enum):
+class SortOrder(str, Enum):
     """Sort ordering for use building OpenSearch query body."""
 
     ASCENDING = "asc"
@@ -19,7 +19,7 @@ class SortField(str, Enum):
 
     DATE = "date"
     TITLE = "title"
-    TOP_HIT = "top_hit"
+    SCORE = "score"
     # TODO: complete enum
 
 
@@ -35,7 +35,7 @@ class SearchRequestBody(BaseModel):
     year_range: Optional[Tuple[Optional[int], Optional[int]]] = None
 
     sort_field: SortField = SortField.DATE
-    sort_order: SortEnum = SortEnum.DESCENDING
+    sort_order: SortOrder = SortOrder.DESCENDING
 
     limit: int = 10  # TODO: decide on default
     offset: int = 0

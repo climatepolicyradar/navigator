@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from opensearchpy import OpenSearch
 from sentence_transformers import SentenceTransformer
@@ -38,9 +38,16 @@ from app.db.schemas.search import (
     SearchResponseBody,
     SearchResponseDocument,
     SearchResponseDocumentPassage,
+    SortField,
+    SortOrder,
 )
 
 _ENCODER = SentenceTransformer(model_name_or_path=OPENSEARCH_INDEX_ENCODER)
+_SORT_FIELD_MAP: Mapping[SortField, str] = {
+    SortField.SCORE: "top_hit",
+    SortField.DATE: "action_date",
+    SortField.TITLE: "action_name",
+}
 
 
 @dataclass
@@ -392,6 +399,18 @@ class QueryBuilder:
             filters = self._request_body["query"]["bool"].get("filter") or []
             filters.append(year_range_filter)
             self._request_body["query"]["bool"]["filter"] = filters
+
+    def order_by(self, field: SortField, order: SortOrder):
+        """Change sort order for results."""
+        terms_field = self._request_body["aggs"]["sampler"]["aggs"]["top_docs"]["terms"]
+        if field == SortField.SCORE:
+            terms_field["order"] = {_SORT_FIELD_MAP[field]: str(order)}
+        elif field == SortField.DATE:
+            terms_field["order"] = {f"{_SORT_FIELD_MAP[field]}.avg": str(order)}
+        elif field == SortField.TITLE:
+            {"_key": str(order)}
+        else:
+            raise RuntimeError("Unknown sort ordering field: {field}")
 
 
 def process_opensearch_response_body(
