@@ -59,9 +59,9 @@ clear_test_search_index:
 
 test_backend:
 	make clear_test_search_index
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_dump_analyzer --type=analyzer
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_dump_mapping --type=mapping
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_dump_data --type=data
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_analyzer.dump --type=analyzer
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_mapping.dump --type=mapping
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_data.dump --type=data
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest
 
 test_loader:

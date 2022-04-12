@@ -20,7 +20,6 @@ class SortField(str, Enum):
     DATE = "date"
     TITLE = "title"
     SCORE = "score"
-    # TODO: complete enum
 
 
 class SearchRequestBody(BaseModel):
