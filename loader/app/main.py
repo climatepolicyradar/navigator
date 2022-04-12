@@ -61,8 +61,8 @@ def main():
 
     data = extract(data_dir)
     policies = transform(data)
-    db = next(get_db())
-    load(db, policies)
+    for db in get_db():
+        load(db, policies)
 
 
 if __name__ == "__main__":

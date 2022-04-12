@@ -213,11 +213,13 @@ def upgrade():
             ["document_id_from"],
             ["document.id"],
             name=op.f("fk_association__document_id_from__document"),
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["document_id_to"],
             ["document.id"],
             name=op.f("fk_association__document_id_to__document"),
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_association")),
     )
@@ -230,6 +232,7 @@ def upgrade():
             ["document_id"],
             ["document.id"],
             name=op.f("fk_document_framework__document_id__document"),
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["framework_id"],
@@ -247,6 +250,7 @@ def upgrade():
             ["document_id"],
             ["document.id"],
             name=op.f("fk_document_hazard__document_id__document"),
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["hazard_id"],
@@ -264,6 +268,7 @@ def upgrade():
             ["document_id"],
             ["document.id"],
             name=op.f("fk_document_instrument__document_id__document"),
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["instrument_id"],
@@ -281,6 +286,7 @@ def upgrade():
             ["document_id"],
             ["document.id"],
             name=op.f("fk_document_response__document_id__document"),
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["response_id"],
@@ -298,6 +304,7 @@ def upgrade():
             ["document_id"],
             ["document.id"],
             name=op.f("fk_document_sector__document_id__document"),
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["sector_id"],
@@ -322,6 +329,7 @@ def upgrade():
             ["document_id"],
             ["document.id"],
             name=op.f("fk_event__document_id__document"),
+            ondelete="CASCADE",
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_event")),
     )
@@ -338,6 +346,7 @@ def upgrade():
             ["document_id"],
             ["document.id"],
             name=op.f("fk_passage__document_id__document"),
+            ondelete="CASCADE",
         ),
         sa.ForeignKeyConstraint(
             ["language_id"],

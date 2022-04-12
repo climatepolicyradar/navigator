@@ -1,7 +1,7 @@
 import logging
 from datetime import datetime
 
-from app.db.models import Document, Event
+from app.db.models import Association, Document, Event
 from sqlalchemy.orm import Session
 from app.model import PolicyLookup
 from app.service.lookups import get_type_id, get_geography_id
@@ -37,6 +37,7 @@ def load(db: Session, policies: PolicyLookup):
 
         # this was the loader before the change to own-db:
         # https://github.com/climatepolicyradar/navigator/blob/17491aceaf9a5a852e0a6d51a1e8f88b07675801/backend/app/api/api_v1/routers/actions.py
+        main_doc = None
         for doc in policy_data.docs:
 
             # check doc validity
@@ -53,29 +54,46 @@ def load(db: Session, policies: PolicyLookup):
                     f"url={doc.doc_url}"
                 )
 
-            with db.begin():
-                doc = Document(
-                    name=key.policy_name,
-                    source_url=doc.doc_url,
-                    source_id=1,
-                    # url=None,  # TODO: upload to S3
-                    is_valid=is_valid,
-                    invalid_reason=invalid_reason,
-                    geography_id=geography_id,
-                    type_id=document_type_id,
-                )
-                db.add(doc)
+            doc = Document(
+                name=key.policy_name,
+                source_url=doc.doc_url,
+                source_id=1,
+                # url=None,  # TODO: upload to S3
+                is_valid=is_valid,
+                invalid_reason=invalid_reason,
+                geography_id=geography_id,
+                type_id=document_type_id,
+            )
+            db.add(doc)
+            db.flush()
+            db.refresh(doc)
 
-                event = Event(
-                    document_id=doc.id,
-                    name="Publication",
-                    description="The publication date",
-                    created_ts=key.policy_date,
-                )
-                db.add(event)
+            event = Event(
+                document_id=doc.id,
+                name="Publication",
+                description="The publication date",
+                created_ts=key.policy_date,
+            )
+            db.add(event)
 
-                # TODO persist doc association
-                imported_count += 1
+            # Association
+            if len(policy_data.docs) > 1:
+                if not main_doc:
+                    main_doc = doc
+                else:
+                    association = Association(
+                        document_id_from=doc.id,
+                        document_id_to=main_doc.id,
+                        type="related",
+                        name="related",
+                    )
+                    db.add(association)
+
+            # commit for each doc, not each policy
+            db.commit()
+            imported_count += 1
+
+        main_doc = None
 
     logger.info(
         f"Done, {imported_count} policies imported out of {len(policies.items())} total"

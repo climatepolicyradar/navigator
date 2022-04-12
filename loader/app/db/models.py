@@ -70,7 +70,7 @@ class DocumentType(Base):  # noqa: D101
     description = sa.Column(sa.Text, nullable=False)
 
 
-class Document(Auditable, Base):
+class Document(Base, Auditable):
     """A document.
 
     source_url: Reference url to document on third party aggregator
@@ -113,7 +113,9 @@ class DocumentSector(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     sector_id = sa.Column(sa.Integer, sa.ForeignKey(Sector.id), nullable=False)
-    document_id = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
 
 
 class Instrument(Base):  # noqa: D101
@@ -131,7 +133,9 @@ class DocumentInstrument(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     instrument_id = sa.Column(sa.Integer, sa.ForeignKey(Instrument.id), nullable=False)
-    document_id = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
 
 
 class Framework(Base):  # noqa: D101
@@ -147,7 +151,9 @@ class DocumentFramework(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     framework_id = sa.Column(sa.Integer, sa.ForeignKey(Framework.id), nullable=False)
-    document_id = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
 
 
 class Response(Base):  # noqa: D101
@@ -163,7 +169,9 @@ class DocumentResponse(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     response_id = sa.Column(sa.Integer, sa.ForeignKey(Response.id), nullable=False)
-    document_id = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
 
 
 class Hazard(Base):  # noqa: D101
@@ -179,7 +187,9 @@ class DocumentHazard(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     hazard_id = sa.Column(sa.Integer, sa.ForeignKey(Hazard.id), nullable=False)
-    document_id = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
 
 
 class PassageType(Base):  # noqa: D101
@@ -193,7 +203,9 @@ class Passage(Base):  # noqa: D101
     __tablename__ = "passage"
 
     id = sa.Column(sa.BigInteger, primary_key=True)
-    document_id = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
     page_id = sa.Column(sa.BigInteger, autoincrement=False, nullable=False)
     passage_type_id = sa.Column(
         sa.Integer, sa.ForeignKey(PassageType.id), nullable=False
@@ -213,7 +225,9 @@ class Event(Base):  # noqa: D101
     __tablename__ = "event"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    document_id = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
@@ -223,7 +237,11 @@ class Association(Base):  # noqa: D101
     __tablename__ = "association"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    document_id_from = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
-    document_id_to = sa.Column(sa.Integer, sa.ForeignKey(Document.id), nullable=False)
+    document_id_from = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
+    document_id_to = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
     type = sa.Column(sa.Text, nullable=False)
     name = sa.Column(sa.Text, nullable=False)
