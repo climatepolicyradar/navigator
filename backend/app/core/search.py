@@ -227,7 +227,6 @@ class QueryBuilder:
                         "top_docs": {
                             "terms": {
                                 "field": OPENSEARCH_INDEX_INDEX_KEY,
-                                # TODO: Other ordering options
                                 "order": {"top_hit": "desc"},
                                 "size": self._search_config.max_doc_count,
                             },
