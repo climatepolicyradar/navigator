@@ -5,17 +5,18 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_health import health
 from fastapi_pagination import add_pagination
-from slowapi import _rate_limit_exceeded_handler
+from slowapi.extension import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
 from starlette.requests import Request
 
 from app.api.api_v1.routers.actions import actions_router
+from app.api.api_v1.routers.admin import admin_users_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.documents import documents_router
 from app.api.api_v1.routers.lookups import lookups_router
-from app.api.api_v1.routers.users import users_router
-from app.api.api_v1.routers.admin import admin_users_router
+from app.api.api_v1.routers.search import search_router
 from app.api.api_v1.routers.unauthenticated import unauthenticated_router
+from app.api.api_v1.routers.users import users_router
 from app.core import config
 from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
@@ -60,21 +61,23 @@ app.include_router(
     tags=["Unauthenticated"],  # or Public?
 )
 app.include_router(
-    users_router,
-    prefix="/api/v1",
-    tags=["Users"],
-    dependencies=[Depends(get_current_active_user)],
-)
-app.include_router(
     admin_users_router,
     prefix="/api/v1/admin",
     tags=["Admin"],
     dependencies=[Depends(get_current_active_superuser)],
 )
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])
+app.include_router(
+    users_router,
+    prefix="/api/v1",
+    tags=["Users"],
+    dependencies=[Depends(get_current_active_user)],
+)
+
 app.include_router(actions_router, prefix="/api/v1", tags=["Actions"])
 app.include_router(documents_router, prefix="/api/v1", tags=["Documents"])
 app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
+app.include_router(search_router, prefix="/api/v1", tags=["Searches"])
 
 # add pagination support to all routes that ask for it
 add_pagination(app)

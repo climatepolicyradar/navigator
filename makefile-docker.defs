@@ -18,7 +18,7 @@ migrations_docker:
 
 start: start_containers
 	# Hack to wait for postgres container to be up before running alembic migrations
-	sleep 5;
+	sleep 30;
 	# Run migrations
 	make migrations_docker
 
@@ -54,7 +54,14 @@ build: build_backend build_frontend build_loader build_search_index build_pipeli
 test_frontend:
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
 
+clear_test_search_index:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --insecure
+
 test_backend:
+	make clear_test_search_index
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_dump_analyzer --type=analyzer
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_dump_mapping --type=mapping
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_dump_data --type=data
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest
 
 test_loader:
