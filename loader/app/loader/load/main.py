@@ -1,8 +1,8 @@
 import logging
 from datetime import datetime
 
-from app.db.models import Document
-from app.db.session import SessionLocal
+from app.db.models import Document, Event
+from sqlalchemy.orm import Session
 from app.model import PolicyLookup
 from app.service.lookups import get_type_id, get_geography_id
 from app.service.validation import get_document_validity_sync
@@ -10,7 +10,7 @@ from app.service.validation import get_document_validity_sync
 logger = logging.getLogger(__file__)
 
 
-def load(db: SessionLocal, policies: PolicyLookup):
+def load(db: Session, policies: PolicyLookup):
 
     imported_count = 0
     for key, policy_data in policies.items():
@@ -42,7 +42,7 @@ def load(db: SessionLocal, policies: PolicyLookup):
             # check doc validity
             is_valid = True
 
-            # TODO async one day
+            # TODO async
             # invalid_reason = await get_document_validity(document_create.source_url)
             invalid_reason = get_document_validity_sync(doc.doc_url)
 
@@ -53,20 +53,29 @@ def load(db: SessionLocal, policies: PolicyLookup):
                     f"url={doc.doc_url}"
                 )
 
-            doc = Document(
-                name=key.policy_name,
-                source_url=doc.doc_url,
-                source_id=1,
-                # url=None,  # TODO: upload to S3
-                is_valid=is_valid,
-                invalid_reason=invalid_reason,
-                geography_id=geography_id,
-                type_id=document_type_id,
-            )
-            db.add(doc)
-            db.commit()
-            # TODO also save event (and possible other things)
-            imported_count += 1
+            with db.begin():
+                doc = Document(
+                    name=key.policy_name,
+                    source_url=doc.doc_url,
+                    source_id=1,
+                    # url=None,  # TODO: upload to S3
+                    is_valid=is_valid,
+                    invalid_reason=invalid_reason,
+                    geography_id=geography_id,
+                    type_id=document_type_id,
+                )
+                db.add(doc)
+
+                event = Event(
+                    document_id=doc.id,
+                    name="Publication",
+                    description="The publication date",
+                    created_ts=key.policy_date,
+                )
+                db.add(event)
+
+                # TODO persist doc association
+                imported_count += 1
 
     logger.info(
         f"Done, {imported_count} policies imported out of {len(policies.items())} total"
