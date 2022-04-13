@@ -350,10 +350,6 @@ def run_cli(
         output_dir
         / f"description_embs_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
-    if s3:
-        description_embs_output_path = (
-            Path(tempfile.mkdtemp()) / description_embs_output_path.name
-        )
 
     encode_text_to_memmap(
         description_data_to_encode["description"].tolist(),
@@ -361,9 +357,6 @@ def run_cli(
         batch_size,
         description_embs_output_path,
     )
-    if s3:
-        logger.info(f"Writing description embeddings to S3 bucket {output_dir}")
-        output_dir.upload_from(description_embs_output_path)
 
     description_ids_output_path = (
         output_dir / f"description_ids_{model_name}_{curr_time}.csv"
@@ -375,6 +368,12 @@ def run_cli(
     logger.info(f"Saved embeddings and IDs for text and descriptions to {output_dir}")
 
     if s3:
+        logger.info(f"Writing embeddings to S3 bucket {output_dir}")
+        output_dir.upload_from(embs_output_path)
+        logger.info(f"Writing description embeddings to S3 bucket {output_dir}")
+        output_dir.upload_from(description_embs_output_path)
+        output_dir.upload_from(description_ids_output_path)
+        logger.info(f"Deleting temporary folder {embs_output_path}")
         shutil.rmtree(embs_output_path)
         shutil.rmtree(description_embs_output_path)
 
