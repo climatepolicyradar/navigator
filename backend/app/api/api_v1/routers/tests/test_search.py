@@ -137,9 +137,8 @@ def test_multiple_filters(
     } in query_body["query"]["bool"]["filter"]
 
 
-@pytest.mark.parametrize("order", [SortOrder.DESCENDING, SortOrder.DESCENDING])
 def test_result_order_score(
-    test_opensearch, monkeypatch, client, user_token_headers, mocker, order
+    test_opensearch, monkeypatch, client, user_token_headers, mocker
 ):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -149,7 +148,6 @@ def test_result_order_score(
         json={
             "query_string": "disaster",
             "exact_match": False,
-            "sort_order": order.value,
         },
         headers=user_token_headers,
     )
@@ -161,14 +159,11 @@ def test_result_order_score(
     for d in result_docs:
         new_s = d["top_hit"]["value"]
         if s is not None:
-            if order == SortOrder.DESCENDING:
-                assert new_s <= s
-            if order == SortOrder.ASCENDING:
-                assert new_s >= s
+            assert new_s <= s
         s = new_s
 
 
-@pytest.mark.parametrize("order", [SortOrder.DESCENDING, SortOrder.DESCENDING])
+@pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_date(
     test_opensearch, monkeypatch, client, user_token_headers, order
 ):
@@ -201,7 +196,7 @@ def test_result_order_date(
         dt = new_dt
 
 
-@pytest.mark.parametrize("order", [SortOrder.DESCENDING, SortOrder.DESCENDING])
+@pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_title(
     test_opensearch, monkeypatch, client, user_token_headers, order
 ):
@@ -228,7 +223,7 @@ def test_result_order_title(
         new_t = d["document_name"]
         if t is not None:
             if order == SortOrder.DESCENDING:
-                assert t <= new_t
+                assert new_t <= t
             if order == SortOrder.ASCENDING:
                 assert new_t >= t
         t = new_t

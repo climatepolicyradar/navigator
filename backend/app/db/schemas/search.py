@@ -19,7 +19,6 @@ class SortField(str, Enum):
 
     DATE = "date"
     TITLE = "title"
-    SCORE = "score"
 
 
 class SearchRequestBody(BaseModel):
@@ -33,7 +32,7 @@ class SearchRequestBody(BaseModel):
     keyword_filters: Optional[Dict[str, List[str]]] = None
     year_range: Optional[Tuple[Optional[int], Optional[int]]] = None
 
-    sort_field: SortField = SortField.DATE
+    sort_field: Optional[SortField] = None
     sort_order: SortOrder = SortOrder.DESCENDING
 
     limit: int = 10  # TODO: decide on default
