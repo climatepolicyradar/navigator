@@ -40,8 +40,14 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
     # formatting. This makes this function unnecessary, but I've left it here in case we want something more later.
     text = text.strip()
     # This snippet is ugly/non pythonic. It's used to get around some upstream bad code with html tags. Really, this
-    # was a bad way of doing things in the first place so not overly concerned with fixing it for now. This will do.
-    text = codecs.decode(text, "unicode_escape")
+    # was a bad way of doing things in the first place, so not overly concerned with fixing it for now. This will do.
+    try:
+        text = codecs.decode(text, "unicode_escape")
+    except UnicodeDecodeError:
+        # Flush the pipe if we can't decode the string. This needs an upstream fix,
+        # but for now let's log the errors to a file for visibility.
+        logger.error("Could not decode string: %s", text)
+        pass
     text = "\n".join([s for s in text.split("\n") if s])
     # Always append previous text block as context. This is a fairly strong assumption, and the code to make this
     # better has been started, in postprocessor.py, but is not yet completely robust, so we are not using it for now.
