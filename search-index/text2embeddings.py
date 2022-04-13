@@ -326,10 +326,6 @@ def run_cli(
         embs_output_path = Path(tempfile.mkdtemp()) / embs_output_path.name
 
     encode_text_to_memmap(text_by_document, encoder, batch_size, embs_output_path)
-    # Write contents of memmap to S3
-    if s3:
-        logger.info(f"Writing embeddings to S3 bucket {output_dir}")
-        output_dir.upload_from(embs_output_path)
 
     # Save text, text block IDs and document IDs to JSON file
     with (output_dir / f"ids_{model_name}_{curr_time}.json").open("w") as f:
@@ -369,10 +365,14 @@ def run_cli(
 
     if s3:
         logger.info(f"Writing embeddings to S3 bucket {output_dir}")
-        output_dir.upload_from(embs_output_path)
+        output_dir.upload_from(embs_output_path, force_overwrite_to_cloud=True)
         logger.info(f"Writing description embeddings to S3 bucket {output_dir}")
-        output_dir.upload_from(description_embs_output_path)
-        output_dir.upload_from(description_ids_output_path)
+        output_dir.upload_from(
+            description_embs_output_path, force_overwrite_to_cloud=True
+        )
+        output_dir.upload_from(
+            description_ids_output_path, force_overwrite_to_cloud=True
+        )
         logger.info(f"Deleting temporary folder {embs_output_path}")
         shutil.rmtree(embs_output_path)
         shutil.rmtree(description_embs_output_path)
