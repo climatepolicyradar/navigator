@@ -93,6 +93,10 @@ def get_text_from_merged_block(text_block: dict) -> str:
         "".join(text_block["text"]).strip(),
         text_block["text_block_id"],
     )
+
+    # Get text as opposed to block id.
+    text_output_text = text_output[0]
+
     # Remove superscripts only. Bolding has no impact on the block's content once merged, so we don't need to remove
     # anything. Subscripts are kept because, for example, we want to keep CO2 even when it is subscripted).
     # Superscripts are almost always references not related to semantics, so we can remove them.
@@ -115,10 +119,10 @@ def get_text_from_merged_block(text_block: dict) -> str:
         if delete_indices:  # There will only be indices to delete in superscript case.
             text_output_amended = delete_string_indices(text_output[0], delete_indices)
             text_output = (text_output_amended, text_block["text_block_id"])
-            return text_output
+            return text_output_amended
         else:
-            return text_output
-    # Blocks are sometimes merged by the styling processor for rare reasons other
+            return text_output_text
+    # Blocks are sometimes merged by the styling processor for reasons other
     # than style, in which case there is no stylespan attribute, hence this exception handling.
     # This happens when, for example, there is a block with a unique path between two blocks with the same path.
     # For example, italicized text often has a different path to the block it is part of because it
@@ -133,7 +137,7 @@ def get_text_from_merged_block(text_block: dict) -> str:
             "No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
             "italics). "
         )
-        return text_output
+        return text_output_text
 
 
 def get_text_from_document_dict(
