@@ -380,4 +380,10 @@ def run_cli(
 
 
 if __name__ == "__main__":
+    # write logs to file
+    log_dir = Path(os.path.join(os.path.dirname(__file__), "logs"))
+    if not log_dir.exists():
+        log_dir.mkdir(parents=True)
+    log_file = log_dir / "debuglog.log"
+    logger.add(log_file, rotation="10 MB")
     run_cli()
