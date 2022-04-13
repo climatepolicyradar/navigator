@@ -4,15 +4,17 @@ import codecs
 import json
 import os
 import re
+import shutil
+import tempfile
 from pathlib import Path
 from typing import List, Optional, Dict, Union
 
 import click
 import numpy as np
+from cloudpathlib import CloudPath
 from navigator.core.log import get_logger
 from navigator.core.utils import get_timestamp
 from tqdm.auto import tqdm
-from cloudpathlib import CloudPath
 
 from app.db import PostgresConnector
 from app.load_data import create_dataset
@@ -57,10 +59,7 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
     #  when, for example, there are random elements between pages that the postprocessors haven't been able to catch.
     #  But I've ignored this for now because it seems that the postprocessing in postprocessor.py has dealt with the
     #  vast majority of edge cases (as indicated by the rarity of certain debugging metadata).
-    try:
-        text = prev_processed_text_block + "\n" + text
-    except TypeError:
-        breakpoint()
+    text = prev_processed_text_block + "\n" + text
     return text
 
 
@@ -183,18 +182,20 @@ def get_text_from_document_dict(
     return text_output
 
 
-def get_text_from_json_files(filepaths: List[str]) -> List[Dict[str, str]]:
+def get_text_from_json_files(
+    filepaths: List[Union[Path, CloudPath]]
+) -> List[Dict[str, str]]:
     """Extract text, text block IDs and document IDs from JSON files created by the PDF parsing pipeline.
 
     Args:
-        filepaths (List[str]): list of paths to JSON files outputted by the pdf2text CLI.
+        filepaths (List[Union[Path, CloudPath]]): list of paths to JSON files outputted by the pdf2text CLI.
 
     Returns:
         List[Dict[str, str]]: dicts are {"text": "", "text_block_id": "", "document_id": ""}.
     """
     text_by_document = []
 
-    for filepath in tqdm(filepaths):
+    for ix, filepath in enumerate(tqdm(filepaths)):
         with open(filepath, "r") as f:
             document = json.load(f)
 
@@ -211,7 +212,7 @@ def encode_text_to_memmap(
     text_list: List[str],
     encoder: SentenceEncoder,
     batch_size: int,
-    memmap_path: Path,
+    memmap_path: Union[Path, CloudPath],
 ):
     """Encode list of text strings to a memmap file using a SentenceEncoder, in batches of `batch_size`.
 
@@ -219,10 +220,9 @@ def encode_text_to_memmap(
         text_list (List[str]): list of strings to encode.
         encoder (SentenceEncoder): sentence encoder.
         batch_size (int): size of batches to encode text in.
-        memmap_path (Path): path to memmap file to write text embeddings to.
+        memmap_path (Union[Path, CloudPath]): path to memmap file to write text embeddings to
     """
     text_list_batched = paginate_list(text_list, batch_size)
-
     fp = np.memmap(
         memmap_path,
         dtype="float32",
@@ -244,15 +244,13 @@ def encode_text_to_memmap(
 @click.option(
     "--input-dir",
     "-i",
-    type=click.Path(exists=True, path_type=Path),
-    required=False,
+    required=True,
     help="Directory containing JSON files.",
 )
 @click.option(
     "--output-dir",
     "-o",
-    type=click.Path(exists=True, path_type=Path),
-    required=False,
+    required=True,
     help="Directory to save embeddings and IDs to.",
 )
 @click.option(
@@ -261,18 +259,6 @@ def encode_text_to_memmap(
     is_flag=True,
     required=False,
     help="Whether or not we are reading from and writing to S3.",
-)
-@click.option(
-    "--s3-input-dir",
-    type=str,
-    required=False,
-    help="Directory containing JSON files.",
-)
-@click.option(
-    "--s3-output-dir",
-    type=str,
-    required=False,
-    help="Directory to save embeddings and IDs to.",
 )
 @click.option(
     "--model-name", "-m", type=str, help="Name of the sentence-BERT model to use."
@@ -288,8 +274,6 @@ def run_cli(
     input_dir: Path,
     output_dir: Path,
     s3: Optional[str],
-    s3_input_dir: Optional[str],
-    s3_output_dir: Optional[str],
     model_name: str,
     batch_size: int,
     limit: Optional[int],
@@ -299,23 +283,30 @@ def run_cli(
     Args:
         input_dir (Path): Directory containing JSON files
         output_dir (Path): Directory to save embeddings and IDs to
-        s3 (Optional[str]): Whether or not we are reading from and writing to S3.
-        s3_input_dir (Optional[str]): Directory containing JSON files.
-        s3_output_dir (Optional[str]): Directory to save embeddings and IDs to.
+        s3 (Optional[str]): Whether we are reading from and writing to S3.
         model_name (str): Name of the sentence-BERT model to use. See https://www.sbert.net/docs/pretrained_models.html.
         batch_size (int): Batch size for encoding.
         limit (Optional[int]): Optionally limit the number of text samples to process. Useful for debugging.
     """
     logger.info(f"Getting text from JSONs in {input_dir}")
-    if s3:
-        assert s3_input_dir.startswith("s3://")
-        input_dir = CloudPath(s3_input_dir)
-        # output_dir = CloudPath(s3_output_dir)
-    # else:
-    #     input_dir = Path(input_dir)
-    curr_time = get_timestamp()
-    json_filepaths = input_dir.glob("*.json")  # glob.glob(str(input_dir / "*.json"))
 
+    # Note, the s3 conditionals scattered throughout this function are not very pythonic.
+    # It could be refactored with a better wrapper, but I've stuck with
+    # the ugly but simple solution for now instead of writing new types.
+    if s3:
+        # Hack: instead of letting click infer type and make a path object, do it ourselves as depending on the
+        # string we want a cloudpath object.
+        assert input_dir.startswith("s3://")
+        logger.info(f"Reading from S3 bucket {input_dir}")
+        input_dir = CloudPath(input_dir)
+        output_dir = CloudPath(output_dir)
+    else:
+        assert not input_dir.startswith("s3://")
+        input_dir = Path(input_dir)
+        output_dir = Path(output_dir)
+    curr_time = get_timestamp()
+
+    json_filepaths = list(input_dir.glob("*.json"))
     text_and_ids = get_text_from_json_files(json_filepaths)
     if limit:
         text_and_ids = text_and_ids[:limit]
@@ -330,10 +321,18 @@ def run_cli(
         output_dir
         / f"embeddings_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
+    # if using s3, create temporary folder to write to.
+    if s3:
+        embs_output_path = Path(tempfile.mkdtemp()) / embs_output_path.name
+
     encode_text_to_memmap(text_by_document, encoder, batch_size, embs_output_path)
+    # Write contents of memmap to S3
+    if s3:
+        logger.info(f"Writing embeddings to S3 bucket {output_dir}")
+        output_dir.upload_from(embs_output_path)
 
     # Save text, text block IDs and document IDs to JSON file
-    with open(output_dir / f"ids_{model_name}_{curr_time}.json", "w") as f:
+    with (output_dir / f"ids_{model_name}_{curr_time}.json").open("w") as f:
         json.dump(text_and_ids, f)
 
     # Encode action descriptions
@@ -351,12 +350,20 @@ def run_cli(
         output_dir
         / f"description_embs_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
+    if s3:
+        description_embs_output_path = (
+            Path(tempfile.mkdtemp()) / description_embs_output_path.name
+        )
+
     encode_text_to_memmap(
         description_data_to_encode["description"].tolist(),
         encoder,
         batch_size,
         description_embs_output_path,
     )
+    if s3:
+        logger.info(f"Writing description embeddings to S3 bucket {output_dir}")
+        output_dir.upload_from(description_embs_output_path)
 
     description_ids_output_path = (
         output_dir / f"description_ids_{model_name}_{curr_time}.csv"
@@ -366,6 +373,10 @@ def run_cli(
     )
 
     logger.info(f"Saved embeddings and IDs for text and descriptions to {output_dir}")
+
+    if s3:
+        shutil.rmtree(embs_output_path)
+        shutil.rmtree(description_embs_output_path)
 
 
 if __name__ == "__main__":
