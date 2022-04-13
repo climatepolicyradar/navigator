@@ -1,14 +1,13 @@
-import os
 from pathlib import Path
 
 import pandas as pd
 
-from unittest.mock import patch
-from extract.document import Document, Page, TextBlock
+from extract.document import Document
 from processor.postprocessor import (
     HyphenationPostProcessor,
     AdobeListGroupingPostProcessor,
     AdobeTextStylingPostProcessor,
+    CoordinateFlippingPostProcessor,
 )
 import pytest
 
@@ -415,9 +414,9 @@ def test_adobe_list_processor_pprinter(adobe_list_postprocessor):
 	* A licensee shall inform the P.P.U.C. of any proposed technical changes to the renewable energy system that affects either the maximum power output or the components that provide the interconnection between the renewable energy system and the P.P.U.C. grid and will, under the licensing agreement, not make those changes without P.P.U.C. approval.
 	* The failure of a licensee to promptly inform the P.P.U.C. in writing of any technical changes to the renewable energy system that affects any of the above may, at the P.P.U.C. discretion, result in a fine of not more than two hundred dollars ($200).
 * shall, at its own-expense, make available to each of its eligible customer generators who have installed a net metering system the meter (or set of meters) that is needed to determine the net flow of electricity both into and out of the electricity grid;
-"""
+"""  # noqa: E101,W191
     out_str = adobe_list_postprocessor._pprinter(full_list_text)
-    print(out_str)
+    assert expected_out == out_str
 
 
 def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor):
@@ -754,6 +753,77 @@ def test_adobe_list_processor_update_custom_attributes(adobe_list_postprocessor)
     assert actual == expected
 
 
+def test_coordinate_flipping_postprocessor():
+    page = {
+        "text_blocks": [
+            {
+                "text": ["The Austrian strategy for adapt"],
+                "text_block_id": "p0_b1",
+                "coords": [
+                    [68.0570068359375, 157.7793426513672],
+                    [417.93873596191406, 157.7793426513672],
+                    [68.0570068359375, 194.4615478515625],
+                    [417.93873596191406, 194.4615478515625],
+                ],
+                "type": "Title",
+                "path": ["Document", "Title"],
+                "custom_attributes": None,
+            },
+            {
+                "text": ["at"],
+                "text_block_id": "p0_b2",
+                "coords": [
+                    [417.938720703125, 156.8287353515625],
+                    [438.1251220703125, 156.8287353515625],
+                    [417.938720703125, 194.48951721191406],
+                    [438.1251220703125, 194.48951721191406],
+                ],
+                "type": "Span",
+                "path": ["Document", "Title", "Span"],
+                "custom_attributes": None,
+            },
+        ],
+        "dimensions": [595.0013427734375, 842.0010986328125],
+        "page_id": 0,
+    }
+
+    document = Document.from_dict(
+        {
+            "pages": [page],
+            "filename": "test.pdf",
+        }
+    )
+
+    converted_document = CoordinateFlippingPostProcessor().process(
+        document, document.filename
+    )
+    converted_page = converted_document.to_dict()["pages"][0]
+    page_height = converted_page["dimensions"][1]
+
+    assert converted_document.filename == document.filename
+    assert document.pages[0].dimensions == converted_document.pages[0].dimensions
+
+    for idx in range(len(document.pages[0].text_blocks)):
+        orig_text_block = document.pages[0].text_blocks[idx]
+        new_text_block = converted_document.pages[0].text_blocks[idx]
+
+        assert orig_text_block.text == new_text_block.text
+        assert orig_text_block.text_block_id == new_text_block.text_block_id
+        assert orig_text_block.type == new_text_block.type
+        assert orig_text_block.path == new_text_block.path
+        assert orig_text_block.custom_attributes == new_text_block.custom_attributes
+
+        for coord_idx in range(len(orig_text_block.coords)):
+            assert (
+                orig_text_block.coords[coord_idx][0]
+                == new_text_block.coords[coord_idx][0]
+            )
+            assert (
+                orig_text_block.coords[coord_idx][1]
+                == page_height - new_text_block.coords[coord_idx][1]
+            )
+
+
 # Integration test.
 def test_postprocessor_integration(
     test_input_path,
@@ -762,12 +832,13 @@ def test_postprocessor_integration(
     adobe_list_postprocessor,
 ):
     in_doc = Document.from_json(test_input_path)
+    filename = f"{test_input_path.stem}.pdf"
     # run postprocessors
-    hyphenation_doc = adobe_hyphenation_postprocessor.process(in_doc)
-    text_styling_doc = adobe_text_styling_postprocessor.process(hyphenation_doc)
-    out_doc = adobe_list_postprocessor.process(
-        text_styling_doc, f"{test_input_path.stem}.pdf"
+    hyphenation_doc = adobe_hyphenation_postprocessor.process(in_doc, filename)
+    text_styling_doc = adobe_text_styling_postprocessor.process(
+        hyphenation_doc, filename
     )
+    out_doc = adobe_list_postprocessor.process(text_styling_doc, filename)
     # Basic tests to ensure that nothing has gone wrong.
 
     # Check that 6 pages have been returned in the document

@@ -8,7 +8,7 @@ from typing import List, Dict, Optional, Sequence
 
 import pandas as pd
 from english_words import english_words_set
-from extract.document import Document, TextBlock
+from extract.document import Document
 
 
 class PostProcessor(ABC):
@@ -34,7 +34,7 @@ class PostProcessor(ABC):
         return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
 
     @abstractmethod
-    def process(self, document: Document, filename: Optional[str]) -> Document:
+    def process(self, document: Document, filename: str) -> Document:
         """Process the document.
 
         Args:
@@ -94,14 +94,14 @@ class HyphenationPostProcessor(PostProcessor):
                 current = regex_match[0]
         return new_list
 
-    def process(self, contents: Document, filename: str = None) -> Document:
+    def process(self, contents: Document, filename: str) -> Document:
         """Join hyphenated words if they are real words, otherwise keep hyphenation."""
-        contents = contents.to_dict()
-        for ix, page in enumerate(contents["pages"]):
+        contents_dict = contents.to_dict()
+        for page in contents_dict["pages"]:
             for text_block in page["text_blocks"]:
                 text_block["text"] = self._rewrap_hyphenated_words(text_block["text"])
-        contents = Document.from_dict(contents)
-        return contents
+        contents_new = Document.from_dict(contents_dict)
+        return contents_new
 
 
 class AdobeTextStylingPostProcessor(PostProcessor):
@@ -119,7 +119,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         super(AdobeTextStylingPostProcessor, self).__init__()
 
     @staticmethod
-    def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
+    def _classify_text_block_styling(text_block: dict) -> Optional[str]:
         """Get text block styling, if present.
 
         Args:
@@ -196,7 +196,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         }
         return text_block
 
-    def process(self, document: Document, filename=None) -> Document:
+    def process(self, document: Document, filename: str) -> Document:
         """Iterate through a document and merge text blocks that have been separated due to styling elements.
 
         Args:
@@ -206,9 +206,9 @@ class AdobeTextStylingPostProcessor(PostProcessor):
                 A new dict object with styling info added.
         """
         new_document = deepcopy(document)
-        new_document = new_document.to_dict()
+        new_document_dict = new_document.to_dict()
 
-        for page in new_document["pages"]:
+        for page in new_document_dict["pages"]:
             # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
             # TODO: This is a hack. We should be able to handle this better.
             if len(page["text_blocks"]) == 0:
@@ -253,7 +253,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             except TypeError:
                 pass
 
-        new_document = Document.from_dict(new_document)
+        new_document = Document.from_dict(new_document_dict)
         return new_document
 
 
@@ -620,7 +620,7 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         new_contents = {"pages": new_pages}
         return new_contents
 
-    def process(self, document: Document, filename: Optional[str]) -> Document:
+    def process(self, document: Document, filename: str) -> Document:
         """Parse elements belonging to lists into single semantic blocks.
 
         Args:
@@ -635,3 +635,25 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         new_contents = self._group_list_elements(doc)
         new_contents["filename"] = filename
         return Document.from_dict(new_contents)
+
+
+class CoordinateFlippingPostProcessor(PostProcessor):
+    """Flip y coordinates of text blocks in a document. Used to convert coordinates to be used for the Adobe Embed API.
+
+    This should be run last in the pipeline as this coordinate change breaks the `_minimal_bounding_box` method of other post processors.
+    """
+
+    def process(self, document: Document, filename: str) -> Document:
+        """Move the origin for coordinates to the bottom left corner from the top left corner by flipping the coordinates in the y direction.
+
+        Args:
+            filename: The filename of the pdf being processed.
+            document: Document for a single pdf.
+
+        Returns:
+            A Document object with coordinates flipped in the y direction.
+        """
+
+        new_pages = [page.flip_y_coordinates() for page in document.pages]
+
+        return Document(pages=new_pages, filename=filename)

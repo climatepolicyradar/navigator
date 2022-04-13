@@ -89,6 +89,32 @@ class Page:
 
         return "\n".join(page_text)
 
+    def flip_y_coordinates(self) -> "Page":
+        """Flip the y-coordinates of the text blocks in the page, so that the point (0,0) moves from the top left of the page to the bottom left of the page.
+
+        This is useful for the Adobe Embed API.
+        """
+
+        page_height = self.dimensions[1]
+
+        flipped_text_blocks = [
+            TextBlock(
+                text=text_block.text,
+                text_block_id=text_block.text_block_id,
+                coords=[(x, page_height - y) for x, y in text_block.coords],
+                type=text_block.type,
+                path=text_block.path,
+                custom_attributes=text_block.custom_attributes,
+            )
+            for text_block in self.text_blocks
+        ]
+
+        return Page(
+            text_blocks=flipped_text_blocks,
+            dimensions=self.dimensions,
+            page_id=self.page_id,
+        )
+
 
 @dataclass
 class Document:

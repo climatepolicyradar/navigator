@@ -6,32 +6,37 @@ from processor.postprocessor import (
     AdobeListGroupingPostProcessor,
     AdobeTextStylingPostProcessor,
     HyphenationPostProcessor,
+    CoordinateFlippingPostProcessor,
 )
 
 
 def process(in_path, out_path):
-    """
-    Process a document into a better format for downstream tasks.
+    """Process a document into a better format for downstream tasks.
 
     Args:
         in_path: Directory with Adobe output files to process further.
         out_path: Directory to write post-processed files to.
-
-    Returns:
-
     """
     # TODO: Add s3 support.
     text_styling_processor = AdobeTextStylingPostProcessor()
     hyphenation_processor = HyphenationPostProcessor()
-    postprocessor = AdobeListGroupingPostProcessor()
+    list_grouping_postprocessor = AdobeListGroupingPostProcessor()
+    coordinate_flipping_postprocessor = CoordinateFlippingPostProcessor()
+
+    postprocessors = [
+        hyphenation_processor,
+        text_styling_processor,
+        list_grouping_postprocessor,
+        coordinate_flipping_postprocessor,
+    ]
+
     for file in in_path.iterdir():
         if file.suffix == ".json":
             doc = Document.from_json(file)
-            doc = hyphenation_processor.process(doc)
-            doc = text_styling_processor.process(
-                doc,
-            )
-            doc = postprocessor.process(doc, f"{file.stem}.pdf")
+
+            for processor in postprocessors:
+                doc = processor.process(doc, f"{file.stem}.pdf")
+
             # Write to json file.
             doc.save_json(out_path / f"{file.stem}.json")
 
@@ -39,7 +44,11 @@ def process(in_path, out_path):
 if __name__ == "__main__":
     # create logger
     parser = argparse.ArgumentParser()
-    parser.add_argument("in_path", type=str, help="Path to the contents.json file.")
+    parser.add_argument(
+        "in_path",
+        type=str,
+        help="Path to folder containing JSON files from pdf2text output.",
+    )
     parser.add_argument("out_path", type=str, help="Path to the output directory.")
     args = parser.parse_args()
     in_dir = Path(args.in_path)
