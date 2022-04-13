@@ -17,9 +17,6 @@ migrations_docker:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 app/initial_data.py
 
 start: start_containers
-	# Hack to wait for postgres container to be up before running alembic migrations
-	sleep 30;
-	# Run migrations
 	make migrations_docker
 
 stop:
