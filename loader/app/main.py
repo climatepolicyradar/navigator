@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.loader.extract.main import extract
 from app.loader.load.main import load
 from app.loader.transform.main import transform
+from app.poster.main import post_all_to_backend_api
 from app.service.document_upload import upload_all_documents
 
 DEFAULT_LOGGING = {
@@ -64,6 +65,10 @@ def main():
     policies = transform(data)
     for db in get_db():
         load(db, policies)
+
+        # This will normally be triggered separately, but we're
+        # expediting the load for alpha.
+        post_all_to_backend_api(db)
 
 
 if __name__ == "__main__":

@@ -15,14 +15,14 @@ alembic upgrade head
 All databases:
 
 ```
-make upgrade_all_dbs
+make migrations
 ```
 
 Or only the app-specific DBs:
 
 ```
-make upgrade_loader_db
-make upgrade_backend_db
+make migrations_docker_backend
+make migrations_docker_loader
 ```
 
 # Create a new migration

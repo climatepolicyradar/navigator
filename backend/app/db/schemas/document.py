@@ -12,8 +12,6 @@ class _DocumentBase(BaseModel):  # noqa: D106
     Do not use directly.
     """
 
-    created_by: t.Optional[int]
-    updated_by: t.Optional[int]
     loaded_ts: t.Optional[datetime.datetime]
     name: str
     source_url: t.Optional[str]

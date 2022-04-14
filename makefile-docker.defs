@@ -34,18 +34,9 @@ migrations_docker_loader:
 
 migrations: migrations_docker_backend migrations_docker_loader
 
-upgrade_backend_db:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic upgrade head
-
-upgrade_loader_db:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic upgrade head
-
-upgrade_all_dbs: upgrade_backend_db upgrade_loader_db
-
 %:
 	@:
 
-# if this doesn't work on Mac, try other suggestions here: https://stackoverflow.com/questions/2214575/passing-arguments-to-make-run
 new_migration_backend:
 	docker-compose run --rm backend alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
 

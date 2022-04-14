@@ -11,6 +11,9 @@ logger = logging.getLogger(__file__)
 
 
 def load(db: Session, policies: PolicyLookup):
+    """Loads policy data into local database."""
+
+    document_source_id = 1  # always CCLW (for alpha)
 
     imported_count = 0
     for key, policy_data in policies.items():
@@ -40,6 +43,35 @@ def load(db: Session, policies: PolicyLookup):
         main_doc = None
         for doc in policy_data.docs:
 
+            # TODO name/geography_id/type_id/source_id is not unique, but the
+            # addition of url makes it unique. Fetch any existing docs by
+            # name/geography_id/type_id/source_id and then set up any associations
+            # in case we have a new doc.
+
+            # As the get_document_validity_sync check can take long,
+            # check if the document already exists, and skip if it does
+            # (as per the unique constraint)
+            maybe_existing_doc = (
+                db.query(Document)
+                .filter(
+                    Document.name == key.policy_name,
+                    Document.geography_id == geography_id,
+                    Document.type_id == document_type_id,
+                    Document.source_id == document_source_id,
+                    Document.url == doc.doc_url,
+                )
+                .one_or_none()
+            )
+            if maybe_existing_doc:
+                logger.warning(
+                    f"Skipping existing doc, name={key.policy_name}, "
+                    f"geography_id={geography_id}, "
+                    f"type_id={document_type_id}, "
+                    f"source_id={document_source_id}"
+                    f"url={doc.doc_url}"
+                )
+                continue
+
             # check doc validity
             is_valid = True
 
@@ -59,7 +91,7 @@ def load(db: Session, policies: PolicyLookup):
             doc = Document(
                 name=key.policy_name,
                 source_url=doc.doc_url,
-                source_id=1,
+                source_id=document_source_id,
                 # url=None,  # TODO: upload to S3
                 is_valid=is_valid,
                 invalid_reason=invalid_reason,
