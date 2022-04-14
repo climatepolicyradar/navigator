@@ -1,25 +1,51 @@
 import logging
 from pathlib import Path
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    File,
-    HTTPException,
-    Request,
-    UploadFile,
-)
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
 
 from app.core.auth import get_current_active_superuser
+from app.db.crud.document import create_document
+from app.db.schemas.document import DocumentInDB, DocumentCreate
+from app.db.session import get_db
 from navigator.core.aws import get_s3_client
 
 logger = logging.getLogger(__file__)
 
 documents_router = r = APIRouter()
 
-# TODO return nested documents with associations
+# TODO for get_document, return nested documents with associations
 # - only show doc IDs, association types, and a hyperlink (so the associated doc can be loaded on demand)
 # - possibly a flag so nested docs can be fully hydrated?
+
+
+@r.post("/documents", response_model=DocumentInDB)
+async def post_document(
+    request: Request,
+    document_create: DocumentCreate,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a document.
+
+    TODO instead of just DocumentCreate as a payload, have all the metadata too:
+
+    {
+        document: { <DocumentCreate> },
+        source: id?,
+        events: [],
+        sectors: [],
+        instruments: [],
+        frameworks: [],
+        responses: [],
+        hazards: []
+        languages: []
+        // passages?
+    }
+
+    """
+    db_action = create_document(db, document_create, current_user)
+
+    return DocumentInDB.from_orm(db_action)
 
 
 @r.post(

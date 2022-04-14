@@ -54,6 +54,8 @@ def load(db: Session, policies: PolicyLookup):
                     f"url={doc.doc_url}"
                 )
 
+            # TODO for S3, see
+            # https://github.com/climatepolicyradar/navigator/blob/3ca2eda8de691288a66a1722908f32dd52c178f9/backend/app/api/api_v1/routers/actions.py#L81
             doc = Document(
                 name=key.policy_name,
                 source_url=doc.doc_url,

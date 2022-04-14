@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.sql import func
 
 from app.db.session import Base
@@ -105,6 +106,7 @@ class Document(Base, Auditable):
         sa.SmallInteger, sa.ForeignKey(Geography.id), nullable=False
     )
     type_id = sa.Column(sa.Integer, sa.ForeignKey(DocumentType.id), nullable=False)
+    UniqueConstraint(name, geography_id, type_id, source_id)
 
 
 class Sector(Base):  # noqa: D101

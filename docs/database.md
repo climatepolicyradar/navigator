@@ -12,8 +12,17 @@ alembic upgrade head
 
 ## Docker dev environment
 
+All databases:
+
 ```
-docker-compose run --rm backend alembic upgrade head
+make upgrade_all_dbs
+```
+
+Or only the app-specific DBs:
+
+```
+make upgrade_loader_db
+make upgrade_backend_db
 ```
 
 # Create a new migration
