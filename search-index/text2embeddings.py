@@ -4,7 +4,6 @@ import codecs
 import json
 import os
 import re
-import shutil
 import tempfile
 from pathlib import Path
 from typing import List, Optional, Dict, Union
@@ -207,7 +206,6 @@ def get_text_from_json_files(
         for text_and_id in document_text_and_ids:
             text_and_id.update({"document_id": document["filename"]})
             text_by_document.append(text_and_id)
-
     return text_by_document
 
 
@@ -311,6 +309,7 @@ def run_cli(
 
     json_filepaths = list(input_dir.glob("*.json"))
     text_and_ids = get_text_from_json_files(json_filepaths)
+    logger.info(f"There are {len(text_and_ids)} text blocks.")
     if limit:
         text_and_ids = text_and_ids[:limit]
 
@@ -377,15 +376,11 @@ def run_cli(
             description_ids_output_path, force_overwrite_to_cloud=True
         )
         logger.info(f"Deleting temporary folder {embs_output_path}")
-        shutil.rmtree(embs_output_path)
-        shutil.rmtree(description_embs_output_path)
+        output_dir.upload_from("debuglogs.log", force_overwrite_to_cloud=True)
 
 
 if __name__ == "__main__":
-    # write logs to file
-    log_dir = Path(os.path.join(os.path.dirname(__file__), "logs"))
-    if not log_dir.exists():
-        log_dir.mkdir(parents=True)
-    log_file = log_dir / "debuglog.log"
-    logger.add(log_file, rotation="10 MB")
+    import logging
+
+    logging.basicConfig(filename="debuglogs.log", level=logging.INFO)
     run_cli()
