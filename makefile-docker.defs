@@ -10,6 +10,18 @@ start_containers:
 show_logs:
 	docker-compose logs -f
 
+start: start_containers migrations upgrade_all_dbs
+
+stop:
+	docker-compose stop
+
+remove_volumes:
+	docker-compose down -v
+
+# ----------------------------------
+# database maintenance
+# ----------------------------------
+
 migrations_docker_backend:
 	# Run database migrations when using docker for development
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic upgrade head
@@ -20,16 +32,15 @@ migrations_docker_loader:
 	# Run database migrations when using docker for development
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic upgrade head
 
-
 migrations: migrations_docker_backend migrations_docker_loader
 
-start: start_containers migrations
+upgrade_backend_db:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic upgrade head
 
-stop:
-	docker-compose stop
+upgrade_loader_db:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic upgrade head
 
-remove_volumes:
-	docker-compose down -v
+upgrade_all_dbs: upgrade_backend_db upgrade_loader_db
 
 # ----------------------------------
 # building images
