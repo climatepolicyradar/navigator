@@ -10,15 +10,11 @@ from processor.postprocessor import (
 
 
 def process(in_path, out_path):
-    """
-    Process a document into a better format for downstream tasks.
+    """Process a document into a better format for downstream tasks.
 
     Args:
         in_path: Directory with Adobe output files to process further.
         out_path: Directory to write post-processed files to.
-
-    Returns:
-
     """
     # TODO: Add s3 support.
     text_styling_processor = AdobeTextStylingPostProcessor()
@@ -31,7 +27,7 @@ def process(in_path, out_path):
             doc = text_styling_processor.process(
                 doc,
             )
-            doc = postprocessor.process(doc, f"{file.stem}.pdf")
+            doc = postprocessor.process(doc, f"{file.stem}")
             # Write to json file.
             doc.save_json(out_path / f"{file.stem}.json")
 

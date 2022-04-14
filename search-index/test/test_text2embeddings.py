@@ -21,10 +21,7 @@ def test_get_text_from_merged_block():
         },
     }
 
-    expected_1 = (
-        "The central indicator for measuring the depletion of natural resources at the macroeconomic level is the environmentally adjusted GDP: GDP – GDP . It is the adjustment of GDP by the depletion (depreciation) of natural capital, which is the consumption of environmental products. Consumption of environmental products means quantitative reduction of minerals, bio-resources and the observed reduction in ecosystem services.",
-        "p6_b91_merged",
-    )
+    expected_1 = "The central indicator for measuring the depletion of natural resources at the macroeconomic level is the environmentally adjusted GDP: GDP – GDP . It is the adjustment of GDP by the depletion (depreciation) of natural capital, which is the consumption of environmental products. Consumption of environmental products means quantitative reduction of minerals, bio-resources and the observed reduction in ecosystem services."
 
     result_1 = text2embeddings.get_text_from_merged_block(input_1)
     assert result_1 == expected_1
@@ -41,10 +38,7 @@ def test_get_text_from_merged_block():
         },
     }
 
-    expected_2 = (
-        "It is this government's priority to reduce carbon emissions by 2030.",
-        "p6_b3_merged",
-    )
+    expected_2 = "It is this government's priority to reduce carbon emissions by 2030."
 
     result_2 = text2embeddings.get_text_from_merged_block(input_2)
     assert result_2 == expected_2
@@ -60,7 +54,7 @@ def test_get_text_from_merged_block():
         },
     }
 
-    expected_3 = ("CO2 has risen by 0.5% since the last year.", "p6_b3_merged")
+    expected_3 = "CO2 has risen by 0.5% since the last year."
 
     result_3 = text2embeddings.get_text_from_merged_block(input_3)
     assert result_3 == expected_3
@@ -76,7 +70,7 @@ def test_get_text_from_merged_block():
         },
     }
 
-    expected_4 = ("On the 1st April.", "p6_b3_merged")
+    expected_4 = "On the 1st April."
 
     result_4 = text2embeddings.get_text_from_merged_block(input_4)
     assert result_4 == expected_4
