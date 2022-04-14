@@ -9,7 +9,7 @@ from sqlalchemy import create_engine, event
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
 
-from app.core import config, security
+from app.core import security
 from app.core.search import OpenSearchConnection, OpenSearchConfig
 from app.db.models import User, PasswordResetToken
 from app.db.session import Base, get_db
@@ -64,7 +64,7 @@ def test_opensearch():
 
 
 def get_test_db_url() -> str:
-    return f"{config.SQLALCHEMY_DATABASE_URI}_test"
+    return os.environ["DATABASE_URL"] + "_test"
 
 
 @pytest.fixture

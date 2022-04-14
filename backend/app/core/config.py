@@ -1,5 +1,7 @@
 import os
 
+# TODO is this module really needed?
+
 PROJECT_NAME = "navigator"
 
 SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")

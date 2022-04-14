@@ -2,9 +2,10 @@ import logging.config
 import os
 from pathlib import Path
 
-from app.extract import extract
-from app.load import load
-from app.transform import transform
+from app.db.session import get_db
+from app.loader.extract.main import extract
+from app.loader.load.main import load
+from app.loader.transform.main import transform
 
 DEFAULT_LOGGING = {
     "version": 1,
@@ -60,7 +61,8 @@ def main():
 
     data = extract(data_dir)
     policies = transform(data)
-    load(policies)
+    for db in get_db():
+        load(db, policies)
 
 
 if __name__ == "__main__":

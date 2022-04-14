@@ -10,7 +10,7 @@ describe('Submit Action form', () => {
 
     cy.get('[data-cy="selectSource"] option').should('have.length', 2);
     cy.get('[data-cy="selectGeographies"] option').should('have.length', 11);
-    cy.get('[data-cy="selectActionType"] option').should('have.length', 3);
+    cy.get('[data-cy="selectActionType"] option').should('have.length', 1);
   });
 
   it('Should show errors when any required fields are not filled out', () => {
@@ -25,7 +25,7 @@ describe('Submit Action form', () => {
     cy.get('[data-cy="add-document-form"]').should('have.class', 'is-active');
   });
 
-  it('should fill out form and display success message on submit', () => {
+  it.skip('should fill out form and display success message on submit', () => {
     cy.intercept('POST', 'actions', { fixture: 'action' }).as('postAction');
     cy.get_lookups();
     cy.get('[data-cy="add-action-form"] select[name=action_source_id]').select(
