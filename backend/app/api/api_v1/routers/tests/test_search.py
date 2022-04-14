@@ -1,13 +1,10 @@
 import time
+from datetime import datetime
 
 import pytest
 
 from app.api.api_v1.routers import search
-
-
-"""
-TODO: need more docs in saved opensearch to test ordering of results
-"""
+from app.db.schemas.search import SortOrder
 
 
 def test_search_body_valid(test_opensearch, monkeypatch, client, user_token_headers):
@@ -140,11 +137,121 @@ def test_multiple_filters(
     } in query_body["query"]["bool"]["filter"]
 
 
-def test_result_order(test_opensearch, monkeypatch, client, user_token_headers):
+def test_result_order_score(
+    test_opensearch, monkeypatch, client, user_token_headers, mocker
+):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
-    # TODO: implement when alternative ordering is supported
-    pass
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "query")
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "disaster",
+            "exact_match": False,
+        },
+        headers=user_token_headers,
+    )
+    assert response.status_code == 200
+    query_response = query_spy.spy_return.raw_response
+    result_docs = query_response["aggregations"]["sample"]["top_docs"]["buckets"]
+
+    s = None
+    for d in result_docs:
+        new_s = d["top_hit"]["value"]
+        if s is not None:
+            assert new_s <= s
+        s = new_s
+
+
+@pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
+def test_result_order_date(
+    test_opensearch, monkeypatch, client, user_token_headers, order
+):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "disaster",
+            "exact_match": False,
+            "sort_field": "date",
+            "sort_order": order.value,
+        },
+        headers=user_token_headers,
+    )
+    assert response.status_code == 200
+
+    response_body = response.json()
+    documents = response_body["documents"]
+    assert len(documents) > 1
+
+    dt = None
+    for d in documents:
+        new_dt = datetime.strptime(d["document_date"], "%d/%m/%Y")
+        if dt is not None:
+            if order == SortOrder.DESCENDING:
+                assert new_dt <= dt
+            if order == SortOrder.ASCENDING:
+                assert new_dt >= dt
+        dt = new_dt
+
+
+@pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
+def test_result_order_title(
+    test_opensearch, monkeypatch, client, user_token_headers, order
+):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "disaster",
+            "exact_match": False,
+            "sort_field": "title",
+            "sort_order": order.value,
+        },
+        headers=user_token_headers,
+    )
+    assert response.status_code == 200
+
+    response_body = response.json()
+    documents = response_body["documents"]
+    assert len(documents) > 1
+
+    t = None
+    for d in documents:
+        new_t = d["document_name"]
+        if t is not None:
+            if order == SortOrder.DESCENDING:
+                assert new_t <= t
+            if order == SortOrder.ASCENDING:
+                assert new_t >= t
+        t = new_t
+
+
+def test_invalid_request(test_opensearch, monkeypatch, client, user_token_headers):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    response = client.post(
+        "/api/v1/searches",
+        json={"exact_match": False},
+        headers=user_token_headers,
+    )
+    assert response.status_code == 422
+
+    response = client.post(
+        "/api/v1/searches",
+        json={"query_string": "disaster"},
+        headers=user_token_headers,
+    )
+    assert response.status_code == 422
+
+    response = client.post(
+        "/api/v1/searches",
+        json={},
+        headers=user_token_headers,
+    )
+    assert response.status_code == 422
 
 
 def test_case_insensitivity(test_opensearch, monkeypatch, client, user_token_headers):

@@ -1,6 +1,6 @@
 import time
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Tuple
 
 from opensearchpy import OpenSearch
 from sentence_transformers import SentenceTransformer
@@ -38,9 +38,15 @@ from app.db.schemas.search import (
     SearchResponseBody,
     SearchResponseDocument,
     SearchResponseDocumentPassage,
+    SortField,
+    SortOrder,
 )
 
 _ENCODER = SentenceTransformer(model_name_or_path=OPENSEARCH_INDEX_ENCODER)
+_SORT_FIELD_MAP: Mapping[SortField, str] = {
+    SortField.DATE: "action_date",
+    SortField.TITLE: "action_name",
+}
 
 
 @dataclass
@@ -180,7 +186,9 @@ def build_opensearch_request_body(
 ) -> Dict[str, Any]:
     """Build a complete OpenSearch request body."""
 
-    search_config = search_internal_config or OpenSearchQueryConfig()
+    search_config = search_internal_config or OpenSearchQueryConfig(
+        max_passages_per_doc=search_request.max_passages_per_doc,
+    )
     builder = QueryBuilder(search_config)
 
     if search_request.exact_match:
@@ -194,6 +202,9 @@ def build_opensearch_request_body(
 
     if search_request.year_range is not None:
         builder.with_year_range_filter(search_request.year_range)
+
+    if search_request.sort_field is not None:
+        builder.order_by(search_request.sort_field, search_request.sort_order)
 
     return builder.query
 
@@ -220,8 +231,7 @@ class QueryBuilder:
                         "top_docs": {
                             "terms": {
                                 "field": OPENSEARCH_INDEX_INDEX_KEY,
-                                # TODO: Other ordering options
-                                "order": {"top_hit": "desc"},
+                                "order": {"top_hit": SortOrder.DESCENDING.value},
                                 "size": self._search_config.max_doc_count,
                             },
                             "aggs": {
@@ -237,9 +247,9 @@ class QueryBuilder:
                                     },
                                 },
                                 "top_hit": {"max": {"script": {"source": "_score"}}},
-                                "action_date": {
+                                _SORT_FIELD_MAP[SortField.DATE]: {
                                     "stats": {
-                                        "field": "action_date",
+                                        "field": _SORT_FIELD_MAP[SortField.DATE],
                                     },
                                 },
                             },
@@ -393,6 +403,16 @@ class QueryBuilder:
             filters.append(year_range_filter)
             self._request_body["query"]["bool"]["filter"] = filters
 
+    def order_by(self, field: SortField, order: SortOrder):
+        """Change sort order for results."""
+        terms_field = self._request_body["aggs"]["sample"]["aggs"]["top_docs"]["terms"]
+        if field == SortField.DATE:
+            terms_field["order"] = {f"{_SORT_FIELD_MAP[field]}.avg": order.value}
+        elif field == SortField.TITLE:
+            terms_field["order"] = {"_key": order.value}
+        else:
+            raise RuntimeError("Unknown sort ordering field: {field}")
+
 
 def process_opensearch_response_body(
     opensearch_response_body: OpenSearchResponse,
@@ -451,6 +471,7 @@ def process_opensearch_response_body(
             raise RuntimeError("Unexpected document match with no matching passages")
 
         search_response.documents.append(search_response_document)
+        search_response_document = None
 
     return search_response
 
