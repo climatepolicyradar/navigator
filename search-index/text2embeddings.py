@@ -376,11 +376,12 @@ def run_cli(
             description_ids_output_path, force_overwrite_to_cloud=True
         )
         logger.info(f"Deleting temporary folder {embs_output_path}")
-        output_dir.upload_from("debuglogs.log", force_overwrite_to_cloud=True)
+        output_dir.upload_from(logger_fname, force_overwrite_to_cloud=True)
 
 
 if __name__ == "__main__":
     import logging
 
-    logging.basicConfig(filename=f"debuglogs_{get_timestamp()}.log", level=logging.INFO)
+    logger_fname = f"debuglogs_{get_timestamp()}.log"
+    logging.basicConfig(filename=logger_fname, level=logging.INFO)
     run_cli()
