@@ -367,16 +367,12 @@ def run_cli(
 
     if s3:
         logger.info(f"Writing embeddings to S3 bucket {output_dir}")
-        output_dir.upload_from(embs_output_path, force_overwrite_to_cloud=True)
+        output_dir.upload_from(embs_output_path)
         logger.info(f"Writing description embeddings to S3 bucket {output_dir}")
-        output_dir.upload_from(
-            description_embs_output_path, force_overwrite_to_cloud=True
-        )
-        output_dir.upload_from(
-            description_ids_output_path, force_overwrite_to_cloud=True
-        )
+        output_dir.upload_from(description_embs_output_path)
+        output_dir.upload_from(description_ids_output_path)
         logger.info(f"Deleting temporary folder {embs_output_path}")
-        output_dir.upload_from(logger_fname, force_overwrite_to_cloud=True)
+        output_dir.upload_from(logger_fname)
 
 
 if __name__ == "__main__":
