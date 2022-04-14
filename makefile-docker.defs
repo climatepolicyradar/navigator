@@ -42,6 +42,16 @@ upgrade_loader_db:
 
 upgrade_all_dbs: upgrade_backend_db upgrade_loader_db
 
+%:
+	@:
+
+# if this doesn't work on Mac, try other suggestions here: https://stackoverflow.com/questions/2214575/passing-arguments-to-make-run
+new_migration_backend:
+	docker-compose run --rm backend alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
+
+new_migration_loader:
+	docker-compose run --rm loader alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
+
 # ----------------------------------
 # building images
 # ----------------------------------

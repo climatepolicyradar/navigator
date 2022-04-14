@@ -32,6 +32,8 @@ For more information see
 
 ## Local dev environment
 
+In app root:
+
 ```
 alembic revision --autogenerate -m "[revision message]"
 ```
@@ -44,6 +46,12 @@ PYTHONPATH=. DATABASE_URL=postgresql://navigator:password@localhost:5432/navigat
 
 ## Docker dev environment
 
+In project root:
+
 ```
-docker-compose run --rm backend alembic revision --autogenerate -m "[revision message]"
+make new_migration_backend "[revision message]"
+```
+
+```
+make new_migration_loader "[revision message]"
 ```
