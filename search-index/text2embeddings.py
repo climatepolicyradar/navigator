@@ -336,7 +336,9 @@ def run_cli(
     # Encode action descriptions
     postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
     navigator_dataset = create_dataset(postgres_connector)
-    document_ids_processed = set([i["document_id"] for i in text_and_ids])
+    document_ids_processed = set(
+        [i["document_id"].replace(".pdf", "") for i in text_and_ids]
+    )
     description_data_to_encode = navigator_dataset.loc[
         navigator_dataset["prototype_filename_stem"].isin(document_ids_processed)
     ]
