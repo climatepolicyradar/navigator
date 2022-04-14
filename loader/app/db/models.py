@@ -88,7 +88,6 @@ class Document(Base, Auditable):
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
     url = sa.Column(sa.Text)
 
-    # this will be in the loader DB
     is_valid = sa.Column(sa.Boolean, nullable=False)
     invalid_reason = sa.Column(sa.Enum(DocumentInvalidReason))
 

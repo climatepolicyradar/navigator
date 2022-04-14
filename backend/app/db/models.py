@@ -1,5 +1,3 @@
-import enum
-
 import sqlalchemy as sa
 from sqlalchemy.sql import func
 
@@ -77,16 +75,6 @@ class Source(Base):  # noqa: D101
     name = sa.Column(sa.String(128), nullable=False)
 
 
-class DocumentInvalidReason(enum.Enum):
-    """Reasons why a document might be invalid."""
-
-    unsupported_content_type = "unsupported_content_type"
-    net_ssl_error = "net_ssl_error"
-    net_read_error = "net_read_error"
-    net_connection_error = "net_connection_error"
-    net_too_many_redirects = "net_too_many_redirects"
-
-
 class DocumentType(Base):  # noqa: D101
     __tablename__ = "document_type"
 
@@ -112,10 +100,6 @@ class Document(Base, Auditable):
     source_url = sa.Column(sa.Text)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
     url = sa.Column(sa.Text)
-
-    # this will be in the loader DB
-    # is_valid = sa.Column(sa.Boolean, nullable=False)
-    # invalid_reason = sa.Column(sa.Enum(DocumentInvalidReason))
 
     geography_id = sa.Column(
         sa.SmallInteger, sa.ForeignKey(Geography.id), nullable=False
