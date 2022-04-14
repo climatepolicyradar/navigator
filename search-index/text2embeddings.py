@@ -382,5 +382,5 @@ def run_cli(
 if __name__ == "__main__":
     import logging
 
-    logging.basicConfig(filename="debuglogs.log", level=logging.INFO)
+    logging.basicConfig(filename=f"debuglogs_{get_timestamp()}.log", level=logging.INFO)
     run_cli()
