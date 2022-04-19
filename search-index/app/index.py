@@ -55,6 +55,8 @@ class OpenSearchIndex:
                 "index": {
                     "knn": True,
                     "knn.algo_param.ef_search": 100,  # TODO: tune me. see https://opensearch.org/docs/latest/search-plugins/knn/knn-index#index-settings
+                    "number_of_shards": 1,
+                    "number_of_replicas": 1,
                 },
                 "analysis": {
                     "filter": {
@@ -116,8 +118,8 @@ class OpenSearchIndex:
                             "space_type": "innerproduct",
                             "engine": "nmslib",  # TODO: decide between faiss and nmslib and tune params
                             "parameters": {
-                                "ef_construction": 128,  # TODO: tune me
-                                "m": 12,  # TODO: tune me
+                                "ef_construction": 512,  # TODO: tune me. 512 is Opensearch default
+                                "m": 16,  # TODO: tune me. 16 is Opensearch default
                             },
                         },
                     },
@@ -133,8 +135,8 @@ class OpenSearchIndex:
                             "space_type": "innerproduct",
                             "engine": "nmslib",  # TODO: decide between faiss and nmslib and tune params
                             "parameters": {
-                                "ef_construction": 128,  # TODO: tune me
-                                "m": 12,  # TODO: tune me
+                                "ef_construction": 512,  # TODO: tune me. 512 is Opensearch default
+                                "m": 16,  # TODO: tune me. 16 is Opensearch default
                             },
                         },
                     },
