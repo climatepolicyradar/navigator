@@ -44,6 +44,12 @@ def test_simple_pagination(
     page2_documents = page2_response_body["documents"]
     assert len(page2_documents) == 2
 
+    # Sanity check that we really do have 4 different documents
+    document_names = {d["document_name"] for d in page1_documents} | {
+        d["document_name"] for d in page2_documents
+    }
+    assert len(document_names) == 4
+
     for d in page1_documents:
         assert d not in page2_documents
 
@@ -84,6 +90,12 @@ def test_pagination_overlap(
     page2_response_body = page2_response.json()
     page2_documents = page2_response_body["documents"]
     assert len(page2_documents) == 2
+
+    # Sanity check that we really do have 3 different documents
+    document_names = {d["document_name"] for d in page1_documents} | {
+        d["document_name"] for d in page2_documents
+    }
+    assert len(document_names) == 3
 
     assert page1_documents[-1] == page2_documents[0]
 
