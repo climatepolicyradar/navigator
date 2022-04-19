@@ -96,7 +96,22 @@ class Document(Base, Auditable):
         sa.SmallInteger, sa.ForeignKey(Geography.id), nullable=False
     )
     type_id = sa.Column(sa.Integer, sa.ForeignKey(DocumentType.id), nullable=False)
-    UniqueConstraint(name, geography_id, type_id, source_id, url)
+    UniqueConstraint(name, geography_id, type_id, source_id, source_url)
+
+
+class APIDocument(Base):
+    """A pointer to the document's ID in the API database."""
+
+    __tablename__ = "api_document"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    document_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
+    remote_document_id = sa.Column(sa.Integer, nullable=False)
 
 
 class Sector(Base):  # noqa: D101

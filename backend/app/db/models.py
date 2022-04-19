@@ -106,7 +106,7 @@ class Document(Base, Auditable):
         sa.SmallInteger, sa.ForeignKey(Geography.id), nullable=False
     )
     type_id = sa.Column(sa.Integer, sa.ForeignKey(DocumentType.id), nullable=False)
-    UniqueConstraint(name, geography_id, type_id, source_id, url)
+    UniqueConstraint(name, geography_id, type_id, source_id, source_url)
 
 
 class Sector(Base):  # noqa: D101

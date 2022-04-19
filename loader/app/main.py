@@ -4,7 +4,7 @@ from pathlib import Path
 
 from app.db.session import get_db
 from app.loader.extract.main import extract
-from app.loader.load.main import load
+from app.loader.load.main import load  # noqa: F401
 from app.loader.transform.main import transform
 from app.poster.main import post_all_to_backend_api
 from app.service.document_upload import upload_all_documents
@@ -62,9 +62,9 @@ def main():
     data_dir = get_data_dir()
 
     data = extract(data_dir)
-    policies = transform(data)
+    policies = transform(data)  # noqa: F841
     for db in get_db():
-        load(db, policies)
+        # load(db, policies)  # TODO uncomment once POST is dev complete
 
         # This will normally be triggered separately, but we're
         # expediting the load for alpha.

@@ -1,6 +1,7 @@
 import logging
 from datetime import datetime
 
+from app.db.crud import get_document_by_unique_constraint
 from app.db.models import Association, Document, Event
 from sqlalchemy.orm import Session
 from app.model import PolicyLookup
@@ -48,19 +49,16 @@ def load(db: Session, policies: PolicyLookup):
             # name/geography_id/type_id/source_id and then set up any associations
             # in case we have a new doc.
 
-            # As the get_document_validity_sync check can take long,
-            # check if the document already exists, and skip if it does
+            # Optimisation: As the get_document_validity_sync check can take long,
+            # check if the document already exists in the DB, and skip if it does
             # (as per the unique constraint)
-            maybe_existing_doc = (
-                db.query(Document)
-                .filter(
-                    Document.name == key.policy_name,
-                    Document.geography_id == geography_id,
-                    Document.type_id == document_type_id,
-                    Document.source_id == document_source_id,
-                    Document.url == doc.doc_url,
-                )
-                .one_or_none()
+            maybe_existing_doc = get_document_by_unique_constraint(
+                db,
+                key.policy_name,
+                geography_id,
+                document_type_id,
+                document_source_id,
+                doc.doc_url,
             )
             if maybe_existing_doc:
                 logger.warning(

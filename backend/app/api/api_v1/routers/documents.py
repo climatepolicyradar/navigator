@@ -2,6 +2,7 @@ import logging
 from pathlib import Path
 
 from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
+from sqlalchemy.exc import IntegrityError
 
 from app.core.auth import get_current_active_superuser
 from app.db.crud.document import create_document
@@ -43,9 +44,15 @@ async def post_document(
     }
 
     """
-    db_action = create_document(db, document_create, current_user)
 
-    return DocumentInDB.from_orm(db_action)
+    try:
+        db_document = create_document(db, document_create, current_user)
+    except Exception as e:
+        if isinstance(e, IntegrityError):
+            raise HTTPException(409, detail="Document already exists")
+        raise e
+
+    return DocumentInDB.from_orm(db_document)
 
 
 @r.post(

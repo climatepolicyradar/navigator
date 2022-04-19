@@ -19,7 +19,7 @@ def upgrade():
     op.create_unique_constraint(
         op.f("uq_document__name"),
         "document",
-        ["name", "geography_id", "type_id", "source_id", "url"],
+        ["name", "geography_id", "type_id", "source_id", "source_url"],
     )
     # ### end Alembic commands ###
 
