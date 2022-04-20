@@ -77,3 +77,8 @@ extend-ignore = "E203"
 
 [tool.mypy]
 ignore_missing_imports = "True"
+
+[tool.black]
+line-length = 79
+target-version = ['py38']
+

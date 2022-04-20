@@ -49,6 +49,38 @@ _SORT_FIELD_MAP: Mapping[SortField, str] = {
 }
 
 
+def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
+    """Maps inner product to lucene threashold.
+
+    Opensearch documentation on mapping similarity functions to Lucene thresholds is
+    here: https://github.com/opensearch-project/k-NN/blob/main/src/main/java/org/opensearch/knn/index/SpaceType.java#L33
+
+    It defines 'inner product' as negative inner product i.e. a distance rather than
+    similarity measure, so we reverse the signs of inner product here compared to the docs.
+    """
+    if ip_thresh > 0:
+        return ip_thresh + 1
+    else:
+        return 1 / (1 - ip_thresh)
+
+
+@dataclass(frozen=True)
+class OpenSearchQueryConfig:
+    """Configuration for searches sent to OpenSearch."""
+
+    name_boost: int = OPENSEARCH_INDEX_NAME_BOOST
+    description_boost: int = OPENSEARCH_INDEX_DESCRIPTION_BOOST
+    lucene_threshold: float = _innerproduct_threshold_to_lucene_threshold(
+        OPENSEARCH_INDEX_INNER_PRODUCT_THRESHOLD
+    )  # TODO: tune me separately for descriptions?
+    max_doc_count: int = OPENSEARCH_INDEX_MAX_DOC_COUNT
+    max_passages_per_doc: int = OPENSEARCH_INDEX_MAX_PASSAGES_PER_DOC
+    n_passages_to_sample_per_shard = (
+        OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
+    )
+    k = OPENSEARCH_INDEX_KNN_K_VALUE
+
+
 @dataclass
 class OpenSearchConfig:
     """Config for accessing an OpenSearch instance."""
@@ -82,8 +114,28 @@ class OpenSearchConnection:
         self._opensearch_config = opensearch_config
         self._opensearch_connection: Optional[OpenSearch] = None
 
-    def query(self, request_body: Dict[str, Any]) -> OpenSearchResponse:
-        """Query the configures OpenSearch instance."""
+    def query(
+        self,
+        search_request_body: SearchRequestBody,
+        opensearch_internal_config: OpenSearchQueryConfig,
+    ) -> SearchResponseBody:
+        """Build & make an OpenSearch query based on the given request body."""
+
+        opensearch_request_body = build_opensearch_request_body(
+            search_request=search_request_body,
+            opensearch_internal_config=opensearch_internal_config,
+        )
+
+        opensearch_response_body = self.raw_query(opensearch_request_body)
+
+        return process_opensearch_response_body(
+            opensearch_response_body,
+            limit=search_request_body.limit,
+            offset=search_request_body.offset,
+        )
+
+    def raw_query(self, request_body: Dict[str, Any]) -> OpenSearchResponse:
+        """Query the configured OpenSearch instance with a JSON OpenSearch body."""
 
         if self._opensearch_connection is None:
             login_details = (
@@ -129,21 +181,6 @@ class OpenSearchConnection:
         )
 
 
-def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
-    """Maps inner product to lucene threashold.
-
-    Opensearch documentation on mapping similarity functions to Lucene thresholds is
-    here: https://github.com/opensearch-project/k-NN/blob/main/src/main/java/org/opensearch/knn/index/SpaceType.java#L33
-
-    It defines 'inner product' as negative inner product i.e. a distance rather than
-    similarity measure, so we reverse the signs of inner product here compared to the docs.
-    """
-    if ip_thresh > 0:
-        return ip_thresh + 1
-    else:
-        return 1 / (1 - ip_thresh)
-
-
 def _year_range_filter(
     year_range: Tuple[Optional[int], Optional[int]]
 ) -> Optional[Dict[str, Any]]:
@@ -165,28 +202,13 @@ def _year_range_filter(
     return None
 
 
-@dataclass(frozen=True)
-class OpenSearchQueryConfig:
-    """Configuration for searches sent to OpenSearch."""
-
-    name_boost: int = OPENSEARCH_INDEX_NAME_BOOST
-    description_boost: int = OPENSEARCH_INDEX_DESCRIPTION_BOOST
-    lucene_threshold: float = _innerproduct_threshold_to_lucene_threshold(
-        OPENSEARCH_INDEX_INNER_PRODUCT_THRESHOLD
-    )  # TODO: tune me separately for descriptions?
-    max_doc_count: int = OPENSEARCH_INDEX_MAX_DOC_COUNT
-    max_passages_per_doc: int = OPENSEARCH_INDEX_MAX_PASSAGES_PER_DOC
-    n_passages_to_sample_per_shard = OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
-    k = OPENSEARCH_INDEX_KNN_K_VALUE
-
-
 def build_opensearch_request_body(
     search_request: SearchRequestBody,
-    search_internal_config: Optional[OpenSearchQueryConfig] = None,
+    opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
 ) -> Dict[str, Any]:
     """Build a complete OpenSearch request body."""
 
-    search_config = search_internal_config or OpenSearchQueryConfig(
+    search_config = opensearch_internal_config or OpenSearchQueryConfig(
         max_passages_per_doc=search_request.max_passages_per_doc,
     )
     builder = QueryBuilder(search_config)
@@ -231,7 +253,9 @@ class QueryBuilder:
                         "top_docs": {
                             "terms": {
                                 "field": OPENSEARCH_INDEX_INDEX_KEY,
-                                "order": {"top_hit": SortOrder.DESCENDING.value},
+                                "order": {
+                                    "top_hit": SortOrder.DESCENDING.value
+                                },
                                 "size": self._search_config.max_doc_count,
                             },
                             "aggs": {
@@ -246,10 +270,14 @@ class QueryBuilder:
                                         "size": self._search_config.max_passages_per_doc,
                                     },
                                 },
-                                "top_hit": {"max": {"script": {"source": "_score"}}},
+                                "top_hit": {
+                                    "max": {"script": {"source": "_score"}}
+                                },
                                 _SORT_FIELD_MAP[SortField.DATE]: {
                                     "stats": {
-                                        "field": _SORT_FIELD_MAP[SortField.DATE],
+                                        "field": _SORT_FIELD_MAP[
+                                            SortField.DATE
+                                        ],
                                     },
                                 },
                             },
@@ -394,7 +422,9 @@ class QueryBuilder:
         filters.append({"terms": {field: values}})
         self._request_body["query"]["bool"]["filter"] = filters
 
-    def with_year_range_filter(self, year_range: Tuple[Optional[int], Optional[int]]):
+    def with_year_range_filter(
+        self, year_range: Tuple[Optional[int], Optional[int]]
+    ):
         """Add a year range filter to the configured query."""
 
         year_range_filter = _year_range_filter(year_range)
@@ -405,9 +435,13 @@ class QueryBuilder:
 
     def order_by(self, field: SortField, order: SortOrder):
         """Change sort order for results."""
-        terms_field = self._request_body["aggs"]["sample"]["aggs"]["top_docs"]["terms"]
+        terms_field = self._request_body["aggs"]["sample"]["aggs"]["top_docs"][
+            "terms"
+        ]
         if field == SortField.DATE:
-            terms_field["order"] = {f"{_SORT_FIELD_MAP[field]}.avg": order.value}
+            terms_field["order"] = {
+                f"{_SORT_FIELD_MAP[field]}.avg": order.value
+            }
         elif field == SortField.TITLE:
             terms_field["order"] = {"_key": order.value}
         else:
@@ -416,24 +450,30 @@ class QueryBuilder:
 
 def process_opensearch_response_body(
     opensearch_response_body: OpenSearchResponse,
+    limit: int = 10,
+    offset: int = 0,
 ) -> SearchResponseBody:
     opensearch_json_response = opensearch_response_body.raw_response
     search_response = SearchResponseBody(
-        hits=opensearch_json_response["aggregations"]["sample"]["bucketcount"]["count"],
+        hits=opensearch_json_response["aggregations"]["sample"]["bucketcount"][
+            "count"
+        ],
         query_time_ms=opensearch_response_body.request_time_ms,
         documents=[],
     )
     search_response_document = None
 
-    result_docs = opensearch_json_response["aggregations"]["sample"]["top_docs"][
-        "buckets"
-    ]
-    for result_doc in result_docs:
+    result_docs = opensearch_json_response["aggregations"]["sample"][
+        "top_docs"
+    ]["buckets"]
+    for result_doc in result_docs[offset : offset + limit]:
         for document_match in result_doc["top_passage_hits"]["hits"]["hits"]:
             document_match_source = document_match["_source"]
             if OPENSEARCH_INDEX_NAME_KEY in document_match_source:
                 # Validate as a title match
-                name_match = OpenSearchResponseNameMatch(**document_match_source)
+                name_match = OpenSearchResponseNameMatch(
+                    **document_match_source
+                )
                 if search_response_document is None:
                     search_response_document = create_search_response_document(
                         name_match
@@ -441,7 +481,9 @@ def process_opensearch_response_body(
                 search_response_document.document_title_match = True
             elif OPENSEARCH_INDEX_DESCRIPTION_KEY in document_match_source:
                 # Validate as a description match
-                desc_match = OpenSearchResponseDescriptionMatch(**document_match_source)
+                desc_match = OpenSearchResponseDescriptionMatch(
+                    **document_match_source
+                )
                 if search_response_document is None:
                     search_response_document = create_search_response_document(
                         desc_match
@@ -449,7 +491,9 @@ def process_opensearch_response_body(
                 search_response_document.document_description_match = True
             elif OPENSEARCH_INDEX_TEXT_BLOCK_KEY in document_match_source:
                 # Process as a text block
-                passage_match = OpenSearchResponsePassageMatch(**document_match_source)
+                passage_match = OpenSearchResponsePassageMatch(
+                    **document_match_source
+                )
                 if search_response_document is None:
                     search_response_document = create_search_response_document(
                         passage_match
@@ -468,7 +512,9 @@ def process_opensearch_response_body(
                 raise RuntimeError("Unexpected data in match results")
 
         if search_response_document is None:
-            raise RuntimeError("Unexpected document match with no matching passages")
+            raise RuntimeError(
+                "Unexpected document match with no matching passages"
+            )
 
         search_response.documents.append(search_response_document)
         search_response_document = None
@@ -476,7 +522,9 @@ def process_opensearch_response_body(
     return search_response
 
 
-def create_search_response_document(passage_match: OpenSearchResponseMatchBase):
+def create_search_response_document(
+    passage_match: OpenSearchResponseMatchBase,
+):
     return SearchResponseDocument(
         document_name=passage_match.action_name,
         document_description=passage_match.action_description,
