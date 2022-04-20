@@ -43,7 +43,7 @@ class Language(Base):  # noqa: D101
     __tablename__ = "language"
 
     id = sa.Column(sa.SmallInteger, primary_key=True)
-    language_code = sa.Column(sa.CHAR(length=3), nullable=False)
+    language_code = sa.Column(sa.CHAR(length=3), nullable=False, unique=True)
     part1_code = sa.Column(sa.CHAR(length=2))
     part2_code = sa.Column(sa.CHAR(length=3))
     name = sa.Column(sa.Text)

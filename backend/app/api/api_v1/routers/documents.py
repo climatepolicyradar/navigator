@@ -6,7 +6,8 @@ from sqlalchemy.exc import IntegrityError
 
 from app.core.auth import get_current_active_superuser
 from app.db.crud.document import create_document
-from app.db.schemas.document import DocumentInDB, DocumentCreate
+from app.db.schemas.document import DocumentInDB
+from app.db.schemas.metadata import DocumentCreateWithMetadata
 from app.db.session import get_db
 from navigator.core.aws import get_s3_client
 
@@ -22,30 +23,14 @@ documents_router = r = APIRouter()
 @r.post("/documents", response_model=DocumentInDB)
 async def post_document(
     request: Request,
-    document_create: DocumentCreate,
+    document_with_metadata: DocumentCreateWithMetadata,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
-    """Create a document.
-
-    TODO instead of just DocumentCreate as a payload, have all the metadata too:
-
-    {
-        document: { <DocumentCreate> },
-        source: id?,
-        events: [],
-        sectors: [],
-        instruments: [],
-        frameworks: [],
-        responses: [],
-        hazards: []
-        languages: []
-        // passages?
-    }
-
-    """
+    """Create a document, with associated metadata."""
 
     try:
+        document_create = document_with_metadata.document
         db_document = create_document(db, document_create, current_user)
     except Exception as e:
         if isinstance(e, IntegrityError):
