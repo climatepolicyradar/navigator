@@ -90,7 +90,12 @@ class OpenSearchIndex:
                     "document_name": {"type": "text"},
                     "action_name": {"type": "keyword", "normalizer": "folding"},
                     "action_description": {"type": "keyword", "normalizer": "folding"},
-                    "action_name_and_id": {"type": "keyword", "normalizer": "folding"},
+                    "action_name_and_id": {
+                        "type": "keyword",
+                        "normalizer": "folding",
+                        # Load ordinals on indexing for this field for faster aggregations.
+                        "eager_global_ordinals": True,
+                    },
                     "action_date": {"type": "date", "format": "dd/MM/yyyy"},
                     "action_country_code": {"type": "keyword"},
                     "action_geography_english_shortname": {"type": "keyword"},
