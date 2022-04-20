@@ -114,7 +114,7 @@ class OpenSearchConnection:
         # else:
         #     passage_hit_qualifier = "unknown (unexpected)"
         #
-        # doc_hit_count = response['aggregations']['sample']['bucketcount']['count']
+        # doc_hit_count = response['aggregations']['no_unique_docs']['value']
         # f"returned {passage_hit_qualifier} {passage_hit_count} passage(s) in {doc_hit_count} document(s)"
 
         return OpenSearchResponse(
@@ -244,13 +244,9 @@ class QueryBuilder:
                                 },
                             },
                         },
-                        "bucketcount": {
-                            "stats_bucket": {
-                                "buckets_path": "top_docs._count",
-                            },
-                        },
                     },
                 },
+                "no_unique_docs": {"cardinality": {"field": "action_name_and_id"}},
             },
         }
 
@@ -399,7 +395,7 @@ def process_opensearch_response_body(
 ) -> SearchResponseBody:
     opensearch_json_response = opensearch_response_body.raw_response
     search_response = SearchResponseBody(
-        hits=opensearch_json_response["aggregations"]["sample"]["bucketcount"]["count"],
+        hits=opensearch_json_response["aggregations"]["no_unique_docs"]["value"],
         query_time_ms=opensearch_response_body.request_time_ms,
         documents=[],
     )
