@@ -1,13 +1,13 @@
 """Infra-as-code for CPR stack."""
 import base64
-import os
+
 import pulumi
 import pulumi_aws as aws
 import pulumi_docker as docker
 
 default_tag = {
     "CPR-Created-By": "pulumi",
-    "CPR-Pulumi-Stack-Name": os.environ["PULUMI_STACK"],
+    "CPR-Pulumi-Stack-Name": pulumi.get_stack(),
 }
 
 

@@ -1,6 +1,6 @@
 """Infra-as-code for CPR stack."""
 import json
-import os
+import pathlib
 import pulumi
 import pulumi_aws as aws
 
@@ -67,7 +67,7 @@ class Plumbing:
             most_recent=True,
         )
 
-        stack_name = os.environ["PULUMI_STACK"]
+        stack_name = pulumi.get_stack()
 
         keypair = aws.ec2.KeyPair(
             "bastion-ssh-key",
@@ -244,16 +244,17 @@ class Plumbing:
             vpc_id=app_vpc)
         """  # noqa: F841
 
-        with open("bastion_extra.sh") as f:
+        bastion_extra = pathlib.Path(__file__) / ".." / "bastion_extra.sh"
+        with open(bastion_extra.resolve()) as f:
             user_data = f.read()
 
         instance = aws.ec2.Instance(
             "bastion-server",
-            ami=bastion_ami,
+            ami=bastion_ami.id,
             associate_public_ip_address=True,
             instance_type=aws.ec2.InstanceType.T2_NANO,
             key_name=keypair.key_name,
-            vpc_security_group_ids=[self.security_group_bastion.id],
+            vpc_security_group_ids=[security_group_bastion.id],
             subnet_id=default_az1.id,
             user_data=user_data,
             tags=default_tag,
