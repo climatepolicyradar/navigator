@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
 import Header from '../headers/Main';
-import Banner from '../banner/Main';
+import Banner from '../banner/Slim';
 
 type Props = {
   children?: ReactNode;
@@ -26,7 +26,7 @@ const Layout = ({
     </a>
     <Header />
     <main>
-      <Banner heading={heading} />
+      <Banner />
       {children}
     </main>
     <footer className="my-8">

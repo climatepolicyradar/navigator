@@ -1,15 +1,13 @@
 import { useState, useEffect } from 'react';
 import Close from '../buttons/Close';
 import SearchButton from '../buttons/SearchButton';
-import { SearchIcon } from '../Icons';
 import useWindowResize from '../../hooks/useWindowResize';
 
 interface SearchFormProps {
   placeholder: string;
-  buttonText: string;
 }
 
-const SearchForm = ({ placeholder, buttonText }: SearchFormProps) => {
+const SearchForm = ({ placeholder }: SearchFormProps) => {
   const [term, setTerm] = useState('');
   const windowSize = useWindowResize();
   const onClick = (e) => {
@@ -21,30 +19,26 @@ const SearchForm = ({ placeholder, buttonText }: SearchFormProps) => {
   };
   return (
     <form data-cy="search-form">
-      <p className="sm:hidden mt-4 text-center text-white">{placeholder}</p>
-      <div className="mt-4 md:mt-16 relative">
-        <div className="absolute top-0 left-0 ml-4 mt-3 text-indigo-400 z-20">
-          <SearchIcon height="35" width="40" />
-        </div>
-
+      <div className="relative shadow-md rounded-lg bg-white flex items-stretch">
         <input
           data-cy="search-input"
-          className="md:text-xl w-full mx-2 text-indigo-600 appearance-none bg-white py-4 pl-12 pr-28 md:pl-16 md:pr-40 rounded-full flex rounded-full relative z-10"
+          className="bg-transparent text-indigo-600 appearance-none py-2 pl-2 z-10 rounded-lg relative flex-grow mr-8 placeholder:text-indigo-400"
           type="search"
           placeholder={`${windowSize.width > 540 ? placeholder : ''}`}
           value={term}
           onChange={onChange}
         />
+        <div className="rounded-lg absolute inset-0 border border-indigo-200 z-0" />
         {term.length > 0 && (
           <div
             data-cy="search-clear-button"
-            className="flex items-center mx-2 text-indigo-500 shrink-0 absolute top-0 right-0 mr-16 pr-1 md:mr-28 z-20 h-full items-center"
+            className="flex items-center mx-2 text-indigo-400 shrink-0 absolute top-0 right-0 mr-16 h-full md:mr-20 z-20 h-full items-center"
           >
-            <Close onClick={onClick} size="30" />
+            <Close onClick={onClick} size="16" />
           </div>
         )}
-        <div className="absolute top-0 right-0 md:mr-1 h-full flex items-center justify-end z-10">
-          <SearchButton>{buttonText}</SearchButton>
+        <div className="flex items-center justify-end z-10">
+          <SearchButton />
         </div>
       </div>
     </form>

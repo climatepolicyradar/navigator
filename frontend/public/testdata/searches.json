@@ -1,0 +1,26 @@
+{
+  "hits": 0,
+  "query_time_ms": 0,
+  "documents": [
+    {
+      "document_name": "American Recovery and Reinvestment Act",
+      "document_country_code": "usa",
+      "document_source_name": "cclw",
+      "document_date": "2009",
+      "document_id": 0,
+      "document_geography_english_shortname": "United States of America",
+      "document_description": "The Bill authorises a stimulus package that supports new and existing renewable energy and energy efficiency programmes. The bill supersedes the tax provisions of the Energy Improvement and Extension Act 2008 as...",
+      "document_type_name": "string",
+      "document_title_match": true,
+      "document_description_match": true,
+      "document_passage_matches": [
+        {
+          "text": "string",
+          "text_block_id": "string",
+          "text_block_page": 0,
+          "text_block_coords": [["string", "string"]]
+        }
+      ]
+    }
+  ]
+}

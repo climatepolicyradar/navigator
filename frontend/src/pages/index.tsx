@@ -28,10 +28,15 @@ const IndexPage = () => {
                   t('dashboard.New Documents'),
                 ]}
               />
-              <SearchForm
-                placeholder={t("Search for something, e.g. 'carbon taxes'")}
-                buttonText={t('Go')}
-              />
+              <div className="mt-8 md:mt-16">
+                <p className="sm:hidden mt-4 text-center text-white mb-4">
+                  {t("Search for something, e.g. 'carbon taxes'")}
+                </p>
+
+                <SearchForm
+                  placeholder={t("Search for something, e.g. 'carbon taxes'")}
+                />
+              </div>
             </div>
           </div>
         </Layout>
