@@ -24,7 +24,6 @@ from app.core.config import (
     OPENSEARCH_USERNAME,
     OPENSEARCH_PASSWORD,
     OPENSEARCH_REQUEST_TIMEOUT,
-    OPENSEARCH_PREFERENCE,
     OPENSEARCH_USE_SSL,
     OPENSEARCH_VERIFY_CERTS,
     OPENSEARCH_SSL_WARNINGS,
@@ -52,7 +51,6 @@ class OpenSearchConfig:
     password: str = OPENSEARCH_PASSWORD
     index_name: str = OPENSEARCH_INDEX
     request_timeout: int = OPENSEARCH_REQUEST_TIMEOUT
-    preference: str = OPENSEARCH_PREFERENCE
     use_ssl: bool = OPENSEARCH_USE_SSL
     verify_certs: bool = OPENSEARCH_VERIFY_CERTS
     ssl_show_warnings: bool = OPENSEARCH_SSL_WARNINGS
@@ -76,8 +74,10 @@ class OpenSearchConnection:
         self._opensearch_config = opensearch_config
         self._opensearch_connection: Optional[OpenSearch] = None
 
-    def query(self, request_body: Dict[str, Any]) -> OpenSearchResponse:
-        """Query the configures OpenSearch instance."""
+    def query(
+        self, request_body: Dict[str, Any], preference: Optional[str]
+    ) -> OpenSearchResponse:
+        """Query the configured OpenSearch instance."""
 
         if self._opensearch_connection is None:
             login_details = (
@@ -97,7 +97,7 @@ class OpenSearchConnection:
             body=request_body,
             index=self._opensearch_config.index_name,
             request_timeout=self._opensearch_config.request_timeout,
-            preference=self._opensearch_config.preference,
+            preference=preference,
         )
         end = time.time()
 

@@ -32,5 +32,7 @@ def search_documents(
         search_request=search_body,
         search_internal_config=_OPENSEARCH_INDEX_CONFIG,
     )
-    opensearch_response_body = _OPENSEARCH_CONNECTION.query(opensearch_request_body)
+    opensearch_response_body = _OPENSEARCH_CONNECTION.query(
+        opensearch_request_body, preference=str(current_user.id)
+    )
     return process_opensearch_response_body(opensearch_response_body)
