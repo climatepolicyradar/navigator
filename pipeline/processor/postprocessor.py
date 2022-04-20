@@ -8,7 +8,7 @@ from typing import List, Dict, Optional, Sequence
 
 import pandas as pd
 from english_words import english_words_set
-from extract.document import Document, TextBlock
+from extract.document import Document
 
 
 class PostProcessor(ABC):
@@ -18,19 +18,23 @@ class PostProcessor(ABC):
     def _minimal_bounding_box(
         coords: Sequence[Sequence[Sequence[float]]],
     ) -> List[List[float]]:
-        """Return the minimally enclosing bounding box of bounding boxes.
+        """Return the minimally enclosing bounding box of a sequence of bounding boxes.
 
-        Args: coords: A list of coordinates for each bounding box formatted [x1,y1,x2,y2] with the bottom left as the
-        origin.
+        Args:
+            coords: a list of coordinates for each bounding box formatted as the (x,y) coordinates of each of its corners.
 
         Returns:
             A list of coordinates for the minimally enclosing bounding box for all input bounding boxes.
 
         """
-        x_min = min(coord[0][0] for coord in coords)
-        y_min = min(coord[1][1] for coord in coords)
-        x_max = max(coord[1][0] for coord in coords)
-        y_max = max(coord[3][1] for coord in coords)
+        x_coords = [point[0] for coord in coords for point in coord]
+        y_coords = [point[1] for coord in coords for point in coord]
+
+        x_min = min(x_coords)
+        y_min = min(y_coords)
+        x_max = max(x_coords)
+        y_max = max(y_coords)
+
         return [[x_min, y_min], [x_max, y_min], [x_min, y_max], [x_max, y_max]]
 
     @abstractmethod
@@ -96,11 +100,11 @@ class HyphenationPostProcessor(PostProcessor):
 
     def process(self, contents: Document, filename: str = None) -> Document:
         """Join hyphenated words if they are real words, otherwise keep hyphenation."""
-        contents = contents.to_dict()
-        for ix, page in enumerate(contents["pages"]):
+        contents_dict = contents.to_dict()
+        for ix, page in enumerate(contents_dict["pages"]):
             for text_block in page["text_blocks"]:
                 text_block["text"] = self._rewrap_hyphenated_words(text_block["text"])
-        contents = Document.from_dict(contents)
+        contents = Document.from_dict(contents_dict)
         return contents
 
 
@@ -119,7 +123,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         super(AdobeTextStylingPostProcessor, self).__init__()
 
     @staticmethod
-    def _classify_text_block_styling(text_block: TextBlock) -> Optional[str]:
+    def _classify_text_block_styling(text_block: dict) -> Optional[str]:
         """Get text block styling, if present.
 
         Args:
@@ -206,9 +210,9 @@ class AdobeTextStylingPostProcessor(PostProcessor):
                 A new dict object with styling info added.
         """
         new_document = deepcopy(document)
-        new_document = new_document.to_dict()
+        new_document_dict = new_document.to_dict()
 
-        for page in new_document["pages"]:
+        for page in new_document_dict["pages"]:
             # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
             # TODO: This is a hack. We should be able to handle this better.
             if len(page["text_blocks"]) == 0:
@@ -253,7 +257,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             except TypeError:
                 pass
 
-        new_document = Document.from_dict(new_document)
+        new_document = Document.from_dict(new_document_dict)
         return new_document
 
 
