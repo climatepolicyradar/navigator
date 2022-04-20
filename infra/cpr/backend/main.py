@@ -179,6 +179,16 @@ class Backend:
                     name="PORT",
                     value="8888",
                 ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeType",
+                    value="gp2",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeSize",
+                    value="16",  # default is 8GB, but we're making space for pytorch
+                ),
             ],
         )
 

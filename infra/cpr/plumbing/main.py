@@ -1,6 +1,6 @@
 """Infra-as-code for CPR stack."""
 import json
-
+import os
 import pulumi
 import pulumi_aws as aws
 
@@ -25,10 +25,62 @@ class Plumbing:
     service_role: aws.iam.Role
 
     def __init__(self):
+        self.default_vpc = aws.ec2.DefaultVpc(
+            "default-vpc",
+            tags={
+                "Name": "Default VPC",
+            },
+        )
+
+        # Security groups control traffic flow between applications running inside our VPC
+        security_group_bastion = aws.ec2.SecurityGroup(
+            "bastion-security-group",
+            description="Enable SSH access",
+            vpc_id=self.default_vpc.id,
+            ingress=[
+                aws.ec2.SecurityGroupIngressArgs(
+                    protocol="tcp",
+                    from_port=22,
+                    to_port=22,
+                    cidr_blocks=["0.0.0.0/0"],
+                )
+            ],
+            egress=[
+                aws.ec2.SecurityGroupEgressArgs(
+                    protocol="-1",  # -1 means ALL protocols
+                    from_port=0,
+                    to_port=0,
+                    cidr_blocks=["0.0.0.0/0"],
+                )
+            ],
+            tags=default_tag,
+        )
+
+        bastion_ami = aws.ec2.get_ami(
+            filters=[
+                aws.ec2.GetAmiFilterArgs(
+                    name="name",
+                    values=["amzn2-ami-hvm-*"],
+                ),
+            ],
+            owners=["137112412989"],  # This owner ID is Amazon
+            most_recent=True,
+        )
+
+        stack_name = os.environ["PULUMI_STACK"]
+
+        keypair = aws.ec2.KeyPair(
+            "bastion-ssh-key",
+            key_name=f"bastion-{stack_name}-ssh-key",
+            public_key="ssh-rsa AAAAB3NzaC1yc2EAAAABIwAAAQEA14swrmHESs/dE8+nhj8twLPpbq//FHAVw7fXEQIvflJ+03yb6ostNLcXNroenoKzfRAwqVx0BRgYB0RKoBP5yIL7K5UkzxnWHEpIj3oC+kIrR1kn8LlsGa1aP05BYmZvsBXFzBjiBie3vhOTGOiEVEzqxdJLZExa6HIeoarKukAi94uQNDFZbnBNqdjRdgIPUdDHYlL5abSKC+yTS2+L96y6Dzt47i+rkn2rZzld1nYgRNLfAtvooIPZ60IfCnhRGPGuPA+nyYLtgRYVKCfC5yZ6QFUp0WH9NjE7PJMY2UX6w465bgbWlVtu8Ue687oWNyJf3r39S73gmpHOUHMkuw== opyate@gmail.com",
+            tags=default_tag,
+        )
+
         # Security groups control traffic flow between applications running inside our VPC
         self.security_group = aws.ec2.SecurityGroup(
             "navigator-security-group",
             description="Enable HTTP access",
+            vpc_id=self.default_vpc.id,
             ingress=[
                 aws.ec2.SecurityGroupIngressArgs(
                     protocol="tcp",
@@ -38,13 +90,6 @@ class Plumbing:
                 )
             ],
             tags=default_tag,
-        )
-
-        self.default_vpc = aws.ec2.DefaultVpc(
-            "default-vpc",
-            tags={
-                "Name": "Default VPC",
-            },
         )
 
         default_az1 = aws.ec2.DefaultSubnet(
@@ -86,6 +131,7 @@ class Plumbing:
                     to_port=5432,
                     protocol="tcp",
                     cidr_blocks=[self.default_vpc.cidr_block],
+                    security_groups=[security_group_bastion.id],
                 )
             ],
             tags=default_tag,
@@ -180,10 +226,10 @@ class Plumbing:
 
         # TODO A gateway and routing table are needed to allow the VPC to communicate with the Internet.
         # Once created, we associate the routing table with our VPC.
-        """
+        _comment = """
         app_gateway = aws.ec2.InternetGateway("navigator-gateway",
             vpc_id=app_vpc.id)
-        
+
         app_routetable = aws.ec2.RouteTable("navigator-routetable",
             routes=[
                 {
@@ -192,8 +238,26 @@ class Plumbing:
                 }
             ],
             vpc_id=app_vpc.id)
-        
+
         app_routetable_association = aws.ec2.MainRouteTableAssociation("navigator_routetable_association",
             route_table_id=app_routetable.id,
             vpc_id=app_vpc)
-    """
+        """  # noqa: F841
+
+        with open("bastion_extra.sh") as f:
+            user_data = f.read()
+
+        instance = aws.ec2.Instance(
+            "bastion-server",
+            ami=bastion_ami,
+            associate_public_ip_address=True,
+            instance_type=aws.ec2.InstanceType.T2_NANO,
+            key_name=keypair.key_name,
+            vpc_security_group_ids=[self.security_group_bastion.id],
+            subnet_id=default_az1.id,
+            user_data=user_data,
+            tags=default_tag,
+        )
+
+        pulumi.export("bastion.public_dns", instance.public_dns)
+        pulumi.export("bastion.public_ip", instance.public_ip)
