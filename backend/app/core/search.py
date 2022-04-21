@@ -42,7 +42,10 @@ from app.db.schemas.search import (
     SortOrder,
 )
 
-_ENCODER = SentenceTransformer(model_name_or_path=OPENSEARCH_INDEX_ENCODER)
+_ENCODER = SentenceTransformer(
+    model_name_or_path=OPENSEARCH_INDEX_ENCODER,
+    cache_folder="/models",
+)
 _SORT_FIELD_MAP: Mapping[SortField, str] = {
     SortField.DATE: "action_date",
     SortField.TITLE: "action_name",
@@ -476,7 +479,9 @@ def process_opensearch_response_body(
     return search_response
 
 
-def create_search_response_document(passage_match: OpenSearchResponseMatchBase):
+def create_search_response_document(
+    passage_match: OpenSearchResponseMatchBase,
+):
     return SearchResponseDocument(
         document_name=passage_match.action_name,
         document_description=passage_match.action_description,
