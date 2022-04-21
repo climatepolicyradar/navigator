@@ -225,15 +225,29 @@ def run_cli(
         index_name=os.environ["OPENSEARCH_INDEX"],
         # TODO: convert to env variables?
         opensearch_connector_kwargs={
-            "use_ssl": False,
-            "verify_certs": False,
-            "ssl_show_warn": False,
+            "use_ssl": os.environ["OPENSEARCH_USE_SSL"],
+            "verify_certs": os.environ["OPENSEARCH_VERIFY_CERTS"],
+            "ssl_show_warn": os.environ["OPENSEARCH_SSL_WARNINGS"],
         },
-        embedding_dim=embedding_dim,
+        embedding_dim=int(os.environ["OPENSEARCH_INDEX_EMBEDDING_DIM"]),
     )
 
     opensearch.delete_and_create_index()
+    # We disable index refreshes during indexing to speed up the indexing process,
+    # and to ensure only 1 segment is created per shard. This also speeds up KNN
+    # queries and aggregations according to the Opensearch and Elasticsearch docs.
+    opensearch.set_index_refresh_interval(-1, timeout=60)
     opensearch.bulk_index(actions=doc_generator)
+
+    # TODO: we wrap this in a try/except block because for now because sometimes it times out
+    # and we don't want the whole >1hr indexing process to fail if this happens.
+    # We should stop doing this when we care what the refresh interval is, i.e. when we plan
+    # on incrementally adding data to the index.
+    try:
+        # 1 second refresh interval is the Opensearch default
+        opensearch.set_index_refresh_interval(1, timeout=60)
+    except Exception as e:
+        logger.info(f"Failed to set index refresh interval after indexing: {e}")
 
 
 if __name__ == "__main__":

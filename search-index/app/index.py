@@ -35,7 +35,7 @@ class OpenSearchIndex:
                 self.opns = OpenSearch(
                     [self._url],
                     http_auth=self._login,
-                    **self._opensearch_connector_kwargs
+                    **self._opensearch_connector_kwargs,
                 )
             else:
                 self.opns = OpenSearch([self._url], **self._opensearch_connector_kwargs)
@@ -154,6 +154,18 @@ class OpenSearchIndex:
 
         self.opns.indices.delete(index=self.index_name, ignore=[400, 404])
         self.opns.indices.create(index=self.index_name, body=self._index_body())
+
+    def set_index_refresh_interval(self, interval: int, timeout: int = 10):
+        """Set the refresh interval (seconds) for the index. If interval=-1, refresh is disabled."""
+
+        interval_seconds = interval if interval == -1 else f"{interval}s"
+        timeout_seconds = f"{timeout}s"
+
+        self.opns.indices.put_settings(
+            index=self.index_name,
+            body={"index.refresh_interval": interval_seconds},
+            timeout=timeout_seconds,
+        )
 
     def bulk_index(self, actions: Iterable[dict]):
         """Bulk load data into the index.
