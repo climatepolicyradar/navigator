@@ -42,7 +42,10 @@ from app.db.schemas.search import (
     SortOrder,
 )
 
-_ENCODER = SentenceTransformer(model_name_or_path=OPENSEARCH_INDEX_ENCODER)
+_ENCODER = SentenceTransformer(
+    model_name_or_path=OPENSEARCH_INDEX_ENCODER,
+    cache_folder="/models",
+)
 _SORT_FIELD_MAP: Mapping[SortField, str] = {
     SortField.DATE: "action_date",
     SortField.TITLE: "action_name",

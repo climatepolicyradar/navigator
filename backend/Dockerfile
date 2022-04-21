@@ -20,6 +20,10 @@ COPY ./common ../common
 RUN poetry config virtualenvs.create false
 RUN poetry install
 
+# Download the sentence transformer model
+RUN mkdir /models
+RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/msmarco-distilbert-dot-v5', cache_folder='/models')"
+
 ENV PYTHONPATH=/app
 
 ARG PORT=8888

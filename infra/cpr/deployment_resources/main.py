@@ -5,7 +5,10 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_docker as docker
 
-default_tag = {"Created-By": "pulumi"}
+default_tag = {
+    "CPR-Created-By": "pulumi",
+    "CPR-Pulumi-Stack-Name": pulumi.get_stack(),
+}
 
 
 class DeploymentResources:
