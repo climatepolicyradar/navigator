@@ -52,8 +52,22 @@ cat graph.dot|dot -Tpng > output.png
 
 # Bastion server
 
-`pulumi up` will export the bastion server's IP address, e.g. `1.2.3.4`, and then connect to it, presuming your key has been included:
+`pulumi up` will export the bastion server's IP address, or you can find it via [the AWS console](https://eu-west-2.console.aws.amazon.com/ec2/v2/home?region=eu-west-2#NIC:securityGroup=bastion*) in the `Public IPv4 address` column.
+
+Then connect to it (provided your SSH public key is provisioned for):
 
 ``` 
-ssh ec2-user@1.2.3.4
+ssh ec2-user@<the-ip>
+```
+
+Then run migrations via psql:
+
+```
+psql -h rds-instance<random>.<random>.eu-west-2.rds.amazonaws.com -U navigator_db_user navigator
+```
+
+When prompted for the password, use the one from
+
+```
+pulumi config get infra:db_password
 ```
