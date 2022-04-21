@@ -1,30 +1,46 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Layout from '../../components/layouts/Main';
 import LoaderOverlay from '../../components/LoaderOverlay';
 import useSearch from '../../hooks/useSearch';
 import useLookups from '../../hooks/useLookups';
+import useFilters from '../../hooks/useFilters';
+import useUpdateFilters from '../../hooks/useUpdateFilters';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../api/auth';
 import { getCountryFromId } from '../../utils/geography';
 import SearchForm from '../../components/forms/SearchForm';
 import SearchResult from '../../components/text-blocks/SearchResult';
+import ByTextInput from '../../components/filters/ByTextInput';
 
 const Search = () => {
+  const [filter, setFilter] = useState('');
+
   const { user } = useAuth();
   const resultsQuery = useSearch('searches');
   const { data: { documents } = [] } = resultsQuery;
   const geosQuery = useLookups('geographies');
-  const { data: geographies } = geosQuery;
+  const { data: { geographies } = [] } = geosQuery;
   const { t, i18n, ready } = useTranslation(['searchResults', 'searchStart']);
   const placeholder = t("Search for something, e.g. 'carbon taxes'", {
     ns: 'searchStart',
   });
+  // const [filters, updateFilters] = useFilters();
+  const updateFilters = useUpdateFilters();
+  const filters = useFilters();
+
+  const handleFilterChange = (type, value) => {
+    // setFilter(type);
+    console.log(type, value);
+    updateFilters.mutate({ [type]: value });
+  };
+
   const handleDocumentClick = () => {};
 
-  useEffect(() => {
-    // console.log(resultsQuery);
-  }, [resultsQuery]);
+  // useEffect(() => {
+  //   // console.log(resultsQuery);
+  //   setFilters.mutate({ filter: });
+  // }, [filter]);
   return (
     <>
       {!resultsQuery.isSuccess || !ready || !user ? (
@@ -36,9 +52,18 @@ const Search = () => {
         >
           <section>
             <div className="px-4 md:flex md:border-b">
-              <div className="md:w-1/3 lg:w-1/4 md:border-r border-indigo-200">
+              <div className="md:w-1/3 lg:w-1/4 md:border-r border-indigo-200 pr-8">
                 <div className="text-indigo-400 mt-8 font-medium">
                   {t('Filter by')}
+                </div>
+                <div className="my-4 text-sm text-indigo-500">
+                  <ByTextInput
+                    title="By country"
+                    list={geographies}
+                    keyField="english_shortname"
+                    type="geographies"
+                    handleFilterChange={handleFilterChange}
+                  />
                 </div>
               </div>
               <div className="md:w-2/3 lg:w-3/4 xl:w-3/5">

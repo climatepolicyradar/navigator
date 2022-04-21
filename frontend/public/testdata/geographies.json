@@ -1,0 +1,28 @@
+{
+  "geographies": [
+    {
+      "country_code": "usa",
+      "english_shortname": "United States of America",
+      "french_shortname": "string",
+      "geography_id": 1
+    },
+    {
+      "country_code": "gbr",
+      "english_shortname": "United Kingdom",
+      "french_shortname": "string",
+      "geography_id": 2
+    },
+    {
+      "country_code": "aus",
+      "english_shortname": "Australia",
+      "french_shortname": "string",
+      "geography_id": 3
+    },
+    {
+      "country_code": "can",
+      "english_shortname": "Canada",
+      "french_shortname": "string",
+      "geography_id": 4
+    }
+  ]
+}

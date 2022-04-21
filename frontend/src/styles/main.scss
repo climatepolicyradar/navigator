@@ -62,6 +62,9 @@ input[type='email'],
 textarea,
 select {
   @apply p-3 rounded-lg text-lg w-full text-indigo-600;
+  &.small {
+    @apply p-2 text-base;
+  }
 }
 
 .form-row {
