@@ -192,3 +192,65 @@ export function EditIcon({ color = 'currentColor' }) {
     </svg>
   );
 }
+
+export function DownloadPDFIcon({
+  height = '32',
+  width = '32',
+  color = 'currentColor',
+}: IconProps) {
+  return (
+    <svg
+      id="icon"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ width: `${width}px`, height: `${height}px` }}
+      viewBox="0 0 32 32"
+      fill={color}
+    >
+      <path d="M24,24v4H8V24H6v4H6a2,2,0,0,0,2,2H24a2,2,0,0,0,2-2h0V24Z" />
+      <polygon points="21 21 19.586 19.586 17 22.172 17 14 15 14 15 22.172 12.414 19.586 11 21 16 26 21 21" />
+      <polygon points="28 4 28 2 22 2 22 12 24 12 24 8 27 8 27 6 24 6 24 4 28 4" />
+      <path d="M17,12H13V2h4a3.0033,3.0033,0,0,1,3,3V9A3.0033,3.0033,0,0,1,17,12Zm-2-2h2a1.0011,1.0011,0,0,0,1-1V5a1.0011,1.0011,0,0,0-1-1H15Z" />
+      <path d="M9,2H4V12H6V9H9a2.0027,2.0027,0,0,0,2-2V4A2.0023,2.0023,0,0,0,9,2ZM6,7V4H9l.001,3Z" />
+      <rect
+        id="_Transparent_Rectangle_"
+        data-name="&lt;Transparent Rectangle&gt;"
+        style={{ fill: 'none' }}
+        width="32"
+        height="32"
+      />
+    </svg>
+  );
+}
+
+export function ViewDocumentCoverPageIcon({
+  height = '32',
+  width = '32',
+  color = 'currentColor',
+}: IconProps) {
+  return (
+    <svg
+      id="icon"
+      xmlns="http://www.w3.org/2000/svg"
+      style={{ width: `${width}px`, height: `${height}px` }}
+      viewBox="0 0 32 32"
+      fill={color}
+    >
+      <circle cx="22" cy="24" r="2" />
+      <path
+        id="_inner_path_"
+        data-name="&lt;inner path&gt;"
+        style={{ fill: 'none' }}
+        d="M22,28a4,4,0,1,1,4-4A4.0039,4.0039,0,0,1,22,28Zm0-6a2,2,0,1,0,2,2A2.0027,2.0027,0,0,0,22,22Z"
+      />
+      <path d="M29.7769,23.4785A8.64,8.64,0,0,0,22,18a8.64,8.64,0,0,0-7.7769,5.4785L14,24l.2231.5215A8.64,8.64,0,0,0,22,30a8.64,8.64,0,0,0,7.7769-5.4785L30,24ZM22,28a4,4,0,1,1,4-4A4.0045,4.0045,0,0,1,22,28Z" />
+      <path d="M12,28H8V4h8v6a2.0058,2.0058,0,0,0,2,2h6v4h2V10a.9092.9092,0,0,0-.3-.7l-7-7A.9087.9087,0,0,0,18,2H8A2.0058,2.0058,0,0,0,6,4V28a2.0058,2.0058,0,0,0,2,2h4ZM18,4.4,23.6,10H18Z" />
+      <rect
+        id="_Transparent_Rectangle_"
+        data-name="&lt;Transparent Rectangle&gt;"
+        style={{ fill: 'none' }}
+        width="32"
+        height="32"
+      />
+    </svg>
+  );
+}

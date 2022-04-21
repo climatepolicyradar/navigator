@@ -48,16 +48,11 @@ const Search = () => {
                 </div>
                 <div className="md:pl-8">
                   {documents.map((doc, index: number) => (
-                    <div key={index} className="my-4">
+                    <div key={index} className="my-16 first:mt-4">
                       <SearchResult
                         document={doc}
                         onClick={handleDocumentClick}
                       />
-                      {/* <p className="font-bold">{doc.document_name}</p>
-                      <p>
-                        {getCountryFromId(doc.document_country_code, geographies)}
-                      </p>
-                      <p>{doc.document_description}</p> */}
                     </div>
                   ))}
                 </div>

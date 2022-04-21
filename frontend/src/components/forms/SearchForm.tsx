@@ -17,6 +17,7 @@ const SearchForm = ({ placeholder }: SearchFormProps) => {
   const onChange = (e) => {
     setTerm(e.currentTarget.value);
   };
+  const handleSearch = (e) => {};
   return (
     <form data-cy="search-form">
       <div className="relative shadow-md rounded-lg bg-white flex items-stretch">
@@ -38,7 +39,7 @@ const SearchForm = ({ placeholder }: SearchFormProps) => {
           </div>
         )}
         <div className="flex items-center justify-end z-10">
-          <SearchButton />
+          <SearchButton onClick={handleSearch} />
         </div>
       </div>
     </form>

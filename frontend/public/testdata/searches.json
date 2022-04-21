@@ -21,6 +21,52 @@
           "text_block_coords": [["string", "string"]]
         }
       ]
+    },
+    {
+      "document_name": "Duncan Hunter National Defense Authorisation Act for Fiscal Year 2009 - Energy Provisions",
+      "document_country_code": "ukr",
+      "document_source_name": "cclw",
+      "document_date": "2008",
+      "document_id": 0,
+      "document_geography_english_shortname": "Ukraine",
+      "document_description": "Authorises defence spending for fiscal year 2009 and includes several provisions aimed at energy efficiency, renewable energy and use of alternative sources of energy in the armed forces.",
+      "document_type_name": "string",
+      "document_title_match": true,
+      "document_description_match": true,
+      "document_passage_matches": [
+        {
+          "text": "string",
+          "text_block_id": "string",
+          "text_block_page": 0,
+          "text_block_coords": [["string", "string"]]
+        },
+        {
+          "text": "string",
+          "text_block_id": "string",
+          "text_block_page": 0,
+          "text_block_coords": [["string", "string"]]
+        }
+      ]
+    },
+    {
+      "document_name": "Energy Independence and Security Act of 2007",
+      "document_country_code": "usa",
+      "document_source_name": "cclw",
+      "document_date": "2007",
+      "document_id": 0,
+      "document_geography_english_shortname": "United States of America",
+      "document_description": "Introduces measures to expand the production of renewable fuels, reduce US dependence on oil, increase energy security and address climate change.",
+      "document_type_name": "string",
+      "document_title_match": true,
+      "document_description_match": true,
+      "document_passage_matches": [
+        {
+          "text": "string",
+          "text_block_id": "string",
+          "text_block_page": 0,
+          "text_block_coords": [["string", "string"]]
+        }
+      ]
     }
   ]
 }
