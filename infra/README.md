@@ -2,6 +2,18 @@
 
 Infrastructure as code, using Pulumi.
 
+# Quick start
+
+[Install Pulumi](https://www.pulumi.com/docs/get-started/install/), and then run
+
+```
+pulumi login
+pulumi org set-default climatepolicyradar
+pulumi stack select dev
+```
+
+And then `pulumi about` to verify.
+
 # Python Environment
 
 `venv` is created/used by Pulumi.
@@ -36,4 +48,12 @@ The code is broken up into these conceptual parts:
 pulumi stack graph --color always graph.dot
 # sudo apt install -y graphviz
 cat graph.dot|dot -Tpng > output.png
+```
+
+# Bastion server
+
+`pulumi up` will export the bastion server's IP address, e.g. `1.2.3.4`, and then connect to it, presuming your key has been included:
+
+``` 
+ssh ec2-user@1.2.3.4
 ```
