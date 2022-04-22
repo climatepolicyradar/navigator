@@ -190,12 +190,14 @@ def load_description_embeddings_and_metadata(
 @click.option("--desc-ids-path", type=click.Path(exists=True), required=True)
 @click.option("--desc-embeddings-path", type=click.Path(exists=True), required=True)
 @click.option("--embedding-dim", "-d", type=int, required=True)
+@click.option("--index-no-replicas", "-r", type=int, default=2)
 def run_cli(
     text_ids_path: Path,
     embeddings_path: Path,
     desc_ids_path: Path,
     desc_embeddings_path: Path,
     embedding_dim: int,
+    index_no_replicas: int,
 ) -> None:
     """Index text and embeddings stores at `text-ids-path` and `embeddings-path` into Opensearch.
 
@@ -205,6 +207,8 @@ def run_cli(
         desc_ids_path (Path): path to CSV file containing a document ID for each description.
         desc_embeddings_path (Path): path to memmap file containing description embeddings.
         embedding_dim (int): embedding dimension.
+        index_no_replicas (int): number of replicas to create when indexing. Defaults to 2, which is a sensible number for a
+        production three-node cluster: each primary shard has a replica on both other nodes.
     """
     postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
     main_dataset = create_dataset(postgres_connector)
@@ -232,7 +236,7 @@ def run_cli(
         embedding_dim=int(os.environ["OPENSEARCH_INDEX_EMBEDDING_DIM"]),
     )
 
-    opensearch.delete_and_create_index()
+    opensearch.delete_and_create_index(n_replicas=index_no_replicas)
     # We disable index refreshes during indexing to speed up the indexing process,
     # and to ensure only 1 segment is created per shard. This also speeds up KNN
     # queries and aggregations according to the Opensearch and Elasticsearch docs.

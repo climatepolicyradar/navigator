@@ -47,7 +47,7 @@ class OpenSearchIndex:
         """Check if we are connected to the OpenSearch instance."""
         return self.opns.ping()
 
-    def _index_body(self):
+    def _index_body(self, n_replicas: int) -> dict:
         """Define policy index fields and types"""
 
         return {
@@ -56,7 +56,7 @@ class OpenSearchIndex:
                     "knn": True,
                     "knn.algo_param.ef_search": 100,  # TODO: tune me. see https://opensearch.org/docs/latest/search-plugins/knn/knn-index#index-settings
                     "number_of_shards": 1,
-                    "number_of_replicas": 1,
+                    "number_of_replicas": n_replicas,
                 },
                 "analysis": {
                     "filter": {
@@ -149,11 +149,17 @@ class OpenSearchIndex:
             },
         }
 
-    def delete_and_create_index(self):
-        """Create the index, deleting any existing index of the same name first."""
+    def delete_and_create_index(self, n_replicas: int):
+        """Create the index, deleting any existing index of the same name first.
+
+        Args:
+            n_replicas (int): number of replicas to create for the index.
+        """
 
         self.opns.indices.delete(index=self.index_name, ignore=[400, 404])
-        self.opns.indices.create(index=self.index_name, body=self._index_body())
+        self.opns.indices.create(
+            index=self.index_name, body=self._index_body(n_replicas)
+        )
 
     def set_index_refresh_interval(self, interval: int, timeout: int = 10):
         """Set the refresh interval (seconds) for the index. If interval=-1, refresh is disabled."""
