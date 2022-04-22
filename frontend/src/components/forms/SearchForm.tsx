@@ -5,9 +5,10 @@ import useWindowResize from '../../hooks/useWindowResize';
 
 interface SearchFormProps {
   placeholder: string;
+  handleSearchChange(type: string, value: string): void;
 }
 
-const SearchForm = ({ placeholder }: SearchFormProps) => {
+const SearchForm = ({ placeholder, handleSearchChange }: SearchFormProps) => {
   const [term, setTerm] = useState('');
   const windowSize = useWindowResize();
   const onClick = (e) => {
@@ -17,7 +18,10 @@ const SearchForm = ({ placeholder }: SearchFormProps) => {
   const onChange = (e) => {
     setTerm(e.currentTarget.value);
   };
-  const handleSearch = (e) => {};
+  const handleSearch = (e) => {
+    e.preventDefault();
+    handleSearchChange('query_string', term);
+  };
   return (
     <form data-cy="search-form">
       <div className="relative shadow-md rounded-lg bg-white flex items-stretch">

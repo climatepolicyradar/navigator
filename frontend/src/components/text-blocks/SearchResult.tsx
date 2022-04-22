@@ -1,12 +1,8 @@
-import Image from 'next/image';
 import { useEffect } from 'react';
 import { DownloadPDFIcon, ViewDocumentCoverPageIcon } from '../Icons';
 import { truncateString } from '../../helpers';
 
 const SearchResult = ({ document, onClick }) => {
-  useEffect(() => {
-    console.log(document);
-  }, []);
   return (
     <div className="relative">
       <h2 className="leading-none flex items-start">

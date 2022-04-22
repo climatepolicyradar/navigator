@@ -2,74 +2,61 @@ import { useEffect, useState } from 'react';
 import Layout from '../../components/layouts/Main';
 import LoaderOverlay from '../../components/LoaderOverlay';
 import useSearch from '../../hooks/useSearch';
-import useLookups from '../../hooks/useLookups';
-import useFilters from '../../hooks/useFilters';
-import useUpdateFilters from '../../hooks/useUpdateFilters';
+import useSearchCriteria from '../../hooks/useSearchCriteria';
+import useUpdateSearchCriteria from '../../hooks/useUpdateSearchCriteria';
+import useUpdateSearchFilters from '../../hooks/useUpdateSearchFilters';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../api/auth';
-import { getCountryFromId } from '../../utils/geography';
 import SearchForm from '../../components/forms/SearchForm';
 import SearchResult from '../../components/text-blocks/SearchResult';
-import ByTextInput from '../../components/filters/ByTextInput';
+import SearchFilters from '../../components/SearchFilters';
 
 const Search = () => {
-  const [filter, setFilter] = useState('');
+  const updateSearchCriteria = useUpdateSearchCriteria();
+  const updateSearchFilters = useUpdateSearchFilters();
+  const { data: searchCriteria } = useSearchCriteria();
 
   const { user } = useAuth();
-  const resultsQuery = useSearch('searches');
+  const resultsQuery = useSearch('searches', searchCriteria);
   const { data: { documents } = [] } = resultsQuery;
-  const geosQuery = useLookups('geographies');
-  const { data: { geographies } = [] } = geosQuery;
-  const { t, i18n, ready } = useTranslation(['searchResults', 'searchStart']);
-  const placeholder = t("Search for something, e.g. 'carbon taxes'", {
-    ns: 'searchStart',
-  });
-  // const [filters, updateFilters] = useFilters();
-  const updateFilters = useUpdateFilters();
-  const filters = useFilters();
+  const { t, i18n, ready } = useTranslation('searchStart');
+  const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
-  const handleFilterChange = (type, value) => {
-    // setFilter(type);
-    console.log(type, value);
-    updateFilters.mutate({ [type]: value });
+  const handleFilterChange = (type: string, value: string) => {
+    updateSearchFilters.mutate({ [type]: value });
+  };
+  const handleSearchChange = (type: string, value: string) => {
+    updateSearchCriteria.mutate({ [type]: value });
   };
 
   const handleDocumentClick = () => {};
 
-  // useEffect(() => {
-  //   // console.log(resultsQuery);
-  //   setFilters.mutate({ filter: });
-  // }, [filter]);
+  useEffect(() => {
+    resultsQuery.refetch();
+  }, [searchCriteria]);
+
   return (
     <>
       {!resultsQuery.isSuccess || !ready || !user ? (
         <LoaderOverlay />
       ) : (
         <Layout
-          title={`Navigator | ${t('Law and policy search')}`}
-          heading={t('Law and policy search')}
+          title={`Navigator | ${t('Law and Policy Search')}`}
+          heading={t('Law and Policy Search')}
         >
           <section>
             <div className="px-4 md:flex md:border-b">
               <div className="md:w-1/3 lg:w-1/4 md:border-r border-indigo-200 pr-8">
-                <div className="text-indigo-400 mt-8 font-medium">
-                  {t('Filter by')}
-                </div>
-                <div className="my-4 text-sm text-indigo-500">
-                  <ByTextInput
-                    title="By country"
-                    list={geographies}
-                    keyField="english_shortname"
-                    type="geographies"
-                    handleFilterChange={handleFilterChange}
-                  />
-                </div>
+                <SearchFilters handleFilterChange={handleFilterChange} />
               </div>
               <div className="md:w-2/3 lg:w-3/4 xl:w-3/5">
                 <div className="md:py-8 md:pl-8">
                   <p className="sm:hidden mt-4">{placeholder}</p>
-                  <SearchForm placeholder={placeholder} />
+                  <SearchForm
+                    placeholder={placeholder}
+                    handleSearchChange={handleSearchChange}
+                  />
                 </div>
                 <div className="md:pl-8">
                   {documents.map((doc, index: number) => (

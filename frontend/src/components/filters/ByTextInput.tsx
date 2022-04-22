@@ -50,8 +50,10 @@ const ByTextInput = ({
       {suggestList.length > 0 && (
         <SuggestList
           list={suggestList}
+          setList={setSuggestList}
           keyField={keyField}
           type={type}
+          setInput={setInput}
           onClick={handleFilterChange}
         />
       )}

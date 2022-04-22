@@ -1,0 +1,64 @@
+import '../pages/i18n';
+import { useTranslation } from 'react-i18next';
+import ByTextInput from './filters/ByTextInput';
+import useLookups from '../hooks/useLookups';
+import BySelect from './filters/BySelect';
+
+const SearchFilters = ({ handleFilterChange }) => {
+  const { t, i18n, ready } = useTranslation('searchResults');
+  const geosQuery = useLookups('geographies');
+  const { data: { geographies } = [] } = geosQuery;
+  const regionsList = [
+    'All',
+    'Africa',
+    'East Asia & Pacific',
+    'Europe & Central Asia',
+    'Latin America & the Caribbean',
+    'Middle East & North Africa',
+    'South Asia',
+  ];
+  const sectorList = [
+    'All',
+    'Adaptation',
+    'Buildings',
+    'Cross-cutting areas',
+    'Economy-wide',
+  ];
+  const documentTypeList = ['Act', 'Decree', 'Strategy', 'Law', 'Plan'];
+  return (
+    <>
+      <div className="text-indigo-400 mt-8 font-medium">{t('Filter by')}</div>
+      <div className="my-4 text-sm text-indigo-500">
+        <BySelect
+          list={regionsList}
+          onChange={handleFilterChange}
+          title={t('By region')}
+          type="action_region"
+        />
+        <div className="mt-4" />
+        <ByTextInput
+          title={t('By country')}
+          list={geographies}
+          keyField="english_shortname"
+          type="action_geography_english_shortname"
+          handleFilterChange={handleFilterChange}
+        />
+        <div className="mt-4" />
+        <BySelect
+          list={sectorList}
+          onChange={handleFilterChange}
+          title={t('By sector')}
+          type="action_sector"
+        />
+        <div className="mt-4" />
+        <BySelect
+          list={documentTypeList}
+          onChange={handleFilterChange}
+          title={t('By document type')}
+          type="action_document_type"
+        />
+      </div>
+    </>
+  );
+};
+export default SearchFilters;

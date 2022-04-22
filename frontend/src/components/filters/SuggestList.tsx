@@ -1,4 +1,4 @@
-const SuggestList = ({ list, keyField, type, onClick }) => {
+const SuggestList = ({ list, setList, keyField, type, setInput, onClick }) => {
   // const arr = Array.apply(null, { length: 10 });
 
   return (
@@ -8,6 +8,8 @@ const SuggestList = ({ list, keyField, type, onClick }) => {
           key={index}
           onClick={() => {
             onClick(type, item[keyField]);
+            setList([]);
+            setInput('');
           }}
           className="hover:bg-blue-200 cursor-pointer my-1 p-2"
         >
