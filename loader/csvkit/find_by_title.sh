@@ -1,4 +1,12 @@
 #!/usr/bin/env bash
+#
+# Tips:
+# - Use % as wildcard
+# - Columns with spaces can be quoted
+#
+# Example:
+# 
+# ./csvkit/find_by_title.sh "Federal Climate Protection Act and to change further regulations%" "Frameworks,\"Natural Hazards\",Responses,Instruments,Sectors"
 
 TITLE=${1:-xxx}
 SELECT=${2:-*}

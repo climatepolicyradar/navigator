@@ -64,7 +64,7 @@ def main():
     data = extract(data_dir)
     policies = transform(data)  # noqa: F841
     for db in get_db():
-        # load(db, policies)  # TODO uncomment once POST is dev complete
+        load(db, policies)
 
         # This will normally be triggered separately, but we're
         # expediting the load for alpha.

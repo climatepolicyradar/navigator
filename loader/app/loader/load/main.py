@@ -1,8 +1,23 @@
 import logging
 from datetime import datetime
+from typing import List, Type
 
 from app.db.crud import get_document_by_unique_constraint
-from app.db.models import Association, Document, Event
+from app.db.models import (
+    Association,
+    Document,
+    Event,
+    Sector,
+    DocumentSector,
+    Instrument,
+    DocumentInstrument,
+    Framework,
+    DocumentFramework,
+    Response,
+    DocumentResponse,
+    Hazard,
+    DocumentHazard,
+)
 from sqlalchemy.orm import Session
 from app.model import PolicyLookup
 from app.service.lookups import get_type_id, get_geography_id
@@ -17,7 +32,12 @@ def load(db: Session, policies: PolicyLookup):
     document_source_id = 1  # always CCLW (for alpha)
 
     imported_count = 0
+    debug_count = 0
     for key, policy_data in policies.items():
+        # TODO delete this once dev complete
+        debug_count += 1
+        if debug_count > 10:
+            return
 
         country_code = key.country_code
         geography_id = get_geography_id(db, country_code)
@@ -86,7 +106,7 @@ def load(db: Session, policies: PolicyLookup):
 
             # TODO for S3, see
             # https://github.com/climatepolicyradar/navigator/blob/3ca2eda8de691288a66a1722908f32dd52c178f9/backend/app/api/api_v1/routers/actions.py#L81
-            doc = Document(
+            document_db = Document(
                 name=key.policy_name,
                 source_url=doc.doc_url,
                 source_id=document_source_id,
@@ -96,30 +116,80 @@ def load(db: Session, policies: PolicyLookup):
                 geography_id=geography_id,
                 type_id=document_type_id,
             )
-            db.add(doc)
+            db.add(document_db)
             db.flush()
-            db.refresh(doc)
-
-            event = Event(
-                document_id=doc.id,
-                name="Publication",
-                description="The publication date",
-                created_ts=key.policy_date,
-            )
-            db.add(event)
+            db.refresh(document_db)
 
             # Association
             if len(policy_data.docs) > 1:
                 if not main_doc:
-                    main_doc = doc
+                    main_doc = document_db
                 else:
                     association = Association(
-                        document_id_from=doc.id,
+                        document_id_from=document_db.id,
                         document_id_to=main_doc.id,
                         type="related",
                         name="related",
                     )
                     db.add(association)
+
+            # Metadata - events
+            event_db = Event(
+                document_id=document_db.id,
+                name="Publication",
+                description="The publication date",
+                created_ts=key.policy_date,
+            )
+            db.add(event_db)
+
+            # TODO doc.events might have more events, other than publication date
+
+            # Metadata - all the rest
+            add_metadata(
+                db,
+                doc.sectors,
+                document_db.id,
+                document_source_id,
+                Sector,
+                DocumentSector,
+                "sector_id",
+            )
+            add_metadata(
+                db,
+                doc.instruments,
+                document_db.id,
+                document_source_id,
+                Instrument,
+                DocumentInstrument,
+                "instrument_id",
+            )
+            add_metadata(
+                db,
+                doc.frameworks,
+                document_db.id,
+                document_source_id,
+                Framework,
+                DocumentFramework,
+                "framework_id",
+            )
+            add_metadata(
+                db,
+                doc.responses,
+                document_db.id,
+                document_source_id,
+                Response,
+                DocumentResponse,
+                "response_id",
+            )
+            add_metadata(
+                db,
+                doc.hazards,
+                document_db.id,
+                document_source_id,
+                Hazard,
+                DocumentHazard,
+                "hazard_id",
+            )
 
             # commit for each doc, not each policy
             db.commit()
@@ -130,3 +200,74 @@ def load(db: Session, policies: PolicyLookup):
     logger.info(
         f"Done, {imported_count} policies imported out of {len(policies.items())} total"
     )
+
+
+def add_metadata(
+    db: Session,
+    metadata: List[str],
+    doc_id: int,
+    source_id: int,
+    MetaType: Type,
+    DocumentMetaType: Type,
+    fk_column_name: str,
+):
+    """Add metadata to DB relating to a document.
+
+    Turns this:
+        for sector in doc.sectors:
+            sector_db = Sector(
+                name=sector,
+                description="Imported by CPR loader",
+                source_id=source_id,
+            )
+            db.add(sector_db)
+            db.flush()
+            db.refresh(sector_db)
+            document_sector_db = DocumentSector(
+                document_id=document_db.id,
+                sector_id=sector_db.id,
+            )
+            db.add(document_sector_db)
+            db.commit()
+
+    Into this:
+
+        for metadatum in metadata:
+            meta_db = MetaType(
+                name=metadatum,
+                description="Imported by CPR loader",
+                source_id=source_id,
+            )
+            db.add(meta_db)
+            db.flush()
+            db.refresh(meta_db)
+            document_meta_db = DocumentMetaType(
+                document_id=doc_id,
+            )
+            setattr(document_meta_db, fk_column_name, meta_db.id)
+            db.add(document_meta_db)
+
+    Where:
+        metadata = doc.sectors
+        MetaType = Sector
+        DocumentMetaType = DocumentSector
+        sector_id = fk_column_name
+
+    """
+    for metadatum in metadata:
+        meta_db = MetaType(
+            name=metadatum,
+            description="Imported by CPR loader",
+            # source_id=source_id,
+        )
+        if hasattr(meta_db, "source_id"):
+            setattr(meta_db, "source_id", source_id)
+
+        db.add(meta_db)
+        db.flush()
+        db.refresh(meta_db)
+        document_meta_db = DocumentMetaType(
+            document_id=doc_id,
+        )
+        setattr(document_meta_db, fk_column_name, meta_db.id)
+        db.add(document_meta_db)
