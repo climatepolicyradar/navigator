@@ -6,7 +6,9 @@ from app.db.models import User, PasswordResetToken
 
 
 def test_get_users(client, test_superuser, superuser_token_headers):
-    response = client.get("/api/v1/admin/users", headers=superuser_token_headers)
+    response = client.get(
+        "/api/v1/admin/users", headers=superuser_token_headers
+    )
     assert response.status_code == 200
     assert response.json() == [
         {
@@ -18,9 +20,12 @@ def test_get_users(client, test_superuser, superuser_token_headers):
     ]
 
 
-def test_deactivate_user(client, test_superuser, test_db, superuser_token_headers):
+def test_deactivate_user(
+    client, test_superuser, test_db, superuser_token_headers
+):
     response = client.delete(
-        f"/api/v1/admin/users/{test_superuser.id}", headers=superuser_token_headers
+        f"/api/v1/admin/users/{test_superuser.id}",
+        headers=superuser_token_headers,
     )
     assert response.status_code == 200
     assert response.json() == {
@@ -42,7 +47,9 @@ def test_delete_user_not_found(client, superuser_token_headers):
 
 
 @patch("app.api.api_v1.routers.admin.send_email")
-def test_edit_user(mock_send_email, client, test_superuser, superuser_token_headers):
+def test_edit_user(
+    mock_send_email, client, test_superuser, superuser_token_headers
+):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
@@ -58,12 +65,19 @@ def test_edit_user(mock_send_email, client, test_superuser, superuser_token_head
     assert response.status_code == 200
     new_user["id"] = test_superuser.id
     assert response.json() == new_user
-    mock_send_email.assert_called_with(EmailType.account_changed, test_superuser)
+    mock_send_email.assert_called_with(
+        EmailType.account_changed, test_superuser
+    )
 
 
 @patch("app.api.api_v1.routers.admin.send_email")
 def test_edit_other_user(
-    mock_send_email, client, test_superuser, superuser_token_headers, test_user, test_db
+    mock_send_email,
+    client,
+    test_superuser,
+    superuser_token_headers,
+    test_user,
+    test_db,
 ):
     old_is_active = test_user.is_active
 
@@ -88,7 +102,9 @@ def test_edit_user_not_found(client, test_db, superuser_token_headers):
         "password": "new_password",
     }
     response = client.put(
-        "/api/v1/admin/users/1234", json=new_user, headers=superuser_token_headers
+        "/api/v1/admin/users/1234",
+        json=new_user,
+        headers=superuser_token_headers,
     )
     assert response.status_code == 404
 
@@ -111,7 +127,9 @@ def test_get_user(
 
 
 def test_user_not_found(client, superuser_token_headers):
-    response = client.get("/api/v1/admin/users/123", headers=superuser_token_headers)
+    response = client.get(
+        "/api/v1/admin/users/123", headers=superuser_token_headers
+    )
     assert response.status_code == 404
 
 
@@ -128,9 +146,11 @@ def test_unauthenticated_routes(client):
 
 def test_unauthorized_routes(client, user_token_headers):
     response = client.get("/api/v1/admin/users", headers=user_token_headers)
-    assert response.status_code == 403
-    response = client.get("/api/v1/admin/users/123", headers=user_token_headers)
-    assert response.status_code == 403
+    assert response.status_code == 404
+    response = client.get(
+        "/api/v1/admin/users/123", headers=user_token_headers
+    )
+    assert response.status_code == 404
 
 
 @patch("app.db.crud.password_reset.get_password_reset_token_expiry_ts")
@@ -142,7 +162,9 @@ def test_create_user(
     superuser_token_headers,
     test_db,
 ):
-    mock_get_password_reset_token_expiry_ts.return_value = datetime.datetime(2099, 1, 1)
+    mock_get_password_reset_token_expiry_ts.return_value = datetime.datetime(
+        2099, 1, 1
+    )
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,
@@ -172,7 +194,9 @@ def test_create_user(
     mock_get_password_reset_token_expiry_ts.assert_called_once()
 
     db_user = test_db.query(User).filter(User.id == 2).first()
-    mock_send_email.assert_called_once_with(EmailType.account_new, db_user, prt)
+    mock_send_email.assert_called_once_with(
+        EmailType.account_new, db_user, prt
+    )
 
 
 @patch("app.db.crud.password_reset.get_password_reset_token_expiry_ts")
@@ -185,7 +209,9 @@ def test_reset_password(
     test_db,
     test_user,
 ):
-    mock_get_password_reset_token_expiry_ts.return_value = datetime.datetime(2099, 1, 1)
+    mock_get_password_reset_token_expiry_ts.return_value = datetime.datetime(
+        2099, 1, 1
+    )
 
     response = client.post(
         f"/api/v1/admin/password-reset/{test_user.id}",
