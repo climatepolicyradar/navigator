@@ -1,5 +1,7 @@
 import os
 
+# TODO is this module really needed?
+
 PROJECT_NAME = "navigator"
 
 SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
@@ -54,5 +56,5 @@ OPENSEARCH_INDEX_TEXT_BLOCK_KEY: str = os.getenv(
     "OPENSEARCH_INDEX_TEXT_BLOCK_KEY", "text_block_id"
 )
 OPENSEARCH_INDEX_ENCODER: str = os.getenv(
-    "OPENSEARCH_INDEX_ENCODER", "msmarco-distilbert-dot-v5"
+    "OPENSEARCH_INDEX_ENCODER", "sentence-transformers/msmarco-distilbert-dot-v5"
 )

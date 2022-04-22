@@ -1,10 +1,14 @@
 # definitions for local development
 
-migrations_local:
+migrations_local_backend:
 	# Run database migrations in local dev mode
 	cd backend/; alembic upgrade head
 	# Create initial data in database
 	cd backend/; python3 app/initial_data.py
+
+migrations_local_loader:
+	# Run database migrations in local dev mode
+	cd loader/; alembic upgrade head
 
 poetry_environment:
 	cd backend/; poetry install

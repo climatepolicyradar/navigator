@@ -7,6 +7,10 @@ from navigator.core.aws import get_s3_client
 
 documents_router = r = APIRouter()
 
+# TODO return nested documents with associations
+# - only show doc IDs, association types, and a hyperlink (so the associated doc can be loaded on demand)
+# - possibly a flag so nested docs can be fully hydrated?
+
 
 @r.post(
     "/document",

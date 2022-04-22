@@ -68,14 +68,10 @@ Cypress.Commands.add('get_lookups', () => {
     cy.intercept('GET', 'geographies', {fixture: 'geographies'}).as(
         'getGeographies'
     );
-    cy.intercept('GET', 'action_types', {fixture: 'action-types'}).as(
-        'getActionTypes'
-    );
     cy.intercept('GET', 'languages', {fixture: 'languages'}).as('getLanguages');
     cy.visit('http://localhost:3000/add-action');
     cy.wait('@getSources');
     cy.wait('@getGeographies');
-    cy.wait('@getActionTypes');
     cy.wait('@getLanguages');
 });
 

@@ -6,7 +6,7 @@ authors = ["chrisaballard <chris@climatepolicyradar.org>", "kalyandutia <kalyan@
 
 [tool.poetry.dependencies]
 python = "^3.8"
-alembic = "^1.7.6"
+alembic = "^1.7.6"  # TODO move alembic to dev dependencies
 Authlib = "^0.15.5"
 bcrypt = "^3.2.0"
 fastapi = "^0.74.0"
@@ -77,3 +77,8 @@ extend-ignore = "E203"
 
 [tool.mypy]
 ignore_missing_imports = "True"
+
+[tool.black]
+line-length = 79
+target-version = ['py38']
+

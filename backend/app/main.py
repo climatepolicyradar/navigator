@@ -5,11 +5,10 @@ from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi_health import health
 from fastapi_pagination import add_pagination
-from slowapi.extension import _rate_limit_exceeded_handler
 from slowapi.errors import RateLimitExceeded
+from slowapi.extension import _rate_limit_exceeded_handler
 from starlette.requests import Request
 
-from app.api.api_v1.routers.actions import actions_router
 from app.api.api_v1.routers.admin import admin_users_router
 from app.api.api_v1.routers.auth import auth_router
 from app.api.api_v1.routers.documents import documents_router
@@ -73,8 +72,6 @@ app.include_router(
     tags=["Users"],
     dependencies=[Depends(get_current_active_user)],
 )
-
-app.include_router(actions_router, prefix="/api/v1", tags=["Actions"])
 app.include_router(documents_router, prefix="/api/v1", tags=["Documents"])
 app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
 app.include_router(search_router, prefix="/api/v1", tags=["Searches"])

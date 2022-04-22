@@ -10,7 +10,6 @@ import { useAuth } from '../api/auth';
 const AddActionPage = () => {
   const geosQuery = useLookups('geographies');
   const langsQuery = useLookups('languages');
-  const typesQuery = useLookups('action_types');
   const sourcesQuery = useLookups('sources');
 
   const { user } = useAuth();
@@ -23,7 +22,6 @@ const AddActionPage = () => {
       !user ||
       !geosQuery.isSuccess ||
       !langsQuery.isSuccess ||
-      !typesQuery.isSuccess ||
       !sourcesQuery.isSuccess ? (
         <LoaderOverlay />
       ) : (
@@ -36,7 +34,7 @@ const AddActionPage = () => {
               <AddAction
                 geographies={geosQuery?.data}
                 languages={langsQuery?.data}
-                actionTypes={typesQuery?.data}
+                actionTypes={[]}
                 sources={sourcesQuery?.data}
               />
             </div>

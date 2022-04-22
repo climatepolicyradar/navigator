@@ -1,15 +1,16 @@
 """CLI to convert JSON documents outputted by the PDF parsing pipeline to embeddings."""
 
 import codecs
-import glob
 import json
 import os
 import re
+import tempfile
 from pathlib import Path
 from typing import List, Optional, Dict, Union
 
 import click
 import numpy as np
+from cloudpathlib import CloudPath
 from navigator.core.log import get_logger
 from navigator.core.utils import get_timestamp
 from tqdm.auto import tqdm
@@ -40,8 +41,14 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
     # formatting. This makes this function unnecessary, but I've left it here in case we want something more later.
     text = text.strip()
     # This snippet is ugly/non pythonic. It's used to get around some upstream bad code with html tags. Really, this
-    # was a bad way of doing things in the first place so not overly concerned with fixing it for now. This will do.
-    text = codecs.decode(text, "unicode_escape")
+    # was a bad way of doing things in the first place, so not overly concerned with fixing it for now. This will do.
+    try:
+        text = codecs.decode(text, "unicode_escape")
+    except UnicodeDecodeError:
+        # Flush the pipe if we can't decode the string. This needs an upstream fix,
+        # but for now let's log the errors to a file for visibility.
+        logger.error("Could not decode string: %s", text)
+        pass
     text = "\n".join([s for s in text.split("\n") if s])
     # Always append previous text block as context. This is a fairly strong assumption, and the code to make this
     # better has been started, in postprocessor.py, but is not yet completely robust, so we are not using it for now.
@@ -51,8 +58,11 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
     #  when, for example, there are random elements between pages that the postprocessors haven't been able to catch.
     #  But I've ignored this for now because it seems that the postprocessing in postprocessor.py has dealt with the
     #  vast majority of edge cases (as indicated by the rarity of certain debugging metadata).
-    text = prev_processed_text_block + "\n" + text
-    return text
+    if prev_processed_text_block:
+        text = prev_processed_text_block + "\n" + text
+        return text
+    else:
+        return text
 
 
 def delete_string_indices(data: str, indices: List[int]) -> str:
@@ -84,6 +94,10 @@ def get_text_from_merged_block(text_block: dict) -> str:
         "".join(text_block["text"]).strip(),
         text_block["text_block_id"],
     )
+
+    # Get text as opposed to block id.
+    text_output_text = text_output[0]
+
     # Remove superscripts only. Bolding has no impact on the block's content once merged, so we don't need to remove
     # anything. Subscripts are kept because, for example, we want to keep CO2 even when it is subscripted).
     # Superscripts are almost always references not related to semantics, so we can remove them.
@@ -106,10 +120,10 @@ def get_text_from_merged_block(text_block: dict) -> str:
         if delete_indices:  # There will only be indices to delete in superscript case.
             text_output_amended = delete_string_indices(text_output[0], delete_indices)
             text_output = (text_output_amended, text_block["text_block_id"])
-            return text_output
+            return text_output_amended
         else:
-            return text_output
-    # Blocks are sometimes merged by the styling processor for rare reasons other
+            return text_output_text
+    # Blocks are sometimes merged by the styling processor for reasons other
     # than style, in which case there is no stylespan attribute, hence this exception handling.
     # This happens when, for example, there is a block with a unique path between two blocks with the same path.
     # For example, italicized text often has a different path to the block it is part of because it
@@ -124,7 +138,7 @@ def get_text_from_merged_block(text_block: dict) -> str:
             "No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
             "italics). "
         )
-        return text_output
+        return text_output_text
 
 
 def get_text_from_document_dict(
@@ -170,18 +184,20 @@ def get_text_from_document_dict(
     return text_output
 
 
-def get_text_from_json_files(filepaths: List[str]) -> List[Dict[str, str]]:
+def get_text_from_json_files(
+    filepaths: List[Union[Path, CloudPath]]
+) -> List[Dict[str, str]]:
     """Extract text, text block IDs and document IDs from JSON files created by the PDF parsing pipeline.
 
     Args:
-        filepaths (List[str]): list of paths to JSON files outputted by the pdf2text CLI.
+        filepaths (List[Union[Path, CloudPath]]): list of paths to JSON files outputted by the pdf2text CLI.
 
     Returns:
         List[Dict[str, str]]: dicts are {"text": "", "text_block_id": "", "document_id": ""}.
     """
     text_by_document = []
 
-    for filepath in tqdm(filepaths):
+    for ix, filepath in enumerate(tqdm(filepaths)):
         with open(filepath, "r") as f:
             document = json.load(f)
 
@@ -190,7 +206,6 @@ def get_text_from_json_files(filepaths: List[str]) -> List[Dict[str, str]]:
         for text_and_id in document_text_and_ids:
             text_and_id.update({"document_id": document["filename"]})
             text_by_document.append(text_and_id)
-
     return text_by_document
 
 
@@ -198,7 +213,7 @@ def encode_text_to_memmap(
     text_list: List[str],
     encoder: SentenceEncoder,
     batch_size: int,
-    memmap_path: Path,
+    memmap_path: Union[Path, CloudPath],
 ):
     """Encode list of text strings to a memmap file using a SentenceEncoder, in batches of `batch_size`.
 
@@ -206,10 +221,9 @@ def encode_text_to_memmap(
         text_list (List[str]): list of strings to encode.
         encoder (SentenceEncoder): sentence encoder.
         batch_size (int): size of batches to encode text in.
-        memmap_path (Path): path to memmap file to write text embeddings to.
+        memmap_path (Union[Path, CloudPath]): path to memmap file to write text embeddings to
     """
     text_list_batched = paginate_list(text_list, batch_size)
-
     fp = np.memmap(
         memmap_path,
         dtype="float32",
@@ -231,16 +245,21 @@ def encode_text_to_memmap(
 @click.option(
     "--input-dir",
     "-i",
-    type=click.Path(exists=True, path_type=Path),
     required=True,
     help="Directory containing JSON files.",
 )
 @click.option(
     "--output-dir",
     "-o",
-    type=click.Path(exists=True, path_type=Path),
     required=True,
     help="Directory to save embeddings and IDs to.",
+)
+@click.option(
+    "--s3",
+    "-s",
+    is_flag=True,
+    required=False,
+    help="Whether or not we are reading from and writing to S3.",
 )
 @click.option(
     "--model-name", "-m", type=str, help="Name of the sentence-BERT model to use."
@@ -255,6 +274,7 @@ def encode_text_to_memmap(
 def run_cli(
     input_dir: Path,
     output_dir: Path,
+    s3: Optional[str],
     model_name: str,
     batch_size: int,
     limit: Optional[int],
@@ -264,15 +284,32 @@ def run_cli(
     Args:
         input_dir (Path): Directory containing JSON files
         output_dir (Path): Directory to save embeddings and IDs to
+        s3 (Optional[str]): Whether we are reading from and writing to S3.
         model_name (str): Name of the sentence-BERT model to use. See https://www.sbert.net/docs/pretrained_models.html.
         batch_size (int): Batch size for encoding.
         limit (Optional[int]): Optionally limit the number of text samples to process. Useful for debugging.
     """
     logger.info(f"Getting text from JSONs in {input_dir}")
-    curr_time = get_timestamp()
-    json_filepaths = glob.glob(str(input_dir / "*.json"))
 
+    # Note, the s3 conditionals scattered throughout this function are not very pythonic.
+    # It could be refactored with a better wrapper, but I've stuck with
+    # the ugly but simple solution for now instead of writing new types.
+    if s3:
+        # Hack: instead of letting click infer type and make a path object, do it ourselves as depending on the
+        # string we want a cloudpath object.
+        assert input_dir.startswith("s3://")
+        logger.info(f"Reading from S3 bucket {input_dir}")
+        input_dir = CloudPath(input_dir)
+        output_dir = CloudPath(output_dir)
+    else:
+        assert not input_dir.startswith("s3://")
+        input_dir = Path(input_dir)
+        output_dir = Path(output_dir)
+    curr_time = get_timestamp()
+
+    json_filepaths = list(input_dir.glob("*.json"))
     text_and_ids = get_text_from_json_files(json_filepaths)
+    logger.info(f"There are {len(text_and_ids)} text blocks.")
     if limit:
         text_and_ids = text_and_ids[:limit]
 
@@ -286,10 +323,14 @@ def run_cli(
         output_dir
         / f"embeddings_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
+    # if using s3, create temporary folder to write to.
+    if s3:
+        embs_output_path = Path(tempfile.mkdtemp()) / embs_output_path.name
+
     encode_text_to_memmap(text_by_document, encoder, batch_size, embs_output_path)
 
     # Save text, text block IDs and document IDs to JSON file
-    with open(output_dir / f"ids_{model_name}_{curr_time}.json", "w") as f:
+    with (output_dir / f"ids_{model_name}_{curr_time}.json").open("w") as f:
         json.dump(text_and_ids, f)
 
     # Encode action descriptions
@@ -307,6 +348,7 @@ def run_cli(
         output_dir
         / f"description_embs_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
+
     encode_text_to_memmap(
         description_data_to_encode["description"].tolist(),
         encoder,
@@ -323,6 +365,19 @@ def run_cli(
 
     logger.info(f"Saved embeddings and IDs for text and descriptions to {output_dir}")
 
+    if s3:
+        logger.info(f"Writing embeddings to S3 bucket {output_dir}")
+        output_dir.upload_from(embs_output_path)
+        logger.info(f"Writing description embeddings to S3 bucket {output_dir}")
+        output_dir.upload_from(description_embs_output_path)
+        output_dir.upload_from(description_ids_output_path)
+        logger.info(f"Deleting temporary folder {embs_output_path}")
+        output_dir.upload_from(logger_fname)
+
 
 if __name__ == "__main__":
+    import logging
+
+    logger_fname = f"debuglogs_{get_timestamp()}.log"
+    logging.basicConfig(filename=logger_fname, level=logging.INFO)
     run_cli()

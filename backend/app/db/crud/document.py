@@ -26,3 +26,26 @@ def create_document(
     db.refresh(db_document)
 
     return db_document
+
+
+"""
+# TODO might be useful for docs
+def is_action_exists(
+    db: Session,
+    action: ActionCreate,
+) -> bool:
+    # Returns an doc by its unique constraint.
+
+    return db.query(
+        exists().where(
+            and_(
+                Action.name == action.name,
+                Action.action_date
+                == datetime.date(action.year, action.month, action.day),
+                Action.geography_id == action.geography_id,
+                Action.action_type_id == action.action_type_id,
+                Action.action_source_id == action.action_source_id,
+            )
+        )
+    ).scalar()
+"""
