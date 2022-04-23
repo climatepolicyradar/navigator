@@ -2,7 +2,7 @@ import { useQuery } from 'react-query';
 import { ApiClient } from '../api/http-common';
 
 export default function useSearch(id, obj = null) {
-  const client = new ApiClient('http://localhost:8000/'); // note: remove baseUrl argument when api is finally ready
+  const client = new ApiClient('http://localhost:3000/'); // note: remove baseUrl argument when api is finally ready
 
   return useQuery(
     id,

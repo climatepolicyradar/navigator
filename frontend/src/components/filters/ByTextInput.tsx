@@ -38,7 +38,7 @@ const ByTextInput = ({
     suggest(input);
   }, [input]);
   return (
-    <div>
+    <div className="relative">
       <div>{title}</div>
       <input
         type="text"
@@ -48,14 +48,16 @@ const ByTextInput = ({
         onChange={handleChange}
       />
       {suggestList.length > 0 && (
-        <SuggestList
-          list={suggestList}
-          setList={setSuggestList}
-          keyField={keyField}
-          type={type}
-          setInput={setInput}
-          onClick={handleFilterChange}
-        />
+        <div className="absolute top-3 mt-12 left-0 w-full z-10">
+          <SuggestList
+            list={suggestList}
+            setList={setSuggestList}
+            keyField={keyField}
+            type={type}
+            setInput={setInput}
+            onClick={handleFilterChange}
+          />
+        </div>
       )}
     </div>
   );

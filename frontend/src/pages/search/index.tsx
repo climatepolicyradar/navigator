@@ -46,11 +46,12 @@ const Search = () => {
           heading={t('Law and Policy Search')}
         >
           <section>
-            <div className="px-4 md:flex md:border-b">
-              <div className="md:w-1/3 lg:w-1/4 md:border-r border-indigo-200 pr-8">
+            <div className="px-4 md:flex md:border-b container">
+              <div className="md:w-1/4 lg:w-1/4 md:border-r border-indigo-200 pr-8 flex-shrink-0">
                 <SearchFilters handleFilterChange={handleFilterChange} />
               </div>
-              <div className="md:w-2/3 lg:w-3/4 xl:w-3/5">
+              {/* <div className="md:w-2/3 lg:w-3/4 xl:w-3/5"> */}
+              <div>
                 <div className="md:py-8 md:pl-8">
                   <p className="sm:hidden mt-4">{placeholder}</p>
                   <SearchForm
