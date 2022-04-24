@@ -2,7 +2,7 @@ const SuggestList = ({ list, setList, keyField, type, setInput, onClick }) => {
   // const arr = Array.apply(null, { length: 10 });
 
   return (
-    <ul className="bg-indigo-100 rounded-b-lg">
+    <ul className="bg-white rounded-b-lg border-t-dotted border-b border-l border-r">
       {list.map((item, index) => (
         <li
           key={index}

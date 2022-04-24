@@ -1,9 +1,15 @@
 {
   "Law and policy search": "Law and policy search",
   "Filter by": "Filter by",
-  "Start typing": "Start typing",
+  "Start typing": "Start typing...",
   "By country": "By country",
   "By region": "By region",
   "By sector": "By sector",
-  "By document type": "By document type"
+  "By document type": "By document type",
+  "Tooltips": {
+    "Region": "This is the explainer for filtering by region",
+    "Country": "This is the explainer for filtering by country",
+    "Sector": "This is the explainer for filtering by sector",
+    "Document type": "This is the explainer for filtering by document type more info more info more info."
+  }
 }

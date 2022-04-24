@@ -30,6 +30,7 @@ const ByTextInput = ({
       return;
     }
     const filteredList = list.filter((item) => {
+      /* TODO: Make sure item hasn't already been selected */
       return item[keyField].toLowerCase().indexOf(input.toLowerCase()) > -1;
     });
     setSuggestList(filteredList);
@@ -42,13 +43,14 @@ const ByTextInput = ({
       <div>{title}</div>
       <input
         type="text"
-        className="border border-indigo-200 mt-2 small"
+        className="border border-indigo-200 mt-2 small outline-none"
         placeholder={t('Start typing')}
         value={input}
         onChange={handleChange}
       />
+      {/* TODO: add clickable tags for each item that is added (click x to remove) */}
       {suggestList.length > 0 && (
-        <div className="absolute top-3 mt-12 left-0 w-full z-10">
+        <div className="absolute top-3 mt-12 left-0 w-full z-20">
           <SuggestList
             list={suggestList}
             setList={setSuggestList}
@@ -63,12 +65,3 @@ const ByTextInput = ({
   );
 };
 export default ByTextInput;
-
-/*
-What we need:
-Title (props)
-type?
-Suggest list - updates as user types in
-Selected list (filters)
-
-*/

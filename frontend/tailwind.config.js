@@ -38,6 +38,13 @@ module.exports = {
         400: '#f6e0a8',
         500: '#f1cb73',
       },
+      purple: {
+        100: '#f0edfe',
+        200: '#e2dafc',
+        300: '#c4b6f7',
+        400: '#a993f5',
+        500: '#8e73f1',
+      },
     },
     container: {
       center: true,
