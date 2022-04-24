@@ -4,11 +4,15 @@ import ByTextInput from './filters/ByTextInput';
 import useLookups from '../hooks/useLookups';
 import BySelect from './filters/BySelect';
 import Tooltip from './tooltip';
+import MultiList from './filters/MultiList';
 
-const SearchFilters = ({ handleFilterChange }) => {
+const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
   const { t, i18n, ready } = useTranslation('searchResults');
   const geosQuery = useLookups('geographies');
   const { data: { geographies } = [] } = geosQuery;
+  const {
+    keyword_filters: { action_geography_english_shortname = [] },
+  } = searchCriteria;
   // the 3 lists below may come dynamically from db at some point?
   const regionsList = [
     'All',
@@ -61,6 +65,8 @@ const SearchFilters = ({ handleFilterChange }) => {
             type="action_geography_english_shortname"
             handleFilterChange={handleFilterChange}
           />
+          {/* TODO: add clickable tags for each item that is added (click x to remove) */}
+          <MultiList list={action_geography_english_shortname} />
         </div>
         <div className="relative mt-6">
           <div className="absolute top-0 right-0 z-10">

@@ -48,7 +48,7 @@ const ByTextInput = ({
         value={input}
         onChange={handleChange}
       />
-      {/* TODO: add clickable tags for each item that is added (click x to remove) */}
+
       {suggestList.length > 0 && (
         <div className="absolute top-3 mt-12 left-0 w-full z-20">
           <SuggestList
