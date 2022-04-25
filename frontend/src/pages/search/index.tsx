@@ -12,6 +12,7 @@ import { useAuth } from '../../api/auth';
 import SearchForm from '../../components/forms/SearchForm';
 import SearchResult from '../../components/text-blocks/SearchResult';
 import SearchFilters from '../../components/SearchFilters';
+import ExactMatch from '../../components/filters/ExactMatch';
 
 const Search = () => {
   const updateSearchCriteria = useUpdateSearchCriteria();
@@ -66,6 +67,13 @@ const Search = () => {
                     placeholder={placeholder}
                     handleSearchChange={handleSearchChange}
                   />
+                  <div className="flex justify-end mt-2">
+                    <ExactMatch
+                      checked={searchCriteria.exact_match}
+                      id="exact-match"
+                      handleSearchChange={handleSearchChange}
+                    />
+                  </div>
                 </div>
                 <div className="md:pl-8">
                   {documents.map((doc, index: number) => (
