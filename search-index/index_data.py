@@ -210,7 +210,7 @@ def run_cli(
         index_no_replicas (int): number of replicas to create when indexing. Defaults to 2, which is a sensible number for a
         production three-node cluster: each primary shard has a replica on both other nodes.
     """
-    postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
+    postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
     main_dataset = create_dataset(postgres_connector)
 
     ids_table = load_text_and_ids_json(text_ids_path)
