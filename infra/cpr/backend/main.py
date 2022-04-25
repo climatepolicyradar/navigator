@@ -94,6 +94,9 @@ class Backend:
 
         config = pulumi.Config()
         backend_secret_key = config.require_secret("backend_secret_key")
+        opensearch_user = config.require("opensearch_user")
+        opensearch_password = config.require_secret("opensearch_password")
+        opensearch_url = config.require("opensearch_url")
 
         backend_eb_env = aws.elasticbeanstalk.Environment(
             "navigator-api-environment",
@@ -136,7 +139,7 @@ class Backend:
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:ec2:instances",
                     name="InstanceTypes",
-                    value="t3.micro",  # https://aws.amazon.com/ec2/instance-types/
+                    value="t3.medium",  # https://aws.amazon.com/ec2/instance-types/
                 ),
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:autoscaling:launchconfiguration",
@@ -163,6 +166,16 @@ class Backend:
                     name="SystemType",
                     value="enhanced",
                 ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeType",
+                    value="gp2",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeSize",
+                    value="16",  # default is 8GB, but we're making space for pytorch
+                ),
                 # app env vars
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:elasticbeanstalk:application:environment",
@@ -178,6 +191,26 @@ class Backend:
                     namespace="aws:elasticbeanstalk:application:environment",
                     name="PORT",
                     value="8888",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:elasticbeanstalk:application:environment",
+                    name="OPENSEARCH_USER",
+                    value=opensearch_user,
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:elasticbeanstalk:application:environment",
+                    name="OPENSEARCH_PASSWORD",
+                    value=opensearch_password,
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:elasticbeanstalk:application:environment",
+                    name="OPENSEARCH_URL",
+                    value=opensearch_url,
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:elasticbeanstalk:application:environment",
+                    name="OPENSEARCH_INDEX",
+                    value="navigator",
                 ),
             ],
         )

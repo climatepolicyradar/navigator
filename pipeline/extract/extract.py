@@ -168,32 +168,41 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         return xml_output_path
 
-    def _get_text_block_coords(self, text_block: Element) -> List[Tuple[float, float]]:
+    def _get_text_block_coords(
+        self, text_block: Element, page_height: float
+    ) -> List[Tuple[float, float]]:
         """Get the coordinates of a text block element.
 
         Fetches the x, y, width and height coordinates from an alto xml text block element
-        and returns as a list of x, y pairs.
+        and returns as a list of x, y pairs, with the origin at the bottom left of the page.
+
+        pdfalto provides [x0, y0, x1, y1] with origin at top left. We flip y coordinates so that the
+        origin is at the bottom left.
 
         Args:
-            text_block: Element representing a text block in the XML tree
+            text_block (Element): Element representing a text block in the XML tree
+            page_height (float): height of the page
 
         Returns:
             A list of four elements, where each element is a tuple containing the coordinate
             of each of the four corners of a rectangular text block.
         """
-        tb_x = float(text_block.attrib.get("HPOS", 0))
-        tb_y = float(text_block.attrib.get("VPOS", 0))
-        tb_h = float(text_block.attrib.get("HEIGHT", 0))
-        tb_w = float(text_block.attrib.get("WIDTH", 0))
+        x0 = float(text_block.attrib.get("HPOS", 0))
+        y0 = float(text_block.attrib.get("VPOS", 0))
+        tb_height = float(text_block.attrib.get("HEIGHT", 0))
+        tb_width = float(text_block.attrib.get("WIDTH", 0))
 
-        x1, y1 = tb_x, tb_y
-        x2, y2 = tb_x + tb_w, tb_y
-        x3, y3 = tb_x, tb_y + tb_h
-        x4, y4 = tb_x + tb_w, tb_y + tb_h
+        x1 = x0 + tb_width
+        y1 = y0 + tb_height
 
-        return [(x1, y1), (x2, y2), (x3, y3), (x4, y4)]
+        # Flip in y-direction: subtract from page height and swap y0 and y1
+        y0 = page_height - y0
+        y1 = page_height - y1
+        y0, y1 = y1, y0
 
-    def _get_page_dimensions(self, page: Element):
+        return [(x0, y0), (x1, y0), (x1, y1), (x0, y1)]
+
+    def _get_page_dimensions(self, page: Element) -> Tuple[float, float]:
         """Get the dimensions of a page."""
         w = float(page.attrib.get("WIDTH", 0))
         h = float(page.attrib.get("HEIGHT", 0))
@@ -240,7 +249,9 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
             ):
                 # Get the text block id
                 text_block_id = text_block.attrib["ID"]
-                text_block_coords = self._get_text_block_coords(text_block)
+                text_block_coords = self._get_text_block_coords(
+                    text_block, page_dimensions[1]
+                )
 
                 # Iterate through the lines in the text block and merge lines into a single string
                 text_block_lines = []
@@ -482,37 +493,33 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         return TextBlock(
             text=text_by_line,
             text_block_id=text_block_id,
-            coords=self._convert_bounding_box_to_coordinates(
-                element["Bounds"], element["Page"]
-            ),
+            coords=self._convert_bounding_box_to_coordinates(element["Bounds"]),
             type=self._structure_path(element["Path"], remove_numbers=True)[-1],
             path=path,
             custom_attributes=custom_attributes,
         )
 
     def _convert_bounding_box_to_coordinates(
-        self, adobe_coords: List[float], page_number: int
+        self, adobe_coords: List[float]
     ) -> List[Tuple[float, float]]:
         """Convert to coordinates from bounding box produced by Adobe.
 
         We convert the 4 element bounding box provided by Adobe into the four corner
         coordinate points.
 
-        Adobe provides [x0, y0, x1, y1] with origin at bottom left.
+        Adobe provides [x0, y0, x1, y1] with origin at bottom left. We preserve the location of the origin.
 
         Args:
             adobe_coords: list of coordinates output by Adobe: [x0, y0, x1, y1].
             page_number: number of page output by Adobe. Indexed at 0.
         """
-        page_height = self._current_data["pages"][page_number]["height"]
 
-        # To reverse the coordinate system we subtract y0 and y1 from the page height and swap
-        # them.
         return [
-            (adobe_coords[0], page_height - adobe_coords[3]),
-            (adobe_coords[2], page_height - adobe_coords[3]),
-            (adobe_coords[0], page_height - adobe_coords[1]),
-            (adobe_coords[2], page_height - adobe_coords[1]),
+            # (x0, y0), (x1, y0), (x1, y1), (x0, y1)
+            (adobe_coords[0], adobe_coords[1]),
+            (adobe_coords[2], adobe_coords[1]),
+            (adobe_coords[2], adobe_coords[3]),
+            (adobe_coords[0], adobe_coords[3]),
         ]
 
     @staticmethod
