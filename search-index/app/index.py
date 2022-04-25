@@ -2,6 +2,11 @@ from typing import Optional, Iterable
 
 from opensearchpy import OpenSearch, helpers
 from tqdm.auto import tqdm
+import requests
+
+from navigator.core.log import get_logger
+
+logger = get_logger(__name__)
 
 
 class OpenSearchIndex:
@@ -189,3 +194,27 @@ class OpenSearchIndex:
             client=self.opns, index=self.index_name, actions=actions
         ):
             successes += ok
+
+    def warmup_knn(self) -> bool:
+        """Load the KNN index into memory by calling the index warmup API.
+
+        Returns when the warmup is complete, or returns False and logs the error message if it fails.
+
+        Returns:
+            bool: whether the warmup request succeeded
+        """
+
+        url = f"{self._url}/_plugins/_knn/warmup/{self.index_name}?pretty"
+
+        response = requests.get(
+            url,
+            auth=self._login,
+        )
+
+        if response.status_code == 200:
+            return True
+        else:
+            logger.warning(
+                f"KNN index warmup API call returned non-200 status code. Full response {response.json()}"
+            )
+            return False

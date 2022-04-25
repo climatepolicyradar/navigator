@@ -253,6 +253,8 @@ def run_cli(
     except Exception as e:
         logger.info(f"Failed to set index refresh interval after indexing: {e}")
 
+    opensearch.warmup_knn()
+
 
 if __name__ == "__main__":
     run_cli()
