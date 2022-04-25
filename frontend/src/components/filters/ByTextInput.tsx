@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 interface ByTextInputProps {
   title: string;
   list: Object[];
+  selectedList: string[];
   keyField: string;
   type: string;
   handleFilterChange(type: string, value: string): void;
@@ -14,6 +15,7 @@ interface ByTextInputProps {
 const ByTextInput = ({
   title,
   list,
+  selectedList,
   keyField,
   type,
   handleFilterChange,
@@ -30,8 +32,11 @@ const ByTextInput = ({
       return;
     }
     const filteredList = list.filter((item) => {
-      /* TODO: Make sure item hasn't already been selected */
-      return item[keyField].toLowerCase().indexOf(input.toLowerCase()) > -1;
+      /* Make sure item hasn't already been selected */
+      return (
+        item[keyField].toLowerCase().indexOf(input.toLowerCase()) > -1 &&
+        selectedList.indexOf(item[keyField]) === -1
+      );
     });
     setSuggestList(filteredList);
   };

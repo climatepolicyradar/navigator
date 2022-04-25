@@ -30,7 +30,7 @@ const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
     'Cross-cutting areas',
     'Economy-wide',
   ];
-  const documentTypeList = ['Act', 'Decree', 'Strategy', 'Law', 'Plan'];
+  const documentTypeList = ['All', 'Act', 'Decree', 'Strategy', 'Law', 'Plan'];
 
   // tooltip descriptions
   const regionTooltip = t('Tooltips.Region');
@@ -61,12 +61,17 @@ const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
           <ByTextInput
             title={t('By country')}
             list={geographies}
+            selectedList={action_geography_english_shortname}
             keyField="english_shortname"
             type="action_geography_english_shortname"
             handleFilterChange={handleFilterChange}
           />
           {/* TODO: add clickable tags for each item that is added (click x to remove) */}
-          <MultiList list={action_geography_english_shortname} />
+          <MultiList
+            list={action_geography_english_shortname}
+            removeFilter={handleFilterChange}
+            type="action_geography_english_shortname"
+          />
         </div>
         <div className="relative mt-6">
           <div className="absolute top-0 right-0 z-10">

@@ -7,25 +7,58 @@ export default function useUpdateSearchFilters() {
   const { data } = useSearchCriteria();
 
   const getKeyAndValue = (obj) => {
+    // get first key and value
     const key = Object.keys(obj)[0];
     const val = Object.values(obj)[0];
     return [key, val];
+  };
+
+  const removeProperty = (key: string, keyword_filters) => {
+    const { [key]: remove, ...rest } = keyword_filters;
+    return rest;
+  };
+
+  const actions = {
+    delete: (key, val, keyword_filters) => {
+      let valArray = [val];
+      let new_keyword_filters = {};
+      if (multipleValuesAllowed.indexOf(key) > -1) {
+        // remove value from array
+        valArray = keyword_filters[key].filter((item) => {
+          return item !== val;
+        });
+        if (!valArray.length) {
+          // if array becomes empty then remove the property from the keyword_filters object
+          new_keyword_filters = removeProperty(key, keyword_filters);
+        } else {
+          // if array still is not empty, assign new filtered array to key
+          new_keyword_filters = { ...keyword_filters, [key]: valArray };
+        }
+      } else {
+        // not multiple values, so just remove the property from the keyword_filters object
+        new_keyword_filters = removeProperty(key, keyword_filters);
+      }
+      return new_keyword_filters;
+    },
+    update: (key, val, keyword_filters) => {
+      let valArray = [val];
+      if (multipleValuesAllowed.indexOf(key) > -1 && keyword_filters[key]) {
+        valArray = [...keyword_filters[key], val];
+      }
+      return { ...keyword_filters, [key]: valArray };
+    },
   };
 
   const processFilter = (value) => {
     const prev = queryClient.getQueryData('searchCriteria');
     const { keyword_filters } = prev;
     let [key, val] = getKeyAndValue(value);
-    // check if filter allows multiple values and there is a value already for that key
-    // if true, add to that array, otherwise just make the value an array with a single value
-    if (multipleValuesAllowed.indexOf(key) > -1 && keyword_filters[key]) {
-      val = [...keyword_filters[key], val];
-    } else {
-      val = [val];
-    }
+    const { action } = val.length ? value : { action: 'delete' };
+    const new_keyword_filters = actions[action](key, val, keyword_filters);
+
     return {
       ...data,
-      keyword_filters: { ...keyword_filters, [key]: val },
+      keyword_filters: new_keyword_filters,
     };
   };
 

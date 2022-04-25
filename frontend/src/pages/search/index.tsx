@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useDidUpdateEffect } from '../../hooks/useDidUpdateEffect';
 import Layout from '../../components/layouts/Main';
 import LoaderOverlay from '../../components/LoaderOverlay';
 import useSearch from '../../hooks/useSearch';
@@ -23,8 +24,12 @@ const Search = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
-  const handleFilterChange = (type: string, value: string) => {
-    updateSearchFilters.mutate({ [type]: value });
+  const handleFilterChange = (
+    type: string,
+    value: string,
+    action: string = 'update'
+  ) => {
+    updateSearchFilters.mutate({ [type]: value, action });
   };
   const handleSearchChange = (type: string, value: string) => {
     updateSearchCriteria.mutate({ [type]: value });
@@ -32,7 +37,7 @@ const Search = () => {
 
   const handleDocumentClick = () => {};
 
-  useEffect(() => {
+  useDidUpdateEffect(() => {
     resultsQuery.refetch();
   }, [searchCriteria]);
 

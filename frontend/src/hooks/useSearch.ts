@@ -8,6 +8,7 @@ export default function useSearch(id, obj = null) {
     id,
     () =>
       // client.post(`/searches`, { query_string: 'test', exact_match: true })
-      client.get('testdata/searches.json', obj) // dummy data
+      client.get('testdata/searches.json', obj), // dummy data
+    { refetchOnWindowFocus: false }
   );
 }

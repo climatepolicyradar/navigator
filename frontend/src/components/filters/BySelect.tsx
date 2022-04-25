@@ -8,8 +8,10 @@ const BySelect = ({ onChange, list, title, type }) => {
           onChange(type, e.currentTarget.value);
         }}
       >
-        {list.map((item) => (
-          <option value={item}>{item}</option>
+        {list.map((item, index) => (
+          <option key={`${type}${index}`} value={item === 'All' ? '' : item}>
+            {item}
+          </option>
         ))}
       </select>
     </div>
