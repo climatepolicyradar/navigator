@@ -6,7 +6,9 @@ from app.db.session import Base
 
 
 class Auditable:  # noqa: D101
-    created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
+    created_ts = sa.Column(
+        sa.DateTime(timezone=True), server_default=func.now()
+    )
     updated_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
 
 
@@ -125,7 +127,9 @@ class DocumentSector(Base):  # noqa: D101
     id = sa.Column(sa.Integer, primary_key=True)
     sector_id = sa.Column(sa.Integer, sa.ForeignKey(Sector.id), nullable=False)
     document_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
 
 
@@ -143,9 +147,13 @@ class DocumentInstrument(Base):  # noqa: D101
     __tablename__ = "document_instrument"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    instrument_id = sa.Column(sa.Integer, sa.ForeignKey(Instrument.id), nullable=False)
+    instrument_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Instrument.id), nullable=False
+    )
     document_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
 
 
@@ -161,9 +169,13 @@ class DocumentFramework(Base):  # noqa: D101
     __tablename__ = "document_framework"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    framework_id = sa.Column(sa.Integer, sa.ForeignKey(Framework.id), nullable=False)
+    framework_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Framework.id), nullable=False
+    )
     document_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
 
 
@@ -179,9 +191,13 @@ class DocumentResponse(Base):  # noqa: D101
     __tablename__ = "document_response"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    response_id = sa.Column(sa.Integer, sa.ForeignKey(Response.id), nullable=False)
+    response_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Response.id), nullable=False
+    )
     document_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
 
 
@@ -199,7 +215,31 @@ class DocumentHazard(Base):  # noqa: D101
     id = sa.Column(sa.Integer, primary_key=True)
     hazard_id = sa.Column(sa.Integer, sa.ForeignKey(Hazard.id), nullable=False)
     document_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+    )
+
+
+class Category(Base):  # noqa: D101
+    """Document category, e.g. strategy, plan, law..."""
+
+    __tablename__ = "category"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.Text, nullable=False)
+    description = sa.Column(sa.Text, nullable=False)
+
+
+class DocumentCategory(Base):  # noqa: D101
+    __tablename__ = "document_category"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    type_id = sa.Column(sa.Integer, sa.ForeignKey(Category.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
 
 
@@ -215,7 +255,9 @@ class Passage(Base):  # noqa: D101
 
     id = sa.Column(sa.BigInteger, primary_key=True)
     document_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
     page_id = sa.Column(sa.BigInteger, autoincrement=False, nullable=False)
     passage_type_id = sa.Column(
@@ -237,11 +279,15 @@ class Event(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     document_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
+    created_ts = sa.Column(
+        sa.DateTime(timezone=True), server_default=func.now()
+    )
 
 
 class Association(Base):  # noqa: D101
@@ -249,10 +295,14 @@ class Association(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     document_id_from = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
     document_id_to = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
     )
     type = sa.Column(sa.Text, nullable=False)
     name = sa.Column(sa.Text, nullable=False)
