@@ -1,4 +1,4 @@
-# from app.poster.main import post_all_to_backend_api
+from app.db.models import Document, Source, Geography, DocumentType
 
 
 def test_document_upload(
@@ -38,8 +38,14 @@ def test_document_upload(
     assert len(queue_bucket_contents) == 2
 
 
-def test_post_documents():
-    # post_all_to_backend_api
+def test_post_documents(client, superuser_token_headers, test_db):
+
+    # ensure meta
+    test_db.add(Source(name="may it be with you"))
+    test_db.add(Geography(display_value="not my favourite subject"))
+    test_db.add(DocumentType(name="just my type", description="sigh"))
+    test_db.commit()
+
     payload = {
         "document": {
             "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
@@ -76,7 +82,18 @@ def test_post_documents():
             },
         ],
         "frameworks": [],
-        "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
+        "responses": [
+            {"name": "Mitigation", "description": "Imported by CPR loader"}
+        ],
         "hazards": [],
     }
-    assert payload
+
+    response = client.post(
+        "/api/v1/documents", headers=superuser_token_headers, json=payload
+    )
+
+    assert response.status_code == 200
+
+    # for now, only the document is persisted
+    doc = test_db.query(Document).first()
+    assert doc.name == "Energy Sector Strategy 1387-1391 (2007/8-2012/3)"
