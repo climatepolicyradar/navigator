@@ -105,9 +105,15 @@ class Document(Base, Auditable):
     url = sa.Column(sa.Text)
 
     geography_id = sa.Column(
-        sa.SmallInteger, sa.ForeignKey(Geography.id), nullable=False
+        sa.SmallInteger,
+        sa.ForeignKey(Geography.id),
+        nullable=False,
     )
-    type_id = sa.Column(sa.Integer, sa.ForeignKey(DocumentType.id), nullable=False)
+    type_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(DocumentType.id),
+        nullable=False,
+    )
     UniqueConstraint(name, geography_id, type_id, source_id, source_url)
 
 
@@ -148,7 +154,9 @@ class DocumentInstrument(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     instrument_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Instrument.id), nullable=False
+        sa.Integer,
+        sa.ForeignKey(Instrument.id),
+        nullable=False,
     )
     document_id = sa.Column(
         sa.Integer,
@@ -261,7 +269,9 @@ class Passage(Base):  # noqa: D101
     )
     page_id = sa.Column(sa.BigInteger, autoincrement=False, nullable=False)
     passage_type_id = sa.Column(
-        sa.Integer, sa.ForeignKey(PassageType.id), nullable=False
+        sa.Integer,
+        sa.ForeignKey(PassageType.id),
+        nullable=False,
     )
     parent_passage_id = sa.Column(
         sa.Integer,

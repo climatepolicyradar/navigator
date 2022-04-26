@@ -31,6 +31,7 @@ from app.core.config import (
     OPENSEARCH_SSL_WARNINGS,
 )
 from app.db.schemas.search import (
+    FilterField,
     OpenSearchResponseDescriptionMatch,
     OpenSearchResponseNameMatch,
     OpenSearchResponseMatchBase,
@@ -47,9 +48,21 @@ _ENCODER = SentenceTransformer(
     model_name_or_path=OPENSEARCH_INDEX_ENCODER,
     cache_folder=os.environ.get("INDEX_ENCODER_CACHE_FOLDER", "/models"),
 )
+# Map a sort field type to the document key used by OpenSearch
 _SORT_FIELD_MAP: Mapping[SortField, str] = {
     SortField.DATE: "action_date",
     SortField.TITLE: "action_name",
+}
+# TODO: Map a filter field type to the document key used by OpenSearch
+_FILTER_FIELD_MAP: Mapping[FilterField, str] = {
+    FilterField.SOURCE: "action_source_name",
+    FilterField.GEOGRAPHY: "action_geography_english_shortname",
+    # Mapping for the below fields TBD
+    FilterField.INSTRUMENT: "instruments",
+    FilterField.SECTOR: "sectors",
+    FilterField.TYPE: "types",
+    FilterField.CATEGORY: "categories",
+    FilterField.TOPIC: "topic",
 }
 
 
@@ -411,11 +424,11 @@ class QueryBuilder:
             },
         ]
 
-    def with_keyword_filter(self, field: str, values: List[str]):
+    def with_keyword_filter(self, field: FilterField, values: List[str]):
         """Add a keyword filter to the configured query."""
 
         filters = self._request_body["query"]["bool"].get("filter") or []
-        filters.append({"terms": {field: values}})
+        filters.append({"terms": {_FILTER_FIELD_MAP[field]: values}})
         self._request_body["query"]["bool"]["filter"] = filters
 
     def with_year_range_filter(self, year_range: Tuple[Optional[int], Optional[int]]):

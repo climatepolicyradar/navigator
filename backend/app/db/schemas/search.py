@@ -21,6 +21,18 @@ class SortField(str, Enum):
     TITLE = "title"
 
 
+class FilterField(str, Enum):
+    """Filter field for use building OpenSearch query body."""
+
+    SOURCE = "sources"
+    GEOGRAPHY = "geographies"
+    INSTRUMENT = "instruments"
+    SECTOR = "sectors"
+    TYPE = "types"
+    CATEGORY = "categories"
+    TOPIC = "topics"
+
+
 class SearchRequestBody(BaseModel):
     """The request body expected by the search API endpoint."""
 
@@ -29,7 +41,7 @@ class SearchRequestBody(BaseModel):
     max_passages_per_doc: int = 10  # TODO: decide on default
 
     # TODO: Improve filters to allow generics & use filter types
-    keyword_filters: Optional[Dict[str, List[str]]] = None
+    keyword_filters: Optional[Dict[FilterField, List[str]]] = None
     year_range: Optional[Tuple[Optional[int], Optional[int]]] = None
 
     sort_field: Optional[SortField] = None
