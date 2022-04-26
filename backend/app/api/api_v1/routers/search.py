@@ -5,8 +5,6 @@ from app.core.search import (
     OpenSearchConnection,
     OpenSearchConfig,
     OpenSearchQueryConfig,
-    build_opensearch_request_body,
-    process_opensearch_response_body,
 )
 from app.db.schemas.search import SearchRequestBody, SearchResponseBody
 
@@ -14,7 +12,9 @@ search_router = APIRouter()
 
 # Use configured environment for router
 _OPENSEARCH_CONFIG = OpenSearchConfig()
-_OPENSEARCH_CONNECTION = OpenSearchConnection(opensearch_config=_OPENSEARCH_CONFIG)
+_OPENSEARCH_CONNECTION = OpenSearchConnection(
+    opensearch_config=_OPENSEARCH_CONFIG
+)
 _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 
 
@@ -28,9 +28,7 @@ def search_documents(
     current_user=Depends(get_current_active_user),
 ):
     """Search for documents matching the search criteria."""
-    opensearch_request_body = build_opensearch_request_body(
-        search_request=search_body,
-        search_internal_config=_OPENSEARCH_INDEX_CONFIG,
+    return _OPENSEARCH_CONNECTION.query(
+        search_request_body=search_body,
+        opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
     )
-    opensearch_response_body = _OPENSEARCH_CONNECTION.query(opensearch_request_body)
-    return process_opensearch_response_body(opensearch_response_body)

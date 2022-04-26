@@ -7,7 +7,102 @@ from app.api.api_v1.routers import search
 from app.db.schemas.search import SortOrder
 
 
-def test_search_body_valid(test_opensearch, monkeypatch, client, user_token_headers):
+def test_simple_pagination(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    page1_response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "disaster",
+            "exact_match": False,
+            "limit": 2,
+            "offset": 0,
+        },
+        headers=user_token_headers,
+    )
+    assert page1_response.status_code == 200
+
+    page1_response_body = page1_response.json()
+    page1_documents = page1_response_body["documents"]
+    assert len(page1_documents) == 2
+
+    page2_response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "disaster",
+            "exact_match": False,
+            "limit": 2,
+            "offset": 2,
+        },
+        headers=user_token_headers,
+    )
+    assert page2_response.status_code == 200
+
+    page2_response_body = page2_response.json()
+    page2_documents = page2_response_body["documents"]
+    assert len(page2_documents) == 2
+
+    # Sanity check that we really do have 4 different documents
+    document_names = {d["document_name"] for d in page1_documents} | {
+        d["document_name"] for d in page2_documents
+    }
+    assert len(document_names) == 4
+
+    for d in page1_documents:
+        assert d not in page2_documents
+
+
+def test_pagination_overlap(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    page1_response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "disaster",
+            "exact_match": False,
+            "limit": 2,
+            "offset": 0,
+        },
+        headers=user_token_headers,
+    )
+    assert page1_response.status_code == 200
+
+    page1_response_body = page1_response.json()
+    page1_documents = page1_response_body["documents"]
+    assert len(page1_documents) == 2
+
+    page2_response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "disaster",
+            "exact_match": False,
+            "limit": 2,
+            "offset": 1,
+        },
+        headers=user_token_headers,
+    )
+    assert page2_response.status_code == 200
+
+    page2_response_body = page2_response.json()
+    page2_documents = page2_response_body["documents"]
+    assert len(page2_documents) == 2
+
+    # Sanity check that we really do have 3 different documents
+    document_names = {d["document_name"] for d in page1_documents} | {
+        d["document_name"] for d in page2_documents
+    }
+    assert len(document_names) == 3
+
+    assert page1_documents[-1] == page2_documents[0]
+
+
+def test_search_body_valid(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
     """Test a simple known valid search responds with success."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -31,13 +126,15 @@ def test_keyword_filters(
 ):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
-    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "query")
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
     response = client.post(
         "/api/v1/searches",
         json={
             "query_string": "disaster",
             "exact_match": False,
-            "keyword_filters": {"action_geography_english_shortname": ["Kenya"]},
+            "keyword_filters": {
+                "action_geography_english_shortname": ["Kenya"]
+            },
         },
         headers=user_token_headers,
     )
@@ -45,20 +142,25 @@ def test_keyword_filters(
     assert query_spy.call_count == 1
 
     query_body = query_spy.mock_calls[0].args[0]
-    assert {"terms": {"action_geography_english_shortname": ["Kenya"]}} in query_body[
-        "query"
-    ]["bool"]["filter"]
+    assert {
+        "terms": {"action_geography_english_shortname": ["Kenya"]}
+    } in query_body["query"]["bool"]["filter"]
 
 
 @pytest.mark.parametrize(
     "year_range", [(None, None), (1900, None), (None, 2020), (1900, 2020)]
 )
 def test_year_range_filters(
-    test_opensearch, monkeypatch, client, user_token_headers, mocker, year_range
+    test_opensearch,
+    monkeypatch,
+    client,
+    user_token_headers,
+    mocker,
+    year_range,
 ):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
-    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "query")
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
     response = client.post(
         "/api/v1/searches",
         json={
@@ -107,7 +209,7 @@ def test_multiple_filters(
     """Check that multiple filters are successfully applied"""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
-    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "query")
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
     response = client.post(
         "/api/v1/searches",
         json={
@@ -126,12 +228,12 @@ def test_multiple_filters(
     assert response.status_code == 200
     assert query_spy.call_count == 1
 
-    assert {"terms": {"action_geography_english_shortname": ["Kenya"]}} in query_body[
-        "query"
-    ]["bool"]["filter"]
-    assert {"terms": {"action_source_name": ["CCLW"]}} in query_body["query"]["bool"][
-        "filter"
-    ]
+    assert {
+        "terms": {"action_geography_english_shortname": ["Kenya"]}
+    } in query_body["query"]["bool"]["filter"]
+    assert {"terms": {"action_source_name": ["CCLW"]}} in query_body["query"][
+        "bool"
+    ]["filter"]
     assert {
         "range": {"action_date": {"gte": "01/01/1900", "lte": "31/12/2020"}}
     } in query_body["query"]["bool"]["filter"]
@@ -142,7 +244,7 @@ def test_result_order_score(
 ):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
-    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "query")
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
     response = client.post(
         "/api/v1/searches",
         json={
@@ -153,7 +255,9 @@ def test_result_order_score(
     )
     assert response.status_code == 200
     query_response = query_spy.spy_return.raw_response
-    result_docs = query_response["aggregations"]["sample"]["top_docs"]["buckets"]
+    result_docs = query_response["aggregations"]["sample"]["top_docs"][
+        "buckets"
+    ]
 
     s = None
     for d in result_docs:
@@ -229,7 +333,9 @@ def test_result_order_title(
         t = new_t
 
 
-def test_invalid_request(test_opensearch, monkeypatch, client, user_token_headers):
+def test_invalid_request(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
@@ -254,7 +360,9 @@ def test_invalid_request(test_opensearch, monkeypatch, client, user_token_header
     assert response.status_code == 422
 
 
-def test_case_insensitivity(test_opensearch, monkeypatch, client, user_token_headers):
+def test_case_insensitivity(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
     """Make sure that query string results are not affected by case."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -285,7 +393,9 @@ def test_case_insensitivity(test_opensearch, monkeypatch, client, user_token_hea
     assert response1_json == response2_json == response3_json
 
 
-def test_punctuation_ignored(test_opensearch, monkeypatch, client, user_token_headers):
+def test_punctuation_ignored(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
     """Make sure that punctuation in query strings is ignored."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -316,7 +426,9 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client, user_token_he
     assert response1_json == response2_json == response3_json
 
 
-def test_accents_ignored(test_opensearch, monkeypatch, client, user_token_headers):
+def test_accents_ignored(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
     """Make sure that accents in query strings are ignored."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -375,7 +487,9 @@ def test_time_taken(test_opensearch, monkeypatch, client, user_token_headers):
     assert 0 < reported_response_time_ms < expected_response_time_ms_max
 
 
-def test_empty_search_term(test_opensearch, monkeypatch, client, user_token_headers):
+def test_empty_search_term(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
     """Make sure that empty search terms return no results."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
