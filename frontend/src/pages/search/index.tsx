@@ -13,6 +13,7 @@ import SearchForm from '../../components/forms/SearchForm';
 import SearchResult from '../../components/text-blocks/SearchResult';
 import SearchFilters from '../../components/SearchFilters';
 import ExactMatch from '../../components/filters/ExactMatch';
+import DocumentCategories from '../../components/nav/DocumentCategories';
 
 const Search = () => {
   const updateSearchCriteria = useUpdateSearchCriteria();
@@ -52,14 +53,13 @@ const Search = () => {
           heading={t('Law and Policy Search')}
         >
           <section>
-            <div className="px-4 md:flex md:border-b container">
-              <div className="md:w-1/4 lg:w-1/4 md:border-r border-indigo-200 pr-8 flex-shrink-0">
+            <div className="px-4 md:flex container">
+              <div className="md:w-1/4 lg:w-1/4 md:border-r border-blue-200 pr-8 flex-shrink-0">
                 <SearchFilters
                   handleFilterChange={handleFilterChange}
                   searchCriteria={searchCriteria}
                 />
               </div>
-              {/* <div className="md:w-2/3 lg:w-3/4 xl:w-3/5"> */}
               <div>
                 <div className="md:py-8 md:pl-8">
                   <p className="sm:hidden mt-4">{placeholder}</p>
@@ -75,6 +75,11 @@ const Search = () => {
                     />
                   </div>
                 </div>
+                <div className="mt-4">
+                  <DocumentCategories handleFilterChange={handleFilterChange} />
+                </div>
+                {/* TODO: sort by */}
+                <div className="mt-4 flex justify-end">Sort by</div>
                 <div className="md:pl-8">
                   {documents.map((doc, index: number) => (
                     <div key={index} className="my-16 first:mt-4">

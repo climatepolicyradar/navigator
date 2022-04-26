@@ -191,6 +191,14 @@ input[type='search']::-webkit-search-results-decoration {
   }
 }
 
+.category-active {
+  @extend .subnav-active;
+  @apply text-blue-500;
+  &:after {
+    bottom: -8px;
+  }
+}
+
 .circle-sm {
   width: 20px;
   height: 20px;
