@@ -1,4 +1,5 @@
 import time
+import os
 from dataclasses import dataclass
 from typing import Any, Dict, List, Mapping, Optional, Tuple
 
@@ -44,7 +45,7 @@ from app.db.schemas.search import (
 
 _ENCODER = SentenceTransformer(
     model_name_or_path=OPENSEARCH_INDEX_ENCODER,
-    cache_folder="/models",
+    cache_folder=os.environ.get("INDEX_ENCODER_CACHE_FOLDER", "/models"),
 )
 _SORT_FIELD_MAP: Mapping[SortField, str] = {
     SortField.DATE: "action_date",
@@ -78,9 +79,7 @@ class OpenSearchQueryConfig:
     )  # TODO: tune me separately for descriptions?
     max_doc_count: int = OPENSEARCH_INDEX_MAX_DOC_COUNT
     max_passages_per_doc: int = OPENSEARCH_INDEX_MAX_PASSAGES_PER_DOC
-    n_passages_to_sample_per_shard = (
-        OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
-    )
+    n_passages_to_sample_per_shard = OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
     k = OPENSEARCH_INDEX_KNN_K_VALUE
 
 
@@ -256,9 +255,7 @@ class QueryBuilder:
                         "top_docs": {
                             "terms": {
                                 "field": OPENSEARCH_INDEX_INDEX_KEY,
-                                "order": {
-                                    "top_hit": SortOrder.DESCENDING.value
-                                },
+                                "order": {"top_hit": SortOrder.DESCENDING.value},
                                 "size": self._search_config.max_doc_count,
                             },
                             "aggs": {
@@ -273,14 +270,10 @@ class QueryBuilder:
                                         "size": self._search_config.max_passages_per_doc,
                                     },
                                 },
-                                "top_hit": {
-                                    "max": {"script": {"source": "_score"}}
-                                },
+                                "top_hit": {"max": {"script": {"source": "_score"}}},
                                 _SORT_FIELD_MAP[SortField.DATE]: {
                                     "stats": {
-                                        "field": _SORT_FIELD_MAP[
-                                            SortField.DATE
-                                        ],
+                                        "field": _SORT_FIELD_MAP[SortField.DATE],
                                     },
                                 },
                             },
@@ -425,9 +418,7 @@ class QueryBuilder:
         filters.append({"terms": {field: values}})
         self._request_body["query"]["bool"]["filter"] = filters
 
-    def with_year_range_filter(
-        self, year_range: Tuple[Optional[int], Optional[int]]
-    ):
+    def with_year_range_filter(self, year_range: Tuple[Optional[int], Optional[int]]):
         """Add a year range filter to the configured query."""
 
         year_range_filter = _year_range_filter(year_range)
@@ -438,13 +429,9 @@ class QueryBuilder:
 
     def order_by(self, field: SortField, order: SortOrder):
         """Change sort order for results."""
-        terms_field = self._request_body["aggs"]["sample"]["aggs"]["top_docs"][
-            "terms"
-        ]
+        terms_field = self._request_body["aggs"]["sample"]["aggs"]["top_docs"]["terms"]
         if field == SortField.DATE:
-            terms_field["order"] = {
-                f"{_SORT_FIELD_MAP[field]}.avg": order.value
-            }
+            terms_field["order"] = {f"{_SORT_FIELD_MAP[field]}.avg": order.value}
         elif field == SortField.TITLE:
             terms_field["order"] = {"_key": order.value}
         else:
@@ -458,25 +445,21 @@ def process_opensearch_response_body(
 ) -> SearchResponseBody:
     opensearch_json_response = opensearch_response_body.raw_response
     search_response = SearchResponseBody(
-        hits=opensearch_json_response["aggregations"]["sample"]["bucketcount"][
-            "count"
-        ],
+        hits=opensearch_json_response["aggregations"]["sample"]["bucketcount"]["count"],
         query_time_ms=opensearch_response_body.request_time_ms,
         documents=[],
     )
     search_response_document = None
 
-    result_docs = opensearch_json_response["aggregations"]["sample"][
-        "top_docs"
-    ]["buckets"]
+    result_docs = opensearch_json_response["aggregations"]["sample"]["top_docs"][
+        "buckets"
+    ]
     for result_doc in result_docs[offset : offset + limit]:
         for document_match in result_doc["top_passage_hits"]["hits"]["hits"]:
             document_match_source = document_match["_source"]
             if OPENSEARCH_INDEX_NAME_KEY in document_match_source:
                 # Validate as a title match
-                name_match = OpenSearchResponseNameMatch(
-                    **document_match_source
-                )
+                name_match = OpenSearchResponseNameMatch(**document_match_source)
                 if search_response_document is None:
                     search_response_document = create_search_response_document(
                         name_match
@@ -484,9 +467,7 @@ def process_opensearch_response_body(
                 search_response_document.document_title_match = True
             elif OPENSEARCH_INDEX_DESCRIPTION_KEY in document_match_source:
                 # Validate as a description match
-                desc_match = OpenSearchResponseDescriptionMatch(
-                    **document_match_source
-                )
+                desc_match = OpenSearchResponseDescriptionMatch(**document_match_source)
                 if search_response_document is None:
                     search_response_document = create_search_response_document(
                         desc_match
@@ -494,9 +475,7 @@ def process_opensearch_response_body(
                 search_response_document.document_description_match = True
             elif OPENSEARCH_INDEX_TEXT_BLOCK_KEY in document_match_source:
                 # Process as a text block
-                passage_match = OpenSearchResponsePassageMatch(
-                    **document_match_source
-                )
+                passage_match = OpenSearchResponsePassageMatch(**document_match_source)
                 if search_response_document is None:
                     search_response_document = create_search_response_document(
                         passage_match
@@ -515,9 +494,7 @@ def process_opensearch_response_body(
                 raise RuntimeError("Unexpected data in match results")
 
         if search_response_document is None:
-            raise RuntimeError(
-                "Unexpected document match with no matching passages"
-            )
+            raise RuntimeError("Unexpected document match with no matching passages")
 
         search_response.documents.append(search_response_document)
         search_response_document = None

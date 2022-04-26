@@ -1,9 +1,19 @@
-from datetime import datetime
+import logging
 from pathlib import Path
 
-from app.core.auth import get_current_active_user
-from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
+from fastapi import (
+    APIRouter,
+    Depends,
+    File,
+    HTTPException,
+    Request,
+    UploadFile,
+)
+
+from app.core.auth import get_current_active_superuser
 from navigator.core.aws import get_s3_client
+
+logger = logging.getLogger(__file__)
 
 documents_router = r = APIRouter()
 
@@ -18,19 +28,18 @@ documents_router = r = APIRouter()
 def document_upload(
     request: Request,
     file: UploadFile = File(...),
-    current_user=Depends(get_current_active_user),
+    current_user=Depends(get_current_active_superuser),
     s3_client=Depends(get_s3_client),
 ):
     """Upload a document to the queue bucket."""
 
     file_path = Path(file.filename)
+
     if file_path.suffix.lower() not in (".pdf", ".html", ".htm"):
         raise HTTPException(415, "Unsupported Media Type: must be PDF or HTML.")
 
-    uploaded_filename = f"user-{current_user.id}-time-{datetime.now().strftime('%Y%m%d%H%M%S')}-{file_path.name}"
-
     s3_document = s3_client.upload_fileobj(
-        fileobj=file.file, bucket="cpr-document-queue", key=uploaded_filename
+        fileobj=file.file, bucket="cpr-document-queue", key=str(file_path)
     )
 
     # If the above function returns False, then the upload has failed.
@@ -40,6 +49,7 @@ def document_upload(
             "Internal Server Error: upload failed.",
         )
 
+    logging.info(f"Document uploaded to cloud at {s3_document.url}")
     return {
         "url": s3_document.url,
     }
