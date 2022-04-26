@@ -1,7 +1,12 @@
 import { useState } from 'react';
 import DocumentCategoryItem from './DocumentCategoryItem';
 
-const DocumentCategories = ({ handleFilterChange }) => {
+interface DocumentCategoriesProps {
+  handleFilterChange(type: string, value: string, action: string): void;
+}
+const DocumentCategories = ({
+  handleFilterChange,
+}: DocumentCategoriesProps) => {
   const [activeTab, setActiveTab] = useState(0);
   const categories = ['All', 'Executive', 'Legislative', 'Litigation'];
   const handleClick = (e, index) => {
