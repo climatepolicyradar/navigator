@@ -11,7 +11,7 @@ const ExactMatch = ({ id, handleSearchChange, checked }) => {
           id={id}
           type="checkbox"
           checked={checked}
-          onClick={handleClick}
+          onChange={handleClick}
         />
         <span className="pl-2 leading-none">Exact matches only</span>
       </label>

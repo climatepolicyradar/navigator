@@ -13,7 +13,8 @@ import SearchForm from '../../components/forms/SearchForm';
 import SearchResult from '../../components/text-blocks/SearchResult';
 import SearchFilters from '../../components/SearchFilters';
 import ExactMatch from '../../components/filters/ExactMatch';
-import DocumentCategories from '../../components/nav/DocumentCategories';
+import TabbedNav from '../../components/nav/TabbedNav';
+import Loader from '../../components/Loader';
 
 const Search = () => {
   const updateSearchCriteria = useUpdateSearchCriteria();
@@ -26,6 +27,8 @@ const Search = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
+  const documentCategories = ['All', 'Executive', 'Legislative', 'Litigation'];
+
   const handleFilterChange = (
     type: string,
     value: string,
@@ -36,7 +39,11 @@ const Search = () => {
   const handleSearchChange = (type: string, value: string) => {
     updateSearchCriteria.mutate({ [type]: value });
   };
-
+  const handleDocumentCategoryClick = (e) => {
+    const val = e.currentTarget.textContent;
+    const action = val === 'All' ? 'delete' : 'update';
+    handleFilterChange('document_category', val, action);
+  };
   const handleDocumentClick = () => {};
 
   useDidUpdateEffect(() => {
@@ -45,7 +52,7 @@ const Search = () => {
 
   return (
     <>
-      {!resultsQuery.isSuccess || !ready || !user ? (
+      {!ready || !user ? (
         <LoaderOverlay />
       ) : (
         <Layout
@@ -54,13 +61,13 @@ const Search = () => {
         >
           <section>
             <div className="px-4 md:flex container">
-              <div className="md:w-1/4 lg:w-1/4 md:border-r border-blue-200 pr-8 flex-shrink-0">
+              <div className="md:w-1/4 md:border-r border-blue-200 pr-8 flex-shrink-0">
                 <SearchFilters
                   handleFilterChange={handleFilterChange}
                   searchCriteria={searchCriteria}
                 />
               </div>
-              <div>
+              <div className="md:w-3/4">
                 <div className="md:py-8 md:pl-8">
                   <p className="sm:hidden mt-4">{placeholder}</p>
                   <SearchForm
@@ -76,19 +83,28 @@ const Search = () => {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <DocumentCategories handleFilterChange={handleFilterChange} />
+                  <TabbedNav
+                    items={documentCategories}
+                    handleTabClick={handleDocumentCategoryClick}
+                  />
                 </div>
                 {/* TODO: sort by */}
                 <div className="mt-4 flex justify-end">Sort by</div>
-                <div className="md:pl-8">
-                  {documents.map((doc, index: number) => (
-                    <div key={index} className="my-16 first:mt-4">
-                      <SearchResult
-                        document={doc}
-                        onClick={handleDocumentClick}
-                      />
+                <div className="md:pl-8 relative">
+                  {resultsQuery.isFetching ? (
+                    <div className="w-full flex justify-center h-96">
+                      <Loader />
                     </div>
-                  ))}
+                  ) : (
+                    documents.map((doc, index: number) => (
+                      <div key={index} className="my-16 first:mt-4">
+                        <SearchResult
+                          document={doc}
+                          onClick={handleDocumentClick}
+                        />
+                      </div>
+                    ))
+                  )}
                 </div>
               </div>
             </div>

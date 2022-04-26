@@ -1,17 +1,17 @@
-interface DocumentCategoryItemProps {
+interface TabbedNavItemProps {
   title: string;
   index: number;
   activeTab: number;
   onClick(e): void;
 }
 
-const DocumentCategoryItem = ({
+const TabbedNavItem = ({
   title,
   index,
   activeTab,
   onClick,
-}: DocumentCategoryItemProps) => {
-  let cssClass = `font-medium text-lg text-indigo-400 hover:text-blue-500 mr-8 ${
+}: TabbedNavItemProps) => {
+  const cssClass = `font-medium text-lg text-indigo-400 hover:text-blue-500 mr-8 ${
     activeTab === index ? 'category-active' : ''
   }`;
   return (
@@ -20,4 +20,4 @@ const DocumentCategoryItem = ({
     </button>
   );
 };
-export default DocumentCategoryItem;
+export default TabbedNavItem;
