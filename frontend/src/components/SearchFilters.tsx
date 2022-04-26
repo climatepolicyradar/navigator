@@ -66,7 +66,6 @@ const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
             type="action_geography_english_shortname"
             handleFilterChange={handleFilterChange}
           />
-          {/* TODO: add clickable tags for each item that is added (click x to remove) */}
           <MultiList
             list={action_geography_english_shortname}
             removeFilter={handleFilterChange}

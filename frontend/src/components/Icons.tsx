@@ -193,6 +193,29 @@ export function EditIcon({ color = 'currentColor' }) {
   );
 }
 
+export function DownloadIcon({
+  height = '19',
+  width = '23',
+  color = 'currentColor',
+}: IconProps) {
+  return (
+    <svg
+      style={{ width: `${width}px`, height: `${height}px` }}
+      viewBox="0 0 23 19"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M20.125 11.875V15.0417C20.125 15.4616 19.9231 15.8643 19.5636 16.1613C19.2042 16.4582 18.7167 16.625 18.2083 16.625H4.79167C4.28334 16.625 3.79582 16.4582 3.43638 16.1613C3.07693 15.8643 2.875 15.4616 2.875 15.0417V11.875M6.70833 7.91667L11.5 11.875M11.5 11.875L16.2917 7.91667M11.5 11.875V2.375"
+        stroke={color}
+        stroke-width="2"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      />
+    </svg>
+  );
+}
+
 export function DownloadPDFIcon({
   height = '32',
   width = '32',

@@ -13,9 +13,8 @@ export default function useSearch(id, obj = null) {
   return useQuery(
     id,
     () =>
-      // client.post(`/searches`, { query_string: 'test', exact_match: true })
+      // client.post(`/searches`, obj)
       fake(),
-    // client.get('testdata/searches.json', obj),
     { refetchOnWindowFocus: false }
   );
 }

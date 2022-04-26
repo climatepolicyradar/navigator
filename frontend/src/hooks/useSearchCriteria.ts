@@ -7,7 +7,7 @@ const initialSearchCriteria = {
   keyword_filters: {},
   year_range: [1900, 2022],
   sort_field: 'title',
-  sort_order: 'desc',
+  sort_order: 'asc',
   limit: 10,
   offset: 0,
 };

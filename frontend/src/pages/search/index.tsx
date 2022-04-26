@@ -15,6 +15,9 @@ import SearchFilters from '../../components/SearchFilters';
 import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
 import Loader from '../../components/Loader';
+import Sort from '../../components/filters/Sort';
+import { DownloadIcon } from '../../components/Icons';
+import Button from '../../components/buttons/Button';
 
 const Search = () => {
   const updateSearchCriteria = useUpdateSearchCriteria();
@@ -44,6 +47,12 @@ const Search = () => {
     const action = val === 'All' ? 'delete' : 'update';
     handleFilterChange('document_category', val, action);
   };
+  const handleSortClick = (e) => {
+    const val = e.currentTarget.value;
+    const valArray = val.split(':');
+    handleSearchChange('sort_field', valArray[0]);
+    handleSearchChange('sort_order', valArray[1]);
+  };
   const handleDocumentClick = () => {};
 
   useDidUpdateEffect(() => {
@@ -61,7 +70,7 @@ const Search = () => {
         >
           <section>
             <div className="px-4 md:flex container">
-              <div className="md:w-1/4 md:border-r border-blue-200 pr-8 flex-shrink-0">
+              <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
                 <SearchFilters
                   handleFilterChange={handleFilterChange}
                   searchCriteria={searchCriteria}
@@ -82,14 +91,29 @@ const Search = () => {
                     />
                   </div>
                 </div>
-                <div className="mt-4">
+                <div className="mt-4 relative">
                   <TabbedNav
                     items={documentCategories}
                     handleTabClick={handleDocumentCategoryClick}
                   />
+                  <div className="absolute right-0 top-0 -mt-1">
+                    <Button
+                      color="light-hover-dark"
+                      extraClasses="text-sm py-1"
+                    >
+                      <div className="flex">
+                        <DownloadIcon />
+                        <span>Download</span>
+                      </div>
+                    </Button>
+                  </div>
                 </div>
-                {/* TODO: sort by */}
-                <div className="mt-4 flex justify-end">Sort by</div>
+                <div className="mt-4 mb-8 flex justify-end">
+                  <div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 flex items-center">
+                    <Sort updateSort={handleSortClick} />
+                  </div>
+                </div>
+
                 <div className="md:pl-8 relative">
                   {resultsQuery.isFetching ? (
                     <div className="w-full flex justify-center h-96">

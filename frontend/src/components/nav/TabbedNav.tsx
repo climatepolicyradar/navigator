@@ -13,7 +13,7 @@ const TabbedNav = ({ handleTabClick, items }: TabbedNavProps) => {
     handleTabClick(e);
   };
   return (
-    <div className="border-b border-blue-200 pb-2 pl-8">
+    <div className="border-b border-blue-200 pb-2 md:pl-8">
       {items.map((item, index) => (
         <TabbedNavItem
           key={`tab${index}`}
