@@ -4,15 +4,16 @@ const ExactMatch = ({ id, handleSearchChange, checked }) => {
     handleSearchChange('exact_match', isChecked);
   };
   return (
-    <div className="text-sm flex items-center">
-      <label className="checkbox-input" htmlFor={id}>
+    <div className="text-sm">
+      <label className="checkbox-input flex items-center" htmlFor={id}>
         <input
+          className="text-white border-blue-500 rounded"
           id={id}
           type="checkbox"
           checked={checked}
           onClick={handleClick}
         />
-        <span className="pl-2">Exact matches only</span>
+        <span className="pl-2 leading-none">Exact matches only</span>
       </label>
     </div>
   );

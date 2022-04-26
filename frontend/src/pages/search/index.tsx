@@ -67,7 +67,7 @@ const Search = () => {
                     placeholder={placeholder}
                     handleSearchChange={handleSearchChange}
                   />
-                  <div className="flex justify-end mt-2">
+                  <div className="flex justify-end mt-3">
                     <ExactMatch
                       checked={searchCriteria.exact_match}
                       id="exact-match"
