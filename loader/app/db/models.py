@@ -123,6 +123,13 @@ class Sector(Base):  # noqa: D101
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
 
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id", "parent_id"]
+        }
+
 
 class DocumentSector(Base):  # noqa: D101
     __tablename__ = "document_sector"
@@ -143,6 +150,13 @@ class Instrument(Base):  # noqa: D101
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
 
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["parent_id", "id"]
+        }
+
 
 class DocumentInstrument(Base):  # noqa: D101
     __tablename__ = "document_instrument"
@@ -160,6 +174,13 @@ class Framework(Base):  # noqa: D101
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
+
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id"]
+        }
 
 
 class DocumentFramework(Base):  # noqa: D101
@@ -179,6 +200,13 @@ class Response(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
 
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id"]
+        }
+
 
 class DocumentResponse(Base):  # noqa: D101
     __tablename__ = "document_response"
@@ -196,6 +224,13 @@ class Hazard(Base):  # noqa: D101
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
+
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id"]
+        }
 
 
 class DocumentHazard(Base):  # noqa: D101
@@ -247,6 +282,15 @@ class Event(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
+
+    def as_dict(self):  # noqa: D102
+        d = {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["document_id", "id", "created_ts"]  # do date separately
+        }
+        d["created_ts"] = getattr(self, "created_ts").isoformat()
+        return d
 
 
 class Association(Base):  # noqa: D101

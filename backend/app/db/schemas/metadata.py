@@ -7,7 +7,7 @@ from app.db.schemas.document import DocumentCreate
 
 
 class Event(BaseModel):  # noqa: D101
-    document_id: int
+    # document_id: int  # this won't be posted by loader.
     name: str
     description: str
     created_ts = datetime
@@ -49,5 +49,5 @@ class DocumentCreateWithMetadata(BaseModel):  # noqa: D101
     frameworks: List[Framework]
     responses: List[DocumentResponse]
     hazards: List[Hazard]
-    language_codes: List[str]
+    # language_codes: List[str]
     # passages?

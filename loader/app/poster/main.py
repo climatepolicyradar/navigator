@@ -24,16 +24,12 @@ logger = logging.getLogger(__file__)
 
 def post_all_to_backend_api(db: Session):
     """Posts everything in the local database to the remote backend API."""
-    debug_count = 0
-    for doc in db.query(Document).all():
-        debug_count += 1
-        if debug_count > 10:
-            print("done for testing purposes")
-            break
-        # optimisation: check if we've uploaded already
-        # read from api_document
+    for doc in db.query(Document).filter(Document.is_valid).all():
+        # TODO: optimisation: check if we've uploaded already? (via APIDocument)
         try:
             response = post_doc(db, doc)
+
+            # once we've uploaded, make a note of it.
             if "id" in response:
                 remote_document_id = response["id"]
                 apidoc = APIDocument(
@@ -121,13 +117,14 @@ def post_doc(db: Session, doc: Document) -> dict:
             "type_id": doc.type_id,  # this is from backend API lookup, so will exist remotely.
         },
         "source_id": doc.source_id,
-        "events": [it.name for it in events],
-        "sectors": [it.name for it in sectors],
-        "instruments": [it.name for it in instruments],
-        "frameworks": [it.name for it in frameworks],
-        "responses": [it.name for it in responses],
-        "hazards": [it.name for it in hazards],
+        "events": [it.as_dict() for it in events],
+        "sectors": [it.as_dict() for it in sectors],
+        "instruments": [it.as_dict() for it in instruments],
+        "frameworks": [it.as_dict() for it in frameworks],
+        "responses": [it.as_dict() for it in responses],
+        "hazards": [it.as_dict() for it in hazards],
         # "language_codes": [],  # TODO
     }
+
     response = post_document(payload)
     return response.json()

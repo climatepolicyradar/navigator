@@ -31,6 +31,7 @@ async def post_document(
 
     try:
         document_create = document_with_metadata.document
+        # TODO persist the rest of the metadata
         db_document = create_document(db, document_create, current_user)
     except Exception as e:
         if isinstance(e, IntegrityError):

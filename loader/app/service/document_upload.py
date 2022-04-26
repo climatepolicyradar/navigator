@@ -12,7 +12,7 @@ def upload_all_documents(db: Session):
 
     """
 
-    for document_db in db.query(Document).all():
+    for document_db in db.query(Document).filter(Document.is_valid).all():
         # fetch metadata required for naming the remote doc
         geography: Geography = db.query(Geography).get(document_db.geography_id)
         event: Event = (
