@@ -255,6 +255,7 @@ def add_metadata(
 
     """
     for metadatum in metadata:
+        # TODO check if metadata already exists, and re-use the FK
         meta_db = MetaType(
             name=metadatum,
             description="Imported by CPR loader",

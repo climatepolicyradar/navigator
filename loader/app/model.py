@@ -5,7 +5,6 @@ from typing import List, Dict
 
 @dataclass(frozen=True, eq=True)
 class Key:
-    # class Key:
     """A key representing an action's unique constraint in the DB"""
 
     policy_name: str
