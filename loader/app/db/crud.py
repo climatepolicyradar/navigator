@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from sqlalchemy.orm import Session
 
@@ -25,3 +25,7 @@ def get_document_by_unique_constraint(
         .one_or_none()
     )
     return maybe_existing_doc
+
+
+def get_all_valid_documents(db: Session) -> List[Document]:
+    return db.query(Document).filter(Document.is_valid).all()
