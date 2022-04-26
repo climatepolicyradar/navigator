@@ -74,9 +74,8 @@ def create_test_db():
     test_db_url = get_test_db_url()
 
     # Create the test database
-    assert not database_exists(
-        test_db_url
-    ), f"Test database already exists at {test_db_url}. Aborting tests."
+    if database_exists(test_db_url):
+        drop_database(test_db_url)
     create_database(test_db_url)
     try:
         test_engine = create_engine(test_db_url)

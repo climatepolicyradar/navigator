@@ -1,5 +1,5 @@
 def test_post_document(
-    client, user_token_headers, test_s3_client, s3_document_bucket_names
+    client, superuser_token_headers, test_s3_client, s3_document_bucket_names
 ):
 
     test_valid_filename = "./app/api/api_v1/routers/tests/data/cclw-1618-884b7d6efcf448ff92d27f37ff22cb65.pdf"
@@ -8,7 +8,7 @@ def test_post_document(
         response = client.post(
             "/api/v1/document",
             files={"file": (test_valid_filename, f, "application/pdf")},
-            headers=user_token_headers,
+            headers=superuser_token_headers,
         )
 
     queue_bucket_contents = test_s3_client.client.list_objects(
@@ -24,7 +24,7 @@ def test_post_document(
         response = client.post(
             "/api/v1/document",
             files={"file": (test_invalid_filename, f, "application/pdf")},
-            headers=user_token_headers,
+            headers=superuser_token_headers,
         )
 
     queue_bucket_contents = test_s3_client.client.list_objects(

@@ -6,6 +6,7 @@ from app.db.session import get_db
 from app.loader.extract.main import extract
 from app.loader.load.main import load
 from app.loader.transform.main import transform
+from app.service.document_upload import upload_all_documents
 
 DEFAULT_LOGGING = {
     "version": 1,
@@ -75,3 +76,5 @@ if __name__ == "__main__":
         load_dotenv("../../.env.local")
 
     main()
+    for db in get_db():
+        upload_all_documents(db)
