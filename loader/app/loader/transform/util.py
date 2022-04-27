@@ -104,7 +104,7 @@ def get_policy_data(
             for doc_url in doc_urls:
                 doc = Doc(
                     doc_name=doc_name,
-                    doc_language=doc_language,
+                    doc_languages=[doc_language],
                     doc_url=ensure_safe(doc_url),
                     events=events,
                     sectors=sectors,

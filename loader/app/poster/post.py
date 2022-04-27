@@ -13,6 +13,7 @@ from app.db.models import (
     DocumentResponse,
     Hazard,
     DocumentHazard,
+    DocumentLanguage,
 )
 from app.service.api_client import post_document
 
@@ -72,6 +73,9 @@ def post_doc(db: Session, doc: Document) -> dict:
         )
         .all()
     )
+    document_languages = (
+        db.query(DocumentLanguage).filter(DocumentLanguage.document_id == doc.id).all()
+    )
 
     payload = {
         "document": {
@@ -80,6 +84,8 @@ def post_doc(db: Session, doc: Document) -> dict:
             "source_url": doc.source_url,
             "url": doc.url,
             "type_id": doc.type_id,  # this is from backend API lookup, so will exist remotely.
+            "source_id": doc.source_id,
+            "geography_id": doc.geography_id,  # this is from backend API lookup, so will exist remotely.
         },
         "source_id": doc.source_id,
         "events": [it.as_dict() for it in events],
@@ -88,7 +94,7 @@ def post_doc(db: Session, doc: Document) -> dict:
         "frameworks": [it.as_dict() for it in frameworks],
         "responses": [it.as_dict() for it in responses],
         "hazards": [it.as_dict() for it in hazards],
-        # "language_codes": [],  # TODO
+        "language_ids": [it.id for it in document_languages],
     }
 
     response = post_document(payload)

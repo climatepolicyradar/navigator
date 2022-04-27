@@ -9,10 +9,9 @@ from fastapi import (
     Request,
     UploadFile,
 )
-from sqlalchemy.exc import IntegrityError
 
 from app.core.auth import get_current_active_superuser
-from app.db.crud.document import create_document
+from app.core.service.loader import persist_document_and_metadata
 from app.db.schemas.document import DocumentInDB
 from app.db.schemas.metadata import DocumentCreateWithMetadata
 from app.db.session import get_db
@@ -36,14 +35,9 @@ async def post_document(
 ):
     """Create a document, with associated metadata."""
 
-    try:
-        document_create = document_with_metadata.document
-        # TODO persist the rest of the metadata
-        db_document = create_document(db, document_create, current_user)
-    except Exception as e:
-        if isinstance(e, IntegrityError):
-            raise HTTPException(409, detail="Document already exists")
-        raise e
+    db_document = persist_document_and_metadata(
+        db, document_with_metadata, current_user.id
+    )
 
     return DocumentInDB.from_orm(db_document)
 

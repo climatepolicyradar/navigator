@@ -1,3 +1,12 @@
+"""External data models.
+
+These models represent all the external data we need from a 3rd-party data contribution.
+It will be provided to us as a dictionary, with key/value:
+
+    Key => PolicyData
+"""
+
+
 from dataclasses import dataclass
 from datetime import datetime
 from typing import List, Dict
@@ -11,13 +20,12 @@ class Key:
     policy_date: datetime
     country_code: str
     policy_type: str
-    # source_id: 1  # always 1 for CCLW
 
 
 @dataclass
 class Doc:  # noqa: D101
     doc_name: str
-    doc_language: str
+    doc_languages: List[str]
     doc_url: str
     # metadata
     events: List[str]
@@ -26,7 +34,6 @@ class Doc:  # noqa: D101
     frameworks: List[str]
     responses: List[str]
     hazards: List[str]
-    # language_codes: List[str]
 
 
 @dataclass(frozen=True)
