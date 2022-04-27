@@ -49,10 +49,11 @@ def load(db: Session, policies: PolicyLookup):
 
             if invalid_reason:
                 is_valid = False
-                logger.warning(
-                    f"Invalid document, name={key.policy_name}, reason={invalid_reason} "
-                    f"url={doc.doc_url}"
-                )
+                # TODO: warnings have been disabled as they caused the code to freeze when run with Docker. We will want a way to log these warnings.
+                # logger.warning(
+                #     f"Invalid document, name={key.policy_name}, reason={invalid_reason} "
+                #     f"url={doc.doc_url}"
+                # )
 
             doc = Document(
                 name=key.policy_name,
