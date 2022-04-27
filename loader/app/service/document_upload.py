@@ -31,7 +31,13 @@ def upload_all_documents(db: Session):
         publication_date = event.created_ts.date().isoformat()
 
         logger.debug(f"Uploading {document_db.source_url} to {document_db.url}")
-        _upload_document(db, document_db, country_code, publication_date)
+        # TODO: make document upload more resilient
+        try:
+            _upload_document(db, document_db, country_code, publication_date)
+        except Exception as e:
+            logger.warning(
+                f"Uploading document with URL {document_db.source_url} failed: {e}"
+            )
 
 
 def _upload_document(
@@ -41,7 +47,8 @@ def _upload_document(
 
     # TODO this depends on the new CSV layout for multi-doc actions,
     # but in the meantime, we just use "<doc name> <doc id>"
-    doc_name = f"{document_db.name}-{document_db.id}"
+    # We replace forward slashes with underscores because S3 recognises them as directory splitters
+    doc_name = f"{document_db.name}-{document_db.id}".replace("/", "_")
 
     file_name = f"{country_code}-{publication_date_iso}-{doc_name}"
 
