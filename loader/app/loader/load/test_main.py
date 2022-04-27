@@ -6,6 +6,7 @@ from app.loader.load.main import load
 from app.model import Key, PolicyData, Doc, PolicyLookup
 
 
+@patch("app.loader.load.main.get_document_by_unique_constraint")
 @patch("app.loader.load.main.get_document_validity_sync")
 @patch("app.loader.load.main.get_geography_id")
 @patch("app.loader.load.main.get_type_id")
@@ -13,6 +14,7 @@ def test_load_single_doc(
     mock_get_type_id,
     mock_get_geography_id,
     mock_get_document_validity_sync,
+    mock_get_document_by_unique_constraint,
 ):
     @dataclass
     class MockDb:
@@ -26,6 +28,7 @@ def test_load_single_doc(
     mock_get_type_id.return_value = 123
     mock_get_geography_id.return_value = 456
     mock_get_document_validity_sync.return_value = None
+    mock_get_document_by_unique_constraint.return_value = None
 
     mock_db = MockDb()
 
@@ -54,6 +57,9 @@ def test_load_single_doc(
     mock_get_type_id.assert_called_once_with(mock_db, policy_data.policy_type)
     mock_get_geography_id.assert_called_once_with(mock_db, policy_data.country_code)
     mock_get_document_validity_sync.assert_called_once_with("http://doc")
+    mock_get_document_by_unique_constraint.assert_called_once_with(
+        mock_db, "foo", 456, 123, 1, "http://doc"
+    )
 
     called_doc = mock_db.add.call_args_list[0][0][0]
 
@@ -76,6 +82,7 @@ def test_load_single_doc(
     mock_db.commit.assert_called_once()
 
 
+@patch("app.loader.load.main.get_document_by_unique_constraint")
 @patch("app.loader.load.main.get_document_validity_sync")
 @patch("app.loader.load.main.get_geography_id")
 @patch("app.loader.load.main.get_type_id")
@@ -83,6 +90,7 @@ def test_load_two_related_docs(
     mock_get_type_id,
     mock_get_geography_id,
     mock_get_document_validity_sync,
+    mock_get_document_by_unique_constraint,
 ):
     @dataclass
     class MockDb:
@@ -96,6 +104,7 @@ def test_load_two_related_docs(
     mock_get_type_id.return_value = 123
     mock_get_geography_id.return_value = 456
     mock_get_document_validity_sync.return_value = None
+    mock_get_document_by_unique_constraint.return_value = None
 
     mock_db = MockDb()
 
@@ -130,6 +139,22 @@ def test_load_two_related_docs(
     mock_get_geography_id.assert_called_once_with(mock_db, policy_data.country_code)
     assert mock_get_document_validity_sync.call_args_list[0][0][0] == "http://doc"
     assert mock_get_document_validity_sync.call_args_list[1][0][0] == "http://doc2"
+    assert mock_get_document_by_unique_constraint.call_args_list[0][0] == (
+        mock_db,
+        "foo",
+        456,
+        123,
+        1,
+        "http://doc",
+    )
+    assert mock_get_document_by_unique_constraint.call_args_list[1][0] == (
+        mock_db,
+        "foo",
+        456,
+        123,
+        1,
+        "http://doc2",
+    )
 
     called_doc = mock_db.add.call_args_list[0][0][0]
 

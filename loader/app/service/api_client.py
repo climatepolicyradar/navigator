@@ -83,7 +83,7 @@ def _get_lookup(model, lookup_key):
     return lookup
 
 
-def post_action(action_payload):
+def post_document(payload):
     machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
 
     api_host = os.getenv("API_HOST", "http://backend:8888")
@@ -95,7 +95,7 @@ def post_action(action_payload):
         "Accept": "application/json",
     }
     response = requests.post(
-        f"{api_host}/api/v1/actions", headers=headers, json=action_payload
+        f"{api_host}/api/v1/documents", headers=headers, json=payload
     )
     return response
 

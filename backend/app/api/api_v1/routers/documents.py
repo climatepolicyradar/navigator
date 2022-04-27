@@ -1,25 +1,44 @@
 import logging
 from pathlib import Path
 
-from fastapi import (
-    APIRouter,
-    Depends,
-    File,
-    HTTPException,
-    Request,
-    UploadFile,
-)
+from fastapi import APIRouter, Depends, File, HTTPException, Request, UploadFile
+from sqlalchemy.exc import IntegrityError
 
 from app.core.auth import get_current_active_superuser
+from app.db.crud.document import create_document
+from app.db.schemas.document import DocumentInDB
+from app.db.schemas.metadata import DocumentCreateWithMetadata
+from app.db.session import get_db
 from navigator.core.aws import get_s3_client
 
 logger = logging.getLogger(__file__)
 
 documents_router = r = APIRouter()
 
-# TODO return nested documents with associations
+# TODO for get_document, return nested documents with associations
 # - only show doc IDs, association types, and a hyperlink (so the associated doc can be loaded on demand)
 # - possibly a flag so nested docs can be fully hydrated?
+
+
+@r.post("/documents", response_model=DocumentInDB)
+async def post_document(
+    request: Request,
+    document_with_metadata: DocumentCreateWithMetadata,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a document, with associated metadata."""
+
+    try:
+        document_create = document_with_metadata.document
+        # TODO persist the rest of the metadata
+        db_document = create_document(db, document_create, current_user)
+    except Exception as e:
+        if isinstance(e, IntegrityError):
+            raise HTTPException(409, detail="Document already exists")
+        raise e
+
+    return DocumentInDB.from_orm(db_document)
 
 
 @r.post(
