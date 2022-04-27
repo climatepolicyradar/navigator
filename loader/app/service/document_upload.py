@@ -1,7 +1,12 @@
+import logging
+
 from sqlalchemy.orm import Session
 
 from app.db.models import Document, Geography, Event
 from app.service.api_client import upload_document
+
+
+logger = logging.getLogger(__file__)
 
 
 def upload_all_documents(db: Session):
@@ -12,7 +17,7 @@ def upload_all_documents(db: Session):
 
     """
 
-    for document_db in db.query(Document).all():
+    for document_db in db.query(Document).filter(Document.is_valid).all():
         # fetch metadata required for naming the remote doc
         geography: Geography = db.query(Geography).get(document_db.geography_id)
         event: Event = (
@@ -25,6 +30,7 @@ def upload_all_documents(db: Session):
         country_code = geography.value
         publication_date = event.created_ts.date().isoformat()
 
+        logger.debug(f"Uploading {document_db.source_url} to {document_db.url}")
         _upload_document(db, document_db, country_code, publication_date)
 
 

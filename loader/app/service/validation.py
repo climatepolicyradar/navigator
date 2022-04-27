@@ -34,3 +34,5 @@ async def get_document_validity(source_url: str) -> Optional[DocumentInvalidReas
         return DocumentInvalidReason.net_read_error
     except httpx.TooManyRedirects:
         return DocumentInvalidReason.net_too_many_redirects
+    except httpx.RemoteProtocolError:
+        return DocumentInvalidReason.net_remote_protocol_error
