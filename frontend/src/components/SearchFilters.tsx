@@ -5,6 +5,8 @@ import useLookups from '../hooks/useLookups';
 import BySelect from './filters/BySelect';
 import Tooltip from './tooltip';
 import MultiList from './filters/MultiList';
+import ByRange from './filters/ByRange';
+import InputRange from './form-inputs/InputRange';
 
 const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
   const { t, i18n, ready } = useTranslation('searchResults');
@@ -31,12 +33,15 @@ const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
     'Economy-wide',
   ];
   const documentTypeList = ['All', 'Act', 'Decree', 'Strategy', 'Law', 'Plan'];
+  const now = new Date();
+  const currentYear = now.getFullYear()
 
   // tooltip descriptions
   const regionTooltip = t('Tooltips.Region');
   const countryTooltip = t('Tooltips.Country');
   const sectorTooltip = t('Tooltips.Sector');
   const doctypeTooltip = t('Tooltips.Document type');
+  const dateRangeTooltip = t('Tooltips.Date range');
 
   return (
     <>
@@ -93,6 +98,21 @@ const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
             title={t('By document type')}
             type="action_document_type"
           />
+        </div>
+        <div className="relative mt-6">
+          <div className="absolute top-0 right-0 z-10">
+            <Tooltip id="doctype" tooltip={dateRangeTooltip} />
+          </div>
+          <div className="">
+            <InputRange title={t('By date range')} />
+            {/* <ByRange 
+              title={t('By date range')}
+              type="year_range"
+              min="1947"
+              max={`${currentYear}`}
+            /> */}
+          </div>
+          
         </div>
       </div>
     </>

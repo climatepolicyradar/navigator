@@ -29,7 +29,9 @@
   }
 }
 
+@import 'variables';
 @import 'mixins';
+@import 'range-slider'; 
 
 @font-face {
   font-family: 'Neue Haas Grotesk Display';
@@ -219,3 +221,5 @@ input[type='search']::-webkit-search-results-decoration {
 ul li.selected {
   @apply bg-blue-200;
 }
+
+
