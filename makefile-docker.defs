@@ -72,12 +72,11 @@ test_frontend:
 clear_test_search_index:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --insecure
 
-test_search: clear_test_search_index
+test_backend:
+	make clear_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_analyzer.dump --type=analyzer
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_mapping.dump --type=mapping
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader sh -c "gzip -d /app/test/data/test_opensearch_data.dump.gz -c > /tmp/data && elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/tmp/data --type=data"
-
-test_backend:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest
 
 test_loader:
@@ -89,7 +88,7 @@ test_pipeline:
 test_search_index:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index pytest
 
-test: test_backend test_search test_frontend test_loader test_pipeline test_search_index
+test: test_backend test_frontend test_loader test_pipeline test_search_index
 
 # ----------------------------------
 # tasks
