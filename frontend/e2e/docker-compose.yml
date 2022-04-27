@@ -1,0 +1,13 @@
+version: '3.7'
+services:
+  cypress:
+    # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
+    build: .
+    environment:
+      # pass base url to test pointing at the web application
+      - CYPRESS_baseUrl=http://localhost:3000
+    # share the current folder as volume to avoid copying
+    working_dir: /opt/e2e
+    network_mode: 'host'
+    volumes:
+      - .:/opt/e2e

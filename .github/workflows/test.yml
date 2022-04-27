@@ -1,0 +1,55 @@
+name: run-tests
+
+on:
+  push:
+    branches:
+      - main
+      - dev
+  pull_request:
+    branches:
+      - main
+      - dev
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker-compose stack using .env.example
+        run: cp .env.example .env && make start
+      - name: verify backend is up
+        run: curl http://localhost:8000/api/docs
+      - name: Run backend tests
+        run: make test_backend
+      - name: docker
+        run: |
+          docker-compose logs
+          docker-compose ps
+          docker ps -a
+          ls -la
+      - name: verify frontend is up
+        run: curl http://localhost:3000
+      - name: Run frontend tests
+        run: make test_frontend
+  test_pipeline:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Configure docker-compose stack with .env.example
+        run: cp .env.example .env
+      - name: Build pipeline
+        env:
+          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
+        run: make build_pipeline
+      - name: Test pipeline
+        run: make test_pipeline
+  test_search_index:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker-compose stack using .env.example
+        run: cp .env.example .env
+      - name: Build search_index
+        run: make build_search_index
+      - name: Test search_index
+        run: make test_search_index

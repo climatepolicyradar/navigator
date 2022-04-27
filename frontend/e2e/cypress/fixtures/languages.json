@@ -1,0 +1,72 @@
+[
+  {
+    "language_id": 16,
+    "language_code": "aar",
+    "part1_code": "aa",
+    "part2_code": "aar",
+    "name": "Afar"
+  },
+  {
+    "language_id": 33,
+    "language_code": "abk",
+    "part1_code": "ab",
+    "part2_code": "abk",
+    "name": "Abkhazian"
+  },
+  {
+    "language_id": 118,
+    "language_code": "afr",
+    "part1_code": "af",
+    "part2_code": "afr",
+    "name": "Afrikaans"
+  },
+  {
+    "language_id": 193,
+    "language_code": "aka",
+    "part1_code": "ak",
+    "part2_code": "aka",
+    "name": "Akan"
+  },
+  {
+    "language_id": 247,
+    "language_code": "amh",
+    "part1_code": "am",
+    "part2_code": "amh",
+    "name": "Amharic"
+  },
+  {
+    "language_id": 346,
+    "language_code": "ara",
+    "part1_code": "ar",
+    "part2_code": "ara",
+    "name": "Arabic"
+  },
+  {
+    "language_id": 351,
+    "language_code": "arg",
+    "part1_code": "an",
+    "part2_code": "arg",
+    "name": "Aragonese"
+  },
+  {
+    "language_id": 380,
+    "language_code": "asm",
+    "part1_code": "as",
+    "part2_code": "asm",
+    "name": "Assamese"
+  },
+  {
+    "language_id": 440,
+    "language_code": "ava",
+    "part1_code": "av",
+    "part2_code": "ava",
+    "name": "Avaric"
+  },
+  {
+    "language_id": 443,
+    "language_code": "ave",
+    "part1_code": "ae",
+    "part2_code": "ave",
+    "name": "Avestan"
+  }
+]

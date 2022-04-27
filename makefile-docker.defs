@@ -1,0 +1,110 @@
+# definitions for docker-based development
+
+# ----------------------------------
+# starting, stopping, migrating DB
+# ----------------------------------
+start_containers:
+	# Build and run containers
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
+
+show_logs:
+	docker-compose logs -f
+
+start: start_containers migrations upgrade_all_dbs
+
+stop:
+	docker-compose stop
+
+remove_volumes:
+	docker-compose down -v
+
+# ----------------------------------
+# database maintenance
+# ----------------------------------
+
+migrations_docker_backend:
+	# Run database migrations when using docker for development
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic upgrade head
+	# Create initial data in database
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 app/initial_data.py
+
+migrations_docker_loader:
+	# Run database migrations when using docker for development
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic upgrade head
+
+migrations: migrations_docker_backend migrations_docker_loader
+
+%:
+	@:
+
+new_migration_backend:
+	docker-compose run --rm backend alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
+
+new_migration_loader:
+	docker-compose run --rm loader alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
+
+# ----------------------------------
+# building images
+# ----------------------------------
+build_backend:
+	docker-compose build backend
+
+build_frontend:
+	docker-compose build frontend
+
+build_loader:
+	docker-compose build loader
+
+build_pipeline:
+	docker build -f pipeline/Dockerfile -t navigator_pipeline .
+
+build_search_index:
+	docker-compose build search-index
+
+build: build_backend build_frontend build_loader build_search_index build_pipeline
+
+# ----------------------------------
+# testing
+# ----------------------------------
+test_frontend:
+	cd frontend/e2e && docker-compose up --exit-code-from cypress
+
+clear_test_search_index:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --insecure
+
+test_backend:
+	make clear_test_search_index
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_analyzer.dump --type=analyzer
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_mapping.dump --type=mapping
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader sh -c "gzip -d /app/test/data/test_opensearch_data.dump.gz -c > /tmp/data && elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/tmp/data --type=data"
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest
+
+test_loader:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader pytest
+
+test_pipeline:
+	docker run navigator_pipeline python -m pytest
+
+test_search_index:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index pytest
+
+test: test_backend test_frontend test_loader test_pipeline test_search_index
+
+# ----------------------------------
+# tasks
+# ----------------------------------
+
+run_loader:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader python app/main.py
+
+# Check OpenSearch running on localhost
+check_opensearch_local:
+	curl -XGET http://localhost:9200 -u 'admin:admin' --insecure
+
+populate_opensearch_test: run_loader
+	docker-compose run \
+	-v ${PWD}/search-index/test/data/ids_msmarco-distilbert-dot-v5_20220407-1003.json:/text-ids-path \
+	-v ${PWD}/search-index/test/data/embeddings_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/embeddings-path \
+	-v ${PWD}/search-index/test/data/description_ids_msmarco-distilbert-dot-v5_20220407-1003.csv:/desc-ids-path \
+	-v ${PWD}/search-index/test/data/description_embs_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/desc-embeddings-path \
+	search-index python /app/index_data.py --text-ids-path /text-ids-path --embeddings-path /embeddings-path --desc-ids-path /desc-ids-path --desc-embeddings-path /desc-embeddings-path -d 768

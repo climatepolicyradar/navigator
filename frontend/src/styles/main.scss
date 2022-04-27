@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import 'mixins';
+
+@font-face {
+  font-family: 'Neue Haas Grotesk Display';
+  src: url('/fonts/5549031/5e356b56-25c1-43ac-9524-44e597eb7172.woff2')
+      format('woff2'),
+    url('/fonts/5549031/bb63728c-a742-41fb-929f-64692e41d2e7.woff')
+      format('woff');
+  /* font-display: swap; */
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Neue Haas Grotesk Display';
+  src: url('/fonts/5548986/4746c4e5-3355-4f8f-8395-3f7abfcbf4b8.woff2')
+      format('woff2'),
+    url('/fonts/5548986/0058324c-ca31-42b1-bf5b-b9d9025c1a9c.woff')
+      format('woff');
+  /* font-display: swap; */
+  font-weight: 500;
+}
+
+body {
+  @apply text-indigo-500;
+  @include light-gradient;
+  font-family: 'Neue Haas Grotesk Display';
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  @apply text-indigo-600;
+}
+h1 {
+  @apply text-h1 font-medium;
+}
+h2 {
+  @apply text-h2;
+}
+h3 {
+  @apply text-h3;
+}
+h4 {
+  @apply text-h4 font-medium;
+}
+h5 {
+  @apply text-h5;
+}
+h6 {
+  @apply text-h6 font-semibold;
+}
+input[type='text'],
+input[type='number'],
+input[type='password'],
+input[type='email'],
+textarea,
+select {
+  @apply p-3 rounded-lg text-lg w-full text-indigo-600;
+}
+
+.form-row {
+  @apply my-6;
+  &__border {
+    @apply border-b border-indigo-200 py-6;
+  }
+}
+
+select {
+  appearance: none;
+  position: relative;
+  background-image: url(/images/down-arrow.svg);
+  background-repeat: no-repeat;
+  background-position-y: 16px;
+  background-position-x: calc(100% - 8px);
+  background-size: 16px 16px;
+}
+
+// radar loader
+.radar {
+  transform: rotate(-70deg);
+  width: 25%;
+  height: 14em;
+}
+
+.banner {
+  @include dark-gradient;
+  &--full {
+    position: relative;
+    &:before {
+      content: '';
+      width: 2000px;
+      height: 2000px;
+      position: absolute;
+      top: 0;
+      left: -25%;
+      background-image: url(/images/arc-bg.png);
+      overflow: hidden;
+
+      @screen md {
+        top: 360px;
+        left: 50%;
+      }
+    }
+  }
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
+}
+
+/* clears the 'X' in search input from Internet Explorer */
+input[type='search']::-ms-clear {
+  display: none;
+  width: 0;
+  height: 0;
+}
+input[type='search']::-ms-reveal {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* clears the 'X' search input from Chrome */
+input[type='search']::-webkit-search-decoration,
+input[type='search']::-webkit-search-cancel-button,
+input[type='search']::-webkit-search-results-button,
+input[type='search']::-webkit-search-results-decoration {
+  display: none;
+}
+
+.subnav-active {
+  position: relative;
+  @apply z-20;
+  &:after {
+    content: '';
+    position: absolute;
+    left: 0;
+    bottom: -16px;
+    height: 2px;
+    width: 100%;
+    @apply bg-blue-500;
+  }
+}

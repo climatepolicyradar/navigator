@@ -1,0 +1,54 @@
+[tool.poetry]
+name = "search-index"
+version = "0.1.0"
+description = ""
+authors = ["CPR Tech <tech@climatepolicyradar.org>"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+opensearch-py = "^1.1.0"
+SQLAlchemy = "^1.4.32"
+pandas = "^1.4.1"
+cloudpathlib = {version = "^0.7.0", extras = ["s3"]}
+sentence-transformers = "^2.2.0"
+click = "^8.0.4"
+navigator = {path = "../common", develop = true}
+psycopg2-binary = "^2.9.3"
+pytest = "^7.1.1"
+
+[tool.poetry.dev-dependencies]
+black = "^22.1.0"
+flake8 = "^4.0.1"
+mypy = "^0.941"
+pre-commit = "^2.17.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.pydocstyle]
+# D100 - Missing docstring in public module
+# D103 - Missing docstring in public function
+# D104 - Missing docstring in public package
+# D107 - Missing docstring in __init__
+# D202 - No blank lines allowed after function docstring
+# D203 - 1 blank line required before class docstring
+# D213 - Multi-line docstring summary should start at the second line
+# D400 - First line should end with a period
+# D401 - First line should be in imperative mood (Google styleguide denotes 'descriptive' style.)
+# D406 - Section name should end with a newline (incompatible with Google styleguide)
+# D407 - Missing dashed underline after section (incompatible with Google styleguide)
+# D413 - Missing blank line after last section (incompatible with Google styleguide)
+# D415 - First line should end with a period, question mark, or exclamation point
+ignore = """
+D100,D103,D104,D107,
+D202,D203,D213,
+D400,D401,D406,D407,D413,D415
+"""
+
+[tool.flake8]
+max-line-length = 88
+extend-ignore = "E203"
+
+[tool.mypy]
+ignore_missing_imports = "True"

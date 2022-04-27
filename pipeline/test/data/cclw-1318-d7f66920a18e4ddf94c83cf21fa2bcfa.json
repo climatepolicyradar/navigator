@@ -1,0 +1,6030 @@
+{
+  "pages": [
+    {
+      "text_blocks": [
+        {
+          "text": [
+            "Clean Energy Cess Rules, 2010"
+          ],
+          "text_block_id": "p0_b1",
+          "coords": [
+            [
+              189.95989990234375,
+              86.07666015625
+            ],
+            [
+              397.7910614013672,
+              86.07666015625
+            ],
+            [
+              189.95989990234375,
+              99.5550537109375
+            ],
+            [
+              397.7910614013672,
+              99.5550537109375
+            ]
+          ],
+          "type": "Title",
+          "path": [
+            "Document",
+            "Title"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ". "
+          ],
+          "text_block_id": "p0_b2",
+          "coords": [
+            [
+              397.8036804199219,
+              86.07666015625
+            ],
+            [
+              405.5950164794922,
+              86.07666015625
+            ],
+            [
+              397.8036804199219,
+              99.541015625
+            ],
+            [
+              405.5950164794922,
+              99.541015625
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "Title",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Notification No. 06/2010-Clean Energy Cess Dated 22"
+          ],
+          "text_block_id": "p0_b3",
+          "coords": [
+            [
+              144.95989990234375,
+              112.97993469238281
+            ],
+            [
+              384.49937438964844,
+              112.97993469238281
+            ],
+            [
+              144.95989990234375,
+              122.53158569335938
+            ],
+            [
+              384.49937438964844,
+              122.53158569335938
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "nd "
+          ],
+          "text_block_id": "p0_b4",
+          "coords": [
+            [
+              384.5998992919922,
+              110.51861572265625
+            ],
+            [
+              393.47381591796875,
+              110.51861572265625
+            ],
+            [
+              384.5998992919922,
+              116.73294067382812
+            ],
+            [
+              393.47381591796875,
+              116.73294067382812
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "P"
+          ],
+          "custom_attributes": {
+            "BaselineShift": 5,
+            "TextPosition": "Sup"
+          }
+        },
+        {
+          "text": [
+            "June, 2010, "
+          ],
+          "text_block_id": "p0_b5",
+          "coords": [
+            [
+              394.43980407714844,
+              112.97993469238281
+            ],
+            [
+              449.5267333984375,
+              112.97993469238281
+            ],
+            [
+              394.43980407714844,
+              122.53158569335938
+            ],
+            [
+              449.5267333984375,
+              122.53158569335938
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "as amended by Notification No. 07/2010-Clean Energy Cess Dated 08.09.2010, ",
+            "Notification No. 01/2012-Clean Energy Cess Dated 17.03.2012 "
+          ],
+          "text_block_id": "p0_b6",
+          "coords": [
+            [
+              119.63632202148438,
+              124.503662109375
+            ],
+            [
+              474.7366027832031,
+              124.503662109375
+            ],
+            [
+              119.63632202148438,
+              145.45950317382812
+            ],
+            [
+              474.7366027832031,
+              145.45950317382812
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "G.S.R. "
+          ],
+          "text_block_id": "p0_b7",
+          "coords": [
+            [
+              124.576904296875,
+              181.98281860351562
+            ],
+            [
+              157.35171508789062,
+              181.98281860351562
+            ],
+            [
+              124.576904296875,
+              191.53445434570312
+            ],
+            [
+              157.35171508789062,
+              191.53445434570312
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(E).-In exercise of the powers conferred by Section 84 of the ",
+            "Finance Act, 2010 (14 of 2010), the Central Government hereby makes the following ",
+            "rules, namely:-"
+          ],
+          "text_block_id": "p0_b8",
+          "coords": [
+            [
+              107.99565124511719,
+              181.98281860351562
+            ],
+            [
+              484.2161560058594,
+              181.98281860351562
+            ],
+            [
+              107.99565124511719,
+              214.46238708496094
+            ],
+            [
+              484.2161560058594,
+              214.46238708496094
+            ]
+          ],
+          "type": "LI",
+          "path": [
+            "Document",
+            "L",
+            "LI"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Chapter 1 "
+          ],
+          "text_block_id": "p0_b9",
+          "coords": [
+            [
+              272.7544708251953,
+              216.31494140625
+            ],
+            [
+              321.4852600097656,
+              216.31494140625
+            ],
+            [
+              272.7544708251953,
+              225.8765411376953
+            ],
+            [
+              321.4852600097656,
+              225.8765411376953
+            ]
+          ],
+          "type": "H1",
+          "path": [
+            "Document",
+            "H1"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "PRELIMINARY "
+          ],
+          "text_block_id": "p0_b10",
+          "coords": [
+            [
+              261.3523712158203,
+              227.83865356445312
+            ],
+            [
+              332.7939910888672,
+              227.83865356445312
+            ],
+            [
+              261.3523712158203,
+              237.40025329589844
+            ],
+            [
+              332.7939910888672,
+              237.40025329589844
+            ]
+          ],
+          "type": "H2",
+          "path": [
+            "Document",
+            "H2"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "1. "
+          ],
+          "text_block_id": "p0_b11",
+          "coords": [
+            [
+              107.99565124511719,
+              250.8761444091797
+            ],
+            [
+              119.04286193847656,
+              250.8761444091797
+            ],
+            [
+              107.99565124511719,
+              260.437744140625
+            ],
+            [
+              119.04286193847656,
+              260.437744140625
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Short title, extent and commencement"
+          ],
+          "text_block_id": "p0_b12",
+          "coords": [
+            [
+              143.9912872314453,
+              250.8761444091797
+            ],
+            [
+              330.6685028076172,
+              250.8761444091797
+            ],
+            [
+              143.9912872314453,
+              260.437744140625
+            ],
+            [
+              330.6685028076172,
+              260.437744140625
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI",
+            "LBody",
+            "ParagraphSpan",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ".-"
+          ],
+          "text_block_id": "p0_b13",
+          "coords": [
+            [
+              107.99565124511719,
+              250.8761444091797
+            ],
+            [
+              486.48365783691406,
+              250.8761444091797
+            ],
+            [
+              107.99565124511719,
+              272.0710144042969
+            ],
+            [
+              486.48365783691406,
+              272.0710144042969
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(1) These rules may be called ",
+            "the Clean Energy Cess Rules, 2010. "
+          ],
+          "text_block_id": "p0_b14",
+          "coords": [
+            [
+              107.99565124511719,
+              250.8761444091797
+            ],
+            [
+              486.48365783691406,
+              250.8761444091797
+            ],
+            [
+              107.99565124511719,
+              272.0710144042969
+            ],
+            [
+              486.48365783691406,
+              272.0710144042969
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(2) "
+          ],
+          "text_block_id": "p0_b15",
+          "coords": [
+            [
+              125.99844360351562,
+              273.923583984375
+            ],
+            [
+              140.95230102539062,
+              273.923583984375
+            ],
+            [
+              125.99844360351562,
+              283.4752197265625
+            ],
+            [
+              140.95230102539062,
+              283.4752197265625
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI",
+            "LBody",
+            "L",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "They extend to the whole of India. "
+          ],
+          "text_block_id": "p0_b16",
+          "coords": [
+            [
+              144.001220703125,
+              273.923583984375
+            ],
+            [
+              296.7833709716797,
+              273.923583984375
+            ],
+            [
+              144.001220703125,
+              283.4752197265625
+            ],
+            [
+              296.7833709716797,
+              283.4752197265625
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI",
+            "LBody",
+            "L",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(3) "
+          ],
+          "text_block_id": "p0_b17",
+          "coords": [
+            [
+              125.99844360351562,
+              285.4472961425781
+            ],
+            [
+              140.95230102539062,
+              285.4472961425781
+            ],
+            [
+              125.99844360351562,
+              294.9989471435547
+            ],
+            [
+              140.95230102539062,
+              294.9989471435547
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI",
+            "LBody",
+            "L",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "They shall come into force on the 1st day of July, 2010. "
+          ],
+          "text_block_id": "p0_b18",
+          "coords": [
+            [
+              144.001220703125,
+              285.4472961425781
+            ],
+            [
+              391.3362731933594,
+              285.4472961425781
+            ],
+            [
+              144.001220703125,
+              294.9989471435547
+            ],
+            [
+              391.3362731933594,
+              294.9989471435547
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI",
+            "LBody",
+            "L",
+            "LI[2]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "2. "
+          ],
+          "text_block_id": "p0_b19",
+          "coords": [
+            [
+              108.00558471679688,
+              308.3652648925781
+            ],
+            [
+              119.05279541015625,
+              308.3652648925781
+            ],
+            [
+              108.00558471679688,
+              317.92686462402344
+            ],
+            [
+              119.05279541015625,
+              317.92686462402344
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Definitions. "
+          ],
+          "text_block_id": "p0_b20",
+          "coords": [
+            [
+              144.001220703125,
+              308.3652648925781
+            ],
+            [
+              201.13894653320312,
+              308.3652648925781
+            ],
+            [
+              144.001220703125,
+              317.92686462402344
+            ],
+            [
+              201.13894653320312,
+              317.92686462402344
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "ParagraphSpan",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "-In these rules, unless the context otherwise requires, \u2013 "
+          ],
+          "text_block_id": "p0_b21",
+          "coords": [
+            [
+              144.001220703125,
+              308.3652648925781
+            ],
+            [
+              451.82704162597656,
+              308.3652648925781
+            ],
+            [
+              144.001220703125,
+              317.92686462402344
+            ],
+            [
+              451.82704162597656,
+              317.92686462402344
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(a)"
+          ],
+          "text_block_id": "p0_b22",
+          "coords": [
+            [
+              130.56126403808594,
+              320.0084991455078
+            ],
+            [
+              142.7515869140625,
+              320.0084991455078
+            ],
+            [
+              130.56126403808594,
+              329.5601348876953
+            ],
+            [
+              142.7515869140625,
+              329.5601348876953
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\"Act\" means the Finance Act, 2010 (14 of 2010); "
+          ],
+          "text_block_id": "p0_b23",
+          "coords": [
+            [
+              144.001220703125,
+              320.0084991455078
+            ],
+            [
+              360.49395751953125,
+              320.0084991455078
+            ],
+            [
+              144.001220703125,
+              329.5601348876953
+            ],
+            [
+              360.49395751953125,
+              329.5601348876953
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(b)"
+          ],
+          "text_block_id": "p0_b24",
+          "coords": [
+            [
+              130.56126403808594,
+              331.41270446777344
+            ],
+            [
+              142.7515869140625,
+              331.41270446777344
+            ],
+            [
+              130.56126403808594,
+              340.96434020996094
+            ],
+            [
+              142.7515869140625,
+              340.96434020996094
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u201cBoard\u201d means the Central Board of Excise and Customs constituted under ",
+            "the Central Boards of Revenue Act, 1963 (54 of 1963); "
+          ],
+          "text_block_id": "p0_b25",
+          "coords": [
+            [
+              144.001220703125,
+              331.41270446777344
+            ],
+            [
+              486.45176696777344,
+              331.41270446777344
+            ],
+            [
+              144.001220703125,
+              352.4880676269531
+            ],
+            [
+              486.45176696777344,
+              352.4880676269531
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[2]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(c) "
+          ],
+          "text_block_id": "p0_b26",
+          "coords": [
+            [
+              130.56126403808594,
+              354.46014404296875
+            ],
+            [
+              145.0349884033203,
+              354.46014404296875
+            ],
+            [
+              130.56126403808594,
+              364.01177978515625
+            ],
+            [
+              145.0349884033203,
+              364.01177978515625
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[3]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u201ccess\u201d means the Clean Energy Cess levied under section 83 of the Act; "
+          ],
+          "text_block_id": "p0_b27",
+          "coords": [
+            [
+              147.7250518798828,
+              354.46014404296875
+            ],
+            [
+              469.46600341796875,
+              354.46014404296875
+            ],
+            [
+              147.7250518798828,
+              364.01177978515625
+            ],
+            [
+              469.46600341796875,
+              364.01177978515625
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(d) "
+          ],
+          "text_block_id": "p0_b28",
+          "coords": [
+            [
+              130.56126403808594,
+              365.9838562011719
+            ],
+            [
+              145.51513671875,
+              365.9838562011719
+            ],
+            [
+              130.56126403808594,
+              375.53550720214844
+            ],
+            [
+              145.51513671875,
+              375.53550720214844
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[4]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u201cCentral Excise Officer\u201d shall have the meaning assigned to it in the Central ",
+            "Excise Act, 1944(1 of 1944); "
+          ],
+          "text_block_id": "p0_b29",
+          "coords": [
+            [
+              130.56126403808594,
+              365.9838562011719
+            ],
+            [
+              486.42103576660156,
+              365.9838562011719
+            ],
+            [
+              130.56126403808594,
+              387.05921936035156
+            ],
+            [
+              486.42103576660156,
+              387.05921936035156
+            ]
+          ],
+          "type": "LI",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[4]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(e) "
+          ],
+          "text_block_id": "p0_b30",
+          "coords": [
+            [
+              130.55133056640625,
+              389.0312957763672
+            ],
+            [
+              145.50518798828125,
+              389.0312957763672
+            ],
+            [
+              130.55133056640625,
+              398.58294677734375
+            ],
+            [
+              145.50518798828125,
+              398.58294677734375
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u201cmine\u201d shall have the meaning assigned to it under Mines Act,1952 (32 of ",
+            "1952); "
+          ],
+          "text_block_id": "p0_b31",
+          "coords": [
+            [
+              143.9912872314453,
+              389.0312957763672
+            ],
+            [
+              486.3762969970703,
+              389.0312957763672
+            ],
+            [
+              143.9912872314453,
+              409.9871368408203
+            ],
+            [
+              486.3762969970703,
+              409.9871368408203
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(f) "
+          ],
+          "text_block_id": "p0_b32",
+          "coords": [
+            [
+              130.55133056640625,
+              411.95921325683594
+            ],
+            [
+              142.8649139404297,
+              411.95921325683594
+            ],
+            [
+              130.55133056640625,
+              421.5108642578125
+            ],
+            [
+              142.8649139404297,
+              421.5108642578125
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[6]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u201cproducer\u201d means any person engaged in the production of specified goods ",
+            "and includes a owner or agent as defined under section 2 of the Mines Act, ",
+            "1952 (32 of 1952); "
+          ],
+          "text_block_id": "p0_b33",
+          "coords": [
+            [
+              130.55133056640625,
+              411.95921325683594
+            ],
+            [
+              486.4876251220703,
+              411.95921325683594
+            ],
+            [
+              130.55133056640625,
+              444.5583038330078
+            ],
+            [
+              486.4876251220703,
+              444.5583038330078
+            ]
+          ],
+          "type": "LI",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[6]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(g) "
+          ],
+          "text_block_id": "p0_b34",
+          "coords": [
+            [
+              133.3148651123047,
+              446.53038024902344
+            ],
+            [
+              148.26873779296875,
+              446.53038024902344
+            ],
+            [
+              133.3148651123047,
+              456.08201599121094
+            ],
+            [
+              148.26873779296875,
+              456.08201599121094
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[7]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u201cremoval\u201d means despatch of specified goods from a mine and shall ",
+            "include despatch of such goods for captive consumption within that mine for ",
+            "any purpose other than for raising of such goods; "
+          ],
+          "text_block_id": "p0_b35",
+          "coords": [
+            [
+              143.9912872314453,
+              446.53038024902344
+            ],
+            [
+              486.55714416503906,
+              446.53038024902344
+            ],
+            [
+              143.9912872314453,
+              479.0099334716797
+            ],
+            [
+              486.55714416503906,
+              479.0099334716797
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[7]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(h) "
+          ],
+          "text_block_id": "p0_b36",
+          "coords": [
+            [
+              130.55133056640625,
+              480.9820251464844
+            ],
+            [
+              145.50518798828125,
+              480.9820251464844
+            ],
+            [
+              130.55133056640625,
+              490.5336608886719
+            ],
+            [
+              145.50518798828125,
+              490.5336608886719
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[8]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u201cspecified goods \u201c means raw coal, raw lignite and raw peat. "
+          ],
+          "text_block_id": "p0_b37",
+          "coords": [
+            [
+              151.07907104492188,
+              480.9820251464844
+            ],
+            [
+              419.41307067871094,
+              480.9820251464844
+            ],
+            [
+              151.07907104492188,
+              490.5336608886719
+            ],
+            [
+              419.41307067871094,
+              490.5336608886719
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[2]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI[8]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Chapter 2 "
+          ],
+          "text_block_id": "p0_b38",
+          "coords": [
+            [
+              272.74452209472656,
+              503.8999786376953
+            ],
+            [
+              321.4753112792969,
+              503.8999786376953
+            ],
+            [
+              272.74452209472656,
+              513.4615783691406
+            ],
+            [
+              321.4753112792969,
+              513.4615783691406
+            ]
+          ],
+          "type": "H1",
+          "path": [
+            "Document",
+            "H1[2]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "COLLECTION AND ASSESSMENT OF CESS "
+          ],
+          "text_block_id": "p0_b39",
+          "coords": [
+            [
+              191.9854736328125,
+              515.4237060546875
+            ],
+            [
+              402.38356018066406,
+              515.4237060546875
+            ],
+            [
+              191.9854736328125,
+              524.9853057861328
+            ],
+            [
+              402.38356018066406,
+              524.9853057861328
+            ]
+          ],
+          "type": "H2",
+          "path": [
+            "Document",
+            "H2[2]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "3. "
+          ],
+          "text_block_id": "p0_b40",
+          "coords": [
+            [
+              107.98570251464844,
+              538.3416595458984
+            ],
+            [
+              119.03291320800781,
+              538.3416595458984
+            ],
+            [
+              107.98570251464844,
+              547.9032592773438
+            ],
+            [
+              119.03291320800781,
+              547.9032592773438
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Registration.\u2212 "
+          ],
+          "text_block_id": "p0_b41",
+          "coords": [
+            [
+              143.98133850097656,
+              538.3416595458984
+            ],
+            [
+              213.6365203857422,
+              538.3416595458984
+            ],
+            [
+              143.98133850097656,
+              547.9032592773438
+            ],
+            [
+              213.6365203857422,
+              547.9032592773438
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "LBody",
+            "ParagraphSpan",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Every producer "
+          ],
+          "text_block_id": "p0_b42",
+          "coords": [
+            [
+              143.97140502929688,
+              538.3416595458984
+            ],
+            [
+              486.4717254638672,
+              538.3416595458984
+            ],
+            [
+              143.97140502929688,
+              582.583984375
+            ],
+            [
+              486.4717254638672,
+              582.583984375
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "who is liable to pay cess "
+          ],
+          "text_block_id": "p0_b43",
+          "coords": [
+            [
+              143.97140502929688,
+              538.3416595458984
+            ],
+            [
+              486.4717254638672,
+              538.3416595458984
+            ],
+            [
+              143.97140502929688,
+              582.583984375
+            ],
+            [
+              486.4717254638672,
+              582.583984375
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "shall get ",
+            "registered immediately with the jurisdictional Central Excise Officer "
+          ],
+          "text_block_id": "p0_b44",
+          "coords": [
+            [
+              143.97140502929688,
+              538.3416595458984
+            ],
+            [
+              486.4717254638672,
+              538.3416595458984
+            ],
+            [
+              143.97140502929688,
+              582.583984375
+            ],
+            [
+              486.4717254638672,
+              582.583984375
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "but not ",
+            "later than a period of thirty days from the date of commencement "
+          ],
+          "text_block_id": "p0_b45",
+          "coords": [
+            [
+              143.97140502929688,
+              538.3416595458984
+            ],
+            [
+              486.4717254638672,
+              538.3416595458984
+            ],
+            [
+              143.97140502929688,
+              582.583984375
+            ],
+            [
+              486.4717254638672,
+              582.583984375
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "of these ",
+            "rules by making an application to the jurisdictional Central Excise Officer : "
+          ],
+          "text_block_id": "p0_b46",
+          "coords": [
+            [
+              143.97140502929688,
+              538.3416595458984
+            ],
+            [
+              486.4717254638672,
+              538.3416595458984
+            ],
+            [
+              143.97140502929688,
+              582.583984375
+            ],
+            [
+              486.4717254638672,
+              582.583984375
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Provided that where a producer commences production of the specified ",
+            "goods at any time after the commencement of these rules, such ",
+            "producer shall obtain registration within thirty days from the ",
+            "commencement of such production ; "
+          ],
+          "text_block_id": "p0_b47",
+          "coords": [
+            [
+              161.9741973876953,
+              595.9602661132812
+            ],
+            [
+              486.60194396972656,
+              595.9602661132812
+            ],
+            [
+              161.9741973876953,
+              640.0830535888672
+            ],
+            [
+              486.60194396972656,
+              640.0830535888672
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Provided further that where a producer has a centralized billing or ",
+            "accounting system in respect of such specified goods produced at ",
+            "different mines, he may, instead, opt for registering only the premises or ",
+            "office from where such centralized billing or accounting is done. "
+          ],
+          "text_block_id": "p0_b48",
+          "coords": [
+            [
+              143.97140502929688,
+              538.3416595458984
+            ],
+            [
+              486.60194396972656,
+              538.3416595458984
+            ],
+            [
+              143.97140502929688,
+              697.5821380615234
+            ],
+            [
+              486.60194396972656,
+              697.5821380615234
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        }
+      ],
+      "dimensions": [
+        612.0,
+        792.0
+      ],
+      "page_id": 0
+    },
+    {
+      "text_blocks": [
+        {
+          "text": [
+            "4. "
+          ],
+          "text_block_id": "p1_b1",
+          "coords": [
+            [
+              108.0,
+              73.73994445800781
+            ],
+            [
+              119.04721069335938,
+              73.73994445800781
+            ],
+            [
+              108.0,
+              83.30154418945312
+            ],
+            [
+              119.04721069335938,
+              83.30154418945312
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Cess payable on removal"
+          ],
+          "text_block_id": "p1_b2",
+          "coords": [
+            [
+              143.99563598632812,
+              73.73994445800781
+            ],
+            [
+              266.03883361816406,
+              73.73994445800781
+            ],
+            [
+              143.99563598632812,
+              83.30154418945312
+            ],
+            [
+              266.03883361816406,
+              83.30154418945312
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[2]",
+            "LBody",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ".\u2212 Every producer shall pay the cess leviable on ",
+            "the removal of the specified goods in the manner provided in rule 6. "
+          ],
+          "text_block_id": "p1_b3",
+          "coords": [
+            [
+              143.99563598632812,
+              73.73994445800781
+            ],
+            [
+              486.49595642089844,
+              73.73994445800781
+            ],
+            [
+              143.99563598632812,
+              94.934814453125
+            ],
+            [
+              486.49595642089844,
+              94.934814453125
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[2]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "5. "
+          ],
+          "text_block_id": "p1_b4",
+          "coords": [
+            [
+              108.0,
+              108.19157409667969
+            ],
+            [
+              119.04721069335938,
+              108.19157409667969
+            ],
+            [
+              108.0,
+              117.753173828125
+            ],
+            [
+              119.04721069335938,
+              117.753173828125
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[3]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Assessment of cess"
+          ],
+          "text_block_id": "p1_b5",
+          "coords": [
+            [
+              143.99563598632812,
+              108.19157409667969
+            ],
+            [
+              240.72259521484375,
+              108.19157409667969
+            ],
+            [
+              143.99563598632812,
+              117.753173828125
+            ],
+            [
+              240.72259521484375,
+              117.753173828125
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[3]",
+            "LBody",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ".\u2212 The producer shall himself assess the cess payable ",
+            "on the specified goods. "
+          ],
+          "text_block_id": "p1_b6",
+          "coords": [
+            [
+              108.0,
+              108.19157409667969
+            ],
+            [
+              486.4949645996094,
+              108.19157409667969
+            ],
+            [
+              108.0,
+              129.38645935058594
+            ],
+            [
+              486.4949645996094,
+              129.38645935058594
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "6. "
+          ],
+          "text_block_id": "p1_b7",
+          "coords": [
+            [
+              108.0,
+              142.75277709960938
+            ],
+            [
+              119.04721069335938,
+              142.75277709960938
+            ],
+            [
+              108.0,
+              152.3143768310547
+            ],
+            [
+              119.04721069335938,
+              152.3143768310547
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Manner of payment"
+          ],
+          "text_block_id": "p1_b8",
+          "coords": [
+            [
+              143.99563598632812,
+              142.75277709960938
+            ],
+            [
+              238.2661590576172,
+              142.75277709960938
+            ],
+            [
+              143.99563598632812,
+              152.3143768310547
+            ],
+            [
+              238.2661590576172,
+              152.3143768310547
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "ParagraphSpan",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ".\u2212 (1) Cess on the specified goods removed from the ",
+            "mine during a month shall be paid by the 5"
+          ],
+          "text_block_id": "p1_b9",
+          "coords": [
+            [
+              143.99563598632812,
+              142.75277709960938
+            ],
+            [
+              486.4980926513672,
+              142.75277709960938
+            ],
+            [
+              143.99563598632812,
+              175.45530700683594
+            ],
+            [
+              486.4980926513672,
+              175.45530700683594
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "th "
+          ],
+          "text_block_id": "p1_b10",
+          "coords": [
+            [
+              337.4398956298828,
+              151.9186248779297
+            ],
+            [
+              344.7538757324219,
+              151.9186248779297
+            ],
+            [
+              337.4398956298828,
+              158.1329345703125
+            ],
+            [
+              344.7538757324219,
+              158.1329345703125
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BaselineShift": 5,
+            "TextPosition": "Sup"
+          }
+        },
+        {
+          "text": [
+            "of the second month, following ",
+            "the month in which the removals were made: "
+          ],
+          "text_block_id": "p1_b11",
+          "coords": [
+            [
+              143.99563598632812,
+              142.75277709960938
+            ],
+            [
+              486.4980926513672,
+              142.75277709960938
+            ],
+            [
+              143.99563598632812,
+              175.45530700683594
+            ],
+            [
+              486.4980926513672,
+              175.45530700683594
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Illustration"
+          ],
+          "text_block_id": "p1_b12",
+          "coords": [
+            [
+              166.56040954589844,
+              188.82162475585938
+            ],
+            [
+              212.0594482421875,
+              188.82162475585938
+            ],
+            [
+              166.56040954589844,
+              198.2039337158203
+            ],
+            [
+              212.0594482421875,
+              198.2039337158203
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "P",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ".\u2212 Cess payable on specified goods removed from the ",
+            "factory for the month of July, 2010 shall be paid by the 5"
+          ],
+          "text_block_id": "p1_b13",
+          "coords": [
+            [
+              166.56040954589844,
+              188.7021026611328
+            ],
+            [
+              486.61341857910156,
+              188.7021026611328
+            ],
+            [
+              166.56040954589844,
+              209.89697265625
+            ],
+            [
+              486.61341857910156,
+              209.89697265625
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "th "
+          ],
+          "text_block_id": "p1_b14",
+          "coords": [
+            [
+              463.1997985839844,
+              197.87852478027344
+            ],
+            [
+              470.51377868652344,
+              197.87852478027344
+            ],
+            [
+              463.1997985839844,
+              204.09283447265625
+            ],
+            [
+              470.51377868652344,
+              204.09283447265625
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": {
+            "BaselineShift": 5,
+            "TextPosition": "Sup"
+          }
+        },
+        {
+          "text": [
+            "of ",
+            "September, 2010. "
+          ],
+          "text_block_id": "p1_b15",
+          "coords": [
+            [
+              166.55926513671875,
+              200.33984375
+            ],
+            [
+              486.4870147705078,
+              200.33984375
+            ],
+            [
+              166.55926513671875,
+              221.4152069091797
+            ],
+            [
+              486.4870147705078,
+              221.4152069091797
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(2) "
+          ],
+          "text_block_id": "p1_b16",
+          "coords": [
+            [
+              144.0035858154297,
+              234.9010467529297
+            ],
+            [
+              158.95745849609375,
+              234.9010467529297
+            ],
+            [
+              144.0035858154297,
+              244.4526824951172
+            ],
+            [
+              158.95745849609375,
+              244.4526824951172
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "A producer who has opted for centralized registration in respect of ",
+            "its mines located at different places under rule 3, shall discharge the cess ",
+            "liability in respect of the aggregate removal of specified goods from all such ",
+            "mines effected during a month by the stipulated period specified in sub-rule ",
+            "(1) "
+          ],
+          "text_block_id": "p1_b17",
+          "coords": [
+            [
+              144.0035858154297,
+              234.9010467529297
+            ],
+            [
+              486.49993896484375,
+              234.9010467529297
+            ],
+            [
+              144.0035858154297,
+              290.42803955078125
+            ],
+            [
+              486.49993896484375,
+              290.42803955078125
+            ]
+          ],
+          "type": "LI",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(3) "
+          ],
+          "text_block_id": "p1_b18",
+          "coords": [
+            [
+              144.0035858154297,
+              303.91387939453125
+            ],
+            [
+              158.95745849609375,
+              303.91387939453125
+            ],
+            [
+              144.0035858154297,
+              313.46551513671875
+            ],
+            [
+              158.95745849609375,
+              313.46551513671875
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Where a producer has paid to the credit of the Central Government ",
+            "any amount in excess of the amount required to be paid towards cess ",
+            "liability for a month, such producer may adjust such excess amount paid by ",
+            "him against the cess liability for the next month: "
+          ],
+          "text_block_id": "p1_b19",
+          "coords": [
+            [
+              144.0035858154297,
+              303.91387939453125
+            ],
+            [
+              486.6202087402344,
+              303.91387939453125
+            ],
+            [
+              144.0035858154297,
+              347.9171600341797
+            ],
+            [
+              486.6202087402344,
+              347.9171600341797
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[2]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Provided that the adjustment of excess amount paid under sub-rule ",
+            "(2) shall be subject to the condition that such excess amount paid is on ",
+            "account of reasons not involving interpretation of law, taxability, or ",
+            "applicability of any exemption notification; "
+          ],
+          "text_block_id": "p1_b20",
+          "coords": [
+            [
+              162.00637817382812,
+              361.4129638671875
+            ],
+            [
+              486.50489807128906,
+              361.4129638671875
+            ],
+            [
+              162.00637817382812,
+              405.41624450683594
+            ],
+            [
+              486.50489807128906,
+              405.41624450683594
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[2]",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Provided further that the producer may, instead, file a refund claim ",
+            "for any excess amount of cess paid if such producer fails to adjust the ",
+            "excess amount against the cess liability for the next month. "
+          ],
+          "text_block_id": "p1_b21",
+          "coords": [
+            [
+              144.0035858154297,
+              303.91387939453125
+            ],
+            [
+              486.6202087402344,
+              303.91387939453125
+            ],
+            [
+              144.0035858154297,
+              451.3816375732422
+            ],
+            [
+              486.6202087402344,
+              451.3816375732422
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[2]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(4) "
+          ],
+          "text_block_id": "p1_b22",
+          "coords": [
+            [
+              144.0035858154297,
+              464.8674774169922
+            ],
+            [
+              158.95745849609375,
+              464.8674774169922
+            ],
+            [
+              144.0035858154297,
+              474.4191131591797
+            ],
+            [
+              158.95745849609375,
+              474.4191131591797
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[3]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Where any producer fails to pay the cess by the due date, he shall ",
+            "be liable to pay the outstanding amount along with interest at the rate ",
+            "specified by the Central Government under section 11AA of the Central ",
+            "Excise, 1944 (1 of 1944) on the outstanding amount for the period starting ",
+            "from the first day after the due date till the date of the actual payment of the ",
+            "outstanding amount. "
+          ],
+          "text_block_id": "p1_b23",
+          "coords": [
+            [
+              144.0035858154297,
+              464.8674774169922
+            ],
+            [
+              486.5128479003906,
+              464.8674774169922
+            ],
+            [
+              144.0035858154297,
+              531.9181976318359
+            ],
+            [
+              486.5128479003906,
+              531.9181976318359
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(5) "
+          ],
+          "text_block_id": "p1_b24",
+          "coords": [
+            [
+              144.0035858154297,
+              545.4040374755859
+            ],
+            [
+              158.95745849609375,
+              545.4040374755859
+            ],
+            [
+              144.0035858154297,
+              554.9556732177734
+            ],
+            [
+              158.95745849609375,
+              554.9556732177734
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[4]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Where any producer defaults in payment beyond thirty days from the ",
+            "due date as specified in rule 6, such specified goods shall be deemed to ",
+            "have been cleared without payment of cess and the consequences and ",
+            "penalties under these rules and provisions of the Central Excise Act, 1944 (1 ",
+            "of 1944) as have been made applicable, shall follow in addition to payment ",
+            "of interest under sub-rule (4). "
+          ],
+          "text_block_id": "p1_b25",
+          "coords": [
+            [
+              144.0035858154297,
+              545.4040374755859
+            ],
+            [
+              486.49794006347656,
+              545.4040374755859
+            ],
+            [
+              144.0035858154297,
+              612.4547576904297
+            ],
+            [
+              486.49794006347656,
+              612.4547576904297
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[4]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(6) "
+          ],
+          "text_block_id": "p1_b26",
+          "coords": [
+            [
+              144.0035858154297,
+              625.9405975341797
+            ],
+            [
+              158.95745849609375,
+              625.9405975341797
+            ],
+            [
+              144.0035858154297,
+              635.4922332763672
+            ],
+            [
+              158.95745849609375,
+              635.4922332763672
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "The provisions of section 11 of the Central Excise Act , 1944 (1 of ",
+            "1944) shall be applicable for recovery of the cess as assessed under rule 5 ",
+            "and the interest under sub-rule (4) in the same manner as they are ",
+            "applicable for recovery of any sums payable to the Central Government. "
+          ],
+          "text_block_id": "p1_b27",
+          "coords": [
+            [
+              144.0035858154297,
+              625.9405975341797
+            ],
+            [
+              486.49794006347656,
+              625.9405975341797
+            ],
+            [
+              144.0035858154297,
+              669.9438781738281
+            ],
+            [
+              486.49794006347656,
+              669.9438781738281
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Explanation."
+          ],
+          "text_block_id": "p1_b28",
+          "coords": [
+            [
+              180.00917053222656,
+              683.4297180175781
+            ],
+            [
+              234.97283935546875,
+              683.4297180175781
+            ],
+            [
+              180.00917053222656,
+              692.8120422363281
+            ],
+            [
+              234.97283935546875,
+              692.8120422363281
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "LBody",
+            "P",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u2212 For the purposes of this rule, -"
+          ],
+          "text_block_id": "p1_b29",
+          "coords": [
+            [
+              234.97283935546875,
+              683.3101959228516
+            ],
+            [
+              376.89060974121094,
+              683.3101959228516
+            ],
+            [
+              234.97283935546875,
+              692.8618469238281
+            ],
+            [
+              376.89060974121094,
+              692.8618469238281
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": null
+        }
+      ],
+      "dimensions": [
+        612.0,
+        792.0
+      ],
+      "page_id": 1
+    },
+    {
+      "text_blocks": [
+        {
+          "text": [
+            "(i) "
+          ],
+          "text_block_id": "p2_b1",
+          "coords": [
+            [
+              179.99989318847656,
+              73.85993957519531
+            ],
+            [
+              191.59378051757812,
+              73.85993957519531
+            ],
+            [
+              179.99989318847656,
+              83.41157531738281
+            ],
+            [
+              191.59378051757812,
+              83.41157531738281
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "LBody",
+            "L",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Cess liability shall be deemed to be discharged only if the ",
+            "amount payable is credited to the account of the Central ",
+            "Government by the specified date; "
+          ],
+          "text_block_id": "p2_b2",
+          "coords": [
+            [
+              215.9955291748047,
+              73.85993957519531
+            ],
+            [
+              486.49365234375,
+              73.85993957519531
+            ],
+            [
+              215.9955291748047,
+              106.45901489257812
+            ],
+            [
+              486.49365234375,
+              106.45901489257812
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "LBody",
+            "L",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(ii) "
+          ],
+          "text_block_id": "p2_b3",
+          "coords": [
+            [
+              179.99989318847656,
+              119.82533264160156
+            ],
+            [
+              193.75392150878906,
+              119.82533264160156
+            ],
+            [
+              179.99989318847656,
+              129.37698364257812
+            ],
+            [
+              193.75392150878906,
+              129.37698364257812
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "LBody",
+            "L",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Where the registered person deposits cess by cheque, the ",
+            "date of presentation of the cheque in the bank designated ",
+            "by the Board for this purpose shall be deemed to be the ",
+            "date on which the cess has been paid subject to realization ",
+            "of the cheque. "
+          ],
+          "text_block_id": "p2_b4",
+          "coords": [
+            [
+              215.9955291748047,
+              119.82533264160156
+            ],
+            [
+              486.5025939941406,
+              119.82533264160156
+            ],
+            [
+              215.9955291748047,
+              175.47186279296875
+            ],
+            [
+              486.5025939941406,
+              175.47186279296875
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[4]",
+            "LBody",
+            "L",
+            "LI[5]",
+            "LBody",
+            "L",
+            "LI[2]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "7. "
+          ],
+          "text_block_id": "p2_b1",
+          "coords": [
+            [
+              107.99868774414062,
+              188.71865844726562
+            ],
+            [
+              119.0458984375,
+              188.71865844726562
+            ],
+            [
+              107.99868774414062,
+              198.28025817871094
+            ],
+            [
+              119.0458984375,
+              198.28025817871094
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[5]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Maintenance of records.-"
+          ],
+          "text_block_id": "p2_b2",
+          "coords": [
+            [
+              143.99432373046875,
+              188.71865844726562
+            ],
+            [
+              269.46900939941406,
+              188.71865844726562
+            ],
+            [
+              143.99432373046875,
+              198.28025817871094
+            ],
+            [
+              269.46900939941406,
+              198.28025817871094
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[5]",
+            "LBody",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(1) Every producer shall maintain accounts ",
+            "showing the quantity of specified goods "
+          ],
+          "text_block_id": "p2_b3",
+          "coords": [
+            [
+              107.99868774414062,
+              188.71865844726562
+            ],
+            [
+              486.4190979003906,
+              188.71865844726562
+            ],
+            [
+              107.99868774414062,
+              209.91354370117188
+            ],
+            [
+              486.4190979003906,
+              209.91354370117188
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[5]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "actually removed "
+          ],
+          "text_block_id": "p2_b4",
+          "coords": [
+            [
+              314.39952087402344,
+              200.3618927001953
+            ],
+            [
+              396.4936218261719,
+              200.3618927001953
+            ],
+            [
+              314.39952087402344,
+              209.91354370117188
+            ],
+            [
+              396.4936218261719,
+              209.91354370117188
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[5]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "during a month, ",
+            "particulars to whom these were removed, the amount of cess payable during a ",
+            "month and the total amount of cess paid: "
+          ],
+          "text_block_id": "p2_b5",
+          "coords": [
+            [
+              107.99868774414062,
+              200.3618927001953
+            ],
+            [
+              486.5035858154297,
+              200.3618927001953
+            ],
+            [
+              107.99868774414062,
+              232.9609832763672
+            ],
+            [
+              486.5035858154297,
+              232.9609832763672
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[3]",
+            "LI[5]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Provided that where a producer has opted for centralized registration under ",
+            "rule 3, such producer shall maintain mine wise details mentioned in the sub-rule (1). "
+          ],
+          "text_block_id": "p2_b6",
+          "coords": [
+            [
+              107.99868774414062,
+              246.32730102539062
+            ],
+            [
+              486.43492126464844,
+              246.32730102539062
+            ],
+            [
+              107.99868774414062,
+              267.4026641845703
+            ],
+            [
+              486.43492126464844,
+              267.4026641845703
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[2]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(2) "
+          ],
+          "text_block_id": "p2_b7",
+          "coords": [
+            [
+              110.75990295410156,
+              280.8598327636719
+            ],
+            [
+              125.71377563476562,
+              280.8598327636719
+            ],
+            [
+              110.75990295410156,
+              290.41148376464844
+            ],
+            [
+              125.71377563476562,
+              290.41148376464844
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "tonne. "
+          ],
+          "text_block_id": "p2_b8",
+          "coords": [
+            [
+              108.0,
+              303.89984130859375
+            ],
+            [
+              138.4914093017578,
+              303.89984130859375
+            ],
+            [
+              108.0,
+              313.45147705078125
+            ],
+            [
+              138.4914093017578,
+              313.45147705078125
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "The amount of cess payable on any removals shall be rounded off to the nearest ",
+            "rupee and the actual weight of a consignment shall be rounded off to the nearest "
+          ],
+          "text_block_id": "p2_b9",
+          "coords": [
+            [
+              108.0,
+              280.8598327636719
+            ],
+            [
+              486.6212158203125,
+              280.8598327636719
+            ],
+            [
+              108.0,
+              313.45147705078125
+            ],
+            [
+              486.6212158203125,
+              313.45147705078125
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "8. "
+          ],
+          "text_block_id": "p2_b10",
+          "coords": [
+            [
+              108.0,
+              326.70404052734375
+            ],
+            [
+              119.04721069335938,
+              326.70404052734375
+            ],
+            [
+              108.0,
+              336.26564025878906
+            ],
+            [
+              119.04721069335938,
+              336.26564025878906
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Access to registered premises or mine"
+          ],
+          "text_block_id": "p2_b11",
+          "coords": [
+            [
+              144.00558471679688,
+              326.70404052734375
+            ],
+            [
+              329.9015197753906,
+              326.70404052734375
+            ],
+            [
+              144.00558471679688,
+              336.26564025878906
+            ],
+            [
+              329.9015197753906,
+              336.26564025878906
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "ParagraphSpan",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ".-(1) An officer empowered by the ",
+            "Commissioner in this behalf shall have access to any mine or "
+          ],
+          "text_block_id": "p2_b12",
+          "coords": [
+            [
+              108.00993347167969,
+              326.70404052734375
+            ],
+            [
+              486.3915710449219,
+              326.70404052734375
+            ],
+            [
+              108.00993347167969,
+              370.9463653564453
+            ],
+            [
+              486.3915710449219,
+              370.9463653564453
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "premises registered ",
+            "under these rules for the purpose of carrying out any scrutiny, verification and ",
+            "checks as may be considered necessary to safeguard the interest "
+          ],
+          "text_block_id": "p2_b13",
+          "coords": [
+            [
+              108.00993347167969,
+              326.70404052734375
+            ],
+            [
+              486.3915710449219,
+              326.70404052734375
+            ],
+            [
+              108.00993347167969,
+              370.9463653564453
+            ],
+            [
+              486.3915710449219,
+              370.9463653564453
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "of revenue. "
+          ],
+          "text_block_id": "p2_b14",
+          "coords": [
+            [
+              108.00993347167969,
+              326.70404052734375
+            ],
+            [
+              486.3915710449219,
+              326.70404052734375
+            ],
+            [
+              108.00993347167969,
+              370.9463653564453
+            ],
+            [
+              486.3915710449219,
+              370.9463653564453
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(2) "
+          ],
+          "text_block_id": "p2_b15",
+          "coords": [
+            [
+              144.00558471679688,
+              384.31268310546875
+            ],
+            [
+              158.95944213867188,
+              384.31268310546875
+            ],
+            [
+              144.00558471679688,
+              393.86431884765625
+            ],
+            [
+              158.95944213867188,
+              393.86431884765625
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(i) "
+          ],
+          "text_block_id": "p2_b16",
+          "coords": [
+            [
+              179.99127197265625,
+              407.36012268066406
+            ],
+            [
+              191.5851593017578,
+              407.36012268066406
+            ],
+            [
+              179.99127197265625,
+              416.91175842285156
+            ],
+            [
+              191.5851593017578,
+              416.91175842285156
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI",
+            "LBody",
+            "L",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "all records prepared and maintained for accounting of ",
+            "transactions in regard to production, storage or removal of ",
+            "specified goods; and "
+          ],
+          "text_block_id": "p2_b17",
+          "coords": [
+            [
+              197.9940643310547,
+              407.36012268066406
+            ],
+            [
+              457.3376007080078,
+              407.36012268066406
+            ],
+            [
+              197.9940643310547,
+              439.9591979980469
+            ],
+            [
+              457.3376007080078,
+              439.9591979980469
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI",
+            "LBody",
+            "L",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(ii) "
+          ],
+          "text_block_id": "p2_b18",
+          "coords": [
+            [
+              179.99127197265625,
+              441.811767578125
+            ],
+            [
+              193.7452850341797,
+              441.811767578125
+            ],
+            [
+              179.99127197265625,
+              451.3634033203125
+            ],
+            [
+              193.7452850341797,
+              451.3634033203125
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI",
+            "LBody",
+            "L",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "financial records and statements including cost audit reports etc. "
+          ],
+          "text_block_id": "p2_b19",
+          "coords": [
+            [
+              197.9940643310547,
+              441.811767578125
+            ],
+            [
+              485.29908752441406,
+              441.811767578125
+            ],
+            [
+              197.9940643310547,
+              451.3634033203125
+            ],
+            [
+              485.29908752441406,
+              451.3634033203125
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI",
+            "LBody",
+            "L",
+            "LI[2]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Every producer shall furnish to the officer empowered under sub-",
+            "rule (1) ,-"
+          ],
+          "text_block_id": "p2_b20",
+          "coords": [
+            [
+              143.99563598632812,
+              384.31268310546875
+            ],
+            [
+              485.29908752441406,
+              384.31268310546875
+            ],
+            [
+              143.99563598632812,
+              451.3634033203125
+            ],
+            [
+              485.29908752441406,
+              451.3634033203125
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[2]",
+            "LBody",
+            "L",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "9. "
+          ],
+          "text_block_id": "p2_b21",
+          "coords": [
+            [
+              108.0,
+              464.6997375488281
+            ],
+            [
+              119.04721069335938,
+              464.6997375488281
+            ],
+            [
+              108.0,
+              474.26133728027344
+            ],
+            [
+              119.04721069335938,
+              474.26133728027344
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[3]",
+            "Lbl"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "Goods to be removed under proper documents"
+          ],
+          "text_block_id": "p2_b22",
+          "coords": [
+            [
+              144.00558471679688,
+              464.6997375488281
+            ],
+            [
+              367.812744140625,
+              464.6997375488281
+            ],
+            [
+              144.00558471679688,
+              474.26133728027344
+            ],
+            [
+              367.812744140625,
+              474.26133728027344
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "indicating the quantity of specified goods and "
+          ],
+          "text_block_id": "p2_b23",
+          "coords": [
+            [
+              108.0,
+              487.8597412109375
+            ],
+            [
+              310.2177429199219,
+              487.8597412109375
+            ],
+            [
+              108.0,
+              497.411376953125
+            ],
+            [
+              310.2177429199219,
+              497.411376953125
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "the name and address of the "
+          ],
+          "text_block_id": "p2_b24",
+          "coords": [
+            [
+              313.0856628417969,
+              487.8597412109375
+            ],
+            [
+              443.1838836669922,
+              487.8597412109375
+            ],
+            [
+              313.0856628417969,
+              497.411376953125
+            ],
+            [
+              443.1838836669922,
+              497.411376953125
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "consignee. "
+          ],
+          "text_block_id": "p2_b25",
+          "coords": [
+            [
+              108.0,
+              499.37974548339844
+            ],
+            [
+              159.00723266601562,
+              499.37974548339844
+            ],
+            [
+              108.0,
+              508.93138122558594
+            ],
+            [
+              159.00723266601562,
+              508.93138122558594
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ".-(1) No specified goods ",
+            "leviable to cess shall be removed from a mine except under cover of a document "
+          ],
+          "text_block_id": "p2_b26",
+          "coords": [
+            [
+              108.0,
+              464.6997375488281
+            ],
+            [
+              479.45985412597656,
+              464.6997375488281
+            ],
+            [
+              108.0,
+              508.93138122558594
+            ],
+            [
+              479.45985412597656,
+              508.93138122558594
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "10. "
+          ],
+          "text_block_id": "p2_b27",
+          "coords": [
+            [
+              108.0,
+              522.1797332763672
+            ],
+            [
+              124.56733703613281,
+              522.1797332763672
+            ],
+            [
+              108.0,
+              531.7413330078125
+            ],
+            [
+              124.56733703613281,
+              531.7413330078125
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[4]",
+            "Lbl"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "Cess shall be shown separately in the invoice or bill"
+          ],
+          "text_block_id": "p2_b28",
+          "coords": [
+            [
+              143.99563598632812,
+              522.1797332763672
+            ],
+            [
+              405.6166076660156,
+              522.1797332763672
+            ],
+            [
+              143.99563598632812,
+              531.7413330078125
+            ],
+            [
+              405.6166076660156,
+              531.7413330078125
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[4]",
+            "LBody"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "goods. "
+          ],
+          "text_block_id": "p2_b29",
+          "coords": [
+            [
+              108.0,
+              545.3397369384766
+            ],
+            [
+              140.64756774902344,
+              545.3397369384766
+            ],
+            [
+              108.0,
+              554.8913726806641
+            ],
+            [
+              140.64756774902344,
+              554.8913726806641
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[4]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ".-Cess shall be ",
+            "shown separately by the producer in the bill or invoice raised in respect of specified "
+          ],
+          "text_block_id": "p2_b30",
+          "coords": [
+            [
+              108.0,
+              522.1797332763672
+            ],
+            [
+              486.5019226074219,
+              522.1797332763672
+            ],
+            [
+              108.0,
+              554.8913726806641
+            ],
+            [
+              486.5019226074219,
+              554.8913726806641
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[4]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "11"
+          ],
+          "text_block_id": "p2_b31",
+          "coords": [
+            [
+              108.0,
+              568.1397399902344
+            ],
+            [
+              119.04721069335938,
+              568.1397399902344
+            ],
+            [
+              108.0,
+              577.7013397216797
+            ],
+            [
+              119.04721069335938,
+              577.7013397216797
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "Lbl"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            ". "
+          ],
+          "text_block_id": "p2_b32",
+          "coords": [
+            [
+              119.04423522949219,
+              568.1397399902344
+            ],
+            [
+              124.57130432128906,
+              568.1397399902344
+            ],
+            [
+              119.04423522949219,
+              577.6913757324219
+            ],
+            [
+              124.57130432128906,
+              577.6913757324219
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "Lbl"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "Filing of return"
+          ],
+          "text_block_id": "p2_b33",
+          "coords": [
+            [
+              144.00558471679688,
+              568.1397399902344
+            ],
+            [
+              217.17079162597656,
+              568.1397399902344
+            ],
+            [
+              144.00558471679688,
+              577.7013397216797
+            ],
+            [
+              217.17079162597656,
+              577.7013397216797
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            ".-Every producer shall submit to the Jurisdictional Central "
+          ],
+          "text_block_id": "p2_b34",
+          "coords": [
+            [
+              108.0,
+              568.1397399902344
+            ],
+            [
+              486.4303436279297,
+              568.1397399902344
+            ],
+            [
+              108.0,
+              589.3313751220703
+            ],
+            [
+              486.4303436279297,
+              589.3313751220703
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "Excise Officer, "
+          ],
+          "text_block_id": "p2_b35",
+          "coords": [
+            [
+              108.0,
+              568.1397399902344
+            ],
+            [
+              486.4303436279297,
+              568.1397399902344
+            ],
+            [
+              108.0,
+              589.3313751220703
+            ],
+            [
+              486.4303436279297,
+              589.3313751220703
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "a return "
+          ],
+          "text_block_id": "p2_b36",
+          "coords": [
+            [
+              108.0,
+              568.1397399902344
+            ],
+            [
+              486.4303436279297,
+              568.1397399902344
+            ],
+            [
+              108.0,
+              589.3313751220703
+            ],
+            [
+              486.4303436279297,
+              589.3313751220703
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "in "
+          ],
+          "text_block_id": "p2_b37",
+          "coords": [
+            [
+              108.0,
+              568.1397399902344
+            ],
+            [
+              486.4303436279297,
+              568.1397399902344
+            ],
+            [
+              108.0,
+              589.3313751220703
+            ],
+            [
+              486.4303436279297,
+              589.3313751220703
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "Form -I "
+          ],
+          "text_block_id": "p2_b38",
+          "coords": [
+            [
+              242.64813232421875,
+              579.7797393798828
+            ],
+            [
+              284.65496826171875,
+              579.7797393798828
+            ],
+            [
+              242.64813232421875,
+              589.3313751220703
+            ],
+            [
+              284.65496826171875,
+              589.3313751220703
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ],
+            "TextDecorationColor": [
+              0,
+              0,
+              1
+            ],
+            "TextDecorationThickness": 0,
+            "TextDecorationType": "Underline"
+          }
+        },
+        {
+          "text": [
+            "showing the quantities of specified goods "
+          ],
+          "text_block_id": "p2_b39",
+          "coords": [
+            [
+              108.0,
+              579.7797393798828
+            ],
+            [
+              486.5440673828125,
+              579.7797393798828
+            ],
+            [
+              108.0,
+              623.8913726806641
+            ],
+            [
+              486.5440673828125,
+              623.8913726806641
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "removed "
+          ],
+          "text_block_id": "p2_b40",
+          "coords": [
+            [
+              108.0,
+              579.7797393798828
+            ],
+            [
+              486.5440673828125,
+              579.7797393798828
+            ],
+            [
+              108.0,
+              623.8913726806641
+            ],
+            [
+              486.5440673828125,
+              623.8913726806641
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "during the month in "
+          ],
+          "text_block_id": "p2_b41",
+          "coords": [
+            [
+              108.0,
+              579.7797393798828
+            ],
+            [
+              486.5440673828125,
+              579.7797393798828
+            ],
+            [
+              108.0,
+              623.8913726806641
+            ],
+            [
+              486.5440673828125,
+              623.8913726806641
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "respect of which the payment has been made, the "
+          ],
+          "text_block_id": "p2_b42",
+          "coords": [
+            [
+              108.0,
+              579.7797393798828
+            ],
+            [
+              486.5440673828125,
+              579.7797393798828
+            ],
+            [
+              108.0,
+              623.8913726806641
+            ],
+            [
+              486.5440673828125,
+              623.8913726806641
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "amount paid under rule 6 "
+          ],
+          "text_block_id": "p2_b43",
+          "coords": [
+            [
+              108.0,
+              579.7797393798828
+            ],
+            [
+              486.5440673828125,
+              579.7797393798828
+            ],
+            [
+              108.0,
+              623.8913726806641
+            ],
+            [
+              486.5440673828125,
+              623.8913726806641
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "and other particulars specified in that form enclosing the "
+          ],
+          "text_block_id": "p2_b44",
+          "coords": [
+            [
+              108.0,
+              579.7797393798828
+            ],
+            [
+              486.5440673828125,
+              579.7797393798828
+            ],
+            [
+              108.0,
+              623.8913726806641
+            ],
+            [
+              486.5440673828125,
+              623.8913726806641
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "evidence of payment of cess not later than 10"
+          ],
+          "text_block_id": "p2_b45",
+          "coords": [
+            [
+              108.0,
+              579.7797393798828
+            ],
+            [
+              486.5440673828125,
+              579.7797393798828
+            ],
+            [
+              108.0,
+              623.8913726806641
+            ],
+            [
+              486.5440673828125,
+              623.8913726806641
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "th "
+          ],
+          "text_block_id": "p2_b46",
+          "coords": [
+            [
+              316.4398956298828,
+              611.87841796875
+            ],
+            [
+              323.7538757324219,
+              611.87841796875
+            ],
+            [
+              316.4398956298828,
+              618.0927429199219
+            ],
+            [
+              323.7538757324219,
+              618.0927429199219
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ],
+            "BaselineShift": 5,
+            "TextPosition": "Sup"
+          }
+        },
+        {
+          "text": [
+            "day of the second month, following "
+          ],
+          "text_block_id": "p2_b47",
+          "coords": [
+            [
+              325.5599060058594,
+              614.3397369384766
+            ],
+            [
+              486.49647521972656,
+              614.3397369384766
+            ],
+            [
+              325.5599060058594,
+              623.8913726806641
+            ],
+            [
+              486.49647521972656,
+              623.8913726806641
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "the month in which removals were made: "
+          ],
+          "text_block_id": "p2_b48",
+          "coords": [
+            [
+              108.0,
+              568.1397399902344
+            ],
+            [
+              486.5440673828125,
+              568.1397399902344
+            ],
+            [
+              108.0,
+              635.411376953125
+            ],
+            [
+              486.5440673828125,
+              635.411376953125
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Form-I "
+          ],
+          "text_block_id": "p2_b49",
+          "coords": [
+            [
+              328.6800842285156,
+              660.2997436523438
+            ],
+            [
+              365.6469268798828,
+              660.2997436523438
+            ],
+            [
+              328.6800842285156,
+              669.8513793945312
+            ],
+            [
+              365.6469268798828,
+              669.8513793945312
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ],
+            "TextDecorationColor": [
+              0,
+              0,
+              0
+            ],
+            "TextDecorationThickness": 0,
+            "TextDecorationType": "Underline"
+          }
+        },
+        {
+          "text": [
+            "information. "
+          ],
+          "text_block_id": "p2_b50",
+          "coords": [
+            [
+              143.99989318847656,
+              671.8196411132812
+            ],
+            [
+              198.96954345703125,
+              671.8196411132812
+            ],
+            [
+              143.99989318847656,
+              681.3712768554688
+            ],
+            [
+              198.96954345703125,
+              681.3712768554688
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Provided that in the case of a producer who has obtained centralized ",
+            "registration under rule 3 , the return in shall contain mine-wise "
+          ],
+          "text_block_id": "p2_b51",
+          "coords": [
+            [
+              143.99989318847656,
+              648.7796325683594
+            ],
+            [
+              486.49822998046875,
+              648.7796325683594
+            ],
+            [
+              143.99989318847656,
+              681.3712768554688
+            ],
+            [
+              486.49822998046875,
+              681.3712768554688
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "P"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Illustration"
+          ],
+          "text_block_id": "p2_b52",
+          "coords": [
+            [
+              143.99989318847656,
+              694.8591613769531
+            ],
+            [
+              189.49893188476562,
+              694.8591613769531
+            ],
+            [
+              143.99989318847656,
+              704.2414855957031
+            ],
+            [
+              189.49893188476562,
+              704.2414855957031
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "P[2]"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            ".\u2212 Return for the month of July 2010 shall be due by the 10"
+          ],
+          "text_block_id": "p2_b53",
+          "coords": [
+            [
+              189.47906494140625,
+              694.7396392822266
+            ],
+            [
+              465.8611297607422,
+              694.7396392822266
+            ],
+            [
+              189.47906494140625,
+              704.2912750244141
+            ],
+            [
+              465.8611297607422,
+              704.2912750244141
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "P[2]"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "th "
+          ],
+          "text_block_id": "p2_b54",
+          "coords": [
+            [
+              465.8397979736328,
+              692.2783203125
+            ],
+            [
+              473.1537780761719,
+              692.2783203125
+            ],
+            [
+              465.8397979736328,
+              698.4926452636719
+            ],
+            [
+              473.1537780761719,
+              698.4926452636719
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "P[2]"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ],
+            "BaselineShift": 5,
+            "TextPosition": "Sup"
+          }
+        },
+        {
+          "text": [
+            "of "
+          ],
+          "text_block_id": "p2_b55",
+          "coords": [
+            [
+              475.3197937011719,
+              694.7396392822266
+            ],
+            [
+              486.36700439453125,
+              694.7396392822266
+            ],
+            [
+              475.3197937011719,
+              704.2912750244141
+            ],
+            [
+              486.36700439453125,
+              704.2912750244141
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "P[2]"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "September, 2010.\u201d "
+          ],
+          "text_block_id": "p2_b56",
+          "coords": [
+            [
+              143.99989318847656,
+              706.2596435546875
+            ],
+            [
+              229.5177001953125,
+              706.2596435546875
+            ],
+            [
+              143.99989318847656,
+              715.811279296875
+            ],
+            [
+              229.5177001953125,
+              715.811279296875
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[5]",
+            "LBody",
+            "P[2]"
+          ],
+          "custom_attributes": null
+        }
+      ],
+      "dimensions": [
+        612.0,
+        792.0
+      ],
+      "page_id": 2
+    },
+    {
+      "text_blocks": [
+        {
+          "text": [
+            "12. "
+          ],
+          "text_block_id": "p3_b1",
+          "coords": [
+            [
+              108.0,
+              86.93994140625
+            ],
+            [
+              124.56733703613281,
+              86.93994140625
+            ],
+            [
+              108.0,
+              96.50154113769531
+            ],
+            [
+              124.56733703613281,
+              96.50154113769531
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[6]",
+            "Lbl"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "General penalty.-"
+          ],
+          "text_block_id": "p3_b2",
+          "coords": [
+            [
+              143.99563598632812,
+              86.93994140625
+            ],
+            [
+              226.87200927734375,
+              86.93994140625
+            ],
+            [
+              143.99563598632812,
+              96.50154113769531
+            ],
+            [
+              226.87200927734375,
+              96.50154113769531
+            ]
+          ],
+          "type": "StyleSpan",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[6]",
+            "LBody"
+          ],
+          "custom_attributes": {
+            "BackgroundColor": [
+              1,
+              1,
+              1
+            ]
+          }
+        },
+        {
+          "text": [
+            "no penalty is provided elsewhere. "
+          ],
+          "text_block_id": "p3_b3",
+          "coords": [
+            [
+              108.0,
+              121.61993408203125
+            ],
+            [
+              259.0872344970703,
+              121.61993408203125
+            ],
+            [
+              108.0,
+              131.1715850830078
+            ],
+            [
+              259.0872344970703,
+              131.1715850830078
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[6]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Whoever contravenes any of the provisions of these ",
+            "rules shall be liable to pay a penalty which may extend to ten thousand rupees and ",
+            "confiscation of the goods in question in respect of which the contravention is made, if "
+          ],
+          "text_block_id": "p3_b4",
+          "coords": [
+            [
+              108.0,
+              86.93994140625
+            ],
+            [
+              486.48204040527344,
+              86.93994140625
+            ],
+            [
+              108.0,
+              131.1715850830078
+            ],
+            [
+              486.48204040527344,
+              131.1715850830078
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[4]",
+            "LI[6]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "\u201cFORM \u2013I "
+          ],
+          "text_block_id": "p3_b5",
+          "coords": [
+            [
+              273.8404998779297,
+              190.73983764648438
+            ],
+            [
+              320.4111633300781,
+              190.73983764648438
+            ],
+            [
+              273.8404998779297,
+              200.29147338867188
+            ],
+            [
+              320.4111633300781,
+              200.29147338867188
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[3]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Monthly Return for Removal of specified goods "
+          ],
+          "text_block_id": "p3_b6",
+          "coords": [
+            [
+              183.35934448242188,
+              213.77731323242188
+            ],
+            [
+              411.0195617675781,
+              213.77731323242188
+            ],
+            [
+              183.35934448242188,
+              223.3389129638672
+            ],
+            [
+              411.0195617675781,
+              223.3389129638672
+            ]
+          ],
+          "type": "H3",
+          "path": [
+            "Document",
+            "H3"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(See rule 11) "
+          ],
+          "text_block_id": "p3_b7",
+          "coords": [
+            [
+              266.88194274902344,
+              227.09384155273438
+            ],
+            [
+              327.3159637451172,
+              227.09384155273438
+            ],
+            [
+              266.88194274902344,
+              236.64547729492188
+            ],
+            [
+              327.3159637451172,
+              236.64547729492188
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[4]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "II. Details of Specified Goods removed and Cess payable "
+          ],
+          "text_block_id": "p3_b8",
+          "coords": [
+            [
+              108.0078125,
+              483.7780456542969
+            ],
+            [
+              387.0430908203125,
+              483.7780456542969
+            ],
+            [
+              108.0078125,
+              493.3396453857422
+            ],
+            [
+              387.0430908203125,
+              493.3396453857422
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[5]"
+          ],
+          "custom_attributes": null
+        }
+      ],
+      "dimensions": [
+        612.0,
+        792.0
+      ],
+      "page_id": 3
+    },
+    {
+      "text_blocks": [
+        {
+          "text": [
+            "IV. Details of other Payments: "
+          ],
+          "text_block_id": "p4_b1",
+          "coords": [
+            [
+              108.0,
+              134.4544219970703
+            ],
+            [
+              272.84423828125,
+              134.4544219970703
+            ],
+            [
+              108.0,
+              144.01602172851562
+            ],
+            [
+              272.84423828125,
+              144.01602172851562
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[6]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(*Miscellaneous payments include penalty, pre-deposit, "
+          ],
+          "text_block_id": "p4_b2",
+          "coords": [
+            [
+              207.86656188964844,
+              334.01983642578125
+            ],
+            [
+              455.2016143798828,
+              334.01983642578125
+            ],
+            [
+              207.86656188964844,
+              343.5714874267578
+            ],
+            [
+              455.2016143798828,
+              343.5714874267578
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[7]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "redemption fine.) "
+          ],
+          "text_block_id": "p4_b3",
+          "coords": [
+            [
+              108.00425720214844,
+              347.33636474609375
+            ],
+            [
+              185.72450256347656,
+              347.33636474609375
+            ],
+            [
+              108.00425720214844,
+              356.88800048828125
+            ],
+            [
+              185.72450256347656,
+              356.88800048828125
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[8]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "V"
+          ],
+          "text_block_id": "p4_b4",
+          "coords": [
+            [
+              108.00425720214844,
+              370.2543182373047
+            ],
+            [
+              114.63485717773438,
+              370.2543182373047
+            ],
+            [
+              108.00425720214844,
+              379.81591796875
+            ],
+            [
+              114.63485717773438,
+              379.81591796875
+            ]
+          ],
+          "type": "Span",
+          "path": [
+            "Document",
+            "L[5]",
+            "LI",
+            "Lbl",
+            "Span"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            ". "
+          ],
+          "text_block_id": "p4_b5",
+          "coords": [
+            [
+              108.00425720214844,
+              370.2543182373047
+            ],
+            [
+              120.13203430175781,
+              370.2543182373047
+            ],
+            [
+              108.00425720214844,
+              379.81591796875
+            ],
+            [
+              120.13203430175781,
+              379.81591796875
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[5]",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(a) I hereby declare that the information given in this return is true, correct and ",
+            "complete in every respect and that I am authorized to sign on behalf of the ",
+            "assessee. "
+          ],
+          "text_block_id": "p4_b6",
+          "coords": [
+            [
+              120.12210083007812,
+              370.2543182373047
+            ],
+            [
+              486.51214599609375,
+              370.2543182373047
+            ],
+            [
+              120.12210083007812,
+              402.97291564941406
+            ],
+            [
+              486.51214599609375,
+              402.97291564941406
+            ]
+          ],
+          "type": "ParagraphSpan",
+          "path": [
+            "Document",
+            "L[5]",
+            "LI",
+            "LBody",
+            "ParagraphSpan"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(b) "
+          ],
+          "text_block_id": "p4_b7",
+          "coords": [
+            [
+              119.05842590332031,
+              404.94500732421875
+            ],
+            [
+              134.01229858398438,
+              404.94500732421875
+            ],
+            [
+              119.05842590332031,
+              414.49664306640625
+            ],
+            [
+              134.01229858398438,
+              414.49664306640625
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[5]",
+            "LI",
+            "LBody",
+            "L",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "During the month a total amount of Rs._____ was deposited vide TR-6 ",
+            "Challan (copies enclosed). "
+          ],
+          "text_block_id": "p4_b8",
+          "coords": [
+            [
+              119.05842590332031,
+              404.94500732421875
+            ],
+            [
+              486.5002136230469,
+              404.94500732421875
+            ],
+            [
+              119.05842590332031,
+              425.9008331298828
+            ],
+            [
+              486.5002136230469,
+              425.9008331298828
+            ]
+          ],
+          "type": "LI",
+          "path": [
+            "Document",
+            "L[5]",
+            "LI",
+            "LBody",
+            "L",
+            "LI"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(c) "
+          ],
+          "text_block_id": "p4_b9",
+          "coords": [
+            [
+              119.05842590332031,
+              427.8729248046875
+            ],
+            [
+              133.53216552734375,
+              427.8729248046875
+            ],
+            [
+              119.05842590332031,
+              437.424560546875
+            ],
+            [
+              133.53216552734375,
+              437.424560546875
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[5]",
+            "LI",
+            "LBody",
+            "L",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "During the month, invoices bearing S. No.____to ____were issued. (Mine-",
+            "wise) "
+          ],
+          "text_block_id": "p4_b10",
+          "coords": [
+            [
+              144.0098419189453,
+              427.8729248046875
+            ],
+            [
+              483.6908721923828,
+              427.8729248046875
+            ],
+            [
+              144.0098419189453,
+              448.9482727050781
+            ],
+            [
+              483.6908721923828,
+              448.9482727050781
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[5]",
+            "LI",
+            "LBody",
+            "L",
+            "LI[2]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(Name and Signature of the Assessee or Authorised signatory) "
+          ],
+          "text_block_id": "p4_b11",
+          "coords": [
+            [
+              205.921142578125,
+              462.44407653808594
+            ],
+            [
+              486.3251953125,
+              462.44407653808594
+            ],
+            [
+              205.921142578125,
+              471.9957275390625
+            ],
+            [
+              486.3251953125,
+              471.9957275390625
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[9]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Place: "
+          ],
+          "text_block_id": "p4_b12",
+          "coords": [
+            [
+              108.00425720214844,
+              474.0873260498047
+            ],
+            [
+              138.49169921875,
+              474.0873260498047
+            ],
+            [
+              108.00425720214844,
+              483.6389617919922
+            ],
+            [
+              138.49169921875,
+              483.6389617919922
+            ]
+          ],
+          "type": "Sub",
+          "path": [
+            "Document",
+            "P[10]",
+            "Sub"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "Date : "
+          ],
+          "text_block_id": "p4_b13",
+          "coords": [
+            [
+              108.00425720214844,
+              487.28431701660156
+            ],
+            [
+              137.2958221435547,
+              487.28431701660156
+            ],
+            [
+              108.00425720214844,
+              496.83595275878906
+            ],
+            [
+              137.2958221435547,
+              496.83595275878906
+            ]
+          ],
+          "type": "Sub",
+          "path": [
+            "Document",
+            "P[10]",
+            "Sub[2]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "ACKNOWLEDGMENT "
+          ],
+          "text_block_id": "p4_b14",
+          "coords": [
+            [
+              244.70021057128906,
+              511.76600646972656
+            ],
+            [
+              349.6582336425781,
+              511.76600646972656
+            ],
+            [
+              244.70021057128906,
+              521.3276062011719
+            ],
+            [
+              349.6582336425781,
+              521.3276062011719
+            ]
+          ],
+          "type": "H2",
+          "path": [
+            "Document",
+            "H2[3]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "(Name and Signature of the Range Officer with Official Seal) "
+          ],
+          "text_block_id": "p4_b15",
+          "coords": [
+            [
+              216.4799041748047,
+              664.9796447753906
+            ],
+            [
+              486.32582092285156,
+              664.9796447753906
+            ],
+            [
+              216.4799041748047,
+              674.5312805175781
+            ],
+            [
+              486.32582092285156,
+              674.5312805175781
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[11]"
+          ],
+          "custom_attributes": null
+        }
+      ],
+      "dimensions": [
+        612.0,
+        792.0
+      ],
+      "page_id": 4
+    },
+    {
+      "text_blocks": [
+        {
+          "text": [
+            "INSTRUCTIONS "
+          ],
+          "text_block_id": "p5_b1",
+          "coords": [
+            [
+              108.0,
+              73.85993957519531
+            ],
+            [
+              185.80174255371094,
+              73.85993957519531
+            ],
+            [
+              108.0,
+              83.42153930664062
+            ],
+            [
+              185.80174255371094,
+              83.42153930664062
+            ]
+          ],
+          "type": "H1",
+          "path": [
+            "Document",
+            "H1[3]"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "1. "
+          ],
+          "text_block_id": "p5_b2",
+          "coords": [
+            [
+              108.0,
+              87.05694580078125
+            ],
+            [
+              119.04721069335938,
+              87.05694580078125
+            ],
+            [
+              108.0,
+              96.60858154296875
+            ],
+            [
+              119.04721069335938,
+              96.60858154296875
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "In case where a producer has obtained a centralized registration under Rule ",
+            "3 of Clean Energy Cess Rules 2010 he should provide information in respect ",
+            "of table No. II and V (c) in respect of each Mine separately. "
+          ],
+          "text_block_id": "p5_b3",
+          "coords": [
+            [
+              143.99563598632812,
+              87.05694580078125
+            ],
+            [
+              486.60630798339844,
+              87.05694580078125
+            ],
+            [
+              143.99563598632812,
+              119.77554321289062
+            ],
+            [
+              486.60630798339844,
+              119.77554321289062
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "2. "
+          ],
+          "text_block_id": "p5_b4",
+          "coords": [
+            [
+              107.99006652832031,
+              131.58810424804688
+            ],
+            [
+              119.03726196289062,
+              131.58810424804688
+            ],
+            [
+              107.99006652832031,
+              141.13973999023438
+            ],
+            [
+              119.03726196289062,
+              141.13973999023438
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI[2]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "In case more than one item is produced, additional row may be inserted in ",
+            "each table. "
+          ],
+          "text_block_id": "p5_b5",
+          "coords": [
+            [
+              143.98570251464844,
+              131.58810424804688
+            ],
+            [
+              486.49098205566406,
+              131.58810424804688
+            ],
+            [
+              143.98570251464844,
+              152.78297424316406
+            ],
+            [
+              486.49098205566406,
+              152.78297424316406
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI[2]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "3. "
+          ],
+          "text_block_id": "p5_b6",
+          "coords": [
+            [
+              107.99006652832031,
+              164.71505737304688
+            ],
+            [
+              119.03726196289062,
+              164.71505737304688
+            ],
+            [
+              107.99006652832031,
+              174.26669311523438
+            ],
+            [
+              119.03726196289062,
+              174.26669311523438
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI[3]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "8-Digit CETHS No. may be indicated without any decimal point. "
+          ],
+          "text_block_id": "p5_b7",
+          "coords": [
+            [
+              143.98570251464844,
+              164.71505737304688
+            ],
+            [
+              426.721923828125,
+              164.71505737304688
+            ],
+            [
+              143.98570251464844,
+              174.26669311523438
+            ],
+            [
+              426.721923828125,
+              174.26669311523438
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI[3]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "4. "
+          ],
+          "text_block_id": "p5_b8",
+          "coords": [
+            [
+              107.99006652832031,
+              186.07925415039062
+            ],
+            [
+              119.03726196289062,
+              186.07925415039062
+            ],
+            [
+              107.99006652832031,
+              195.6309051513672
+            ],
+            [
+              119.03726196289062,
+              195.6309051513672
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI[4]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "The details of the challans for duty payment should be mentioned in Table II. ",
+            "Separate challans should be used for pre-deposit of duty for the purpose of ",
+            "appellate remedy. "
+          ],
+          "text_block_id": "p5_b9",
+          "coords": [
+            [
+              143.98570251464844,
+              186.07925415039062
+            ],
+            [
+              486.6102752685547,
+              186.07925415039062
+            ],
+            [
+              143.98570251464844,
+              218.79786682128906
+            ],
+            [
+              486.6102752685547,
+              218.79786682128906
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI[4]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "5. "
+          ],
+          "text_block_id": "p5_b10",
+          "coords": [
+            [
+              107.99006652832031,
+              230.61041259765625
+            ],
+            [
+              119.03726196289062,
+              230.61041259765625
+            ],
+            [
+              107.99006652832031,
+              240.1620635986328
+            ],
+            [
+              119.03726196289062,
+              240.1620635986328
+            ]
+          ],
+          "type": "Lbl",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI[5]",
+            "Lbl"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "In the sixth column of Table at serial number IV specify the Order-in-Original ",
+            "number and date relating to the payment of arrears of duty and of interest, ",
+            "the period for which the said interest has been paid. For other miscellaneous ",
+            "payments, mention the source document number and date.\u201d "
+          ],
+          "text_block_id": "p5_b11",
+          "coords": [
+            [
+              143.98570251464844,
+              230.61041259765625
+            ],
+            [
+              486.5327453613281,
+              230.61041259765625
+            ],
+            [
+              143.98570251464844,
+              274.73321533203125
+            ],
+            [
+              486.5327453613281,
+              274.73321533203125
+            ]
+          ],
+          "type": "LBody",
+          "path": [
+            "Document",
+            "L[6]",
+            "LI[5]",
+            "LBody"
+          ],
+          "custom_attributes": null
+        },
+        {
+          "text": [
+            "---x---"
+          ],
+          "text_block_id": "p5_b12",
+          "coords": [
+            [
+              283.30601501464844,
+              298.0595397949219
+            ],
+            [
+              308.33587646484375,
+              298.0595397949219
+            ],
+            [
+              283.30601501464844,
+              307.6111755371094
+            ],
+            [
+              308.33587646484375,
+              307.6111755371094
+            ]
+          ],
+          "type": "P",
+          "path": [
+            "Document",
+            "P[12]"
+          ],
+          "custom_attributes": null
+        }
+      ],
+      "dimensions": [
+        612.0,
+        792.0
+      ],
+      "page_id": 5
+    }
+  ],
+  "filename": "cclw-1318-d7f66920a18e4ddf94c83cf21fa2bcfa.pdf"
+}

@@ -1,0 +1,29 @@
+version: '3.7'
+services:
+
+  backend:
+    environment:
+      PYTHONDONTWRITEBYTECODE: 0
+    volumes:
+      - ./backend:/app/:ro
+    ports:
+      - "8888:8888"
+
+  loader:
+    environment:
+      PYTHONDONTWRITEBYTECODE: 0
+    volumes:
+      - ./loader:/app/:ro
+
+  opensearch-node1:
+    environment:
+      - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
+      - "OPENSEARCH_JAVA_OPTS=-Xms2g -Xmx2g" # minimum and maximum Java heap size, recommend setting both to 50% of system RAM
+      - "DISABLE_INSTALL_DEMO_CONFIG=true" # disables execution of install_demo_configuration.sh bundled with security plugin, which installs demo certificates and security configurations to OpenSearch
+      - "DISABLE_SECURITY_PLUGIN=true" # disables security plugin entirely in OpenSearch by setting plugins.security.disabled: true in opensearch.yml
+      - "discovery.type=single-node" # disables bootstrap checks that are enabled when network.host is set to a non-loopback address
+
+  opensearch-dashboards:
+    environment:
+      - 'OPENSEARCH_HOSTS=["http://opensearch-node1:9200"]'
+      - "DISABLE_SECURITY_DASHBOARDS_PLUGIN=true" # disables security dashboards plugin in OpenSearch Dashboards

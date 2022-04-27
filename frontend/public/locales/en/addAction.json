@@ -1,0 +1,20 @@
+{
+  "Add Action": "Add Action",
+  "Add a new action using the form below. Multiple documents can be added to an action.": "Add a new action using the form below. Multiple documents can be added to an action.",
+  "form": {
+    "Source": "Source",
+    "Choose a source": "Choose a source",
+    "Action name": "Action name",
+    "Description": "Description",
+    "Geography/Country": "Geography/Country",
+    "Choose a geography": "Choose a geography",
+    "Action type": "Action type",
+    "Choose an action type": "Choose an action type",
+    "Documents": "Documents",
+    "Add Document": "Add Document",
+    "No documents added.": "No documents added.",
+    "Submit Action": "Submit Action",
+    "Action successfully added!": "Action successfully added!",
+    "There was an error, please try again later.": "There was an error, please try again later."
+  }
+}
