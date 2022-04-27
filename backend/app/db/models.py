@@ -6,9 +6,7 @@ from app.db.session import Base
 
 
 class Auditable:  # noqa: D101
-    created_ts = sa.Column(
-        sa.DateTime(timezone=True), server_default=func.now()
-    )
+    created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
     updated_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
 
 
@@ -177,9 +175,7 @@ class DocumentFramework(Base):  # noqa: D101
     __tablename__ = "document_framework"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    framework_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Framework.id), nullable=False
-    )
+    framework_id = sa.Column(sa.Integer, sa.ForeignKey(Framework.id), nullable=False)
     document_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(Document.id, ondelete="CASCADE"),
@@ -199,9 +195,7 @@ class DocumentResponse(Base):  # noqa: D101
     __tablename__ = "document_response"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    response_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Response.id), nullable=False
-    )
+    response_id = sa.Column(sa.Integer, sa.ForeignKey(Response.id), nullable=False)
     document_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(Document.id, ondelete="CASCADE"),
@@ -295,9 +289,7 @@ class Event(Base):  # noqa: D101
     )
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    created_ts = sa.Column(
-        sa.DateTime(timezone=True), server_default=func.now()
-    )
+    created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
 
 
 class Association(Base):  # noqa: D101
