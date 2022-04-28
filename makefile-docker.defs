@@ -43,6 +43,10 @@ new_migration_backend:
 new_migration_loader:
 	docker-compose run --rm loader alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
 
+refresh_all_dbs:
+	docker-compose down -v
+	make start
+
 # ----------------------------------
 # building images
 # ----------------------------------
