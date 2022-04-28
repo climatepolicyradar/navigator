@@ -15,6 +15,6 @@ export default function useSearch(id, obj = null) {
     () =>
       // client.post(`/searches`, obj)
       fake(),
-    { refetchOnWindowFocus: false }
+    { refetchOnWindowFocus: false, enabled: false }
   );
 }

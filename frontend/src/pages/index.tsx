@@ -1,3 +1,4 @@
+import { useRouter } from 'next/router';
 import Layout from '../components/layouts/FullPageBanner';
 import Dashboard from '../components/Dashboard';
 import SearchForm from '../components/forms/SearchForm';
@@ -9,6 +10,11 @@ import { useAuth } from '../api/auth';
 const IndexPage = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
   const { user } = useAuth();
+  const router = useRouter()
+  const handleSearchInput = (e, term) => {
+    e.preventDefault();
+    router.push(`/search?query_string=${term}`)
+  }
 
   return (
     <>
@@ -34,6 +40,7 @@ const IndexPage = () => {
                 </p>
 
                 <SearchForm
+                  handleSearchInput={handleSearchInput}
                   placeholder={t("Search for something, e.g. 'carbon taxes'")}
                 />
               </div>

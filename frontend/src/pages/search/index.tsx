@@ -1,4 +1,5 @@
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { useDidUpdateEffect } from '../../hooks/useDidUpdateEffect';
 import Layout from '../../components/layouts/Main';
 import LoaderOverlay from '../../components/LoaderOverlay';
@@ -25,9 +26,10 @@ const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
-  const { data: searchCriteria } = useSearchCriteria();
-
   const { user } = useAuth();
+  const router = useRouter();
+  
+  const { isFetching: isFetchingSearchCriteria, data: searchCriteria } = useSearchCriteria();
   const resultsQuery = useSearch('searches', searchCriteria);
   const { data: { documents } = [] } = resultsQuery;
   const { t, i18n, ready } = useTranslation('searchStart');
@@ -45,6 +47,10 @@ const Search = () => {
   const handleSearchChange = (type: string, value: string) => {
     updateSearchCriteria.mutate({ [type]: value });
   };
+  const handleSearchInput = (e, term) => {
+    e.preventDefault();
+    handleSearchChange('query_string', term);
+  }
   const handleDocumentCategoryClick = (e) => {
     const val = e.currentTarget.textContent;
     const action = val === 'All' ? 'delete' : 'update';
@@ -66,9 +72,19 @@ const Search = () => {
     resultsQuery.refetch();
   }, [searchCriteria]);
 
+  useEffect(() => {
+
+    if(router.query) {
+      console.log(router.query.query_string)
+      handleSearchChange('query_string', router.query.query_string as string);
+    }
+    
+  }, [router])
+
   return (
     <>
-      {!ready || !user ? (
+    {/* {console.log(resultsQuery)} */}
+      {isFetchingSearchCriteria || !ready || !user ? (
         <LoaderOverlay />
       ) : (
         <Layout
@@ -98,7 +114,7 @@ const Search = () => {
                   <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
                   <SearchForm
                     placeholder={placeholder}
-                    handleSearchChange={handleSearchChange}
+                    handleSearchInput={handleSearchInput}
                   />
                   <div className="flex justify-end mt-3">
                     <ExactMatch
@@ -132,7 +148,7 @@ const Search = () => {
                 </div>
 
                 <div className="md:pl-8 relative">
-                  {resultsQuery.isFetching ? (
+                  {resultsQuery.isLoading || !resultsQuery.isSuccess ? (
                     <div className="w-full flex justify-center h-96">
                       <Loader />
                     </div>
