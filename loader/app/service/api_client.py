@@ -119,8 +119,8 @@ def upload_document(source_url: str, file_name_without_suffix: str) -> str:
     file_name = f"{file_name_without_suffix}.{file_suffix}"
 
     parts = file_name.split("-")
-    # puts docs in folder <country_code>/<publication_date>/<file_name>
-    full_path = parts[0] + "/" + "-".join(parts[1:4]) + "/" + file_name
+    # puts docs in folder <country_code>/<publication_year>/<file_name>
+    full_path = parts[0] + "/" + parts[1] + "/" + file_name
 
     machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
 

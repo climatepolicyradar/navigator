@@ -7,7 +7,11 @@ import httpx
 from app.db.models import DocumentInvalidReason
 
 transport = httpx.AsyncHTTPTransport(retries=3)
-supported_content_types = ["application/pdf", "text/html"]
+supported_content_types = [
+    "application/pdf",
+    "text/html",
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+]
 
 
 def get_document_validity_sync(source_url: str) -> Optional[DocumentInvalidReason]:
@@ -34,3 +38,5 @@ async def get_document_validity(source_url: str) -> Optional[DocumentInvalidReas
         return DocumentInvalidReason.net_read_error
     except httpx.TooManyRedirects:
         return DocumentInvalidReason.net_too_many_redirects
+    except httpx.RemoteProtocolError:
+        return DocumentInvalidReason.net_remote_protocol_error

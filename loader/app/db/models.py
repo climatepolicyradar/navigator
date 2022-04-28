@@ -61,6 +61,7 @@ class DocumentInvalidReason(enum.Enum):
     net_read_error = "net_read_error"
     net_connection_error = "net_connection_error"
     net_too_many_redirects = "net_too_many_redirects"
+    net_remote_protocol_error = "net_remote_protocol_error"
 
 
 class DocumentType(Base):  # noqa: D101
