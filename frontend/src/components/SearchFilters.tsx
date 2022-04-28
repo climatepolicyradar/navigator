@@ -45,7 +45,7 @@ const SearchFilters = ({ handleFilterChange, handleYearChange, searchCriteria })
 
   return (
     <>
-      <div className="text-indigo-400 mt-8 font-medium">{t('Filter by')}</div>
+      <div className="text-indigo-400 font-medium">{t('Filter by')}</div>
       <div className="my-4 text-sm text-indigo-500">
         <div className="relative">
           <div className="absolute top-0 right-0 z-20">

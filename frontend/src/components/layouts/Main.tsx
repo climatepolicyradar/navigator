@@ -29,7 +29,7 @@ const Layout = ({
       <Banner />
       {children}
     </main>
-    <footer className="my-8">
+    <footer className="mb-8">
       <hr />
     </footer>
   </div>

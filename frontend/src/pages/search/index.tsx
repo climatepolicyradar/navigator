@@ -16,11 +16,13 @@ import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
 import Loader from '../../components/Loader';
 import Sort from '../../components/filters/Sort';
-import { DownloadIcon } from '../../components/Icons';
+import { CloseIcon, DownArrowIcon, DownloadIcon } from '../../components/Icons';
 import Button from '../../components/buttons/Button';
+import Close from '../../components/buttons/Close';
 
 
 const Search = () => {
+  const [showFilters, setShowFilters] = useState(false);
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const { data: searchCriteria } = useSearchCriteria();
@@ -76,15 +78,24 @@ const Search = () => {
           <section>
             <div className="px-4 md:flex container">
               <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
-                <SearchFilters
-                  handleFilterChange={handleFilterChange}
-                  searchCriteria={searchCriteria}
-                  handleYearChange={handleYearChange}
-                />
+                <div className="flex flex items-center justify-center w-full">
+                  <button onClick={() => setShowFilters(!showFilters)} className="text-sm flex items-center bg-blue-500 mt-2 text-white flex-nowrap rounded-md px-4 py-2 md:hidden"><span>Filter</span> <div className="ml-2"><DownArrowIcon /></div></button>
+                </div>
+                
+                <div className={`${showFilters ? '' : 'hidden'} relative md:block md:mt-8 mb-12 md:mb-0`}>
+                  <div className="md:hidden absolute right-0 top-0">
+                    <Close onClick={() => setShowFilters(false)} size="16" />
+                  </div>
+                  <SearchFilters
+                    handleFilterChange={handleFilterChange}
+                    searchCriteria={searchCriteria}
+                    handleYearChange={handleYearChange}
+                  />
+                </div>
               </div>
               <div className="md:w-3/4">
                 <div className="md:py-8 md:pl-8">
-                  <p className="sm:hidden mt-4">{placeholder}</p>
+                  <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
                   <SearchForm
                     placeholder={placeholder}
                     handleSearchChange={handleSearchChange}
@@ -102,12 +113,12 @@ const Search = () => {
                     items={documentCategories}
                     handleTabClick={handleDocumentCategoryClick}
                   />
-                  <div className="absolute right-0 top-0 -mt-1">
+                  <div className="mt-4 md:absolute right-0 top-0 md:-mt-2">
                     <Button
                       color="light-hover-dark"
                       extraClasses="text-sm py-1"
                     >
-                      <div className="flex">
+                      <div className="flex justify-center py-1">
                         <DownloadIcon />
                         <span>Download</span>
                       </div>
@@ -127,7 +138,7 @@ const Search = () => {
                     </div>
                   ) : (
                     documents.map((doc, index: number) => (
-                      <div key={index} className="my-16 first:mt-4">
+                      <div key={index} className="my-16 first:md:mt-4">
                         <SearchResult
                           document={doc}
                           onClick={handleDocumentClick}

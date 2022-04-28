@@ -4,8 +4,8 @@ interface IconProps {
   color?: string;
 }
 export function CloseIcon({
-  width,
-  height,
+  width = '20',
+  height = '20',
   color = 'currentColor',
 }: IconProps) {
   return (
@@ -275,5 +275,15 @@ export function ViewDocumentCoverPageIcon({
         height="32"
       />
     </svg>
+  );
+}
+
+export function DownArrowIcon({
+  height = '16',
+  width = '16',
+  color = 'currentColor',
+}: IconProps) {
+  return (
+    <svg style={{ width: `${width}px`, height: `${height}px` }} viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><g fill={color} id="Layer_3" data-name="Layer 3"><path d="m18.646 6.354-6.646 6.646-6.646-6.646a1.914 1.914 0 0 0 -2.708 2.707l9 9a.5.5 0 0 0 .708 0l9-9a1.914 1.914 0 1 0 -2.708-2.707z"/></g></svg>
   );
 }

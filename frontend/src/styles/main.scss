@@ -90,6 +90,7 @@ input[type='password'],
 input[type='email'],
 textarea,
 select {
+  font-family: 'Neue Haas Grotesk Display';
   @apply p-3 rounded-lg text-lg w-full text-indigo-500;
   &.small {
     @apply p-2 text-base;
@@ -182,23 +183,29 @@ input[type='search']::-webkit-search-results-decoration {
 .subnav-active {
   position: relative;
   @apply z-20;
-  &:after {
-    content: '';
-    position: absolute;
-    left: 0;
-    bottom: -16px;
-    height: 2px;
-    width: 100%;
-    @apply bg-blue-500;
+  @screen md {
+    &:after {
+      content: '';
+      position: absolute;
+      left: 0;
+      bottom: -16px;
+      height: 2px;
+      width: 100%;
+      @apply bg-blue-500;
+    }
   }
+  
 }
 
-.category-active {
+.tabbed-nav__active {
   @extend .subnav-active;
   @apply text-blue-500;
-  &:after {
-    bottom: -8px;
+  @screen md {
+    &:after {
+      bottom: -8px;
+    }
   }
+  
 }
 
 .circle-sm {
