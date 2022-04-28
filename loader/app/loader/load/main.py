@@ -21,7 +21,12 @@ from app.db.models import (
 )
 from sqlalchemy.orm import Session
 from app.model import PolicyLookup
-from app.service.api_client import get_type_id, get_geography_id, get_language_id
+from app.service.api_client import (
+    get_type_id,
+    get_geography_id,
+    get_language_id,
+    get_language_id_by_part1_code,
+)
 from app.service.validation import get_document_validity_sync
 
 logger = logging.getLogger(__file__)
@@ -75,7 +80,11 @@ def load(db: Session, policies: PolicyLookup):
 
             # look up language from API
             # TODO multi-language support for docs imminent with CSV reformat
-            language_id = get_language_id(doc.doc_languages[0])
+            language_id = get_language_id(doc.doc_languages[0] or "eng")
+            if language_id is None:
+                language_id = get_language_id_by_part1_code(
+                    doc.doc_languages[0] or "en"
+                )
 
             # Optimisation: As the get_document_validity_sync check can take long,
             # check if the document already exists in the DB, and skip if it does

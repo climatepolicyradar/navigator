@@ -120,7 +120,7 @@ def lookup_sectors(
     return tree_table_to_json(table=Sector, db=db)
 
 
-@r.get("/types")
+@r.get("/document_types")
 def lookup_document_types(
     request: Request,
     db=Depends(get_db),
