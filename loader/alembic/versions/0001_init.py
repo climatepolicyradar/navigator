@@ -111,6 +111,7 @@ def upgrade():
                 "net_read_error",
                 "net_connection_error",
                 "net_too_many_redirects",
+                "net_remote_protocol_error",
                 name="documentinvalidreason",
             ),
             nullable=True,

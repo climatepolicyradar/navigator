@@ -4,7 +4,7 @@ from abc import ABC, abstractmethod
 from collections import Counter
 from collections import defaultdict
 from copy import deepcopy
-from typing import List, Dict, Optional, Sequence
+from typing import List, Dict, Optional, Sequence, Tuple
 
 import pandas as pd
 from english_words import english_words_set
@@ -138,6 +138,8 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             return "underline"
         elif text_block["custom_attributes"].get("TextPosition") == "Sup":
             return "superscript"
+        elif "UnknownStyle" in text_block["custom_attributes"]:
+            return text_block["custom_attributes"].get("UnknownStyle")
         else:
             return None
 
@@ -200,6 +202,67 @@ class AdobeTextStylingPostProcessor(PostProcessor):
         }
         return text_block
 
+    @staticmethod
+    def _get_all_paths_to_merge(
+        all_paths: List[tuple], path: tuple
+    ) -> Tuple[List[int], List[int]]:
+        """Get all paths on a page that are inferred to be part of the same semantics. See below for detail.
+
+        Some blocks should be merged with other paths (are part of the same semantics) even though their
+        own paths aren't duplicated. This is because Adobe's style detector fails to detect all
+        styled elements with metadata tags, in which case styled elements are contained in separate blocks with
+        different paths. For example, three contiguous blocks with paths P/L/, P/L/Span and P/L should all be joined
+        but relying on Adobe tags and duplicated path names alone will ignore the middle element.
+        This is always the case for italics, which Adobe never detects (especially problematic as we'd expect
+        italicisation to be important a-priori (it indicates emphasis or references to other documents). It also often
+        happens for bolded and underlined elements for an unknown reason.
+
+        Args:
+            all_paths: The path of every block on the page.
+            path: The duplicated path.
+
+        Returns:
+            A list of all paths to merge and a list of the subset of these paths that are duplicates in Adobe output.
+        """
+        duplicated_path_indices = []
+        for i, j in enumerate(all_paths):
+            if path == j:
+                duplicated_path_indices.append(i)
+        merge_path_indices = list(
+            range(duplicated_path_indices[0], duplicated_path_indices[-1] + 1)
+        )
+        return merge_path_indices, duplicated_path_indices
+
+    @staticmethod
+    def _update_style_metadata(
+        merge_path_indices: List[int], page: dict, duplicated_path_indices: List[int]
+    ) -> dict:
+        """Update style metadata of merged text blocks with ambiguous style that Adobe hasn't picked up.
+
+        Args:
+            merge_path_indices: Indices of all blocks to be merged on the page.
+            page:
+            duplicated_path_indices: Duplicate paths
+
+        Returns:
+            The updated page.
+        """
+        intervening_path_indices = [
+            ix for ix in merge_path_indices if ix not in duplicated_path_indices
+        ]
+        # update style metadata (unknown, usually "Span" path when it should be bold, italic, etc).
+        for i in intervening_path_indices:
+            unknown_style_metadata = {
+                "UnknownStyle": page["text_blocks"][i]["path"][-1]
+            }
+            if page["text_blocks"][i]["custom_attributes"]:
+                page["text_blocks"][i]["custom_attributes"].update(
+                    unknown_style_metadata
+                )
+            else:
+                page["text_blocks"][i]["custom_attributes"] = unknown_style_metadata
+        return page
+
     def process(self, document: Document, filename=None) -> Document:
         """Iterate through a document and merge text blocks that have been separated due to styling elements.
 
@@ -214,7 +277,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
 
         for page in new_document_dict["pages"]:
             # If page blocks do not have a path (because they're from the embedded text extractor), skip them.
-            # TODO: This is a hack. We should be able to handle this better.
+            # TODO: This is a hack. We should be able to handle this in a better way.
             if len(page["text_blocks"]) == 0:
                 continue
             else:
@@ -231,7 +294,27 @@ class AdobeTextStylingPostProcessor(PostProcessor):
             duplicated_paths = [
                 path for path, count in path_counts.items() if count > 1
             ]
+
             try:
+                # First, let's get all blocks that have the same path as well as blocks that
+                # have a different path but are between these duplicates (to handle cases adobe
+                # doesn't detect). Let's also update style data accordingly (e.g. if adobe doesn't
+                # detect the style, just use the last path element of the block).
+                for path in duplicated_paths:
+                    all_paths = [tuple(block["path"]) for block in page["text_blocks"]]
+                    # Get all paths to merge, including paths that aren't duplicated but should be
+                    # part of the same semantics. See docstring of function called.
+                    (
+                        merge_path_indices,
+                        duplicated_path_indices,
+                    ) = self._get_all_paths_to_merge(all_paths, path)
+                    all_paths_to_merge = [all_paths[i] for i in merge_path_indices]
+                    page = self._update_style_metadata(
+                        merge_path_indices, page, duplicated_path_indices
+                    )
+
+                # Same conditional twice, a little awkward and could be improved, but needed as a quick
+                # fix for all edge cases without excessive tinkering.
                 for path in duplicated_paths:
                     try:
                         text_block_idxs, text_blocks_to_merge = list(
@@ -240,7 +323,7 @@ class AdobeTextStylingPostProcessor(PostProcessor):
                                     (idx, block)
                                     for idx, block in enumerate(page["text_blocks"])
                                     if tuple(block["path"])
-                                    == path  # Sometimes no matches. Why?
+                                    in all_paths_to_merge  # Sometimes no matches. Why?
                                 ]
                             )
                         )
@@ -253,7 +336,6 @@ class AdobeTextStylingPostProcessor(PostProcessor):
                     # TODO: Fix this rare exception.
                     except ValueError:  # Occasional failure.
                         print("Failure to merge text blocks at path:", path)
-
             except TypeError:
                 pass
 

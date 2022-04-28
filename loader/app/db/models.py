@@ -5,6 +5,7 @@
 import enum
 
 import sqlalchemy as sa
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.sql import func
 
 from app.db.session import Base
@@ -19,7 +20,7 @@ class Language(Base):  # noqa: D101
     __tablename__ = "language"
 
     id = sa.Column(sa.SmallInteger, primary_key=True)
-    language_code = sa.Column(sa.CHAR(length=3), nullable=False)
+    language_code = sa.Column(sa.CHAR(length=3), nullable=False, unique=True)
     part1_code = sa.Column(sa.CHAR(length=2))
     part2_code = sa.Column(sa.CHAR(length=3))
     name = sa.Column(sa.Text)
@@ -60,6 +61,7 @@ class DocumentInvalidReason(enum.Enum):
     net_read_error = "net_read_error"
     net_connection_error = "net_connection_error"
     net_too_many_redirects = "net_too_many_redirects"
+    net_remote_protocol_error = "net_remote_protocol_error"
 
 
 class DocumentType(Base):  # noqa: D101
@@ -95,6 +97,22 @@ class Document(Base, Auditable):
         sa.SmallInteger, sa.ForeignKey(Geography.id), nullable=False
     )
     type_id = sa.Column(sa.Integer, sa.ForeignKey(DocumentType.id), nullable=False)
+    UniqueConstraint(name, geography_id, type_id, source_id, source_url)
+
+
+class APIDocument(Base, Auditable):
+    """A pointer to the document's ID in the API database."""
+
+    __tablename__ = "api_document"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    document_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+        unique=True,
+    )
+    remote_document_id = sa.Column(sa.Integer, nullable=False)
 
 
 class Sector(Base):  # noqa: D101
@@ -105,6 +123,13 @@ class Sector(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
+
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id", "parent_id"]
+        }
 
 
 class DocumentSector(Base):  # noqa: D101
@@ -126,6 +151,13 @@ class Instrument(Base):  # noqa: D101
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
 
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["parent_id", "id"]
+        }
+
 
 class DocumentInstrument(Base):  # noqa: D101
     __tablename__ = "document_instrument"
@@ -143,6 +175,13 @@ class Framework(Base):  # noqa: D101
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
+
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id"]
+        }
 
 
 class DocumentFramework(Base):  # noqa: D101
@@ -162,6 +201,13 @@ class Response(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
 
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id"]
+        }
+
 
 class DocumentResponse(Base):  # noqa: D101
     __tablename__ = "document_response"
@@ -179,6 +225,13 @@ class Hazard(Base):  # noqa: D101
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
+
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id"]
+        }
 
 
 class DocumentHazard(Base):  # noqa: D101
@@ -230,6 +283,15 @@ class Event(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
+
+    def as_dict(self):  # noqa: D102
+        d = {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["document_id", "id", "created_ts"]  # do date separately
+        }
+        d["created_ts"] = getattr(self, "created_ts").isoformat()
+        return d
 
 
 class Association(Base):  # noqa: D101

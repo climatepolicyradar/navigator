@@ -1,4 +1,5 @@
 import sqlalchemy as sa
+from sqlalchemy import UniqueConstraint
 from sqlalchemy.sql import func
 
 from app.db.session import Base
@@ -42,7 +43,7 @@ class Language(Base):  # noqa: D101
     __tablename__ = "language"
 
     id = sa.Column(sa.SmallInteger, primary_key=True)
-    language_code = sa.Column(sa.CHAR(length=3), nullable=False)
+    language_code = sa.Column(sa.CHAR(length=3), nullable=False, unique=True)
     part1_code = sa.Column(sa.CHAR(length=2))
     part2_code = sa.Column(sa.CHAR(length=3))
     name = sa.Column(sa.Text)
@@ -105,6 +106,7 @@ class Document(Base, Auditable):
         sa.SmallInteger, sa.ForeignKey(Geography.id), nullable=False
     )
     type_id = sa.Column(sa.Integer, sa.ForeignKey(DocumentType.id), nullable=False)
+    UniqueConstraint(name, geography_id, type_id, source_id, source_url)
 
 
 class Sector(Base):  # noqa: D101

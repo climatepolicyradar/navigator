@@ -22,7 +22,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const signIn = async (credentials) => {
   return await AuthClient.post(
-    'token',
+    'tokens',
     `grant_type=&username=${credentials.email}&password=${credentials.password}&scope=&client_id=test&client_secret=super_secret`
   )
     .then(handleApiSuccess)

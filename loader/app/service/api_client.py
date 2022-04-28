@@ -83,7 +83,7 @@ def _get_lookup(model, lookup_key):
     return lookup
 
 
-def post_action(action_payload):
+def post_document(payload):
     machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
 
     api_host = os.getenv("API_HOST", "http://backend:8888")
@@ -95,6 +95,46 @@ def post_action(action_payload):
         "Accept": "application/json",
     }
     response = requests.post(
-        f"{api_host}/api/v1/actions", headers=headers, json=action_payload
+        f"{api_host}/api/v1/documents", headers=headers, json=payload
     )
     return response
+
+
+def upload_document(source_url: str, file_name_without_suffix: str) -> str:
+    """Upload a document to the cloud, and returns the cloud URL.
+
+    The remote document will have the specified file_name_without_suffix,
+    and the suffix will be determined from the content type.
+
+    TODO stream the download/upload instead of downloading all-at-once first.
+    """
+
+    # download the document
+    download_response = requests.get(source_url)
+    content_type = download_response.headers["Content-Type"]
+    file_content = download_response.content
+
+    # determine the remote file name, including folder structure
+    file_suffix = content_type.split("/")[1]
+    file_name = f"{file_name_without_suffix}.{file_suffix}"
+
+    parts = file_name.split("-")
+    # puts docs in folder <country_code>/<publication_year>/<file_name>
+    full_path = parts[0] + "/" + parts[1] + "/" + file_name
+
+    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
+
+    api_host = os.getenv("API_HOST", "http://backend:8888")
+    if api_host.endswith("/"):
+        api_host = api_host[:-1]  # strip trailing slash
+
+    headers = {
+        "Authorization": "Bearer {}".format(machine_user_token),
+        "Accept": "application/json",
+    }
+    response = requests.post(
+        f"{api_host}/api/v1/document",
+        headers=headers,
+        files={"file": (full_path, file_content, content_type)},
+    )
+    return response.json()["url"]
