@@ -19,6 +19,7 @@ import Sort from '../../components/filters/Sort';
 import { DownloadIcon } from '../../components/Icons';
 import Button from '../../components/buttons/Button';
 
+
 const Search = () => {
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
@@ -53,6 +54,10 @@ const Search = () => {
     handleSearchChange('sort_field', valArray[0]);
     handleSearchChange('sort_order', valArray[1]);
   };
+  const handleYearChange = (values) => {
+    const newVals = values.map(value => value.toFixed(0))
+    handleSearchChange('year_range', newVals);
+  }
   const handleDocumentClick = () => {};
 
   useDidUpdateEffect(() => {
@@ -74,6 +79,7 @@ const Search = () => {
                 <SearchFilters
                   handleFilterChange={handleFilterChange}
                   searchCriteria={searchCriteria}
+                  handleYearChange={handleYearChange}
                 />
               </div>
               <div className="md:w-3/4">

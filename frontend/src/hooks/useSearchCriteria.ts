@@ -1,11 +1,12 @@
 import { useQuery } from 'react-query';
+import { minYear, currentYear } from '../constants/timedate';
 
 const initialSearchCriteria = {
   query_string: '',
   exact_match: false,
   max_passages_per_doc: 10,
   keyword_filters: {},
-  year_range: [1900, 2022],
+  year_range: [minYear, currentYear()],
   sort_field: 'title',
   sort_order: 'asc',
   limit: 10,

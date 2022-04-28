@@ -6,9 +6,9 @@ import BySelect from './filters/BySelect';
 import Tooltip from './tooltip';
 import MultiList from './filters/MultiList';
 import ByRange from './filters/ByRange';
-import InputRange from './form-inputs/InputRange';
+import { minYear } from '../constants/timedate';
 
-const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
+const SearchFilters = ({ handleFilterChange, handleYearChange, searchCriteria }) => {
   const { t, i18n, ready } = useTranslation('searchResults');
   const geosQuery = useLookups('geographies');
   const { data: { geographies } = [] } = geosQuery;
@@ -103,14 +103,14 @@ const SearchFilters = ({ handleFilterChange, searchCriteria }) => {
           <div className="absolute top-0 right-0 z-10">
             <Tooltip id="doctype" tooltip={dateRangeTooltip} />
           </div>
-          <div className="">
-            <InputRange title={t('By date range')} />
-            {/* <ByRange 
+          <div className="mx-2">
+            <ByRange 
               title={t('By date range')}
               type="year_range"
-              min="1947"
-              max={`${currentYear}`}
-            /> */}
+              handleChange={handleYearChange}
+              min={minYear}
+              max={currentYear}
+            />
           </div>
           
         </div>

@@ -13,8 +13,15 @@ export const months = [
   'December',
 ];
 
+
+export const minYear = 1947;
+export const currentYear = (): number => {
+  const now = new Date();
+  return now.getFullYear()
+}
+
 export const yearRange = () => {
-  const min = 1947;
+  const min = minYear;
   const max = new Date().getFullYear();
   const arr = [];
   for (let i = min; i <= max; i++) {
@@ -31,3 +38,4 @@ export const daysInMonth = (month, year) => {
 };
 
 export const dayRange = (month) => {};
+
