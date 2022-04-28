@@ -79,6 +79,6 @@ extend-ignore = "E203"
 ignore_missing_imports = "True"
 
 [tool.black]
-line-length = 79
+line-length = 88
 target-version = ['py38']
 

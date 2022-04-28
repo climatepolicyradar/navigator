@@ -4,7 +4,8 @@ from datetime import datetime
 import pytest
 
 from app.api.api_v1.routers import search
-from app.db.schemas.search import SortOrder
+from app.db.schemas.search import SortOrder, FilterField
+from app.core.search import _FILTER_FIELD_MAP
 
 
 def test_simple_pagination(
@@ -132,19 +133,37 @@ def test_keyword_filters(
         json={
             "query_string": "disaster",
             "exact_match": False,
-            "keyword_filters": {
-                "action_geography_english_shortname": ["Kenya"]
-            },
+            "keyword_filters": {"geographies": ["Kenya"]},
         },
         headers=user_token_headers,
     )
     assert response.status_code == 200
     assert query_spy.call_count == 1
-
     query_body = query_spy.mock_calls[0].args[0]
+
     assert {
-        "terms": {"action_geography_english_shortname": ["Kenya"]}
+        "terms": {_FILTER_FIELD_MAP[FilterField("geographies")]: ["Kenya"]}
     } in query_body["query"]["bool"]["filter"]
+
+
+def test_invalid_keyword_filters(
+    test_opensearch, monkeypatch, client, user_token_headers
+):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "disaster",
+            "exact_match": False,
+            "keyword_filters": {
+                "geographies": ["Kenya"],
+                "unknown_filter_no1": ["BOOM"],
+            },
+        },
+        headers=user_token_headers,
+    )
+    assert response.status_code == 422
 
 
 @pytest.mark.parametrize(
@@ -216,24 +235,23 @@ def test_multiple_filters(
             "query_string": "disaster",
             "exact_match": False,
             "keyword_filters": {
-                "action_geography_english_shortname": ["Kenya"],
-                "action_source_name": ["CCLW"],
+                "geographies": ["Kenya"],
+                "sources": ["CCLW"],
             },
             "year_range": (1900, 2020),
         },
         headers=user_token_headers,
     )
-    query_body = query_spy.mock_calls[0].args[0]
-
     assert response.status_code == 200
     assert query_spy.call_count == 1
+    query_body = query_spy.mock_calls[0].args[0]
 
     assert {
-        "terms": {"action_geography_english_shortname": ["Kenya"]}
+        "terms": {_FILTER_FIELD_MAP[FilterField("geographies")]: ["Kenya"]}
     } in query_body["query"]["bool"]["filter"]
-    assert {"terms": {"action_source_name": ["CCLW"]}} in query_body["query"][
-        "bool"
-    ]["filter"]
+    assert {
+        "terms": {_FILTER_FIELD_MAP[FilterField("sources")]: ["CCLW"]}
+    } in query_body["query"]["bool"]["filter"]
     assert {
         "range": {"action_date": {"gte": "01/01/1900", "lte": "31/12/2020"}}
     } in query_body["query"]["bool"]["filter"]
