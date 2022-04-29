@@ -32,12 +32,12 @@ def load(db: Session, policies: PolicyLookup):
     document_source_id = 1  # always CCLW (for alpha)
 
     imported_count = 0
-    debug_count = 0
+    # debug_count = 0
     for key, policy_data in policies.items():
-        # TODO delete this once dev complete
-        debug_count += 1
-        if debug_count > 10:
-            return
+        # For limiting the number of docs loaded for dev
+        # debug_count += 1
+        # if debug_count > 10:
+        #     return
 
         country_code = key.country_code
         geography_id = get_geography_id(db, country_code)
