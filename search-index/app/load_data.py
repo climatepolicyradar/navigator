@@ -16,16 +16,97 @@ def get_data_from_navigator_tables(
         pd.DataFrame: one row per document.
     """
     query = """
-        SELECT document_id, source_url, s3_url, document.language_id as document_language_id, document.name AS document_name, action.*, language.language_id, language.language_code, language.name as language_name, \
-        geography.*, source.source_id, source.name as action_source_name, action_type.action_type_id, action_type.type_name as action_type_name, action.name as action_name, action.description as action_description, \
-        geography.country_code as action_country_code, geography.english_shortname as action_geography_english_shortname
-        FROM document
-        INNER JOIN action ON (document.action_id = action.action_id)
-        LEFT JOIN language on (document.language_id = language.language_id)
-        LEFT JOIN geography on (action.geography_id = geography.geography_id)
-        LEFT JOIN source on (action.action_source_id = source.source_id)
-        LEFT JOIN action_type on (action.action_type_id = action_type.action_type_id);
-        """
+SELECT
+  source.name as action_source_name,
+  doc.*,
+  doc.id as document_id,
+  doc.name as document_name,
+  event.created_ts as action_date,
+  doc_instr.instrument_id,
+  doc_instr.parent_id as instrument_parent,
+  doc_instr.name as instrument_name,
+  doc_instr.description as instrument_description,
+  doc_sect.sector_id,
+  doc_sect.parent_id as sector_parent,
+  doc_sect.name as sector_name,
+  doc_sect.description as sector_description,
+  doc_frmwrk.framework_id,
+  doc_frmwrk.name as framework_name,
+  doc_frmwrk.description as framework_description,
+  doc_hzrd.hazard_id,
+  doc_hzrd.name as hazard_name,
+  doc_hzrd.description as hazard_description,
+  geog.parent_id as geog_parent,
+  geog.type as geog_type,
+  geog.display_value as geog_display_value,
+  geog.value as geography_code --world bank region not a 3 letter code.
+FROM
+  DOCUMENT doc
+  LEFT JOIN event ON (doc.id = event.document_id)
+  LEFT join source ON (source.id=doc.source_id)
+  LEFT JOIN (
+    SELECT
+      *
+    FROM
+      document_instrument
+      LEFT JOIN (
+        SELECT
+          *
+        FROM
+          instrument
+      ) instrument ON (instrument.id = document_instrument.instrument_id)
+  ) doc_instr ON (doc.id = doc_instr.document_id)
+  LEFT JOIN (
+    SELECT
+      *
+    FROM
+      document_sector
+      LEFT JOIN (
+        SELECT
+          *
+        FROM
+          sector
+      ) sector ON (sector.id = document_sector.sector_id)
+  ) doc_sect ON (doc.id = doc_sect.document_id)
+  LEFT JOIN (
+    SELECT
+      *
+    FROM
+      document_framework
+      LEFT JOIN (
+        SELECT
+          *
+        FROM
+          framework
+      ) framework ON (framework.id = document_framework.framework_id)
+  ) doc_frmwrk ON (doc.id = doc_frmwrk.document_id)
+  LEFT JOIN (
+    SELECT
+      *
+    FROM
+      document_hazard
+      LEFT JOIN (
+        SELECT
+          *
+        FROM
+          hazard
+      ) hazard ON (hazard.id = document_hazard.hazard_id)
+  ) doc_hzrd ON (doc.id = doc_hzrd.document_id)
+  LEFT JOIN (
+    SELECT
+      *
+    FROM
+      geography
+  ) geog ON doc.geography_id = geog.id
+  LEFT JOIN (
+    SELECT
+      *
+    FROM
+      document_type
+  ) document_type ON doc.type_id = document_type.id -- language not present? No foreign key.
+WHERE
+  event.description = 'The publication date'
+  """
 
     return postgres_connector.run_query(query)
 
@@ -85,6 +166,7 @@ def create_dataset(postgres_connector: PostgresConnector) -> pd.DataFrame:
 
     navigator_data = get_data_from_navigator_tables(postgres_connector)
     prototype_url_join = make_url_filename_join_table_from_prototype_data()
+    breakpoint()
 
     return pd.merge(
         left=navigator_data,
