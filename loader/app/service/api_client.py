@@ -8,6 +8,7 @@ Then delete this later.
 import os
 from functools import lru_cache
 from typing import Callable
+import hashlib
 
 import requests
 
@@ -113,12 +114,22 @@ def upload_document(source_url: str, file_name_without_suffix: str) -> str:
     download_response = requests.get(source_url)
     content_type = download_response.headers["Content-Type"]
     file_content = download_response.content
+    file_content_hash = hashlib.md5(file_content).hexdigest()
 
     # determine the remote file name, including folder structure
+    parts = file_name_without_suffix.split("-")
+    folder_path = parts[0] + "/" + parts[1] + "/"
     file_suffix = content_type.split("/")[1]
-    file_name = f"{file_name_without_suffix}.{file_suffix}"
 
-    parts = file_name.split("-")
+    # s3 can only handle paths of up to 1024 bytes. To ensure we don't exceed that,
+    # we trim the filename if it's too long
+    filename_max_len = (
+        1024 - len(folder_path) - len(file_suffix) - len(file_content_hash) - len("_.")
+    )
+    file_name_without_suffix_trimmed = file_name_without_suffix[:filename_max_len]
+
+    file_name = f"{file_name_without_suffix_trimmed}_{file_content_hash}.{file_suffix}"
+
     # puts docs in folder <country_code>/<publication_year>/<file_name>
     full_path = parts[0] + "/" + parts[1] + "/" + file_name
 
