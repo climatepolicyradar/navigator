@@ -22,9 +22,13 @@ def upgrade():
     )
     op.create_unique_constraint(op.f("uq_framework__name"), "framework", ["name"])
     op.create_unique_constraint(op.f("uq_hazard__name"), "hazard", ["name"])
-    op.create_unique_constraint(op.f("uq_instrument__name"), "instrument", ["name"])
+    op.create_unique_constraint(
+        op.f("uq_instrument__name"), "instrument", ["name", "source_id"]
+    )
     op.create_unique_constraint(op.f("uq_response__name"), "response", ["name"])
-    op.create_unique_constraint(op.f("uq_sector__name"), "sector", ["name"])
+    op.create_unique_constraint(
+        op.f("uq_sector__name"), "sector", ["name", "source_id"]
+    )
     op.create_unique_constraint(op.f("uq_source__name"), "source", ["name"])
     # ### end Alembic commands ###
 

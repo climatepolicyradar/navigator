@@ -8,6 +8,20 @@ https://www.notion.so/climatepolicyradar/External-Pre-Existing-Classifications-0
 However, for now we write the values into the lookups as they come from the uploader.
 As more sources come online, we'll set up a mapping between the source's term, and our term
 (the latter which is currently based on CCLW).
+
+
+These lookups are global:
+- language
+- geography
+- source
+- category
+- framework
+- hazard
+- response (to be named 'topic')
+
+These lookups are source-specific:
+- instrument
+- sector
 """
 
 import sqlalchemy as sa
@@ -132,9 +146,10 @@ class Sector(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     parent_id = sa.Column(sa.Integer, sa.ForeignKey("sector.id"))
-    name = sa.Column(sa.Text, nullable=False, unique=True)
+    name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
+    UniqueConstraint(name, source_id)
 
 
 class DocumentSector(Base):  # noqa: D101
@@ -154,9 +169,10 @@ class Instrument(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     parent_id = sa.Column(sa.Integer, sa.ForeignKey("instrument.id"))
-    name = sa.Column(sa.Text, nullable=False, unique=True)
+    name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
+    UniqueConstraint(name, source_id)
 
 
 class DocumentInstrument(Base):  # noqa: D101
