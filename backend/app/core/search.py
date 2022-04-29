@@ -25,7 +25,6 @@ from app.core.config import (
     OPENSEARCH_USERNAME,
     OPENSEARCH_PASSWORD,
     OPENSEARCH_REQUEST_TIMEOUT,
-    OPENSEARCH_PREFERENCE,
     OPENSEARCH_USE_SSL,
     OPENSEARCH_VERIFY_CERTS,
     OPENSEARCH_SSL_WARNINGS,
@@ -105,7 +104,6 @@ class OpenSearchConfig:
     password: str = OPENSEARCH_PASSWORD
     index_name: str = OPENSEARCH_INDEX
     request_timeout: int = OPENSEARCH_REQUEST_TIMEOUT
-    preference: str = OPENSEARCH_PREFERENCE
     use_ssl: bool = OPENSEARCH_USE_SSL
     verify_certs: bool = OPENSEARCH_VERIFY_CERTS
     ssl_show_warnings: bool = OPENSEARCH_SSL_WARNINGS
@@ -133,6 +131,7 @@ class OpenSearchConnection:
         self,
         search_request_body: SearchRequestBody,
         opensearch_internal_config: OpenSearchQueryConfig,
+        preference: Optional[str],
     ) -> SearchResponseBody:
         """Build & make an OpenSearch query based on the given request body."""
 
@@ -141,7 +140,7 @@ class OpenSearchConnection:
             opensearch_internal_config=opensearch_internal_config,
         )
 
-        opensearch_response_body = self.raw_query(opensearch_request_body)
+        opensearch_response_body = self.raw_query(opensearch_request_body, preference)
 
         return process_opensearch_response_body(
             opensearch_response_body,
@@ -149,7 +148,7 @@ class OpenSearchConnection:
             offset=search_request_body.offset,
         )
 
-    def raw_query(self, request_body: Dict[str, Any]) -> OpenSearchResponse:
+    def raw_query(self, request_body: Dict[str, Any], preference: Optional[str]) -> OpenSearchResponse:
         """Query the configured OpenSearch instance with a JSON OpenSearch body."""
 
         if self._opensearch_connection is None:
@@ -170,7 +169,7 @@ class OpenSearchConnection:
             body=request_body,
             index=self._opensearch_config.index_name,
             request_timeout=self._opensearch_config.request_timeout,
-            preference=self._opensearch_config.preference,
+            preference=preference,
         )
         end = time.time()
 
@@ -187,7 +186,7 @@ class OpenSearchConnection:
         # else:
         #     passage_hit_qualifier = "unknown (unexpected)"
         #
-        # doc_hit_count = response['aggregations']['sample']['bucketcount']['count']
+        # doc_hit_count = response['aggregations']['no_unique_docs']['value']
         # f"returned {passage_hit_qualifier} {passage_hit_count} passage(s) in {doc_hit_count} document(s)"
 
         return OpenSearchResponse(
@@ -291,13 +290,9 @@ class QueryBuilder:
                                 },
                             },
                         },
-                        "bucketcount": {
-                            "stats_bucket": {
-                                "buckets_path": "top_docs._count",
-                            },
-                        },
                     },
                 },
+                "no_unique_docs": {"cardinality": {"field": "action_name_and_id"}},
             },
         }
 
@@ -458,7 +453,7 @@ def process_opensearch_response_body(
 ) -> SearchResponseBody:
     opensearch_json_response = opensearch_response_body.raw_response
     search_response = SearchResponseBody(
-        hits=opensearch_json_response["aggregations"]["sample"]["bucketcount"]["count"],
+        hits=opensearch_json_response["aggregations"]["no_unique_docs"]["value"],
         query_time_ms=opensearch_response_body.request_time_ms,
         documents=[],
     )
