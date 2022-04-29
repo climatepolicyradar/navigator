@@ -20,7 +20,7 @@ import Sort from '../../components/filters/Sort';
 import { CloseIcon, DownArrowIcon, DownloadIcon } from '../../components/Icons';
 import Button from '../../components/buttons/Button';
 import Close from '../../components/buttons/Close';
-
+import FilterToggle from '../../components/buttons/FilterToggle';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -28,8 +28,9 @@ const Search = () => {
   const updateSearchFilters = useUpdateSearchFilters();
   const { user } = useAuth();
   const router = useRouter();
-  
-  const { isFetching: isFetchingSearchCriteria, data: searchCriteria } = useSearchCriteria();
+
+  const { isFetching: isFetchingSearchCriteria, data: searchCriteria } =
+    useSearchCriteria();
   const resultsQuery = useSearch('searches', searchCriteria);
   const { data: { documents } = [] } = resultsQuery;
   const { t, i18n, ready } = useTranslation('searchStart');
@@ -50,7 +51,7 @@ const Search = () => {
   const handleSearchInput = (e, term) => {
     e.preventDefault();
     handleSearchChange('query_string', term);
-  }
+  };
   const handleDocumentCategoryClick = (e) => {
     const val = e.currentTarget.textContent;
     const action = val === 'All' ? 'delete' : 'update';
@@ -63,9 +64,12 @@ const Search = () => {
     handleSearchChange('sort_order', valArray[1]);
   };
   const handleYearChange = (values) => {
-    const newVals = values.map(value => value.toFixed(0))
+    const newVals = values.map((value) => value.toFixed(0));
     handleSearchChange('year_range', newVals);
-  }
+  };
+  const toggleFilters = () => {
+    setShowFilters(!showFilters);
+  };
   const handleDocumentClick = () => {};
 
   useDidUpdateEffect(() => {
@@ -73,17 +77,15 @@ const Search = () => {
   }, [searchCriteria]);
 
   useEffect(() => {
-
-    if(router.query) {
-      console.log(router.query.query_string)
+    if (router.query) {
+      console.log(router.query.query_string);
       handleSearchChange('query_string', router.query.query_string as string);
     }
-    
-  }, [router])
+  }, [router]);
 
   return (
     <>
-    {/* {console.log(resultsQuery)} */}
+      {/* {console.log(resultsQuery)} */}
       {isFetchingSearchCriteria || !ready || !user ? (
         <LoaderOverlay />
       ) : (
@@ -95,10 +97,14 @@ const Search = () => {
             <div className="px-4 md:flex container">
               <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
                 <div className="flex flex items-center justify-center w-full">
-                  <button onClick={() => setShowFilters(!showFilters)} className="text-sm flex items-center bg-blue-500 mt-2 text-white flex-nowrap rounded-md px-4 py-2 md:hidden"><span>Filter</span> <div className="ml-2"><DownArrowIcon /></div></button>
+                  <FilterToggle toggle={toggleFilters} />
                 </div>
-                
-                <div className={`${showFilters ? '' : 'hidden'} relative md:block md:mt-8 mb-12 md:mb-0`}>
+
+                <div
+                  className={`${
+                    showFilters ? '' : 'hidden'
+                  } relative md:block md:mt-8 mb-12 md:mb-0`}
+                >
                   <div className="md:hidden absolute right-0 top-0">
                     <Close onClick={() => setShowFilters(false)} size="16" />
                   </div>
