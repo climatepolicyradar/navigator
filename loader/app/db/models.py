@@ -13,7 +13,7 @@ Note that for all tables that depend on:
 As geographies, doc types, sources, and languages are constant, it makes sense for the lookups
 to live in one place. We decided for that place to be the backend API.
 Therefore, the loader would make (cached) lookups for the IDs above.
-The IDs can then be posted as-is post load, as the IDs are guaranteed to exist in the API DB.
+The IDs can then be posted as-is, as the IDs are guaranteed to exist in the API DB.
 """
 
 import enum
