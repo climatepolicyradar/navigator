@@ -186,11 +186,16 @@ class PDFProcessor:
                 f"Adobe extractor failed with error {e} for {pdf_filename}. Falling back to embedded text extractor."
             )
 
-            pdf_doc = self.embedded_extractor.extract(
-                pdf_filepath=pdf_filepath,
-                pdf_name=pdf_filename,
-                data_output_dir=self.data_dir,
-            )
+            try:
+                pdf_doc = self.embedded_extractor.extract(
+                    pdf_filepath=pdf_filepath,
+                    pdf_name=pdf_filename,
+                    data_output_dir=self.data_dir,
+                )
+            except Exception as e:
+                print(
+                    f"Embedded extractor also failed with error {e} for {pdf_filename}."
+                )
 
         save_filename = Path(pdf_filename).stem
 
