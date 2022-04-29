@@ -24,7 +24,7 @@ from app.db.session import SessionLocal
         ("sources", Source),
         ("instruments", Instrument),
         ("sectors", Sector),
-        ("types", DocumentType),
+        ("document_types", DocumentType),
         ("categories", Category),
     ],
 )
@@ -52,7 +52,7 @@ def test_get_lookups(client, user_token_headers, test_db, path, table):
         "sources",
         "instruments",
         "sectors",
-        "types",
+        "document_types",
         "categories",
     ],
 )
