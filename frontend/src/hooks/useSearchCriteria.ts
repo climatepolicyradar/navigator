@@ -1,4 +1,4 @@
-import { useQuery } from 'react-query';
+import { useQuery, useQueryClient } from 'react-query';
 import { minYear, currentYear } from '../constants/timedate';
 
 const initialSearchCriteria = {
@@ -14,11 +14,15 @@ const initialSearchCriteria = {
 };
 
 export default function useSearchCriteria() {
+  const queryClient = useQueryClient();
   return useQuery(
     'searchCriteria',
     () => {
-      return initialSearchCriteria;
+      const existingCriteria = queryClient.getQueryData('searchCriteria');
+      return existingCriteria ? existingCriteria : initialSearchCriteria;
     },
-    { refetchOnWindowFocus: false }
+    {
+      refetchOnWindowFocus: false,
+    }
   );
 }

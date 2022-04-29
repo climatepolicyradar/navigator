@@ -5,23 +5,28 @@ import useWindowResize from '../../hooks/useWindowResize';
 
 interface SearchFormProps {
   placeholder: string;
-  handleSearchInput(e:any, term: string)
+  handleSearchInput(e: any, term: string);
+  input?: string;
 }
 
-const SearchForm = ({ placeholder, handleSearchInput }: SearchFormProps) => {
+const SearchForm = ({
+  input,
+  placeholder,
+  handleSearchInput,
+}: SearchFormProps) => {
   const [term, setTerm] = useState('');
   const windowSize = useWindowResize();
-  const onClick = (e) => {
+
+  const clearSearch = (e) => {
     e.preventDefault();
     setTerm('');
   };
   const onChange = (e) => {
     setTerm(e.currentTarget.value);
   };
-  // const handleSearch = (e) => {
-  //   e.preventDefault();
-  //   handleSearchChange('query_string', term);
-  // };
+  useEffect(() => {
+    if (input) setTerm(input);
+  }, [input]);
   return (
     <form data-cy="search-form">
       <div className="relative shadow-md rounded-lg bg-white flex items-stretch">
@@ -39,7 +44,7 @@ const SearchForm = ({ placeholder, handleSearchInput }: SearchFormProps) => {
             data-cy="search-clear-button"
             className="flex items-center mx-2 text-indigo-400 shrink-0 absolute top-0 right-0 mr-16 h-full md:mr-20 z-20 h-full items-center"
           >
-            <Close onClick={onClick} size="16" />
+            <Close onClick={clearSearch} size="16" />
           </div>
         )}
         <div className="flex items-center justify-end z-10">

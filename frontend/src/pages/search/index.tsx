@@ -29,8 +29,11 @@ const Search = () => {
   const { user } = useAuth();
   const router = useRouter();
 
-  const { isFetching: isFetchingSearchCriteria, data: searchCriteria } =
-    useSearchCriteria();
+  const {
+    isFetching: isFetchingSearchCriteria,
+    isSuccess: isSearchCriteriaSuccess,
+    data: searchCriteria,
+  } = useSearchCriteria();
   const resultsQuery = useSearch('searches', searchCriteria);
   const { data: { documents } = [] } = resultsQuery;
   const { t, i18n, ready } = useTranslation('searchStart');
@@ -76,13 +79,6 @@ const Search = () => {
     resultsQuery.refetch();
   }, [searchCriteria]);
 
-  useEffect(() => {
-    if (router.query) {
-      console.log(router.query.query_string);
-      handleSearchChange('query_string', router.query.query_string as string);
-    }
-  }, [router]);
-
   return (
     <>
       {/* {console.log(resultsQuery)} */}
@@ -121,6 +117,7 @@ const Search = () => {
                   <SearchForm
                     placeholder={placeholder}
                     handleSearchInput={handleSearchInput}
+                    input={searchCriteria.query_string}
                   />
                   <div className="flex justify-end mt-3">
                     <ExactMatch
@@ -154,7 +151,7 @@ const Search = () => {
                 </div>
 
                 <div className="md:pl-8 relative">
-                  {resultsQuery.isLoading || !resultsQuery.isSuccess ? (
+                  {resultsQuery.isFetching || !resultsQuery.isSuccess ? (
                     <div className="w-full flex justify-center h-96">
                       <Loader />
                     </div>

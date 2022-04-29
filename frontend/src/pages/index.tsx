@@ -6,15 +6,20 @@ import './i18n';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../components/LoaderOverlay';
 import { useAuth } from '../api/auth';
+import useSearchCriteria from '../hooks/useSearchCriteria';
+import useUpdateSearchCriteria from '../hooks/useUpdateSearchCriteria';
 
 const IndexPage = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
   const { user } = useAuth();
-  const router = useRouter()
+  const router = useRouter();
+  const searchCriteria = useSearchCriteria();
+  const updateSearchCriteria = useUpdateSearchCriteria();
   const handleSearchInput = (e, term) => {
     e.preventDefault();
-    router.push(`/search?query_string=${term}`)
-  }
+    updateSearchCriteria.mutate({ ['query_string']: term });
+    router.push('/search');
+  };
 
   return (
     <>
