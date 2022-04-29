@@ -19,6 +19,7 @@ from app.db.models import (
     DocumentFramework,
     Instrument,
     DocumentInstrument,
+    DocumentLanguage,
 )
 from sqlalchemy.dialects.postgresql import insert
 
@@ -45,6 +46,14 @@ def write_metadata(
     db_document: Document,
     document_with_metadata: DocumentCreateWithMetadata,
 ):
+    # doc language
+    for language_id in document_with_metadata.language_ids:
+        db_doc_lang = DocumentLanguage(
+            language_id=language_id,
+            document_id=db_document.id,
+        )
+        db.add(db_doc_lang)
+
     # events
     for event in document_with_metadata.events:
         db_event = Event(

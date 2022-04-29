@@ -1,4 +1,17 @@
-from app.db.models import Document, Source, Geography, DocumentType, Language
+from app.db.models import (
+    Document,
+    Source,
+    Geography,
+    DocumentType,
+    Language,
+    Event,
+    Sector,
+    Response,
+    Hazard,
+    Framework,
+    Instrument,
+    DocumentLanguage,
+)
 from pathlib import Path
 
 
@@ -79,19 +92,21 @@ def test_post_documents(client, superuser_token_headers, test_db):
         ],
         "instruments": [
             {
-                "name": "Developing plans and strategies|Governance and planning",
+                "name": "some instrument",
                 "description": "Imported by CPR loader",
                 "source_id": 1,
             },
             {
-                "name": "Capacity-building - general|Capacity-building",
+                "name": "another instrument",
                 "description": "Imported by CPR loader",
                 "source_id": 1,
             },
         ],
-        "frameworks": [],
+        "frameworks": [
+            {"name": "some framework", "description": "Imported by CPR loader"}
+        ],
         "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
-        "hazards": [],
+        "hazards": [{"name": "some hazard", "description": "Imported by CPR loader"}],
     }
 
     response = client.post(
@@ -100,6 +115,15 @@ def test_post_documents(client, superuser_token_headers, test_db):
 
     assert response.status_code == 200
 
-    # for now, only the document is persisted
     doc = test_db.query(Document).first()
     assert doc.name == "Energy Sector Strategy 1387-1391 (2007/8-2012/3)"
+
+    assert test_db.query(Event).first().name == "Publication"
+    assert test_db.query(Sector).first().name == "Energy"
+    assert test_db.query(Response).first().name == "Mitigation"
+    assert test_db.query(Hazard).first().name == "some hazard"
+    assert test_db.query(Framework).first().name == "some framework"
+    instruments = test_db.query(Instrument).all()
+    assert instruments[0].name == "some instrument"
+    assert instruments[1].name == "another instrument"
+    assert test_db.query(DocumentLanguage).first().document_id == 1

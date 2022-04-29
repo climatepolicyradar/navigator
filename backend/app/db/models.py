@@ -336,3 +336,15 @@ class Association(Base):  # noqa: D101
     )
     type = sa.Column(sa.Text, nullable=False)
     name = sa.Column(sa.Text, nullable=False)
+
+
+class DocumentLanguage(Base):
+    """A document's languages."""
+
+    __tablename__ = "document_language"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    language_id = sa.Column(sa.Integer, sa.ForeignKey(Language.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
