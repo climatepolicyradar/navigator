@@ -104,8 +104,10 @@ def post_document(payload):
 def upload_document(source_url: str, file_name_without_suffix: str) -> str:
     """Upload a document to the cloud, and returns the cloud URL.
 
-    The remote document will have the specified file_name_without_suffix,
-    and the suffix will be determined from the content type.
+    The remote document will have the specified file_name_without_suffix_{md5_hash},
+    where md5_hash is the hash of the file and the suffix is determined from the content type.
+    `file_name_without_suffix` will be trimmed if the total path length exceeds 1024 bytes,
+    which is the S3 maximum path length.
 
     TODO stream the download/upload instead of downloading all-at-once first.
     """
