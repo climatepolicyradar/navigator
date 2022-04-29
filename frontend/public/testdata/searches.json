@@ -7,7 +7,7 @@
       "document_country_code": "usa",
       "document_source_name": "cclw",
       "document_date": "2009",
-      "document_id": 0,
+      "document_id": 88,
       "document_geography_english_shortname": "United States of America",
       "document_description": "The Bill authorises a stimulus package that supports new and existing renewable energy and energy efficiency programmes. The bill supersedes the tax provisions of the Energy Improvement and Extension Act 2008 as...",
       "document_type_name": "string",
@@ -27,7 +27,7 @@
       "document_country_code": "ukr",
       "document_source_name": "cclw",
       "document_date": "2008",
-      "document_id": 0,
+      "document_id": 43267,
       "document_geography_english_shortname": "Ukraine",
       "document_description": "Authorises defence spending for fiscal year 2009 and includes several provisions aimed at energy efficiency, renewable energy and use of alternative sources of energy in the armed forces.",
       "document_type_name": "string",
@@ -53,7 +53,7 @@
       "document_country_code": "usa",
       "document_source_name": "cclw",
       "document_date": "2007",
-      "document_id": 0,
+      "document_id": 9865,
       "document_geography_english_shortname": "United States of America",
       "document_description": "Introduces measures to expand the production of renewable fuels, reduce US dependence on oil, increase energy security and address climate change.",
       "document_type_name": "string",
@@ -80,22 +80,10 @@
         {
           "text": "Disaster Profiling, Disaster Management and Disaster Risk Reduction",
           "text_block_coords": [
-            [
-              63.0,
-              282.5399932861328
-            ],
-            [
-              571.7642517089844,
-              282.5399932861328
-            ],
-            [
-              63.0,
-              312.9720001220703
-            ],
-            [
-              571.7642517089844,
-              312.9720001220703
-            ]
+            [63.0, 282.5399932861328],
+            [571.7642517089844, 282.5399932861328],
+            [63.0, 312.9720001220703],
+            [571.7642517089844, 312.9720001220703]
           ],
           "text_block_id": "p40_b606",
           "text_block_page": 41
@@ -103,22 +91,10 @@
         {
           "text": "A Disaster:",
           "text_block_coords": [
-            [
-              63.0,
-              335.4600067138672
-            ],
-            [
-              128.03843688964844,
-              335.4600067138672
-            ],
-            [
-              63.0,
-              352.0919952392578
-            ],
-            [
-              128.03843688964844,
-              352.0919952392578
-            ]
+            [63.0, 335.4600067138672],
+            [128.03843688964844, 335.4600067138672],
+            [63.0, 352.0919952392578],
+            [128.03843688964844, 352.0919952392578]
           ],
           "text_block_id": "p2_b18",
           "text_block_page": 3
@@ -126,22 +102,10 @@
         {
           "text": "Disaster Management.",
           "text_block_coords": [
-            [
-              345.7200012207031,
-              691.9680023193359
-            ],
-            [
-              473.13258361816406,
-              691.9680023193359
-            ],
-            [
-              345.7200012207031,
-              707.9400024414062
-            ],
-            [
-              473.13258361816406,
-              707.9400024414062
-            ]
+            [345.7200012207031, 691.9680023193359],
+            [473.13258361816406, 691.9680023193359],
+            [345.7200012207031, 707.9400024414062],
+            [473.13258361816406, 707.9400024414062]
           ],
           "text_block_id": "p47_b716",
           "text_block_page": 48
@@ -149,22 +113,10 @@
         {
           "text": "Disaster Risk Reduction:",
           "text_block_coords": [
-            [
-              63.0,
-              514.8600006103516
-            ],
-            [
-              213.4953155517578,
-              514.8600006103516
-            ],
-            [
-              63.0,
-              531.4920043945312
-            ],
-            [
-              213.4953155517578,
-              531.4920043945312
-            ]
+            [63.0, 514.8600006103516],
+            [213.4953155517578, 514.8600006103516],
+            [63.0, 531.4920043945312],
+            [213.4953155517578, 531.4920043945312]
           ],
           "text_block_id": "p2_b24",
           "text_block_page": 3
@@ -172,22 +124,10 @@
         {
           "text": "Disaster Risk Management:",
           "text_block_coords": [
-            [
-              63.0,
-              445.86000061035156
-            ],
-            [
-              227.0996856689453,
-              445.86000061035156
-            ],
-            [
-              63.0,
-              462.49200439453125
-            ],
-            [
-              227.0996856689453,
-              462.49200439453125
-            ]
+            [63.0, 445.86000061035156],
+            [227.0996856689453, 445.86000061035156],
+            [63.0, 462.49200439453125],
+            [227.0996856689453, 462.49200439453125]
           ],
           "text_block_id": "p2_b22",
           "text_block_page": 3
@@ -195,22 +135,10 @@
         {
           "text": "A Disaster Risk:",
           "text_block_coords": [
-            [
-              63.0,
-              390.6600036621094
-            ],
-            [
-              155.3895263671875,
-              390.6600036621094
-            ],
-            [
-              63.0,
-              407.29200744628906
-            ],
-            [
-              155.3895263671875,
-              407.29200744628906
-            ]
+            [63.0, 390.6600036621094],
+            [155.3895263671875, 390.6600036621094],
+            [63.0, 407.29200744628906],
+            [155.3895263671875, 407.29200744628906]
           ],
           "text_block_id": "p2_b20",
           "text_block_page": 3
@@ -218,22 +146,10 @@
         {
           "text": "3.2.3.4 Disaster Response",
           "text_block_coords": [
-            [
-              63.0,
-              402.36000061035156
-            ],
-            [
-              214.3769989013672,
-              402.36000061035156
-            ],
-            [
-              63.0,
-              418.8719940185547
-            ],
-            [
-              214.3769989013672,
-              418.8719940185547
-            ]
+            [63.0, 402.36000061035156],
+            [214.3769989013672, 402.36000061035156],
+            [63.0, 418.8719940185547],
+            [214.3769989013672, 418.8719940185547]
           ],
           "text_block_id": "p22_b273",
           "text_block_page": 23
@@ -241,22 +157,10 @@
         {
           "text": "3.2.3.3 Disaster Preparedness",
           "text_block_coords": [
-            [
-              63.0,
-              609.3000030517578
-            ],
-            [
-              236.33990478515625,
-              609.3000030517578
-            ],
-            [
-              63.0,
-              625.8119964599609
-            ],
-            [
-              236.33990478515625,
-              625.8119964599609
-            ]
+            [63.0, 609.3000030517578],
+            [236.33990478515625, 609.3000030517578],
+            [63.0, 625.8119964599609],
+            [236.33990478515625, 625.8119964599609]
           ],
           "text_block_id": "p21_b267",
           "text_block_page": 22
@@ -278,22 +182,10 @@
         {
           "text": "A national disaster fund.",
           "text_block_coords": [
-            [
-              180.0240020751953,
-              648.3079986572266
-            ],
-            [
-              300.8399963378906,
-              648.3079986572266
-            ],
-            [
-              180.0240020751953,
-              659.2160034179688
-            ],
-            [
-              300.8399963378906,
-              659.2160034179688
-            ]
+            [180.0240020751953, 648.3079986572266],
+            [300.8399963378906, 648.3079986572266],
+            [180.0240020751953, 659.2160034179688],
+            [300.8399963378906, 659.2160034179688]
           ],
           "text_block_id": "p117_b1388",
           "text_block_page": 118
@@ -301,22 +193,10 @@
         {
           "text": "Facilitate capacity building of stakeholders with respect to disaster management \nand climate change adaptation and mitigation though:",
           "text_block_coords": [
-            [
-              144.0240020751953,
-              411.96800231933594
-            ],
-            [
-              542.8079986572266,
-              411.96800231933594
-            ],
-            [
-              144.0240020751953,
-              443.6600036621094
-            ],
-            [
-              542.8079986572266,
-              443.6600036621094
-            ]
+            [144.0240020751953, 411.96800231933594],
+            [542.8079986572266, 411.96800231933594],
+            [144.0240020751953, 443.6600036621094],
+            [542.8079986572266, 443.6600036621094]
           ],
           "text_block_id": "p117_b1378",
           "text_block_page": 118
@@ -324,22 +204,10 @@
         {
           "text": "Finally, with respect to stability, SKN is a small island state that is subject to frequent shocks \nfrom external economic forces and vulnerable to hurricanes, droughts and wind storms. \nGlobal changes in climate bring more frequent and higher risk of natural disasters that have \nthe effect of reversing several years of economic growth. There is therefore need for disaster \npreparedness and mitigation strategies to protect agriculture, social infrastructure, the \necosystem and housing.",
           "text_block_coords": [
-            [
-              90.02400207519531,
-              281.66400146484375
-            ],
-            [
-              542.9916076660156,
-              281.66400146484375
-            ],
-            [
-              90.02400207519531,
-              396.0119934082031
-            ],
-            [
-              542.9916076660156,
-              396.0119934082031
-            ]
+            [90.02400207519531, 281.66400146484375],
+            [542.9916076660156, 281.66400146484375],
+            [90.02400207519531, 396.0119934082031],
+            [542.9916076660156, 396.0119934082031]
           ],
           "text_block_id": "p108_b1178",
           "text_block_page": 109
@@ -347,22 +215,10 @@
         {
           "text": "As a cash value, the poverty line for St. Kitts has been determined as $7,329 per annum whereas in \nNevis is has been determined at $9,788 per annum. The vulnerability line for St. Kitts has been \ndetermined as $9,161 whereas on Nevis it has been determined as $12,235. Those persons who live \nin households with per capita consumption expenditure below the vulnerability line are said to be \nvulnerable. These include those who are susceptible to becoming poor due to an unanticipated event \nsuch as a natural disaster or other economic shock.",
           "text_block_coords": [
-            [
-              58.44000244140625,
-              240.22799682617188
-            ],
-            [
-              543.0695953369141,
-              240.22799682617188
-            ],
-            [
-              58.44000244140625,
-              354.6000061035156
-            ],
-            [
-              543.0695953369141,
-              354.6000061035156
-            ]
+            [58.44000244140625, 240.22799682617188],
+            [543.0695953369141, 240.22799682617188],
+            [58.44000244140625, 354.6000061035156],
+            [543.0695953369141, 354.6000061035156]
           ],
           "text_block_id": "p37_b310",
           "text_block_page": 38
@@ -370,22 +226,10 @@
         {
           "text": "As a cash value, the poverty line for St. Kitts has been determined as $7,329 per annum whereas in \nNevis is has been determined at $9,788 per annum. The vulnerability line for St. Kitts has been \ndetermined as $9,161 whereas on Nevis it has been determined as $12,235. Those persons who live \nin households with per capita consumption expenditure below the vulnerability line are said to be \nvulnerable. These include those who are susceptible to becoming poor due to an unanticipated event \nsuch as a natural disaster or other economic shock.",
           "text_block_coords": [
-            [
-              58.44000244140625,
-              374.3000030517578
-            ],
-            [
-              543.0695953369141,
-              374.3000030517578
-            ],
-            [
-              58.44000244140625,
-              488.79200744628906
-            ],
-            [
-              543.0695953369141,
-              488.79200744628906
-            ]
+            [58.44000244140625, 374.3000030517578],
+            [543.0695953369141, 374.3000030517578],
+            [58.44000244140625, 488.79200744628906],
+            [543.0695953369141, 488.79200744628906]
           ],
           "text_block_id": "p68_b605",
           "text_block_page": 69
@@ -393,22 +237,10 @@
         {
           "text": "As such, the GSKN has produced a Medium Term Economic Strategy Paper (MTESP), \nwhich sets out the policies and approaches which, will be pursued by the Government. The \nmarcoeconomic framework currently encompasses the following: Fiscal Policy Strategies. \nDebt Management Strategies, International Trade Policies, Monetary Policy Strategy, Public \nSector Reform and Disaster Preparedness Management and Mitigation. A major focus of the \nmacroeconomic framework for 2003-2005 is the creation of a favourable macroeconomic \nenvironment, necessary for the creation of linkages between health and economic and social \ndevelopment of the country. Basic macro-economic indicators for the period 2000 -2006 are \nlisted in Table 22.",
           "text_block_coords": [
-            [
-              90.02400207519531,
-              178.0679931640625
-            ],
-            [
-              543.0756072998047,
-              178.0679931640625
-            ],
-            [
-              90.02400207519531,
-              354.6000061035156
-            ],
-            [
-              543.0756072998047,
-              354.6000061035156
-            ]
+            [90.02400207519531, 178.0679931640625],
+            [543.0756072998047, 178.0679931640625],
+            [90.02400207519531, 354.6000061035156],
+            [543.0756072998047, 354.6000061035156]
           ],
           "text_block_id": "p73_b665",
           "text_block_page": 74
@@ -430,22 +262,10 @@
         {
           "text": "NATURAL DISASTER RISK MANAGEMENT",
           "text_block_coords": [
-            [
-              291.8269958496094,
-              42.478790283203125
-            ],
-            [
-              581.8119201660156,
-              42.478790283203125
-            ],
-            [
-              291.8269958496094,
-              63.29399108886719
-            ],
-            [
-              581.8119201660156,
-              63.29399108886719
-            ]
+            [291.8269958496094, 42.478790283203125],
+            [581.8119201660156, 42.478790283203125],
+            [291.8269958496094, 63.29399108886719],
+            [581.8119201660156, 63.29399108886719]
           ],
           "text_block_id": "p142_b172",
           "text_block_page": 143
@@ -467,22 +287,10 @@
         {
           "text": "waste management, beautification, disaster planning",
           "text_block_coords": [
-            [
-              56.692901611328125,
-              213.05702209472656
-            ],
-            [
-              268.6978759765625,
-              213.05702209472656
-            ],
-            [
-              56.692901611328125,
-              226.1070098876953
-            ],
-            [
-              268.6978759765625,
-              226.1070098876953
-            ]
+            [56.692901611328125, 213.05702209472656],
+            [268.6978759765625, 213.05702209472656],
+            [56.692901611328125, 226.1070098876953],
+            [268.6978759765625, 226.1070098876953]
           ],
           "text_block_id": "p102_b1480",
           "text_block_page": 103
@@ -490,22 +298,10 @@
         {
           "text": "convenience and better urban management. Disaster",
           "text_block_coords": [
-            [
-              56.688995361328125,
-              425.8019104003906
-            ],
-            [
-              270.96998596191406,
-              425.8019104003906
-            ],
-            [
-              56.688995361328125,
-              438.85191345214844
-            ],
-            [
-              270.96998596191406,
-              438.85191345214844
-            ]
+            [56.688995361328125, 425.8019104003906],
+            [270.96998596191406, 425.8019104003906],
+            [56.688995361328125, 438.85191345214844],
+            [270.96998596191406, 438.85191345214844]
           ],
           "text_block_id": "p13_b438",
           "text_block_page": 14
@@ -513,22 +309,10 @@
         {
           "text": "and natural disasters. Structural integrity and climate and disaster-proof designs will be key aspects of future projects, together with early-warning systems, disaster-response plans, inter-agency coordination and enhanced disaster-response capacity.",
           "text_block_coords": [
-            [
-              304.722900390625,
-              135.79701232910156
-            ],
-            [
-              532.3058624267578,
-              135.79701232910156
-            ],
-            [
-              304.722900390625,
-              196.84701538085938
-            ],
-            [
-              532.3058624267578,
-              196.84701538085938
-            ]
+            [304.722900390625, 135.79701232910156],
+            [532.3058624267578, 135.79701232910156],
+            [304.722900390625, 196.84701538085938],
+            [532.3058624267578, 196.84701538085938]
           ],
           "text_block_id": "p102_b1498",
           "text_block_page": 103
@@ -536,22 +320,10 @@
         {
           "text": "As part of its disaster-response and rehabilitation policy,",
           "text_block_coords": [
-            [
-              304.722900390625,
-              54.50572204589844
-            ],
-            [
-              530.7628936767578,
-              54.50572204589844
-            ],
-            [
-              304.722900390625,
-              67.55570983886719
-            ],
-            [
-              530.7628936767578,
-              67.55570983886719
-            ]
+            [304.722900390625, 54.50572204589844],
+            [530.7628936767578, 54.50572204589844],
+            [304.722900390625, 67.55570983886719],
+            [530.7628936767578, 67.55570983886719]
           ],
           "text_block_id": "p106_b1532",
           "text_block_page": 107
@@ -559,22 +331,10 @@
         {
           "text": "and explore options for disaster insurance in the coming",
           "text_block_coords": [
-            [
-              304.722900390625,
-              598.5041198730469
-            ],
-            [
-              531.4368896484375,
-              598.5041198730469
-            ],
-            [
-              304.722900390625,
-              611.5541076660156
-            ],
-            [
-              531.4368896484375,
-              611.5541076660156
-            ]
+            [304.722900390625, 598.5041198730469],
+            [531.4368896484375, 598.5041198730469],
+            [304.722900390625, 611.5541076660156],
+            [531.4368896484375, 611.5541076660156]
           ],
           "text_block_id": "p32_b883",
           "text_block_page": 33
@@ -582,22 +342,10 @@
         {
           "text": "early warning systems, inter-agency coordination and enhanced disaster response capacities.",
           "text_block_coords": [
-            [
-              56.688995361328125,
-              449.8019104003906
-            ],
-            [
-              272.5609436035156,
-              449.8019104003906
-            ],
-            [
-              56.688995361328125,
-              474.85191345214844
-            ],
-            [
-              272.5609436035156,
-              474.85191345214844
-            ]
+            [56.688995361328125, 449.8019104003906],
+            [272.5609436035156, 449.8019104003906],
+            [56.688995361328125, 474.85191345214844],
+            [272.5609436035156, 474.85191345214844]
           ],
           "text_block_id": "p13_b440",
           "text_block_page": 14
@@ -605,22 +353,10 @@
         {
           "text": "contingency fund and explore opportunities for disaster insurance schemes with bilateral development partners",
           "text_block_coords": [
-            [
-              56.69850158691406,
-              634.8044128417969
-            ],
-            [
-              280.39747619628906,
-              634.8044128417969
-            ],
-            [
-              56.69850158691406,
-              659.8544158935547
-            ],
-            [
-              280.39747619628906,
-              659.8544158935547
-            ]
+            [56.69850158691406, 634.8044128417969],
+            [280.39747619628906, 634.8044128417969],
+            [56.69850158691406, 659.8544158935547],
+            [280.39747619628906, 659.8544158935547]
           ],
           "text_block_id": "p8_b168",
           "text_block_page": 9
@@ -628,22 +364,10 @@
         {
           "text": "is made disaster-resilient. Options for further underground cabling for grid distribution are being explored.",
           "text_block_coords": [
-            [
-              304.722900390625,
-              287.80091857910156
-            ],
-            [
-              541.0788879394531,
-              287.80091857910156
-            ],
-            [
-              304.722900390625,
-              312.8509216308594
-            ],
-            [
-              541.0788879394531,
-              312.8509216308594
-            ]
+            [304.722900390625, 287.80091857910156],
+            [541.0788879394531, 287.80091857910156],
+            [304.722900390625, 312.8509216308594],
+            [541.0788879394531, 312.8509216308594]
           ],
           "text_block_id": "p29_b820",
           "text_block_page": 30
@@ -651,22 +375,10 @@
         {
           "text": "be properly regulated and enforced. Options will be explored to improve fuel efficiency at sea and ensure that infrastructure development is disaster-resilient.",
           "text_block_coords": [
-            [
-              304.722900390625,
-              292.197021484375
-            ],
-            [
-              534.3319702148438,
-              292.197021484375
-            ],
-            [
-              304.722900390625,
-              329.24700927734375
-            ],
-            [
-              534.3319702148438,
-              329.24700927734375
-            ]
+            [304.722900390625, 292.197021484375],
+            [534.3319702148438, 292.197021484375],
+            [304.722900390625, 329.24700927734375],
+            [534.3319702148438, 329.24700927734375]
           ],
           "text_block_id": "p79_b1293",
           "text_block_page": 80
@@ -674,22 +386,10 @@
         {
           "text": "Major national development challenges and issues that are cross-cutting in nature, such as human rights, green growth, climate change adaptation and disaster risk",
           "text_block_coords": [
-            [
-              304.722900390625,
-              185.8056182861328
-            ],
-            [
-              527.9288787841797,
-              185.8056182861328
-            ],
-            [
-              304.722900390625,
-              222.85562133789062
-            ],
-            [
-              527.9288787841797,
-              222.85562133789062
-            ]
+            [304.722900390625, 185.8056182861328],
+            [527.9288787841797, 185.8056182861328],
+            [304.722900390625, 222.85562133789062],
+            [527.9288787841797, 222.85562133789062]
           ],
           "text_block_id": "p138_b1876",
           "text_block_page": 139
@@ -711,22 +411,10 @@
         {
           "text": "All forests are covered by forest management plans focused on the sustainable supply \nof forestry products or ecosystem services. Such management plans shall include \nForest Management Units for commercial timber and non-timber production, \nCommunity and Private Forests for participatory social and economic forestry, Parks \nand Protected areas for participatory conservation and development and participatory \nwatershed management for enhancing ecosystem services and local development. \nSuch plan should also include management of recreational areas. Management plans \nmust ensure that pest and disease, forest fire and natural disaster management related \nto the particular resources are integral part of the plan in addition to use, management \nand replenishment of the forest.",
           "text_block_coords": [
-            [
-              107.42399597167969,
-              244.0999755859375
-            ],
-            [
-              526.5516052246094,
-              244.0999755859375
-            ],
-            [
-              107.42399597167969,
-              379.2079772949219
-            ],
-            [
-              526.5516052246094,
-              379.2079772949219
-            ]
+            [107.42399597167969, 244.0999755859375],
+            [526.5516052246094, 244.0999755859375],
+            [107.42399597167969, 379.2079772949219],
+            [526.5516052246094, 379.2079772949219]
           ],
           "text_block_id": "p12_b211",
           "text_block_page": 13

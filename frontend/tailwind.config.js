@@ -51,6 +51,9 @@ module.exports = {
       padding: '1rem',
     },
     extend: {
+      spacing: {
+        150: '150%',
+      },
       fontSize: {
         h1: '64px',
         h2: '36px',
