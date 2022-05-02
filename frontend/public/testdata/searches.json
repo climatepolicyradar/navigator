@@ -3,72 +3,6 @@
   "query_time_ms": 0,
   "documents": [
     {
-      "document_name": "American Recovery and Reinvestment Act",
-      "document_country_code": "usa",
-      "document_source_name": "cclw",
-      "document_date": "2009",
-      "document_id": 88,
-      "document_geography_english_shortname": "United States of America",
-      "document_description": "The Bill authorises a stimulus package that supports new and existing renewable energy and energy efficiency programmes. The bill supersedes the tax provisions of the Energy Improvement and Extension Act 2008 as...",
-      "document_type_name": "string",
-      "document_title_match": true,
-      "document_description_match": true,
-      "document_passage_matches": [
-        {
-          "text": "string",
-          "text_block_id": "string",
-          "text_block_page": 0,
-          "text_block_coords": [["string", "string"]]
-        }
-      ]
-    },
-    {
-      "document_name": "Duncan Hunter National Defense Authorisation Act for Fiscal Year 2009 - Energy Provisions",
-      "document_country_code": "ukr",
-      "document_source_name": "cclw",
-      "document_date": "2008",
-      "document_id": 43267,
-      "document_geography_english_shortname": "Ukraine",
-      "document_description": "Authorises defence spending for fiscal year 2009 and includes several provisions aimed at energy efficiency, renewable energy and use of alternative sources of energy in the armed forces.",
-      "document_type_name": "string",
-      "document_title_match": true,
-      "document_description_match": true,
-      "document_passage_matches": [
-        {
-          "text": "string",
-          "text_block_id": "string",
-          "text_block_page": 0,
-          "text_block_coords": [["string", "string"]]
-        },
-        {
-          "text": "string",
-          "text_block_id": "string",
-          "text_block_page": 0,
-          "text_block_coords": [["string", "string"]]
-        }
-      ]
-    },
-    {
-      "document_name": "Energy Independence and Security Act of 2007",
-      "document_country_code": "usa",
-      "document_source_name": "cclw",
-      "document_date": "2007",
-      "document_id": 9865,
-      "document_geography_english_shortname": "United States of America",
-      "document_description": "Introduces measures to expand the production of renewable fuels, reduce US dependence on oil, increase energy security and address climate change.",
-      "document_type_name": "string",
-      "document_title_match": true,
-      "document_description_match": true,
-      "document_passage_matches": [
-        {
-          "text": "string",
-          "text_block_id": "string",
-          "text_block_page": 0,
-          "text_block_coords": [["string", "string"]]
-        }
-      ]
-    },
-    {
       "document_country_code": "KEN",
       "document_date": "02/01/2009",
       "document_description": "The policy recognizes that climate change contributes significantly to Kenya's increasing vulnerability to disasters in the last two decades and affects seriously the lives and livelihoods of communities. The policy therefore aims to institutionalise mechanisms to address these disasters and associated vulnerabilities stressing the central role of climate change in any sustainable and integrated National Strategy for Disaster Management.\u00a0\u00a0The policy emphasises preparedness on the part of the government, communities and other stakeholders and proposes to establish and strengthen Disaster Management institutions, partnerships and networking. It proposes to mainstream Disaster Risk Reduction in the development process and strengthen the resilience of vulnerable groups.\u00a0\u00a0Disaster Risk Management encompasses a full continuum from preparedness, relief and rehabilitation, mitigation and prevention including t diversification of vulnerable livelihoods and coping mechanisms. Ministry of State for Special Programmes in the Office of President is appointed as the chief national co-ordinator.",
@@ -423,6 +357,72 @@
       "document_source_name": "CCLW",
       "document_title_match": false,
       "document_type_name": "Policy"
+    },
+    {
+      "document_name": "American Recovery and Reinvestment Act",
+      "document_country_code": "usa",
+      "document_source_name": "cclw",
+      "document_date": "2009",
+      "document_id": 88,
+      "document_geography_english_shortname": "United States of America",
+      "document_description": "The Bill authorises a stimulus package that supports new and existing renewable energy and energy efficiency programmes. The bill supersedes the tax provisions of the Energy Improvement and Extension Act 2008 as...",
+      "document_type_name": "string",
+      "document_title_match": true,
+      "document_description_match": true,
+      "document_passage_matches": [
+        {
+          "text": "string",
+          "text_block_id": "string",
+          "text_block_page": 0,
+          "text_block_coords": [["string", "string"]]
+        }
+      ]
+    },
+    {
+      "document_name": "Duncan Hunter National Defense Authorisation Act for Fiscal Year 2009 - Energy Provisions",
+      "document_country_code": "ukr",
+      "document_source_name": "cclw",
+      "document_date": "2008",
+      "document_id": 43267,
+      "document_geography_english_shortname": "Ukraine",
+      "document_description": "Authorises defence spending for fiscal year 2009 and includes several provisions aimed at energy efficiency, renewable energy and use of alternative sources of energy in the armed forces.",
+      "document_type_name": "string",
+      "document_title_match": true,
+      "document_description_match": true,
+      "document_passage_matches": [
+        {
+          "text": "string",
+          "text_block_id": "string",
+          "text_block_page": 0,
+          "text_block_coords": [["string", "string"]]
+        },
+        {
+          "text": "string",
+          "text_block_id": "string",
+          "text_block_page": 0,
+          "text_block_coords": [["string", "string"]]
+        }
+      ]
+    },
+    {
+      "document_name": "Energy Independence and Security Act of 2007",
+      "document_country_code": "usa",
+      "document_source_name": "cclw",
+      "document_date": "2007",
+      "document_id": 9865,
+      "document_geography_english_shortname": "United States of America",
+      "document_description": "Introduces measures to expand the production of renewable fuels, reduce US dependence on oil, increase energy security and address climate change.",
+      "document_type_name": "string",
+      "document_title_match": true,
+      "document_description_match": true,
+      "document_passage_matches": [
+        {
+          "text": "string",
+          "text_block_id": "string",
+          "text_block_page": 0,
+          "text_block_coords": [["string", "string"]]
+        }
+      ]
     }
   ]
 }
