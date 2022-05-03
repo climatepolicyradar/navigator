@@ -4,7 +4,10 @@ interface KebabProps {
 }
 const Kebab = ({ onClick }) => {
   return (
-    <button className="text-indigo-400" onClick={onClick}>
+    <button
+      className="bg-indigo-500 text-white p-3 shadow rounded-full"
+      onClick={onClick}
+    >
       <KebabMenuIcon />
     </button>
   );

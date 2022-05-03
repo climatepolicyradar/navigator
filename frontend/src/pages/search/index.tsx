@@ -29,6 +29,7 @@ import PassageMatches from '../../components/PassageMatches';
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showSlideout, setShowSlideout] = useState(false);
+  const [showPDF, setShowPDF] = useState(false);
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();

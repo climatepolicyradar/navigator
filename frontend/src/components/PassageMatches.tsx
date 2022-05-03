@@ -1,12 +1,16 @@
-import { useEffect } from 'react';
-import Kebab from './buttons/Kebab';
+import { useEffect, useState, useRef } from 'react';
 import Loader from './Loader';
 import useOutsideAlerter from '../hooks/useOutsideAlerter';
+import ToggleDocumentMenu from './menus/ToggleDocumentMenu';
 
 const PassageMatches = ({ document }) => {
+  const [showMenu, setShowMenu] = useState(false);
+  const menuRef = useRef();
   const { data: doc } = document;
-  // useOutsideAlerter(menuRef, () => setShowMenu(false));
-  const toggleMenu = () => {};
+  useOutsideAlerter(menuRef, () => setShowMenu(false));
+  const toggleMenu = () => {
+    setShowMenu(!showMenu);
+  };
   useEffect(() => {});
   return (
     <>
@@ -17,8 +21,8 @@ const PassageMatches = ({ document }) => {
       ) : (
         <div>
           {/* {console.log(document.data)} */}
-          <div className="border-b border-blue-200 pb-4 flex justify-between">
-            <div className="pl-4 pr-6 mt-2">
+          <div className="border-b border-blue-200 pb-4 flex justify-between relative">
+            <div className="pl-4 pr-10 mt-2">
               <h1 className="text-lg text-blue-500 font-medium">
                 {doc.document_name}
               </h1>
@@ -31,9 +35,7 @@ const PassageMatches = ({ document }) => {
                 in document.
               </p>
             </div>
-            <div className="flex-shrink-0 mr-4">
-              <Kebab onClick={toggleMenu} />
-            </div>
+            <ToggleDocumentMenu />
           </div>
 
           <div className="px-4">
