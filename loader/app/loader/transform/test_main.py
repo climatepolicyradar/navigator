@@ -12,10 +12,15 @@ def test_transform():
         {
             "policy_name": ["foo", "will be dropped as has no doc"],
             "country_code": ["cc", "xx"],
-            "document_list": ["doc name|http://doc|;second doc|http://doc2|en", None],
+            "document_list": ["doc name|http://doc|en;second doc|http://doc2|", None],
             "policy_description": ["<div>foobar</div>", "nodoc"],
             "events": ["17/11/1979|Law passed", None],
             "policy_type": ["legislative", "legislative"],
+            "sectors": ["Two,Sectors", ""],
+            "instruments": ["", ""],
+            "frameworks": ["", ""],
+            "responses": ["", ""],
+            "hazards": ["", ""],
         }
     )
 
@@ -38,12 +43,13 @@ def test_transform():
 
     doc_one: Doc = docs[0]
     assert doc_one.doc_name == "doc name"
-    assert doc_one.doc_language is None
+    assert doc_one.doc_languages == ["en"]
     assert doc_one.doc_url == "https://doc"
+    assert doc_one.sectors == ["Two", "Sectors"]
 
     doc_two: Doc = docs[1]
     assert doc_two.doc_name == "second doc"
-    assert doc_two.doc_language == "en"
+    assert doc_two.doc_languages == [None]
     assert doc_two.doc_url == "https://doc2"
 
 
@@ -56,6 +62,11 @@ def test_transform_no_doc():
             "policy_description": ["foobar"],
             "events": ["17/11/1979|Law passed"],
             "policy_type": ["legislative"],
+            "sectors": [""],
+            "instruments": [""],
+            "frameworks": [""],
+            "responses": [""],
+            "hazards": [""],
         }
     )
 
@@ -74,6 +85,11 @@ def test_transform_no_date():
             "policy_description": ["foobar"],
             "events": [None],
             "policy_type": ["legislative"],
+            "sectors": [""],
+            "instruments": [""],
+            "frameworks": [""],
+            "responses": [""],
+            "hazards": [""],
         }
     )
 

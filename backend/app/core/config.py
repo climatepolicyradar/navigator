@@ -14,9 +14,6 @@ OPENSEARCH_USERNAME = os.environ["OPENSEARCH_USER"]
 OPENSEARCH_PASSWORD = os.environ["OPENSEARCH_PASSWORD"]
 OPENSEARCH_INDEX = os.environ["OPENSEARCH_INDEX"]
 OPENSEARCH_REQUEST_TIMEOUT: int = int(os.getenv("OPENSEARCH_REQUEST_TIMEOUT", "30"))
-OPENSEARCH_PREFERENCE: str = os.getenv(
-    "OPENSEARCH_PREFERENCE", "prototype_user"
-)  # TODO: document what this means
 OPENSEARCH_USE_SSL: bool = os.getenv("OPENSEARCH_USE_SSL", "False").lower() == "true"
 OPENSEARCH_VERIFY_CERTS: bool = (
     os.getenv("OPENSEARCH_VERIFY_CERTS", "False").lower() == "true"

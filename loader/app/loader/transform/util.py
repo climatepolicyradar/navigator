@@ -7,9 +7,9 @@ from typing import Tuple, List, Optional
 
 from dateutil.parser import parse
 
+from app.loader.transform.datafixes import get_missing_date
 from app.mapping import CCLWActionType
 from app.model import Key, Doc, PolicyData
-from app.loader.transform.datafixes import get_missing_date
 
 DEFAULT_POLICY_DATE = datetime(1900, 1, 1)
 
@@ -49,12 +49,23 @@ def split_and_merge_urls(doc_urls, sep):
     return merged_doc_urls
 
 
+def prune(lst: List[str]) -> List:
+    return list(filter(None, lst))
+
+
 def get_policy_data(
     dataframe, sep=";", sub_sep=None, url_sep=","
 ) -> Optional[Tuple[Key, PolicyData]]:
+
     policy_name = dataframe["policy_name"]
     country_code = dataframe["country_code"]
     policy_type = CCLWActionType[dataframe["policy_type"]].value
+    events = prune(dataframe["events"].split("||"))
+    sectors = prune(dataframe["sectors"].split(","))
+    instruments = prune(dataframe["instruments"].split(";"))
+    frameworks = prune(dataframe["frameworks"].split(","))
+    responses = prune(dataframe["responses"].split(","))
+    hazards = prune(dataframe["hazards"].split(","))
 
     policy_date: Optional[datetime] = extract_date(dataframe["events"])
     if not policy_date:
@@ -93,8 +104,14 @@ def get_policy_data(
             for doc_url in doc_urls:
                 doc = Doc(
                     doc_name=doc_name,
-                    doc_language=doc_language,
+                    doc_languages=[doc_language],
                     doc_url=ensure_safe(doc_url),
+                    events=events,
+                    sectors=sectors,
+                    instruments=instruments,
+                    frameworks=frameworks,
+                    responses=responses,
+                    hazards=hazards,
                 )
                 docs.append(doc)
 

@@ -1,24 +1,24 @@
-import datetime
+from sqlalchemy import and_, exists
+from sqlalchemy.orm import Session
 
 from app.db.models import Document
-from app.db.schemas.document import DocumentCreateInternal
-from sqlalchemy.orm import Session
+from app.db.schemas.document import DocumentCreate
 
 
 def create_document(
     db: Session,
-    document: DocumentCreateInternal,
+    document: DocumentCreate,
+    creator_id: int,
 ) -> Document:
     db_document = Document(
-        action_id=document.action_id,
         name=document.name,
-        language_id=document.language_id,
         source_url=document.source_url,
-        s3_url=document.s3_url,
-        document_date=datetime.date(document.year, document.month, document.day),
-        document_mod_date=document.document_mod_date,
-        is_valid=document.is_valid,
-        invalid_reason=document.invalid_reason,
+        created_by=creator_id,
+        loaded_ts=document.loaded_ts,
+        source_id=document.source_id,
+        url=document.url,
+        geography_id=document.geography_id,
+        type_id=document.type_id,
     )
 
     db.add(db_document)
@@ -28,24 +28,19 @@ def create_document(
     return db_document
 
 
-"""
-# TODO might be useful for docs
-def is_action_exists(
+def is_document_exists(
     db: Session,
-    action: ActionCreate,
+    document: DocumentCreate,
 ) -> bool:
-    # Returns an doc by its unique constraint.
+    # Returns a doc by its unique constraint.
 
     return db.query(
         exists().where(
             and_(
-                Action.name == action.name,
-                Action.action_date
-                == datetime.date(action.year, action.month, action.day),
-                Action.geography_id == action.geography_id,
-                Action.action_type_id == action.action_type_id,
-                Action.action_source_id == action.action_source_id,
+                Document.name == document.name,
+                Document.geography_id == document.geography_id,
+                Document.type_id == document.type_id,
+                Document.source_id == document.source_id,
             )
         )
     ).scalar()
-"""

@@ -31,4 +31,5 @@ def search_documents(
     return _OPENSEARCH_CONNECTION.query(
         search_request_body=search_body,
         opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
+        preference=str(current_user.id)
     )

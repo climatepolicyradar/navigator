@@ -46,7 +46,7 @@ services:
         condition: service_healthy
     healthcheck:
       test: curl -s -f backend:8888/health >/dev/null || exit 1
-      interval: 30s
+      interval: 5s
       timeout: 3s
       retries: 30
 
@@ -127,7 +127,7 @@ services:
     environment:
       PYTHONPATH: .
       ENV: production
-      DATABASE_URL: ${LOADER_DATABASE_URL}
+      DATABASE_URL: ${BACKEND_DATABASE_URL}
     env_file:
       - .env
     depends_on:

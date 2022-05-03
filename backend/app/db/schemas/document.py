@@ -1,9 +1,8 @@
 import datetime
 import typing as t
 
-from pydantic import BaseModel, HttpUrl
+from pydantic import BaseModel
 
-from app.db.models import DocumentInvalidReason
 from app.db.schemas import _ValidatedDateComponents
 
 
@@ -13,10 +12,13 @@ class _DocumentBase(BaseModel):  # noqa: D106
     Do not use directly.
     """
 
+    loaded_ts: t.Optional[datetime.datetime]
     name: str
-    language_id: t.Optional[int]
-    source_url: t.Optional[HttpUrl]
-    s3_url: t.Optional[HttpUrl]
+    source_url: t.Optional[str]
+    url: t.Optional[str]
+    geography_id: int  # the loader gets this via API lookup, so it will exist in the API DB
+    type_id: int  # the loader gets this via API lookup, so it will exist in the API DB
+    source_id: int  # the loader gets this via API lookup, so it will exist in the API DB
 
 
 class _DocumentInDBBase(_DocumentBase):
@@ -25,12 +27,7 @@ class _DocumentInDBBase(_DocumentBase):
     Do not use directly.
     """
 
-    document_id: int
-    action_id: int
-    document_date: datetime.date
-    document_mod_date: datetime.date
-    is_valid: bool
-    invalid_reason: t.Optional[DocumentInvalidReason]
+    id: int
 
     class Config:  # noqa: D106
         orm_mode = True
@@ -39,15 +36,6 @@ class _DocumentInDBBase(_DocumentBase):
 
 class DocumentCreate(_DocumentBase, _ValidatedDateComponents):  # noqa: D101, D106
     pass
-
-
-class DocumentCreateInternal(DocumentCreate):
-    """Like DocumentCreate, but with extra data that only the backend can set."""
-
-    action_id: int
-    is_valid: bool
-    invalid_reason: t.Optional[DocumentInvalidReason]
-    document_mod_date: datetime.date
 
 
 class Document(_DocumentInDBBase):
