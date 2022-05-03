@@ -17,10 +17,16 @@ from app.db.models import (
     DocumentResponse,
     Hazard,
     DocumentHazard,
+    DocumentLanguage,
 )
 from sqlalchemy.orm import Session
 from app.model import PolicyLookup
-from app.service.lookups import get_type_id, get_geography_id
+from app.service.api_client import (
+    get_type_id,
+    get_geography_id,
+    get_language_id,
+    get_language_id_by_part1_code,
+)
 from app.service.validation import get_document_validity_sync
 
 logger = logging.getLogger(__file__)
@@ -39,16 +45,18 @@ def load(db: Session, policies: PolicyLookup):
         # if debug_count > 10:
         #     return
 
+        # look up geography from API
         country_code = key.country_code
-        geography_id = get_geography_id(db, country_code)
+        geography_id = get_geography_id(country_code)
         if not geography_id:
             logger.warning(
                 f"No geography found in lookup for country code {country_code}"
             )
             continue
 
+        # look up document type from API
         policy_type = key.policy_type
-        document_type_id = get_type_id(db, policy_type)
+        document_type_id = get_type_id(policy_type)
         if not document_type_id:
             logger.warning(
                 f"No action type found in lookup for policy type {policy_type}"
@@ -68,6 +76,15 @@ def load(db: Session, policies: PolicyLookup):
             # addition of url makes it unique. Fetch any existing docs by
             # name/geography_id/type_id/source_id and then set up any associations
             # in case we have a new doc.
+            # (This to-do does not apply for alpha, as we load data from scratch every time.)
+
+            # look up language from API
+            # TODO multi-language support for docs imminent with CSV reformat
+            language_id = get_language_id(doc.doc_languages[0] or "eng")
+            if language_id is None:
+                language_id = get_language_id_by_part1_code(
+                    doc.doc_languages[0] or "en"
+                )
 
             # Optimisation: As the get_document_validity_sync check can take long,
             # check if the document already exists in the DB, and skip if it does
@@ -192,6 +209,13 @@ def load(db: Session, policies: PolicyLookup):
                 "hazard_id",
             )
 
+            # doc language
+            document_language_db = DocumentLanguage(
+                language_id=language_id,
+                document_id=document_db.id,
+            )
+            db.add(document_language_db)
+
             # commit for each doc, not each policy
             db.commit()
             imported_count += 1
@@ -199,7 +223,7 @@ def load(db: Session, policies: PolicyLookup):
         main_doc = None
 
     logger.info(
-        f"Done, {imported_count} policies imported out of {len(policies.items())} total"
+        f"Done, {imported_count} documents imported from {len(policies.items())} actions"
     )
 
 

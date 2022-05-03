@@ -20,7 +20,7 @@ jobs:
       - name: verify backend is up
         run: curl http://localhost:8000/api/docs
       - name: Run backend tests
-        run: make test_backend
+        run: make test_backend && make test_backend_search
       - name: docker
         run: |
           docker-compose logs
@@ -53,3 +53,13 @@ jobs:
         run: make build_search_index
       - name: Test search_index
         run: make test_search_index
+  test_loader:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - name: Build docker-compose stack using .env.example
+        run: cp .env.example .env
+      - name: Build
+        run: make build_loader
+      - name: Test
+        run: make test_loader

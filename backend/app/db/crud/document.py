@@ -1,24 +1,24 @@
 from sqlalchemy import and_, exists
 from sqlalchemy.orm import Session
 
-from app.db.models import Document, User
+from app.db.models import Document
 from app.db.schemas.document import DocumentCreate
 
 
 def create_document(
     db: Session,
     document: DocumentCreate,
-    creator: User,
+    creator_id: int,
 ) -> Document:
     db_document = Document(
         name=document.name,
         source_url=document.source_url,
-        created_by=creator.id,
+        created_by=creator_id,
         loaded_ts=document.loaded_ts,
-        source_id=1,  # TODO, but for now, always CCLW (only entry with id=1)
+        source_id=document.source_id,
         url=document.url,
-        geography_id=1,  # TODO
-        type_id=1,  # TODO
+        geography_id=document.geography_id,
+        type_id=document.type_id,
     )
 
     db.add(db_document)

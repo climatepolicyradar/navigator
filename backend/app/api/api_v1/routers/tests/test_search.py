@@ -8,9 +8,8 @@ from app.db.schemas.search import SortOrder, FilterField
 from app.core.search import _FILTER_FIELD_MAP
 
 
-def test_simple_pagination(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+@pytest.mark.search
+def test_simple_pagination(test_opensearch, monkeypatch, client, user_token_headers):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     page1_response = client.post(
@@ -55,9 +54,8 @@ def test_simple_pagination(
         assert d not in page2_documents
 
 
-def test_pagination_overlap(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+@pytest.mark.search
+def test_pagination_overlap(test_opensearch, monkeypatch, client, user_token_headers):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     page1_response = client.post(
@@ -101,9 +99,8 @@ def test_pagination_overlap(
     assert page1_documents[-1] == page2_documents[0]
 
 
-def test_search_body_valid(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+@pytest.mark.search
+def test_search_body_valid(test_opensearch, monkeypatch, client, user_token_headers):
     """Test a simple known valid search responds with success."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -122,6 +119,7 @@ def test_search_body_valid(
     assert response.status_code == 200
 
 
+@pytest.mark.search
 def test_keyword_filters(
     test_opensearch, monkeypatch, client, user_token_headers, mocker
 ):
@@ -146,6 +144,7 @@ def test_keyword_filters(
     } in query_body["query"]["bool"]["filter"]
 
 
+@pytest.mark.search
 def test_invalid_keyword_filters(
     test_opensearch, monkeypatch, client, user_token_headers
 ):
@@ -166,6 +165,7 @@ def test_invalid_keyword_filters(
     assert response.status_code == 422
 
 
+@pytest.mark.search
 @pytest.mark.parametrize(
     "year_range", [(None, None), (1900, None), (None, 2020), (1900, 2020)]
 )
@@ -222,6 +222,7 @@ def test_year_range_filters(
         assert "filter" not in query_body["query"]["bool"]
 
 
+@pytest.mark.search
 def test_multiple_filters(
     test_opensearch, monkeypatch, client, user_token_headers, mocker
 ):
@@ -257,6 +258,7 @@ def test_multiple_filters(
     } in query_body["query"]["bool"]["filter"]
 
 
+@pytest.mark.search
 def test_result_order_score(
     test_opensearch, monkeypatch, client, user_token_headers, mocker
 ):
@@ -273,9 +275,7 @@ def test_result_order_score(
     )
     assert response.status_code == 200
     query_response = query_spy.spy_return.raw_response
-    result_docs = query_response["aggregations"]["sample"]["top_docs"][
-        "buckets"
-    ]
+    result_docs = query_response["aggregations"]["sample"]["top_docs"]["buckets"]
 
     s = None
     for d in result_docs:
@@ -285,6 +285,7 @@ def test_result_order_score(
         s = new_s
 
 
+@pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_date(
     test_opensearch, monkeypatch, client, user_token_headers, order
@@ -318,6 +319,7 @@ def test_result_order_date(
         dt = new_dt
 
 
+@pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_title(
     test_opensearch, monkeypatch, client, user_token_headers, order
@@ -351,9 +353,8 @@ def test_result_order_title(
         t = new_t
 
 
-def test_invalid_request(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+@pytest.mark.search
+def test_invalid_request(test_opensearch, monkeypatch, client, user_token_headers):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
@@ -378,9 +379,8 @@ def test_invalid_request(
     assert response.status_code == 422
 
 
-def test_case_insensitivity(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+@pytest.mark.search
+def test_case_insensitivity(test_opensearch, monkeypatch, client, user_token_headers):
     """Make sure that query string results are not affected by case."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -411,9 +411,8 @@ def test_case_insensitivity(
     assert response1_json == response2_json == response3_json
 
 
-def test_punctuation_ignored(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+@pytest.mark.search
+def test_punctuation_ignored(test_opensearch, monkeypatch, client, user_token_headers):
     """Make sure that punctuation in query strings is ignored."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -444,9 +443,8 @@ def test_punctuation_ignored(
     assert response1_json == response2_json == response3_json
 
 
-def test_accents_ignored(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+@pytest.mark.search
+def test_accents_ignored(test_opensearch, monkeypatch, client, user_token_headers):
     """Make sure that accents in query strings are ignored."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -477,6 +475,7 @@ def test_accents_ignored(
     assert response1_json == response2_json == response3_json
 
 
+@pytest.mark.search
 def test_unauthenticated(client):
     """Make sure that unauthenticated requests are denied correctly."""
     response = client.post(
@@ -486,6 +485,7 @@ def test_unauthenticated(client):
     assert response.status_code == 401
 
 
+@pytest.mark.search
 def test_time_taken(test_opensearch, monkeypatch, client, user_token_headers):
     """Make sure that query time taken is sensible."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -505,9 +505,8 @@ def test_time_taken(test_opensearch, monkeypatch, client, user_token_headers):
     assert 0 < reported_response_time_ms < expected_response_time_ms_max
 
 
-def test_empty_search_term(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+@pytest.mark.search
+def test_empty_search_term(test_opensearch, monkeypatch, client, user_token_headers):
     """Make sure that empty search terms return no results."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 

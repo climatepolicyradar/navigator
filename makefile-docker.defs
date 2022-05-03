@@ -43,6 +43,10 @@ new_migration_backend:
 new_migration_loader:
 	docker-compose run --rm loader alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
 
+refresh_all_dbs:
+	docker-compose down -v
+	make start
+
 # ----------------------------------
 # building images
 # ----------------------------------
@@ -72,12 +76,14 @@ test_frontend:
 clear_test_search_index:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --insecure
 
-test_backend:
-	make clear_test_search_index
+test_backend_search: clear_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_analyzer.dump --type=analyzer
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_mapping.dump --type=mapping
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader sh -c "gzip -d /app/test/data/test_opensearch_data.dump.gz -c > /tmp/data && elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/tmp/data --type=data"
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'search'
+
+test_backend:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'not search'
 
 test_loader:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader pytest

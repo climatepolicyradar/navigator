@@ -16,7 +16,9 @@ class _DocumentBase(BaseModel):  # noqa: D106
     name: str
     source_url: t.Optional[str]
     url: t.Optional[str]
-    type_id: int
+    geography_id: int  # the loader gets this via API lookup, so it will exist in the API DB
+    type_id: int  # the loader gets this via API lookup, so it will exist in the API DB
+    source_id: int  # the loader gets this via API lookup, so it will exist in the API DB
 
 
 class _DocumentInDBBase(_DocumentBase):

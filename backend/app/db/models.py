@@ -1,3 +1,29 @@
+"""Models.
+
+Some of these tables are lookup tables, i.e. the ones which have a DocumentXXX counterpart.
+
+Values for these lookups can be found here:
+https://www.notion.so/climatepolicyradar/External-Pre-Existing-Classifications-0409cd1a01d44362b48b34c24d10cd4c
+
+However, for now we write the values into the lookups as they come from the uploader.
+As more sources come online, we'll set up a mapping between the source's term, and our term
+(the latter which is currently based on CCLW).
+
+
+These lookups are global:
+- language
+- geography
+- source
+- category
+- framework
+- hazard
+- response (to be named 'topic')
+
+These lookups are source-specific:
+- instrument
+- sector
+"""
+
 import sqlalchemy as sa
 from sqlalchemy import UniqueConstraint
 from sqlalchemy.sql import func
@@ -73,14 +99,14 @@ class Source(Base):  # noqa: D101
     __tablename__ = "source"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.String(128), nullable=False)
+    name = sa.Column(sa.String(128), nullable=False, unique=True)
 
 
 class DocumentType(Base):  # noqa: D101
     __tablename__ = "document_type"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.Text, nullable=False)
+    name = sa.Column(sa.Text, nullable=False, unique=True)
     description = sa.Column(sa.Text, nullable=False)
 
 
@@ -123,6 +149,7 @@ class Sector(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
+    UniqueConstraint(name, source_id)
 
 
 class DocumentSector(Base):  # noqa: D101
@@ -145,6 +172,7 @@ class Instrument(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
+    UniqueConstraint(name, source_id)
 
 
 class DocumentInstrument(Base):  # noqa: D101
@@ -167,7 +195,7 @@ class Framework(Base):  # noqa: D101
     __tablename__ = "framework"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.Text, nullable=False)
+    name = sa.Column(sa.Text, nullable=False, unique=True)
     description = sa.Column(sa.Text, nullable=False)
 
 
@@ -187,7 +215,7 @@ class Response(Base):  # noqa: D101
     __tablename__ = "response"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.Text, nullable=False)
+    name = sa.Column(sa.Text, nullable=False, unique=True)
     description = sa.Column(sa.Text, nullable=False)
 
 
@@ -207,7 +235,7 @@ class Hazard(Base):  # noqa: D101
     __tablename__ = "hazard"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.Text, nullable=False)
+    name = sa.Column(sa.Text, nullable=False, unique=True)
     description = sa.Column(sa.Text, nullable=False)
 
 
@@ -229,7 +257,7 @@ class Category(Base):  # noqa: D101
     __tablename__ = "category"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.Text, nullable=False)
+    name = sa.Column(sa.Text, nullable=False, unique=True)
     description = sa.Column(sa.Text, nullable=False)
 
 
@@ -308,3 +336,15 @@ class Association(Base):  # noqa: D101
     )
     type = sa.Column(sa.Text, nullable=False)
     name = sa.Column(sa.Text, nullable=False)
+
+
+class DocumentLanguage(Base):
+    """A document's languages."""
+
+    __tablename__ = "document_language"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    language_id = sa.Column(sa.Integer, sa.ForeignKey(Language.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )

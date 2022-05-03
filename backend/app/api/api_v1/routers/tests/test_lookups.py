@@ -24,7 +24,7 @@ from app.db.session import SessionLocal
         ("sources", Source),
         ("instruments", Instrument),
         ("sectors", Sector),
-        ("types", DocumentType),
+        ("document_types", DocumentType),
         ("categories", Category),
     ],
 )
@@ -52,7 +52,7 @@ def test_get_lookups(client, user_token_headers, test_db, path, table):
         "sources",
         "instruments",
         "sectors",
-        "types",
+        "document_types",
         "categories",
     ],
 )
@@ -96,9 +96,7 @@ _EX_ONE = {"node": _DATA_1, "children": [_EX_TWO]}
 EXPECTED_TREE_1 = [_EX_ONE]
 
 
-@pytest.mark.parametrize(
-    "data,expected", [(TREE_TABLE_DATA_1, EXPECTED_TREE_1)]
-)
+@pytest.mark.parametrize("data,expected", [(TREE_TABLE_DATA_1, EXPECTED_TREE_1)])
 def test_tree_table_to_json(data, expected):
     db = MagicMock(spec=SessionLocal)
     db.query = lambda _: _MockQuery(data)
