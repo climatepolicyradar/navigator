@@ -17,7 +17,7 @@ These lookups are global:
 - category
 - framework
 - hazard
-- response (to be named 'topic')
+- response (named 'topic' outside the app)
 
 These lookups are source-specific:
 - instrument
@@ -168,7 +168,7 @@ class Sector(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
-    UniqueConstraint(name, source_id)
+    UniqueConstraint(name, source_id, parent_id)
 
 
 class DocumentSector(Base):  # noqa: D101
@@ -191,7 +191,7 @@ class Instrument(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
-    UniqueConstraint(name, source_id)
+    UniqueConstraint(name, source_id, parent_id)
 
 
 class DocumentInstrument(Base):  # noqa: D101
@@ -230,7 +230,12 @@ class DocumentFramework(Base):  # noqa: D101
     )
 
 
-class Response(Base):  # noqa: D101
+class Response(Base):
+    """A response.
+
+    Response is called 'topic' outside the app.
+    """
+
     __tablename__ = "response"
 
     id = sa.Column(sa.Integer, primary_key=True)
