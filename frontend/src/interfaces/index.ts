@@ -57,3 +57,19 @@ export interface Source {
   source_id: number;
   name: string;
 }
+
+export interface SearchCriteria {
+  query_string: string; // required
+  exact_match: boolean; // required
+  max_passages_per_doc: number; // default 10
+  keyword_filters: {
+    action_geography_english_shortname: string[];
+    action_source_name: string[];
+    // more filter keys to be provided
+  };
+  year_range: [number, number];
+  sort_field: string; // "title" or "date"
+  sort_order: string; // "desc" or "asc"
+  limit: number; // default 10
+  offset: number;
+}

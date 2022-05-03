@@ -1,0 +1,19 @@
+/* Range slider */
+
+.slider-thumb-outer {
+  height: 20px;
+  width: 20px;
+  @apply relative flex justify-center;
+}
+.slider-thumb {
+  
+  @apply absolute inset-0 bg-white rounded-full drop-shadow flex justify-center items-center;
+}
+.slider-track-outer {
+  height: 18px;
+  @apply flex w-full;
+}
+.slider-track {
+  height: 6px;
+  @apply bg-blue-500 w-full rounded;
+}

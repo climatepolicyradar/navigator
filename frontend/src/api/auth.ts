@@ -10,7 +10,7 @@ import { storage } from '../utils/storage';
 import Router from 'next/router';
 import LoaderOverlay from '../components/LoaderOverlay';
 
-const protectedUrls = ['/add-action', '/account', '/actions', '/search', '/'];
+const unprotectedUrls = [];
 
 export async function handleUserResponse(data) {
   if (data?.error) {
@@ -34,7 +34,7 @@ async function loadUser() {
     }
   }
 
-  if (user === null && protectedUrls.indexOf(Router.router.pathname) > -1) {
+  if (user === null && unprotectedUrls.indexOf(Router.router.pathname) === -1) {
     Router.push('/auth/signin');
   }
 

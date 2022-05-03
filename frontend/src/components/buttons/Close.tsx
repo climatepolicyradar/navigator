@@ -16,7 +16,7 @@ const Close = ({ onClick, size = '20' }: CloseProps) => {
         width: `${size}px`,
       }}
     >
-      <CloseIcon />
+      <CloseIcon height={size} width={size} />
     </button>
   );
 };
