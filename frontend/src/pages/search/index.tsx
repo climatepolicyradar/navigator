@@ -25,6 +25,8 @@ import Close from '../../components/buttons/Close';
 import FilterToggle from '../../components/buttons/FilterToggle';
 import Slideout from '../../components/slideout';
 import PassageMatches from '../../components/PassageMatches';
+import EmbeddedPDF from '../../components/EmbeddedPDF';
+import DocumentSlideout from '../../components/headers/DocumentSlideout';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -100,7 +102,28 @@ const Search = () => {
           heading={t('Law and Policy Search')}
         >
           <Slideout show={showSlideout} setShowSlideout={setShowSlideout}>
-            <PassageMatches document={document} />
+            <>
+              <DocumentSlideout
+                name={document.data?.document_name}
+                length={document.data?.document_passage_matches.length}
+                setShowPDF={setShowPDF}
+                showPDF={showPDF}
+              />
+              {showPDF ? (
+                // TODO: pass in real document when api and docs are ready
+                <EmbeddedPDF
+                  document={null}
+                  showPDF={showPDF}
+                  setShowPDF={setShowPDF}
+                />
+              ) : (
+                <PassageMatches
+                  document={document}
+                  showPDF={showPDF}
+                  setShowPDF={setShowPDF}
+                />
+              )}
+            </>
           </Slideout>
           <section>
             <div className="px-4 md:flex container">
