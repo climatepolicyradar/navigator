@@ -59,7 +59,8 @@ def get_policy_data(
 
     policy_name = dataframe["policy_name"]
     country_code = dataframe["country_code"]
-    policy_type = CCLWActionType[dataframe["policy_type"]].value
+    policy_category = CCLWActionType[dataframe["policy_category"]].value
+    document_type = dataframe["document_type"]
     events = prune(dataframe["events"].split("||"))
     sectors = prune(dataframe["sectors"].split(","))
     instruments = prune(dataframe["instruments"].split(";"))
@@ -72,7 +73,7 @@ def get_policy_data(
         policy_date = get_missing_date(policy_name, country_code)
     if not policy_date:
         logger.warning(
-            f"Found no date for policy policy_name={policy_name}, policy_type={policy_type}, country_code={country_code}"
+            f"Found no date for policy policy_name={policy_name}, policy_category={policy_category}, country_code={country_code}"
         )
         return
 
@@ -80,7 +81,7 @@ def get_policy_data(
         policy_date=policy_date,
         country_code=country_code,
         policy_name=policy_name,
-        policy_type=policy_type,
+        policy_category=policy_category,
     )
 
     doc_list = dataframe["document_list"]
@@ -106,6 +107,7 @@ def get_policy_data(
                     doc_name=doc_name,
                     doc_languages=[doc_language],
                     doc_url=ensure_safe(doc_url),
+                    document_type=document_type,
                     events=events,
                     sectors=sectors,
                     instruments=instruments,
@@ -120,7 +122,7 @@ def get_policy_data(
                 policy_date=policy_date,
                 country_code=country_code,
                 policy_name=policy_name,
-                policy_type=policy_type,
+                policy_category=policy_category,
                 policy_description=strip_tags(dataframe["policy_description"]),
                 docs=docs,
             )

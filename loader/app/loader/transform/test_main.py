@@ -15,12 +15,13 @@ def test_transform():
             "document_list": ["doc name|http://doc|en;second doc|http://doc2|", None],
             "policy_description": ["<div>foobar</div>", "nodoc"],
             "events": ["17/11/1979|Law passed", None],
-            "policy_type": ["legislative", "legislative"],
+            "policy_category": ["legislative", "legislative"],
             "sectors": ["Two,Sectors", ""],
             "instruments": ["", ""],
             "frameworks": ["", ""],
             "responses": ["", ""],
             "hazards": ["", ""],
+            "document_type": ["doc type", ""],
         }
     )
 
@@ -33,7 +34,7 @@ def test_transform():
     policy: PolicyData = results[key]
 
     assert policy.policy_name == "foo"
-    assert policy.policy_type == "Law"
+    assert policy.policy_category == "Law"
     assert policy.country_code == "cc"
     assert policy.policy_date.date() == dt.date(1979, 11, 17)
     assert policy.policy_description == "foobar"
@@ -46,11 +47,13 @@ def test_transform():
     assert doc_one.doc_languages == ["en"]
     assert doc_one.doc_url == "https://doc"
     assert doc_one.sectors == ["Two", "Sectors"]
+    assert doc_one.document_type == "doc type"
 
     doc_two: Doc = docs[1]
     assert doc_two.doc_name == "second doc"
     assert doc_two.doc_languages == [None]
     assert doc_two.doc_url == "https://doc2"
+    assert doc_two.document_type == "doc type"
 
 
 def test_transform_no_doc():
@@ -61,7 +64,7 @@ def test_transform_no_doc():
             "document_list": [None],
             "policy_description": ["foobar"],
             "events": ["17/11/1979|Law passed"],
-            "policy_type": ["legislative"],
+            "policy_category": ["legislative"],
             "sectors": [""],
             "instruments": [""],
             "frameworks": [""],
@@ -84,12 +87,13 @@ def test_transform_no_date():
             "document_list": ["doc name|http://doc|;second doc|http://doc2|en"],
             "policy_description": ["foobar"],
             "events": [None],
-            "policy_type": ["legislative"],
+            "policy_category": ["legislative"],
             "sectors": [""],
             "instruments": [""],
             "frameworks": [""],
             "responses": [""],
             "hazards": [""],
+            "document_type": [""],
         }
     )
 

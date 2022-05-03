@@ -19,7 +19,7 @@ class Key:
     policy_name: str
     policy_date: datetime
     country_code: str
-    policy_type: str
+    policy_category: str
 
 
 @dataclass
@@ -27,6 +27,7 @@ class Doc:  # noqa: D101
     doc_name: str
     doc_languages: List[str]
     doc_url: str
+    document_type: str
     # metadata
     events: List[str]
     sectors: List[str]

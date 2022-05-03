@@ -102,8 +102,26 @@ class Source(Base):  # noqa: D101
     name = sa.Column(sa.String(128), nullable=False, unique=True)
 
 
-class DocumentType(Base):  # noqa: D101
+class DocumentType(Base):
+    """A document type.
+
+    E.g. strategy, plan, law
+    """
+
     __tablename__ = "document_type"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.Text, nullable=False, unique=True)
+    description = sa.Column(sa.Text, nullable=False)
+
+
+class Category(Base):
+    """A document category
+
+    E.g. Policy, Law (executive, legislative as per CCLW)
+    """
+
+    __tablename__ = "category"
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.Text, nullable=False, unique=True)
@@ -138,6 +156,7 @@ class Document(Base, Auditable):
         sa.ForeignKey(DocumentType.id),
         nullable=False,
     )
+    category_id = sa.Column(sa.Integer, sa.ForeignKey(Category.id), nullable=False)
     UniqueConstraint(name, geography_id, type_id, source_id, source_url)
 
 
@@ -244,28 +263,6 @@ class DocumentHazard(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     hazard_id = sa.Column(sa.Integer, sa.ForeignKey(Hazard.id), nullable=False)
-    document_id = sa.Column(
-        sa.Integer,
-        sa.ForeignKey(Document.id, ondelete="CASCADE"),
-        nullable=False,
-    )
-
-
-class Category(Base):  # noqa: D101
-    """Document category, e.g. strategy, plan, law..."""
-
-    __tablename__ = "category"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.Text, nullable=False, unique=True)
-    description = sa.Column(sa.Text, nullable=False)
-
-
-class DocumentCategory(Base):  # noqa: D101
-    __tablename__ = "document_category"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    type_id = sa.Column(sa.Integer, sa.ForeignKey(Category.id), nullable=False)
     document_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(Document.id, ondelete="CASCADE"),

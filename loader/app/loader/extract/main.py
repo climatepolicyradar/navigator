@@ -9,7 +9,7 @@ policy_fe_column_map = {
     "Geography ISO": "country_code",
     "Documents": "document_list",
     "Description": "policy_description",
-    "Type": "policy_type",
+    "Type": "policy_category",
     # metadata
     "Events": "events",
     "Sectors": "sectors",
@@ -17,6 +17,7 @@ policy_fe_column_map = {
     "Frameworks": "frameworks",
     "Responses": "responses",
     "Natural Hazards": "hazards",
+    "Document Types": "document_type",
 }
 
 
