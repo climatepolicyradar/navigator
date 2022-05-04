@@ -1,6 +1,6 @@
 from pathlib import Path
 
-from app.loaders.loader_cclw_v1.extract.main import extract
+from app.loaders.loader_cclw_v2.extract.main import extract
 
 
 def test_extract():

@@ -7,7 +7,6 @@ from typing import Tuple, List, Optional
 
 from dateutil.parser import parse
 
-from app.loaders.loader_cclw_v1.transform.datafixes import get_missing_date
 from app.mapping import CCLWActionType
 from app.model import Key, Doc, PolicyData
 
@@ -69,8 +68,6 @@ def get_policy_data(
     hazards = prune(dataframe["hazards"].split(","))
 
     policy_date: Optional[datetime] = extract_date(dataframe["events"])
-    if not policy_date:
-        policy_date = get_missing_date(policy_name, country_code)
     if not policy_date:
         logger.warning(
             f"Found no date for policy policy_name={policy_name}, policy_category={policy_category}, country_code={country_code}"
