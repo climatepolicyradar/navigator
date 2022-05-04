@@ -77,14 +77,21 @@ const EmbeddedPDF = ({ document, page, setShowPDF }) => {
     return number >= 10 ? number : number.toString().padStart(2, '0');
   };
 
-  const generateAnnotationObject = (passage, index) => {
+  const generateDate = () => {
     const now = new Date();
     const month = padNumber(now.getMonth() + 1);
     const day = padNumber(now.getDate());
-    const nowStr = `${now.getFullYear()}-${month}-${day}T${now.getHours()}:${now.getMinutes()}:00Z`;
-    const coords = passage.text_block_coords;
+    const hours = padNumber(now.getHours());
+    const minutes = padNumber(now.getMinutes());
+    return `${now.getFullYear()}-${month}-${day}T${hours}:${minutes}:00Z`;
+  };
+
+  const generateAnnotationObject = (passage, index) => {
+    const nowStr = generateDate();
+    const { text_block_coords: coords } = passage;
     const boundingBox = [...coords[0], ...coords[3]];
     const quadPoints = [...coords[0], ...coords[1], ...coords[3], ...coords[2]];
+
     return {
       '@context': [
         'https://www.w3.org/ns/anno.jsonld',
