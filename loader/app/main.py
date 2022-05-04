@@ -3,9 +3,9 @@ import os
 from pathlib import Path
 
 from app.db.session import get_db
-from app.loaders.loader.extract.main import extract
-from app.loaders.loader.load.main import load
-from app.loaders.loader.transform.main import transform
+from app.loaders.loader_cclw_v1.extract.main import extract
+from app.loaders.loader_cclw_v1.load.main import load
+from app.loaders.loader_cclw_v1.transform.main import transform
 from app.poster.main import post_all_to_backend_api
 from app.service.document_upload import upload_all_documents
 

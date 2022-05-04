@@ -2,16 +2,16 @@ from dataclasses import dataclass
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 
-from app.loaders.loader.load.main import load
+from app.loaders.loader_cclw_v1.load.main import load
 from app.model import Key, PolicyData, Doc, PolicyLookup
 
 
-@patch("app.loader.load.main.get_category_id")
-@patch("app.loader.load.main.get_language_id")
-@patch("app.loader.load.main.get_document_by_unique_constraint")
-@patch("app.loader.load.main.get_document_validity_sync")
-@patch("app.loader.load.main.get_geography_id")
-@patch("app.loader.load.main.get_type_id")
+@patch("app.loader_cclw_v1.load.main.get_category_id")
+@patch("app.loader_cclw_v1.load.main.get_language_id")
+@patch("app.loader_cclw_v1.load.main.get_document_by_unique_constraint")
+@patch("app.loader_cclw_v1.load.main.get_document_validity_sync")
+@patch("app.loader_cclw_v1.load.main.get_geography_id")
+@patch("app.loader_cclw_v1.load.main.get_type_id")
 def test_load_single_doc(
     mock_get_document_type_id,
     mock_get_geography_id,
@@ -97,12 +97,12 @@ def test_load_single_doc(
     mock_db.commit.assert_called_once()
 
 
-@patch("app.loader.load.main.get_category_id")
-@patch("app.loader.load.main.get_language_id")
-@patch("app.loader.load.main.get_document_by_unique_constraint")
-@patch("app.loader.load.main.get_document_validity_sync")
-@patch("app.loader.load.main.get_geography_id")
-@patch("app.loader.load.main.get_type_id")
+@patch("app.loader_cclw_v1.load.main.get_category_id")
+@patch("app.loader_cclw_v1.load.main.get_language_id")
+@patch("app.loader_cclw_v1.load.main.get_document_by_unique_constraint")
+@patch("app.loader_cclw_v1.load.main.get_document_validity_sync")
+@patch("app.loader_cclw_v1.load.main.get_geography_id")
+@patch("app.loader_cclw_v1.load.main.get_type_id")
 def test_load_two_related_docs(
     mock_get_document_type_id,
     mock_get_geography_id,
