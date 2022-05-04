@@ -56,6 +56,8 @@ def test_load_single_doc(
         sectors=[],
         instruments=[],
         keywords=[],
+        document_date=None,
+        document_category="",
     )
     policy_data: PolicyData = PolicyData(
         **policy_key.__dict__,
@@ -148,6 +150,8 @@ def test_load_two_related_docs(
         sectors=[],
         instruments=[],
         keywords=[],
+        document_date=None,
+        document_category="",
     )
     doc2: Doc = Doc(
         doc_url="http://doc2",
@@ -161,6 +165,8 @@ def test_load_two_related_docs(
         sectors=[],
         instruments=[],
         keywords=[],
+        document_date=None,
+        document_category="",
     )
     policy_data: PolicyData = PolicyData(
         **policy_key.__dict__,
