@@ -7,7 +7,7 @@ from app.model import Key, PolicyData, Doc, PolicyLookup
 
 
 @patch("app.loaders.loader_cclw_v2.load.main.get_category_id")
-@patch("app.loaders.loader_cclw_v2.load.main.get_language_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_language_id_by_name")
 @patch("app.loaders.loader_cclw_v2.load.main.get_document_by_unique_constraint")
 @patch("app.loaders.loader_cclw_v2.load.main.get_document_validity_sync")
 @patch("app.loaders.loader_cclw_v2.load.main.get_geography_id")
@@ -40,7 +40,7 @@ def test_load_single_doc(
 
     policy_key = Key(
         policy_name="foo",
-        policy_category="Law",
+        policy_category=None,
         country_code="cc",
         policy_date=datetime(1979, 11, 17),
     )
@@ -49,6 +49,8 @@ def test_load_single_doc(
         doc_name="doc name",
         doc_languages=["en"],
         document_type="doc type",
+        document_date=datetime(2021, 5, 4),  # ... be with you
+        document_category="doc 🐱",
         hazards=[],
         events=[],
         responses=[],
@@ -69,17 +71,17 @@ def test_load_single_doc(
     load(mock_db, policies)
 
     mock_get_document_type_id.assert_called_once_with(doc.document_type)
-    mock_get_category_id.assert_called_once_with(policy_data.policy_category)
+    mock_get_category_id.assert_called_once_with(doc.document_category)
     mock_get_geography_id.assert_called_once_with(policy_data.country_code)
     mock_get_language_id.assert_called_once_with(doc.doc_languages[0])
     mock_get_document_validity_sync.assert_called_once_with("http://doc")
     mock_get_document_by_unique_constraint.assert_called_once_with(
-        mock_db, "foo", 456, 123, 1, "http://doc"
+        mock_db, doc.doc_name, 456, 123, 1, "http://doc"
     )
 
     called_doc = mock_db.add.call_args_list[0][0][0]
 
-    assert called_doc.name == "foo"
+    assert called_doc.name == doc.doc_name
     assert called_doc.source_url == "http://doc"
     assert called_doc.source_id == 1
     # assert called_doc.url ==  # TODO: upload to S3
@@ -93,13 +95,13 @@ def test_load_single_doc(
     assert called_event.document_id == called_doc.id
     assert called_event.name == "Publication"
     assert called_event.description == "The publication date"
-    assert called_event.created_ts == datetime(1979, 11, 17)
+    assert called_event.created_ts == doc.document_date
 
     mock_db.commit.assert_called_once()
 
 
 @patch("app.loaders.loader_cclw_v2.load.main.get_category_id")
-@patch("app.loaders.loader_cclw_v2.load.main.get_language_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_language_id_by_name")
 @patch("app.loaders.loader_cclw_v2.load.main.get_document_by_unique_constraint")
 @patch("app.loaders.loader_cclw_v2.load.main.get_document_validity_sync")
 @patch("app.loaders.loader_cclw_v2.load.main.get_geography_id")
@@ -141,6 +143,8 @@ def test_load_two_related_docs(
         doc_name="doc name",
         doc_languages=["en"],
         document_type="doc1 type",
+        document_date=datetime(2021, 5, 4),  # ... be with you
+        document_category="doc 🐱",
         hazards=[],
         events=[],
         responses=[],
@@ -154,6 +158,8 @@ def test_load_two_related_docs(
         doc_name="doc name 2",
         doc_languages=["af"],
         document_type="doc2 type",
+        document_date=datetime(2020, 5, 4),  # ... be with you
+        document_category="doc 2 🐱",
         hazards=[],
         events=[],
         responses=[],
@@ -173,7 +179,8 @@ def test_load_two_related_docs(
 
     load(mock_db, policies)
 
-    mock_get_category_id.assert_called_once_with(policy_data.policy_category)
+    assert mock_get_category_id.call_args_list[0][0][0] == doc.document_category
+    assert mock_get_category_id.call_args_list[1][0][0] == doc2.document_category
     assert mock_get_document_type_id.call_args_list[0][0][0] == doc.document_type
     assert mock_get_document_type_id.call_args_list[1][0][0] == doc2.document_type
     mock_get_geography_id.assert_called_once_with(policy_data.country_code)
@@ -183,7 +190,7 @@ def test_load_two_related_docs(
     assert mock_get_document_validity_sync.call_args_list[1][0][0] == "http://doc2"
     assert mock_get_document_by_unique_constraint.call_args_list[0][0] == (
         mock_db,
-        "foo",
+        doc.doc_name,
         456,
         123,
         1,
@@ -191,7 +198,7 @@ def test_load_two_related_docs(
     )
     assert mock_get_document_by_unique_constraint.call_args_list[1][0] == (
         mock_db,
-        "foo",
+        doc2.doc_name,
         456,
         234,
         1,
@@ -201,7 +208,7 @@ def test_load_two_related_docs(
     # assert first doc was added
     called_doc = mock_db.add.call_args_list[0][0][0]
 
-    assert called_doc.name == "foo"
+    assert called_doc.name == doc.doc_name
     assert called_doc.source_url == "http://doc"
     assert called_doc.source_id == 1
     # assert called_doc.url ==  # TODO: upload to S3
@@ -216,7 +223,7 @@ def test_load_two_related_docs(
     assert called_event.document_id == called_doc.id
     assert called_event.name == "Publication"
     assert called_event.description == "The publication date"
-    assert called_event.created_ts == datetime(1979, 11, 17)
+    assert called_event.created_ts == doc.document_date
 
     # assert first doc's language was added
     called_doc_language = mock_db.add.call_args_list[2][0][0]
@@ -226,7 +233,7 @@ def test_load_two_related_docs(
     # assert second doc was added
     called_doc2 = mock_db.add.call_args_list[3][0][0]
 
-    assert called_doc2.name == "foo"
+    assert called_doc2.name == doc2.doc_name
     assert called_doc2.source_url == "http://doc2"
     assert called_doc2.source_id == 1
     # assert called_doc.url ==  # TODO: upload to S3
@@ -249,7 +256,7 @@ def test_load_two_related_docs(
     assert called_event2.document_id == called_doc2.id
     assert called_event2.name == "Publication"
     assert called_event2.description == "The publication date"
-    assert called_event2.created_ts == datetime(1979, 11, 17)
+    assert called_event2.created_ts == doc2.document_date
 
     # assert second doc's language was added
     called_doc2_language = mock_db.add.call_args_list[6][0][0]

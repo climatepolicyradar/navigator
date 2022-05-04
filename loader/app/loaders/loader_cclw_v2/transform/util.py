@@ -70,7 +70,7 @@ def get_policy_data(
                 f"policy_name={policy_id}, document_category={document_category}, "
                 f"country_code={country_code}"
             )
-            return
+            continue
 
         doc = Doc(
             doc_name=document_name,

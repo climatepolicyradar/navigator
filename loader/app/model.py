@@ -24,7 +24,7 @@ class Key:
 
     policy_name: str
     country_code: str
-    policy_date: Optional[str]
+    policy_date: Optional[datetime]
     policy_category: Optional[str]
 
 
