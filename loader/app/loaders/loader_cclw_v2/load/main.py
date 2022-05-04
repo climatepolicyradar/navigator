@@ -2,6 +2,8 @@ import logging
 from datetime import datetime
 from typing import List, Type
 
+from sqlalchemy.orm import Session
+
 from app.db.crud import get_document_by_unique_constraint
 from app.db.models import (
     Association,
@@ -19,14 +21,12 @@ from app.db.models import (
     DocumentHazard,
     DocumentLanguage,
 )
-from sqlalchemy.orm import Session
 from app.model import PolicyLookup
 from app.service.api_client import (
     get_type_id,
     get_geography_id,
-    get_language_id,
-    get_language_id_by_part1_code,
     get_category_id,
+    get_language_id_by_name,
 )
 from app.service.validation import get_document_validity_sync
 
@@ -55,23 +55,27 @@ def load(db: Session, policies: PolicyLookup):
             )
             continue
 
-        # look up document category from API
-        policy_category = key.policy_category
-        category_id = get_category_id(policy_category)
-        if not category_id:
-            logger.warning(
-                f"No document category found in lookup for policy category {policy_category}"
-            )
-            continue
-
-        policy_date: datetime = key.policy_date
-        if policy_date is None:
-            logger.warning("Date is null for policy", key)
-
         # this was the loader before the change to own-db:
         # https://github.com/climatepolicyradar/navigator/blob/17491aceaf9a5a852e0a6d51a1e8f88b07675801/backend/app/api/api_v1/routers/actions.py
+
+        # If a policy has multiple docs,
+        # during doc looping, we set a main_doc if it hasn't been set,
+        # then use it for associating with subsequent docs.
         main_doc = None
         for doc in policy_data.docs:
+
+            document_date: datetime = doc.document_date
+            if document_date is None:
+                logger.warning(f"Date is null for document {doc.doc_name}")
+
+            # look up document category from API
+            document_category = doc.document_category
+            category_id = get_category_id(document_category)
+            if not category_id:
+                logger.warning(
+                    f"No document category found in lookup for document category {document_category}"
+                )
+                continue
 
             # TODO name/geography_id/type_id/source_id is not unique, but the
             # addition of url makes it unique. Fetch any existing docs by
@@ -81,11 +85,7 @@ def load(db: Session, policies: PolicyLookup):
 
             # look up language from API
             # TODO multi-language support for docs imminent with CSV reformat
-            language_id = get_language_id(doc.doc_languages[0] or "eng")
-            if language_id is None:
-                language_id = get_language_id_by_part1_code(
-                    doc.doc_languages[0] or "en"
-                )
+            language_id = get_language_id_by_name(doc.doc_languages[0] or "English")
 
             # look up document type from API
             document_type_id = get_type_id(doc.document_type)
@@ -100,7 +100,7 @@ def load(db: Session, policies: PolicyLookup):
             # (as per the unique constraint)
             maybe_existing_doc = get_document_by_unique_constraint(
                 db,
-                key.policy_name,
+                doc.doc_name,
                 geography_id,
                 document_type_id,
                 document_source_id,
@@ -134,7 +134,7 @@ def load(db: Session, policies: PolicyLookup):
             # TODO for S3, see
             # https://github.com/climatepolicyradar/navigator/blob/3ca2eda8de691288a66a1722908f32dd52c178f9/backend/app/api/api_v1/routers/actions.py#L81
             document_db = Document(
-                name=key.policy_name,
+                name=doc.doc_name,
                 source_url=doc.doc_url,
                 source_id=document_source_id,
                 # url=None,  # TODO: upload to S3
@@ -166,7 +166,7 @@ def load(db: Session, policies: PolicyLookup):
                 document_id=document_db.id,
                 name="Publication",
                 description="The publication date",
-                created_ts=key.policy_date,
+                created_ts=doc.document_date,
             )
             db.add(event_db)
 

@@ -4,11 +4,12 @@ from os import PathLike
 import pandas as pd
 from pandas import DataFrame
 
-policy_fe_column_map = {
-    "Title": "policy_name",
+csv_column_map = {
+    "Id": "policy_id",  # for grouping related documents
+    "Title": "document_name",
     "Geography ISO": "country_code",
-    "Documents": "document_list",
-    "Type": "policy_category",
+    "Documents": "document_url",  # column is plural, but it will be only one document URL
+    "Category": "category",
     # metadata
     "Events": "events",
     "Sectors": "sectors",
@@ -19,6 +20,7 @@ policy_fe_column_map = {
     "Document Type": "document_type",
     "Year": "document_year",
     "Language": "document_language",
+    "Keywords": "keywords",
 }
 
 
@@ -42,10 +44,10 @@ def extract(data_dir: PathLike) -> DataFrame:
         raise Exception(f"CSV not found at path {data_dir}")
 
     cclw_policy_fe_df = pd.read_csv(
-        csv_file, usecols=policy_fe_column_map.keys(), index_col=False
+        csv_file, usecols=csv_column_map.keys(), index_col=False
     )
 
     # rename the CSV columns as per the provided mappings
-    cclw_policy_fe_df.rename(columns=policy_fe_column_map, inplace=True)
+    cclw_policy_fe_df.rename(columns=csv_column_map, inplace=True)
 
     return cclw_policy_fe_df

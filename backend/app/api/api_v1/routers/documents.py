@@ -59,7 +59,10 @@ def document_upload(
         raise HTTPException(415, "Unsupported Media Type: must be PDF or HTML.")
 
     s3_document = s3_client.upload_fileobj(
-        fileobj=file.file, bucket="cpr-document-queue", key=str(file_path)
+        fileobj=file.file,
+        bucket="cpr-document-queue",
+        key=str(file_path),
+        ExtraArgs={"ContentType": file.content_type},
     )
 
     # If the above function returns False, then the upload has failed.

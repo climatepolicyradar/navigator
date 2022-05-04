@@ -57,6 +57,13 @@ def get_language_id_by_part1_code(part1_code):
     return _get_attribute(part1_code, get_language_lookup, "id")
 
 
+def get_language_id_by_name(name):
+    def get_language_lookup():
+        return _get_keyed_lookup("languages", "name")
+
+    return _get_attribute(name, get_language_lookup, "id")
+
+
 def _get_attribute(lookup_key: str, lookup_fn: Callable, attribute_key: str):
     """Gets an attribute from a lookup by key.
 
