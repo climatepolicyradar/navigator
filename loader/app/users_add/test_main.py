@@ -6,9 +6,7 @@ from requests import Response
 from app.users_add.main import main
 
 TEST_USERS_CSV_1 = str(
-    (
-        Path(__file__).parent / ".." / ".." / "data" / "test" / "users_test_data.csv"
-    ).absolute()
+    (Path(__file__).parent / "test_data" / "users_test_data.csv").absolute()
 )
 
 
