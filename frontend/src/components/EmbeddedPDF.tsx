@@ -6,9 +6,9 @@ import { dummyDocument, dummyDocument2 } from '../constants/dummyDocument';
 import { useDidUpdateEffect } from '../hooks/useDidUpdateEffect';
 import Loader from './Loader';
 
-const EmbeddedPDF = ({ document, page }) => {
+const EmbeddedPDF = ({ document, page, setShowPDF }) => {
   const [annotationManager, setAnnotationManager] = useState(null);
-  const [annotationListItems, setAnnotationListItems] = useState([]);
+  const [apis, setApis] = useState(null);
   const containerRef = useRef();
   const viewerConfig = {
     showDownloadPDF: true,
@@ -41,13 +41,18 @@ const EmbeddedPDF = ({ document, page }) => {
       );
       previewFilePromise.then((adobeViewer) => {
         createAnnotationManager(adobeViewer);
+
         // get APIs for gotoLocation
         adobeViewer.getAPIs().then((apis) => {
-          console.log('gototlocation');
-          apis
-            .gotoLocation(page)
-            .then(() => console.log('Success'))
-            .catch((error) => console.log(error));
+          setApis(apis);
+          // not ideal but this doesn't work without a delay.
+          setTimeout(() => {
+            console.log('go');
+            apis
+              .gotoLocation(page)
+              .then(() => console.log('Success'))
+              .catch((error) => console.log(error));
+          }, 500);
         });
       });
     });
@@ -115,13 +120,12 @@ const EmbeddedPDF = ({ document, page }) => {
 
   useEffect(() => {
     if (containerRef?.current) {
+      console.log('load pdf');
+
       previewPDF();
     }
-  }, [containerRef]);
-  useEffect(() => {
-    console.log(page);
-    previewPDF();
-  }, [page, document]);
+  }, [containerRef, document]);
+
   return (
     <>
       <Script src="https://documentcloud.adobe.com/view-sdk/main.js" />
@@ -130,9 +134,21 @@ const EmbeddedPDF = ({ document, page }) => {
           <Loader />
         </div>
       ) : (
-        <div ref={containerRef} id="pdf-div" className="mt-4 px-6 flex-1">
-          PDF
-        </div>
+        <>
+          <button
+            className="ml-6 text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300"
+            onClick={() => {
+              setShowPDF(false);
+            }}
+          >
+            &laquo; Back
+          </button>
+          <div
+            ref={containerRef}
+            id="pdf-div"
+            className="mt-4 px-6 flex-1"
+          ></div>
+        </>
       )}
     </>
   );

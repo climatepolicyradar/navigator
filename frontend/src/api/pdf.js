@@ -75,7 +75,41 @@ class ViewSDKClient {
 
     return previewFilePromise;
   }
+  previewFileBlob(doc, divId, viewerConfig) {
+    const config = {
+      /* Pass your registered client id */
+      clientId: PDF_API_KEY,
+    };
+    if (divId) {
+      /* Optional only for Light Box embed mode */
+      /* Pass the div id in which PDF should be rendered */
+      config.divId = divId;
+    }
+    /* Initialize the AdobeDC View object */
+    this.adobeDCView = new window.AdobeDC.View(config);
+    const previewFilePromise = fetch(doc.document_url)
+      .then((res) => res.blob())
+      .then((blob) => {
+        /* Invoke the file preview API on Adobe DC View object */
+        return this.adobeDCView.previewFile(
+          {
+            /* Pass information on how to access the file */
+            content: { promise: Promise.resolve(blob.arrayBuffer()) },
 
+            /* Pass meta data of file */
+            metaData: {
+              /* file name */
+              fileName: doc.document_name,
+              /* file ID */
+              id: doc.document_fileid,
+            },
+          },
+          viewerConfig
+        );
+      });
+
+    return previewFilePromise;
+  }
   previewFileUsingFilePromise(divId, filePromise, fileName) {
     /* Initialize the AdobeDC View object */
     this.adobeDCView = new window.AdobeDC.View({

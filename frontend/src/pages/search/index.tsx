@@ -32,7 +32,7 @@ const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showSlideout, setShowSlideout] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
-  const [page, setPage] = useState(3);
+  const [page, setPage] = useState(1);
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
@@ -112,7 +112,11 @@ const Search = () => {
               />
               {showPDF ? (
                 // TODO: pass in real document when api and docs are ready
-                <EmbeddedPDF document={null} page={page} />
+                <EmbeddedPDF
+                  document={null}
+                  page={page}
+                  setShowPDF={setShowPDF}
+                />
               ) : (
                 <PassageMatches
                   document={document}
