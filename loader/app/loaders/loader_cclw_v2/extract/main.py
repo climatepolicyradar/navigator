@@ -17,7 +17,9 @@ policy_fe_column_map = {
     "Frameworks": "frameworks",
     "Responses": "responses",
     "Natural Hazards": "hazards",
-    "Document Types": "document_type",
+    "Document Type": "document_type",
+    "Year": "document_year",
+    "Language": "document_language",
 }
 
 
@@ -33,7 +35,7 @@ def extract(data_dir: PathLike) -> DataFrame:
     csv_file = None
     for root, dirs, files in os.walk(data_dir):
         for file in files:
-            if file == "laws_and_policies_16022022.csv":
+            if file == "cclw_new_format_20220503.csv":
                 csv_file = os.path.join(root, file)
                 break
 
