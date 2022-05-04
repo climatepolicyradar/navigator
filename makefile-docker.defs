@@ -100,6 +100,9 @@ test: test_backend test_frontend test_loader test_pipeline test_search_index
 # tasks
 # ----------------------------------
 
+create_csv:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm -v ${PWD}/loader/data:/app/data loader python app/create_csv.py
+
 run_loader:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader python app/main.py
 
