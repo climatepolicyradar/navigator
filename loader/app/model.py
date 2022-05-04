@@ -35,6 +35,7 @@ class Doc:  # noqa: D101
     frameworks: List[str]
     responses: List[str]
     hazards: List[str]
+    keywords: List[str]
 
 
 @dataclass(frozen=True)

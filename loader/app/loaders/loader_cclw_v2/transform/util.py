@@ -49,7 +49,7 @@ def split_and_merge_urls(doc_urls, sep):
 
 
 def prune(lst: List[str]) -> List:
-    return list(filter(None, lst))
+    return [it.strip() for it in filter(None, lst)]
 
 
 def get_policy_data(
@@ -66,6 +66,7 @@ def get_policy_data(
     frameworks = prune(dataframe["frameworks"].split(","))
     responses = prune(dataframe["responses"].split(","))
     hazards = prune(dataframe["hazards"].split(","))
+    keywords = prune(dataframe["keywords"].split(","))
 
     policy_date: Optional[datetime] = extract_date(dataframe["events"])
     if not policy_date:
@@ -111,6 +112,7 @@ def get_policy_data(
                     frameworks=frameworks,
                     responses=responses,
                     hazards=hazards,
+                    keywords=keywords,
                 )
                 docs.append(doc)
 

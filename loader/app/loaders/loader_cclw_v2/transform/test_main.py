@@ -22,6 +22,7 @@ def test_transform():
             "responses": ["", ""],
             "hazards": ["", ""],
             "document_type": ["doc type", ""],
+            "keywords": ["keyword1, keyword2", ""],
         }
     )
 
@@ -48,12 +49,15 @@ def test_transform():
     assert doc_one.doc_url == "https://doc"
     assert doc_one.sectors == ["Two", "Sectors"]
     assert doc_one.document_type == "doc type"
+    assert doc_one.keywords == ["keyword1", "keyword2"]
 
     doc_two: Doc = docs[1]
     assert doc_two.doc_name == "second doc"
     assert doc_two.doc_languages == [None]
     assert doc_two.doc_url == "https://doc2"
+    assert doc_two.sectors == ["Two", "Sectors"]
     assert doc_two.document_type == "doc type"
+    assert doc_two.keywords == ["keyword1", "keyword2"]
 
 
 def test_transform_no_doc():
@@ -70,6 +74,7 @@ def test_transform_no_doc():
             "frameworks": [""],
             "responses": [""],
             "hazards": [""],
+            "keywords": [""],
         }
     )
 
@@ -94,6 +99,7 @@ def test_transform_no_date():
             "responses": [""],
             "hazards": [""],
             "document_type": [""],
+            "keywords": [""],
         }
     )
 

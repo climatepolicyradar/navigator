@@ -6,12 +6,12 @@ from app.loaders.loader_cclw_v2.load.main import load
 from app.model import Key, PolicyData, Doc, PolicyLookup
 
 
-@patch("app.loader_cclw_v2.load.main.get_category_id")
-@patch("app.loader_cclw_v2.load.main.get_language_id")
-@patch("app.loader_cclw_v2.load.main.get_document_by_unique_constraint")
-@patch("app.loader_cclw_v2.load.main.get_document_validity_sync")
-@patch("app.loader_cclw_v2.load.main.get_geography_id")
-@patch("app.loader_cclw_v2.load.main.get_type_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_category_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_language_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_document_by_unique_constraint")
+@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity_sync")
+@patch("app.loaders.loader_cclw_v2.load.main.get_geography_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_type_id")
 def test_load_single_doc(
     mock_get_document_type_id,
     mock_get_geography_id,
@@ -55,6 +55,7 @@ def test_load_single_doc(
         frameworks=[],
         sectors=[],
         instruments=[],
+        keywords=[],
     )
     policy_data: PolicyData = PolicyData(
         **policy_key.__dict__,
@@ -97,12 +98,12 @@ def test_load_single_doc(
     mock_db.commit.assert_called_once()
 
 
-@patch("app.loader_cclw_v2.load.main.get_category_id")
-@patch("app.loader_cclw_v2.load.main.get_language_id")
-@patch("app.loader_cclw_v2.load.main.get_document_by_unique_constraint")
-@patch("app.loader_cclw_v2.load.main.get_document_validity_sync")
-@patch("app.loader_cclw_v2.load.main.get_geography_id")
-@patch("app.loader_cclw_v2.load.main.get_type_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_category_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_language_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_document_by_unique_constraint")
+@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity_sync")
+@patch("app.loaders.loader_cclw_v2.load.main.get_geography_id")
+@patch("app.loaders.loader_cclw_v2.load.main.get_type_id")
 def test_load_two_related_docs(
     mock_get_document_type_id,
     mock_get_geography_id,
@@ -146,6 +147,7 @@ def test_load_two_related_docs(
         frameworks=[],
         sectors=[],
         instruments=[],
+        keywords=[],
     )
     doc2: Doc = Doc(
         doc_url="http://doc2",
@@ -158,6 +160,7 @@ def test_load_two_related_docs(
         frameworks=[],
         sectors=[],
         instruments=[],
+        keywords=[],
     )
     policy_data: PolicyData = PolicyData(
         **policy_key.__dict__,
