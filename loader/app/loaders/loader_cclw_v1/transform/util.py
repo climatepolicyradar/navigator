@@ -114,6 +114,7 @@ def get_policy_data(
                     frameworks=frameworks,
                     responses=responses,
                     hazards=hazards,
+                    keywords=[],  # not supported in v1 CSV
                 )
                 docs.append(doc)
 

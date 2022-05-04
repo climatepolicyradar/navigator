@@ -53,6 +53,7 @@ def test_transform():
     assert doc_two.doc_name == "second doc"
     assert doc_two.doc_languages == [None]
     assert doc_two.doc_url == "https://doc2"
+    assert doc_two.sectors == ["Two", "Sectors"]
     assert doc_two.document_type == "doc type"
 
 
