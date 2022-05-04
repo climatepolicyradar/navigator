@@ -3,7 +3,7 @@ import logging
 from pandas import DataFrame
 import numpy as np
 from app.model import PolicyLookup
-from app.loader.transform.util import get_policy_data
+from app.loaders.loader.transform.util import get_policy_data
 
 logger = logging.getLogger(__file__)
 

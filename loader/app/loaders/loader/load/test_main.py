@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 
-from app.loader.load.main import load
+from app.loaders.loader.load.main import load
 from app.model import Key, PolicyData, Doc, PolicyLookup
 
 

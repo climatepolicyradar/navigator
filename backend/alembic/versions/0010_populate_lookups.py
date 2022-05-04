@@ -30,6 +30,7 @@ document_type_tbl: TableClause = table(
     column("description", String),
 )
 
+# aka topics
 response_tbl: TableClause = table(
     "response",
     column("id", Integer),
