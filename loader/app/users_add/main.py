@@ -1,9 +1,10 @@
+import json
 import logging
 import logging.config
 import os
 import sys
 from csv import DictReader
-from typing import List, Optional, TextIO, Union
+from typing import List, Optional, TextIO
 
 import requests
 
@@ -65,7 +66,7 @@ def validate_open_csv(csv: TextIO) -> DictReader:
     if not csv_fieldnames:
         error = "Invalid User CSV; No headers found"
         logger.error(error)
-        raise RuntimeError(error)
+        sys.exit(10)
 
     if csv_fieldnames != EXPECTED_USER_CSV_FIELDS:
         error = "Invalid User CSV supplied."
@@ -79,21 +80,36 @@ def validate_open_csv(csv: TextIO) -> DictReader:
             error += f" The following fields were not expected: {unexpected_fields}"
 
         logger.error(error)
-        raise RuntimeError(error)
+        sys.exit(10)
 
     return csv_reader
 
 
-def get_admin_token():
+def _log_response(response: requests.Response) -> None:
+    if response.status_code >= 400:
+        logger.error(
+            f"There was an error during a request to {response.url}. "
+            f"STATUS: {response.status_code}, BODY:{response.content}"
+        )
+
+    logger.debug(f"STATUS: {response.status_code}, BODY:{response.content}")
+
+
+def get_admin_token() -> str:
     admin_user = os.getenv("ADMIN_USER")
     admin_password = os.getenv("ADMIN_PASSWORD")
 
     if admin_user is None or admin_password is None:
         raise RuntimeError("Admin username & password env vars must be set")
 
-    url = get_request_url("/api/tokens")
-    response = requests.post(url)
-    token: str = response.json()
+    response = requests.post(
+        get_request_url("/api/tokens"),
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data={"username": admin_user, "password": admin_password},
+    )
+    _log_response(response=response)
+
+    token: str = response.json()["access_token"]
     return token
 
 
@@ -114,37 +130,56 @@ def get_request_url(endpoint):
 
 
 def post_user(payload):
-    url = get_request_url("/api/v1/admin/users")
-    headers = get_admin_auth_headers()
     response = requests.post(
-        f"{url}",
-        headers=headers,
+        get_request_url("/api/v1/admin/users"),
+        headers=get_admin_auth_headers(),
         json=payload,
     )
     return response
 
 
-def _make_list_if_necessary(
-    input: Optional[Union[str, List[str]]]
-) -> Optional[List[str]]:
+class RowParseException(Exception):
+    """Row parsing failed for the given reason."""
+
+    pass
+
+
+def _make_list_if_necessary(input: Optional[str]) -> Optional[List[str]]:
     """Make list from string if necessary."""
     if input is None or not input:
         return None
 
-    if isinstance(input, str):
-        return [input]
+    if input.strip().startswith("["):
+        try:
+            return json.loads(input)
+        except json.JSONDecodeError:
+            logger.error(f"Failed to decode input that appears to be a list: {input}")
+            raise RowParseException(f"Failed to decode input: {input}")
 
-    return input
+    # input is just a string, so return it in a list
+    return [input]
 
 
-def _make_str_from_maybe_list(input: Optional[Union[str, List[str]]]) -> Optional[str]:
+def _make_str_from_maybe_list(input: Optional[str]) -> Optional[str]:
     """Remove unnecessary lists."""
     if input is None or not input:
         return None
 
-    if isinstance(input, list):
-        return input[0]
+    if input.strip().startswith("["):
+        try:
+            input_list = json.loads(input)
+        except json.JSONDecodeError:
+            logger.error(f"Failed to decode input that appears to be a list: {input}")
+            raise RowParseException(f"Failed to decode input: {input}")
 
+        if input_list:
+            if len(input_list) > 1:
+                raise RowParseException(f"Input should have max 1 element: {input}")
+            return input_list[0]
+
+        return None
+
+    # input must be a non-empty string no starting with '[']
     return input
 
 
@@ -158,26 +193,34 @@ def main(users_csv_path):
     with open(users_csv_path, "r") as users_csv:
         csv_reader = validate_open_csv(users_csv)
         for row in csv_reader:
-            payload = {
-                "email": _make_str_from_maybe_list(row["email"]),
-                "names": _make_str_from_maybe_list(row["name"]),
-                "is_active": False,
-                "is_superuser": False,
-                "job_role": None,
-                "location": None,
-                "affiliation_organisation": _make_str_from_maybe_list(
-                    row["organisation"]
-                ),
-                "affiliation_type": _make_str_from_maybe_list(row["affiliation_type"]),
-                "policy_type_of_interest": _make_list_if_necessary(
-                    row["policy_data_types"]
-                ),
-                "geographies_of_interest": _make_list_if_necessary(
-                    row["geographical_scope"]
-                ),
-                "data_focus_of_interest": _make_list_if_necessary(row["data_focus"]),
-            }
-            post_user(payload=payload)
+            try:
+                payload = {
+                    "email": _make_str_from_maybe_list(row["email"]),
+                    "names": _make_str_from_maybe_list(row["name"]),
+                    "job_role": None,
+                    "location": None,
+                    "affiliation_organisation": _make_str_from_maybe_list(
+                        row["organisation"]
+                    ),
+                    "affiliation_type": _make_list_if_necessary(
+                        row["affiliation_type"]
+                    ),
+                    "policy_type_of_interest": _make_list_if_necessary(
+                        row["policy_data_types"]
+                    ),
+                    "geographies_of_interest": _make_list_if_necessary(
+                        row["geographical_scope"]
+                    ),
+                    "data_focus_of_interest": _make_list_if_necessary(
+                        row["data_focus"]
+                    ),
+                    "is_active": False,
+                    "is_superuser": False,
+                }
+                add_user_response = post_user(payload=payload)
+                _log_response(response=add_user_response)
+            except RowParseException:
+                logger.error(f"Failed to parse row content, skipping entry for: {row}")
 
 
 if __name__ == "__main__":
