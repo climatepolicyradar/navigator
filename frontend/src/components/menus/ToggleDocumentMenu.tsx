@@ -3,7 +3,7 @@ import useOutsideAlerter from '../../hooks/useOutsideAlerter';
 import Kebab from '../buttons/Kebab';
 import DocumentMenu from './DocumentMenu';
 
-const ToggleDocumentMenu = ({ setShowPDF, showPDF }) => {
+const ToggleDocumentMenu = ({ document, setShowPDF, showPDF }) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   useOutsideAlerter(menuRef, () => setShowMenu(false));
@@ -23,6 +23,7 @@ const ToggleDocumentMenu = ({ setShowPDF, showPDF }) => {
           setShowMenu={setShowMenu}
           setShowPDF={setShowPDF}
           showPDF={showPDF}
+          document={document}
         />
       </div>
     </div>

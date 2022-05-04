@@ -32,6 +32,7 @@ const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showSlideout, setShowSlideout] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
+  const [page, setPage] = useState(3);
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
@@ -101,29 +102,25 @@ const Search = () => {
           title={`Navigator | ${t('Law and Policy Search')}`}
           heading={t('Law and Policy Search')}
         >
+          {console.log(page)}
           <Slideout show={showSlideout} setShowSlideout={setShowSlideout}>
-            <>
+            <div className="flex flex-col h-full">
               <DocumentSlideout
-                name={document.data?.document_name}
-                length={document.data?.document_passage_matches.length}
+                document={document.data}
                 setShowPDF={setShowPDF}
                 showPDF={showPDF}
               />
               {showPDF ? (
                 // TODO: pass in real document when api and docs are ready
-                <EmbeddedPDF
-                  document={null}
-                  showPDF={showPDF}
-                  setShowPDF={setShowPDF}
-                />
+                <EmbeddedPDF document={null} page={page} />
               ) : (
                 <PassageMatches
                   document={document}
-                  showPDF={showPDF}
+                  setPage={setPage}
                   setShowPDF={setShowPDF}
                 />
               )}
-            </>
+            </div>
           </Slideout>
           <section>
             <div className="px-4 md:flex container">

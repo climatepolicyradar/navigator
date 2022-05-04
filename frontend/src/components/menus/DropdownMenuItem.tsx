@@ -4,6 +4,7 @@ interface DropdownMenuItemProps {
   first?: boolean;
   title: string;
   href?: string;
+  target?: string;
   onClick?(): void;
   setShowMenu?(value: boolean): void;
 }
@@ -11,6 +12,7 @@ const DropdownMenuItem = ({
   first = false,
   title,
   href,
+  target = 'self',
   onClick = () => {},
   setShowMenu,
 }: DropdownMenuItemProps) => {
@@ -25,7 +27,7 @@ const DropdownMenuItem = ({
     <>
       {href ? (
         <Link href={href}>
-          <a onClick={handleClick} className={cssClass}>
+          <a onClick={handleClick} target={target} className={cssClass}>
             {title}
           </a>
         </Link>

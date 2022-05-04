@@ -1,17 +1,8 @@
-import { useEffect, useState, useRef } from 'react';
 import Loader from './Loader';
-import useOutsideAlerter from '../hooks/useOutsideAlerter';
-import ToggleDocumentMenu from './menus/ToggleDocumentMenu';
 
-const PassageMatches = ({ document, setShowPDF, showPDF }) => {
-  const [showMenu, setShowMenu] = useState(false);
-  const menuRef = useRef();
+const PassageMatches = ({ document, setPage, setShowPDF }) => {
   const { data: doc } = document;
-  useOutsideAlerter(menuRef, () => setShowMenu(false));
-  const toggleMenu = () => {
-    setShowMenu(!showMenu);
-  };
-  useEffect(() => {});
+
   return (
     <>
       {!doc ? (
@@ -21,7 +12,14 @@ const PassageMatches = ({ document, setShowPDF, showPDF }) => {
       ) : (
         <div className="px-6">
           {doc.document_passage_matches.map((item) => (
-            <div key={item.text_block_id} className="py-4">
+            <div
+              key={item.text_block_id}
+              className="py-4 cursor-pointer"
+              onClick={() => {
+                setShowPDF(true);
+                setPage(item.text_block_page);
+              }}
+            >
               <span className="text-xs text-blue-500">
                 {/* TODO: translation */}
                 On page {item.text_block_page}

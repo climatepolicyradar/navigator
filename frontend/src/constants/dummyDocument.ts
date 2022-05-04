@@ -1,4 +1,6 @@
 export const dummyDocument = {
+  document_url: 'http://localhost:3000/food_and_nutrition_security_policy.pdf',
+  document_fileid: '3A5E36C8AA950DCDEBFBFE46FFCDE0A6',
   document_country_code: 'KNA',
   document_date: '12/07/2019',
   document_description:
@@ -73,6 +75,36 @@ export const dummyDocument = {
       ],
       text_block_id: 'p73_b665',
       text_block_page: 74,
+    },
+  ],
+  document_source_name: 'CCLW',
+  document_title_match: false,
+  document_type_name: 'Policy',
+};
+
+export const dummyDocument2 = {
+  document_url:
+    'https://documentcloud.adobe.com/view-sdk-demo/PDFs/Summary.pdf',
+  document_fileid: '3A5E36C8AA950DCDEBFBFE46FFCDE0A7',
+  document_country_code: 'KNA',
+  document_date: '12/07/2019',
+  document_description:
+    'The Food and Nutrition Security Policy aims at promoting rational food choices and healthy lifestyles by the population. It further seeks to enhance the resilience of food supplies in front of natural and socio-economic shocks, and climate change.\n\nThe Policy states that the government shall facilitate the implementation of Risk Management and Climate Change Adaptation and Mitigation strategies, including in the food sector. It charges the government to 1) establish a National Task Force for the implementation and supervision of such strategies, 2) to enable capacity building of stakeholders with respect to disaster management, 3) to develop an agricultural risk management scheme, 4) and to facilitate the re-zoning of agricultural production as necessary to reduce vulnerability to adverse effects of climate change.',
+  document_description_match: true,
+  document_geography_english_shortname: 'Saint Kitts and Nevis',
+  document_id: 2097,
+  document_name: 'Food and Nutrition Security Policy and Plan of Action',
+  document_passage_matches: [
+    {
+      text: 'A national disaster fund.',
+      text_block_coords: [
+        [144, 455.22001],
+        [521.557983, 455.22001],
+        [144, 471.191986],
+        [521.557983, 471.191986],
+      ],
+      text_block_id: 'p117_b1388',
+      text_block_page: 118,
     },
   ],
   document_source_name: 'CCLW',
