@@ -68,6 +68,7 @@ class Document(Base, Auditable):
 
     geography_id = sa.Column(sa.SmallInteger, nullable=False)
     type_id = sa.Column(sa.Integer, nullable=False)
+    category_id = sa.Column(sa.SmallInteger, nullable=False)
     UniqueConstraint(name, geography_id, type_id, source_id, source_url)
 
 
