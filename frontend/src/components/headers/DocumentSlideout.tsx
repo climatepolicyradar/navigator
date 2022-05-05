@@ -1,6 +1,11 @@
 import ToggleDocumentMenu from '../menus/ToggleDocumentMenu';
 
-const DocumentSlideout = ({ document, showPDF, setShowPDF }) => {
+const DocumentSlideout = ({
+  document,
+  showPDF,
+  setShowPDF,
+  setPassageIndex,
+}) => {
   return (
     <>
       {document ? (
@@ -22,6 +27,7 @@ const DocumentSlideout = ({ document, showPDF, setShowPDF }) => {
             setShowPDF={setShowPDF}
             showPDF={showPDF}
             document={document}
+            setPassageIndex={setPassageIndex}
           />
         </div>
       ) : null}

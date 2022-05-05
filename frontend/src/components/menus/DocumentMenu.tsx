@@ -1,7 +1,13 @@
 import DropdownMenuItem from './DropdownMenuItem';
 import DropdownMenuWrapper from './DropdownMenuWrapper';
 
-const DocumentMenu = ({ document, setShowMenu, setShowPDF, showPDF }) => {
+const DocumentMenu = ({
+  document,
+  setShowMenu,
+  setShowPDF,
+  showPDF,
+  setPassageIndex,
+}) => {
   return (
     <>
       {document ? (
@@ -16,7 +22,10 @@ const DocumentMenu = ({ document, setShowMenu, setShowPDF, showPDF }) => {
             <DropdownMenuItem
               first={true}
               title="View PDF"
-              onClick={() => setShowPDF(true)}
+              onClick={() => {
+                setPassageIndex(null);
+                setShowPDF(true);
+              }}
             />
           )}
 

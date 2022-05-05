@@ -3,12 +3,9 @@ import { useRef, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ViewSDKClient from '../api/pdf';
 import { dummyDocument, dummyDocument2 } from '../constants/dummyDocument';
-import { useDidUpdateEffect } from '../hooks/useDidUpdateEffect';
 import Loader from './Loader';
 
-const EmbeddedPDF = ({ document, page, setShowPDF }) => {
-  const [annotationManager, setAnnotationManager] = useState(null);
-  const [apis, setApis] = useState(null);
+const EmbeddedPDF = ({ document, passageIndex, setShowPDF }) => {
   const containerRef = useRef();
   const viewerConfig = {
     showDownloadPDF: true,
@@ -41,25 +38,11 @@ const EmbeddedPDF = ({ document, page, setShowPDF }) => {
       );
       previewFilePromise.then((adobeViewer) => {
         createAnnotationManager(adobeViewer);
-
-        // get APIs for gotoLocation
-        adobeViewer.getAPIs().then((apis) => {
-          setApis(apis);
-          // not ideal but this doesn't work without a delay.
-          setTimeout(() => {
-            console.log('go');
-            apis
-              .gotoLocation(page)
-              .then(() => console.log('Success'))
-              .catch((error) => console.log(error));
-          }, 500);
-        });
       });
     });
   };
   const createAnnotationManager = (adobeViewer) => {
     adobeViewer.getAnnotationManager().then((annotationManager) => {
-      setAnnotationManager(annotationManager);
       annotationManager.setConfig(annotationManagerConfig);
       addAnnotations(annotationManager);
     });
@@ -70,8 +53,10 @@ const EmbeddedPDF = ({ document, page, setShowPDF }) => {
       const obj = generateAnnotationObject(passage, index);
       annotations.push(obj);
     });
-
     annotationManager.addAnnotations(annotations);
+    if (passageIndex) {
+      annotationManager.selectAnnotation(annotations[passageIndex].id);
+    }
   };
   const padNumber = (number) => {
     return number >= 10 ? number : number.toString().padStart(2, '0');
@@ -112,8 +97,9 @@ const EmbeddedPDF = ({ document, page, setShowPDF }) => {
           boundingBox,
           quadPoints,
           strokeColor: '#FFFF00',
-          strokeWidth: 1,
+          strokeWidth: 0,
           type: 'AdobeAnnoSelector',
+          styleClass: 'highlight',
         },
       },
       creator: {
@@ -127,8 +113,6 @@ const EmbeddedPDF = ({ document, page, setShowPDF }) => {
 
   useEffect(() => {
     if (containerRef?.current) {
-      console.log('load pdf');
-
       previewPDF();
     }
   }, [containerRef, document]);

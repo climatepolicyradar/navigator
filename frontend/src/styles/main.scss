@@ -31,7 +31,7 @@
 
 @import 'variables';
 @import 'mixins';
-@import 'range-slider'; 
+@import 'range-slider';
 
 @font-face {
   font-family: 'Neue Haas Grotesk Display';
@@ -194,7 +194,6 @@ input[type='search']::-webkit-search-results-decoration {
       @apply bg-blue-500;
     }
   }
-  
 }
 
 .tabbed-nav__active {
@@ -205,7 +204,6 @@ input[type='search']::-webkit-search-results-decoration {
       bottom: -8px;
     }
   }
-  
 }
 
 .circle-sm {
@@ -228,5 +226,3 @@ input[type='search']::-webkit-search-results-decoration {
 ul li.selected {
   @apply bg-blue-200;
 }
-
-

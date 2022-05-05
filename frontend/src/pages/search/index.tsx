@@ -19,7 +19,7 @@ import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
 import Loader from '../../components/Loader';
 import Sort from '../../components/filters/Sort';
-import { CloseIcon, DownArrowIcon, DownloadIcon } from '../../components/Icons';
+import { DownloadIcon } from '../../components/Icons';
 import Button from '../../components/buttons/Button';
 import Close from '../../components/buttons/Close';
 import FilterToggle from '../../components/buttons/FilterToggle';
@@ -32,7 +32,7 @@ const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showSlideout, setShowSlideout] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
-  const [page, setPage] = useState(1);
+  const [passageIndex, setPassageIndex] = useState(null);
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
@@ -87,6 +87,7 @@ const Search = () => {
   const handleDocumentClick = (id) => {
     updateDocument.mutate(id);
     setShowSlideout(true);
+    setShowPDF(false);
   };
 
   useDidUpdateEffect(() => {
@@ -102,25 +103,25 @@ const Search = () => {
           title={`Navigator | ${t('Law and Policy Search')}`}
           heading={t('Law and Policy Search')}
         >
-          {console.log(page)}
           <Slideout show={showSlideout} setShowSlideout={setShowSlideout}>
             <div className="flex flex-col h-full">
               <DocumentSlideout
                 document={document.data}
                 setShowPDF={setShowPDF}
                 showPDF={showPDF}
+                setPassageIndex={setPassageIndex}
               />
               {showPDF ? (
                 // TODO: pass in real document when api and docs are ready
                 <EmbeddedPDF
                   document={null}
-                  page={page}
+                  passageIndex={passageIndex}
                   setShowPDF={setShowPDF}
                 />
               ) : (
                 <PassageMatches
                   document={document}
-                  setPage={setPage}
+                  setPassageIndex={setPassageIndex}
                   setShowPDF={setShowPDF}
                 />
               )}

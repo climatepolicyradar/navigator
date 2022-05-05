@@ -85,6 +85,8 @@ export const dummyDocument = {
 export const dummyDocument2 = {
   document_url:
     'https://documentcloud.adobe.com/view-sdk-demo/PDFs/Summary.pdf',
+  // document_url:
+  //   'https://cdn.climatepolicyradar.org/CAN/2021/CAN-2021-08-03-A+Healthy+Environment+and+a+Healthy+Economy-405_ff8da848e71d476e55038da84c5573f5.pdf',
   document_fileid: '3A5E36C8AA950DCDEBFBFE46FFCDE0A7',
   document_country_code: 'KNA',
   document_date: '12/07/2019',
@@ -102,6 +104,17 @@ export const dummyDocument2 = {
         [521.557983, 455.22001],
         [144, 471.191986],
         [521.557983, 471.191986],
+      ],
+      text_block_id: 'p117_b1388',
+      text_block_page: 118,
+    },
+    {
+      text: 'A national disaster fundsdfsdf.',
+      text_block_coords: [
+        [144, 655.22001],
+        [521.557983, 655.22001],
+        [144, 671.191986],
+        [521.557983, 671.191986],
       ],
       text_block_id: 'p117_b1388',
       text_block_page: 118,

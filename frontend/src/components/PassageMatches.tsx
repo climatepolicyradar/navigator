@@ -1,6 +1,6 @@
 import Loader from './Loader';
 
-const PassageMatches = ({ document, setPage, setShowPDF }) => {
+const PassageMatches = ({ document, setShowPDF, setPassageIndex }) => {
   const { data: doc } = document;
 
   return (
@@ -11,13 +11,13 @@ const PassageMatches = ({ document, setPage, setShowPDF }) => {
         </div>
       ) : (
         <div className="px-6">
-          {doc.document_passage_matches.map((item) => (
+          {doc.document_passage_matches.map((item, index) => (
             <div
               key={item.text_block_id}
               className="py-4 cursor-pointer"
               onClick={() => {
                 setShowPDF(true);
-                setPage(item.text_block_page);
+                setPassageIndex(index);
               }}
             >
               <span className="text-xs text-blue-500">
