@@ -14,6 +14,7 @@ class _DocumentBase(BaseModel):  # noqa: D106
 
     loaded_ts: t.Optional[datetime.datetime]
     name: str
+    description: str
     source_url: t.Optional[str]
     url: t.Optional[str]
     geography_id: int  # the loader gets this via API lookup, so it will exist in the API DB

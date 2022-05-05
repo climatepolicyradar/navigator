@@ -12,6 +12,7 @@ def test_transform():
         {
             "policy_id": ["1", "2"],
             "document_name": ["foo", "will be dropped as has no URL"],
+            "document_description": ["some description", "another description"],
             "country_code": ["cc", "xx"],
             "document_url": ["http://doc|en", None],
             "category": ["legislative", "legislative"],
@@ -49,6 +50,7 @@ def test_transform():
 
     doc_one: Doc = docs[0]
     assert doc_one.doc_name == "foo"
+    assert doc_one.doc_description == "some description"
     assert doc_one.doc_languages == ["English"]
     assert doc_one.doc_url == "https://doc"
     assert doc_one.document_category == "Law"
@@ -58,11 +60,15 @@ def test_transform():
     assert doc_one.keywords == ["keyword1", "keyword2"]
 
 
+# TODO multiple related docs
+
+
 def test_transform_no_url():
     policies_fe = pd.DataFrame(
         {
             "policy_id": ["1"],
             "document_name": ["will be dropped as has no URL"],
+            "document_description": ["description"],
             "country_code": ["cc"],
             "document_url": [None],
             "policy_description": ["foobar"],
@@ -91,6 +97,7 @@ def test_transform_no_date():
         {
             "policy_id": ["1"],
             "document_name": ["will be dropped as has no date"],
+            "document_description": ["description"],
             "country_code": ["cc"],
             "document_url": ["https://doc"],
             "policy_description": ["foobar"],

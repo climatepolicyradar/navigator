@@ -59,6 +59,7 @@ class Document(Base, Auditable):
     # updated_by = sa.Column(sa.Integer, sa.ForeignKey(User.id))
     loaded_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
     name = sa.Column(sa.Text, nullable=False)
+    description = sa.Column(sa.Text, nullable=False)
     source_url = sa.Column(sa.Text)
     source_id = sa.Column(sa.Integer, nullable=False)
     url = sa.Column(sa.Text)
@@ -248,21 +249,21 @@ class DocumentHazard(Base):  # noqa: D101
     )
 
 
-class Category(Base):  # noqa: D101
-    """Document category, e.g. strategy, plan, law..."""
+class Keyword(Base):  # noqa: D101
+    """Document keyword."""
 
-    __tablename__ = "category"
+    __tablename__ = "keyword"
 
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
 
 
-class DocumentCategory(Base):  # noqa: D101
-    __tablename__ = "document_category"
+class DocumentKeyword(Base):  # noqa: D101
+    __tablename__ = "document_keyword"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    type_id = sa.Column(sa.Integer, sa.ForeignKey(Category.id), nullable=False)
+    keyword_id = sa.Column(sa.Integer, sa.ForeignKey(Keyword.id), nullable=False)
     document_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(Document.id, ondelete="CASCADE"),
