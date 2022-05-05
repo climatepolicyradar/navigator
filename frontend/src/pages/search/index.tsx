@@ -5,6 +5,8 @@ import Layout from '../../components/layouts/Main';
 import LoaderOverlay from '../../components/LoaderOverlay';
 import useSearch from '../../hooks/useSearch';
 import useSearchCriteria from '../../hooks/useSearchCriteria';
+import useDocument from '../../hooks/useDocument';
+import useUpdateDocument from '../../hooks/useUpdateDocument';
 import useUpdateSearchCriteria from '../../hooks/useUpdateSearchCriteria';
 import useUpdateSearchFilters from '../../hooks/useUpdateSearchFilters';
 import '../i18n';
@@ -17,15 +19,23 @@ import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
 import Loader from '../../components/Loader';
 import Sort from '../../components/filters/Sort';
-import { CloseIcon, DownArrowIcon, DownloadIcon } from '../../components/Icons';
+import { DownloadIcon } from '../../components/Icons';
 import Button from '../../components/buttons/Button';
 import Close from '../../components/buttons/Close';
 import FilterToggle from '../../components/buttons/FilterToggle';
+import Slideout from '../../components/slideout';
+import PassageMatches from '../../components/PassageMatches';
+import EmbeddedPDF from '../../components/EmbeddedPDF';
+import DocumentSlideout from '../../components/headers/DocumentSlideout';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
+  const [showSlideout, setShowSlideout] = useState(false);
+  const [showPDF, setShowPDF] = useState(false);
+  const [passageIndex, setPassageIndex] = useState(null);
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
+  const updateDocument = useUpdateDocument();
   const { user } = useAuth();
   const router = useRouter();
 
@@ -36,6 +46,7 @@ const Search = () => {
   } = useSearchCriteria();
   const resultsQuery = useSearch('searches', searchCriteria);
   const { data: { documents } = [] } = resultsQuery;
+  const document = useDocument();
   const { t, i18n, ready } = useTranslation('searchStart');
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
@@ -73,7 +84,11 @@ const Search = () => {
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
-  const handleDocumentClick = () => {};
+  const handleDocumentClick = (id) => {
+    updateDocument.mutate(id);
+    setShowSlideout(true);
+    setShowPDF(false);
+  };
 
   useDidUpdateEffect(() => {
     resultsQuery.refetch();
@@ -81,7 +96,6 @@ const Search = () => {
 
   return (
     <>
-      {/* {console.log(resultsQuery)} */}
       {isFetchingSearchCriteria || !ready || !user ? (
         <LoaderOverlay />
       ) : (
@@ -89,6 +103,30 @@ const Search = () => {
           title={`Navigator | ${t('Law and Policy Search')}`}
           heading={t('Law and Policy Search')}
         >
+          <Slideout show={showSlideout} setShowSlideout={setShowSlideout}>
+            <div className="flex flex-col h-full">
+              <DocumentSlideout
+                document={document.data}
+                setShowPDF={setShowPDF}
+                showPDF={showPDF}
+                setPassageIndex={setPassageIndex}
+              />
+              {showPDF ? (
+                // TODO: pass in real document when api and docs are ready
+                <EmbeddedPDF
+                  document={null}
+                  passageIndex={passageIndex}
+                  setShowPDF={setShowPDF}
+                />
+              ) : (
+                <PassageMatches
+                  document={document}
+                  setPassageIndex={setPassageIndex}
+                  setShowPDF={setShowPDF}
+                />
+              )}
+            </div>
+          </Slideout>
           <section>
             <div className="px-4 md:flex container">
               <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
@@ -160,7 +198,7 @@ const Search = () => {
                       <div key={index} className="my-16 first:md:mt-4">
                         <SearchResult
                           document={doc}
-                          onClick={handleDocumentClick}
+                          onClick={() => handleDocumentClick(doc.document_id)}
                         />
                       </div>
                     ))
