@@ -1,7 +1,7 @@
 import logging
 
 from pandas import DataFrame
-
+import numpy as np
 from app.model import PolicyLookup
 from app.loader.transform.util import get_policy_data
 
@@ -13,6 +13,8 @@ def transform(cclw_policy_fe_df: DataFrame) -> PolicyLookup:
     cclw_policy_fe_df.dropna(subset=["document_list"], inplace=True)
 
     policies: PolicyLookup = {}
+
+    cclw_policy_fe_df = cclw_policy_fe_df.replace({np.nan: ""})
 
     for d_ix, d in cclw_policy_fe_df.iterrows():
         result = get_policy_data(d, sep=";", sub_sep="|")

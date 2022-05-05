@@ -66,12 +66,12 @@ def main():
     for db in get_db():
         load(db, policies)
 
-        # # once all data has been loaded into database, upload files to cloud
-        # upload_all_documents(db)
-        #
-        # # This will normally be triggered separately, but we're
-        # # expediting the load for alpha.
-        # post_all_to_backend_api(db)
+        # once all data has been loaded into database, upload files to cloud
+        upload_all_documents(db)
+
+        # This will normally be triggered separately, but we're
+        # expediting the load for alpha.
+        post_all_to_backend_api(db)
 
 
 if __name__ == "__main__":

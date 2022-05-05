@@ -115,3 +115,29 @@ Note the `for_search_action_description` field and the `action_description` fiel
           "action_description_embedding" : [<768xfloat>]
         }
 ```
+
+# Common issues
+
+## Virtual memory
+
+Error in docker logs:
+
+```
+opensearch-node1          | ERROR: [2] bootstrap checks failed
+opensearch-node1          | [1]: max virtual memory areas vm.max_map_count [65530] is too low, increase to at least [262144]
+opensearch-node1          | [2]: the default discovery settings are unsuitable for production use; at least one of [discovery.seed_hosts, discovery.seed_providers, cluster.initial_master_nodes] must be configured
+opensearch-node1          | ERROR: OpenSearch did not exit normally - check the logs at /usr/share/opensearch/logs/opensearch-cluster.log
+opensearch-node1          | [2022-04-14T14:49:58,972][INFO ][o.o.n.Node               ] [opensearch-node1] stopping ...
+opensearch-node1          | [2022-04-14T14:49:58,985][INFO ][o.o.n.Node               ] [opensearch-node1] stopped
+opensearch-node1          | [2022-04-14T14:49:58,985][INFO ][o.o.n.Node               ] [opensearch-node1] closing ...
+opensearch-node1          | [2022-04-14T14:49:58,995][INFO ][o.o.n.Node               ] [opensearch-node1] closed
+opensearch-node1          | Killing performance analyzer process 34
+opensearch-node1          | OpenSearch exited with code 78
+opensearch-node1          | Performance analyzer exited with code 143
+```
+
+Run [this command](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html) on the host machine:
+
+``` 
+sysctl -w vm.max_map_count=262144
+```
