@@ -1,4 +1,5 @@
 import ToggleDocumentMenu from '../menus/ToggleDocumentMenu';
+import BackLink from '../nav/BackLink';
 
 const DocumentSlideout = ({
   document,
@@ -32,14 +33,10 @@ const DocumentSlideout = ({
             />
           </div>
           {showPDF && (
-            <button
-              className="ml-6 text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300"
-              onClick={() => {
-                setShowPDF(false);
-              }}
-            >
-              &laquo; Back
-            </button>
+            <BackLink
+              onClick={() => setShowPDF(false)}
+              text="Back to passage matches"
+            />
           )}
         </>
       ) : null}

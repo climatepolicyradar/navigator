@@ -127,11 +127,7 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
         </div>
       ) : (
         <>
-          <div
-            ref={containerRef}
-            id="pdf-div"
-            className="mt-4 px-6 flex-1"
-          ></div>
+          <div ref={containerRef} id="pdf-div" className="h-full"></div>
         </>
       )}
     </>

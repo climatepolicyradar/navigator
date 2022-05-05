@@ -113,11 +113,13 @@ const Search = () => {
               />
               {showPDF ? (
                 // TODO: pass in real document when api and docs are ready
-                <EmbeddedPDF
-                  document={null}
-                  passageIndex={passageIndex}
-                  setShowPDF={setShowPDF}
-                />
+                <div className="mt-4 px-6 flex-1">
+                  <EmbeddedPDF
+                    document={null}
+                    passageIndex={passageIndex}
+                    setShowPDF={setShowPDF}
+                  />
+                </div>
               ) : (
                 <PassageMatches
                   document={document}
