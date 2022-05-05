@@ -87,7 +87,9 @@ def drop_missing_rows_from_merged_df(df_merged: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_single_doc_actions_xlsx(single_doc_actions_path: Path) -> pd.DataFrame:
-    return pd.read_excel(str(single_doc_actions_path), sheet_name="COMPLETED combined")
+    return pd.read_excel(
+        str(single_doc_actions_path), sheet_name="COMPLETED combined"
+    ).rename(columns={"Type": "Category"})
 
 
 if __name__ == "__main__":
