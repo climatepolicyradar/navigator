@@ -116,7 +116,7 @@ def upgrade():
         "Mitigation",
         "Adaptation",
         "Loss & Damage",
-        "Disaster Risk Management(DRM)",
+        "Disaster Risk Management (DRM)",
     ]:
         op.execute(
             response_tbl.insert().values(
