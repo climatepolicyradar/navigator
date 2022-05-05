@@ -7,7 +7,7 @@ from app.db.models import Document
 
 def get_document_by_unique_constraint(
     db: Session,
-    policy_name,
+    document_name,
     geography_id,
     document_type_id,
     document_source_id,
@@ -16,7 +16,7 @@ def get_document_by_unique_constraint(
     maybe_existing_doc = (
         db.query(Document)
         .filter(
-            Document.name == policy_name,
+            Document.name == document_name,
             Document.geography_id == geography_id,
             Document.type_id == document_type_id,
             Document.source_id == document_source_id,

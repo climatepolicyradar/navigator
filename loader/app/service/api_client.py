@@ -22,6 +22,13 @@ def get_type_id(type_name):
     return _get_attribute(type_name, get_types_lookup, "id")
 
 
+def get_category_id(category_name):
+    def get_categories_lookup():
+        return _get_keyed_lookup("categories", "name")
+
+    return _get_attribute(category_name, get_categories_lookup, "id")
+
+
 def get_geography_id(country_code):
     def get_geographies_lookup():
         return _get_tree_lookup("geographies", "ISO-3166", "value")
@@ -48,6 +55,13 @@ def get_language_id_by_part1_code(part1_code):
         return _get_keyed_lookup("languages", "part1_code")
 
     return _get_attribute(part1_code, get_language_lookup, "id")
+
+
+def get_language_id_by_name(name):
+    def get_language_lookup():
+        return _get_keyed_lookup("languages", "name")
+
+    return _get_attribute(name, get_language_lookup, "id")
 
 
 def _get_attribute(lookup_key: str, lookup_fn: Callable, attribute_key: str):

@@ -26,6 +26,7 @@ from app.service.api_client import (
     get_geography_id,
     get_language_id,
     get_language_id_by_part1_code,
+    get_category_id,
 )
 from app.service.validation import get_document_validity_sync
 
@@ -54,12 +55,12 @@ def load(db: Session, policies: PolicyLookup):
             )
             continue
 
-        # look up document type from API
-        policy_type = key.policy_type
-        document_type_id = get_type_id(policy_type)
-        if not document_type_id:
+        # look up document category from API
+        policy_category = key.policy_category
+        category_id = get_category_id(policy_category)
+        if not category_id:
             logger.warning(
-                f"No action type found in lookup for policy type {policy_type}"
+                f"No document category found in lookup for policy category {policy_category}"
             )
             continue
 
@@ -85,6 +86,14 @@ def load(db: Session, policies: PolicyLookup):
                 language_id = get_language_id_by_part1_code(
                     doc.doc_languages[0] or "en"
                 )
+
+            # look up document type from API
+            document_type_id = get_type_id(doc.document_type)
+            if not document_type_id:
+                logger.warning(
+                    f"No document type found in lookup for policy type {doc.document_type}"
+                )
+                continue
 
             # Optimisation: As the get_document_validity_sync check can take long,
             # check if the document already exists in the DB, and skip if it does
@@ -133,6 +142,7 @@ def load(db: Session, policies: PolicyLookup):
                 invalid_reason=invalid_reason,
                 geography_id=geography_id,
                 type_id=document_type_id,
+                category_id=category_id,
             )
             db.add(document_db)
             db.flush()
