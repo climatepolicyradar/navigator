@@ -91,7 +91,7 @@ def load(db: Session, policies: PolicyLookup):
             document_type_id = get_type_id(doc.document_type)
             if not document_type_id:
                 logger.warning(
-                    f"No document type found in lookup for policy type {doc.document_type}"
+                    f"No document type found in lookup for policy type {doc.document_type} (document url: {doc.doc_url})"
                 )
                 continue
 

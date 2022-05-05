@@ -167,4 +167,4 @@ if __name__ == "__main__":
     data_final = pd.concat(
         [all_manual_data, single_doc_actions_df], axis=0, ignore_index=True
     )
-    data_final.to_csv(str(DATA_DIR / "loader_data.csv"), index=False)
+    data_final.to_csv(str(DATA_DIR / "cclw_new_format_20220503.csv"), index=False)
