@@ -9,7 +9,7 @@ policy_fe_column_map = {
     "Geography ISO": "country_code",
     "Documents": "document_list",
     "Description": "policy_description",
-    "Type": "policy_type",
+    "Type": "policy_category",
     # metadata
     "Events": "events",
     "Sectors": "sectors",
@@ -17,6 +17,7 @@ policy_fe_column_map = {
     "Frameworks": "frameworks",
     "Responses": "responses",
     "Natural Hazards": "hazards",
+    "Document Types": "document_type",
 }
 
 
@@ -32,8 +33,9 @@ def extract(data_dir: PathLike) -> DataFrame:
     csv_file = None
     for root, dirs, files in os.walk(data_dir):
         for file in files:
-            csv_file = os.path.join(root, file)
-            break
+            if file == "laws_and_policies_16022022.csv":
+                csv_file = os.path.join(root, file)
+                break
 
     if not csv_file:
         raise Exception(f"CSV not found at path {data_dir}")

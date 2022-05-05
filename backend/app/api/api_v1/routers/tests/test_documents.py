@@ -11,6 +11,7 @@ from app.db.models import (
     Framework,
     Instrument,
     DocumentLanguage,
+    Category,
 )
 from pathlib import Path
 
@@ -62,6 +63,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
     test_db.add(Geography(display_value="not my favourite subject"))
     test_db.add(DocumentType(name="just my type", description="sigh"))
     test_db.add(Language(language_code="afr"))
+    test_db.add(Category(name="a category", description="a category description"))
     test_db.commit()
 
     payload = {
@@ -73,6 +75,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
             "type_id": 1,
             "geography_id": 1,
             "source_id": 1,
+            "category_id": 1,
         },
         "language_ids": [1],
         "source_id": 1,

@@ -19,6 +19,7 @@ def create_document(
         url=document.url,
         geography_id=document.geography_id,
         type_id=document.type_id,
+        category_id=document.category_id,
     )
 
     db.add(db_document)
