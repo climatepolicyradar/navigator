@@ -197,15 +197,15 @@ def get_text_from_json_files(
     """
     text_by_document = []
 
-    for ix, filepath in enumerate(tqdm(filepaths)):
+    for filepath in tqdm(filepaths):
         with open(filepath, "r") as f:
             document = json.load(f)
 
-        document_text_and_ids = get_text_from_document_dict(document)
+        document_text_and_hashes = get_text_from_document_dict(document)
 
-        for text_and_id in document_text_and_ids:
-            text_and_id.update({"document_id": document["filename"]})
-            text_by_document.append(text_and_id)
+        for text_and_hash in document_text_and_hashes:
+            text_and_hash.update({"document_md5_hash": document["md5hash"]})
+            text_by_document.append(text_and_hash)
     return text_by_document
 
 
@@ -308,16 +308,16 @@ def run_cli(
     curr_time = get_timestamp()
 
     json_filepaths = list(input_dir.glob("*.json"))
-    text_and_ids = get_text_from_json_files(json_filepaths)
-    logger.info(f"There are {len(text_and_ids)} text blocks.")
+    text_and_hashes = get_text_from_json_files(json_filepaths)
+    logger.info(f"There are {len(text_and_hashes)} text blocks.")
     if limit:
-        text_and_ids = text_and_ids[:limit]
+        text_and_hashes = text_and_hashes[:limit]
 
     logger.info(f"Loading sentence-transformer model {model_name}")
     encoder = SBERTEncoder(model_name)
 
     logger.info(f"Encoding text in batches of {batch_size}")
-    text_by_document = [i["text"] for i in text_and_ids]
+    text_by_document = [i["text"] for i in text_and_hashes]
     # Export embeddings to numpy memmap file
     embs_output_path = (
         output_dir
@@ -331,14 +331,16 @@ def run_cli(
 
     # Save text, text block IDs and document IDs to JSON file
     with (output_dir / f"ids_{model_name}_{curr_time}.json").open("w") as f:
-        json.dump(text_and_ids, f)
+        json.dump(text_and_hashes, f)
 
     # Encode action descriptions
     postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
     navigator_dataset = create_dataset(postgres_connector)
-    document_ids_processed = set([i["document_id"] for i in text_and_ids])
+    document_hashes_processed = set([i["md5hash"] for i in text_and_hashes])
+    # TODO: to get document hashes from here we need to get the filename from `create_dataset`, and then regex out
+    # the md5hash from the filename. This is dependent on #440 at the moment.
     description_data_to_encode = navigator_dataset.loc[
-        navigator_dataset["prototype_filename_stem"].isin(document_ids_processed)
+        navigator_dataset["prototype_filename_stem"].isin(document_hashes_processed)
     ]
 
     logger.info(
