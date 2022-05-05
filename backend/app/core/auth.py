@@ -38,7 +38,7 @@ async def get_current_user(
 
 async def get_current_active_user(
     current_user: User = Depends(get_current_user),
-):
+) -> User:
     if not current_user.is_active:
         raise HTTPException(status_code=403, detail="Inactive User")
     return current_user
@@ -52,13 +52,13 @@ async def get_current_active_superuser(
     return current_user
 
 
-def authenticate_user(db, email: str, password: str):
+def authenticate_user(db, email: str, password: str) -> Optional[User]:
     try:
         user = get_user_by_email(db, email)
     except HTTPException:
-        return False
+        return None
     if not user:
-        return False
+        return None
     if not security.verify_password(password, user.hashed_password):
-        return False
+        return None
     return user
