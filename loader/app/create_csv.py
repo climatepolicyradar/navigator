@@ -86,9 +86,16 @@ def drop_missing_rows_from_merged_df(df_merged: pd.DataFrame) -> pd.DataFrame:
     return df_merged.dropna(subset=cols_required_values)
 
 
+def get_single_doc_actions_xlsx(single_doc_actions_path: Path) -> pd.DataFrame:
+    return pd.read_excel(str(single_doc_actions_path), sheet_name="COMPLETED combined")
+
+
 if __name__ == "__main__":
     DATA_DIR = get_data_dir()
-    DATA_PATH = DATA_DIR / "Master sheet completed.xlsx"
+    MANUALLY_CREATED_DATA_PATH = DATA_DIR / "Master sheet completed.xlsx"
+    SINGLE_DOC_ACTIONS_PATH = DATA_DIR / "Single doc action doc type fixes.xlsx"
+
+    single_doc_actions_df = get_single_doc_actions_xlsx(SINGLE_DOC_ACTIONS_PATH)
 
     # From Juan loader
     # TODO: can we import this from the loader code?
@@ -145,10 +152,17 @@ if __name__ == "__main__":
     for person in person_names:
         print(f"Processing {person}")
 
-        df_documents = pd.read_excel(str(DATA_PATH), sheet_name=f"{person} documents")
-        df_actions = pd.read_excel(str(DATA_PATH), sheet_name=f"{person} actions")
+        df_documents = pd.read_excel(
+            str(MANUALLY_CREATED_DATA_PATH), sheet_name=f"{person} documents"
+        )
+        df_actions = pd.read_excel(
+            str(MANUALLY_CREATED_DATA_PATH), sheet_name=f"{person} actions"
+        )
 
         data_list.append(process_data(df_documents, df_actions))
 
-    data_final = pd.concat(data_list, axis=0, ignore_index=True)
+    all_manual_data = pd.concat(data_list, axis=0, ignore_index=True)
+    data_final = pd.concat(
+        [all_manual_data, single_doc_actions_df], axis=0, ignore_index=True
+    )
     data_final.to_csv(str(DATA_DIR / "loader_data.csv"), index=False)
