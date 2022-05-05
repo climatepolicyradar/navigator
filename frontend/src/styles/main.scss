@@ -52,7 +52,11 @@
   /* font-display: swap; */
   font-weight: 500;
 }
-
+body,
+html,
+#__next {
+  height: 100%;
+}
 body {
   @apply text-indigo-500;
   @include light-gradient;

@@ -29,7 +29,7 @@ const DocumentMenu = ({
             />
           )}
 
-          {/* <DropdownMenuItem title="View PDF in full window" /> */}
+          <DropdownMenuItem href="/pdf/1299" title="View PDF in full window" />
           <DropdownMenuItem href={document.document_url} title="Download PDF" />
           <DropdownMenuItem title="View document details" />
         </DropdownMenuWrapper>
