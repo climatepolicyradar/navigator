@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 import { DownloadPDFIcon, ViewDocumentCoverPageIcon } from '../Icons';
 import { truncateString } from '../../helpers';
 
@@ -9,6 +10,7 @@ interface SearchResultProps {
 }
 
 const SearchResult = ({ document, onClick, showAllOptions = true }) => {
+  const router = useRouter();
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
@@ -23,10 +25,16 @@ const SearchResult = ({ document, onClick, showAllOptions = true }) => {
         {showAllOptions && (
           <div className="flex pl-2">
             {/* TODO: download pdf, open doc cover page on click */}
-            <button className="text-indigo-500 hover:text-indigo-600 transition duration-300">
+            <button
+              className="text-indigo-500 hover:text-indigo-600 transition duration-300"
+              onClick={() => router.push(`/pdf/${document.document_id}`)}
+            >
               <DownloadPDFIcon height="24" width="24" />
             </button>
-            <button className="text-indigo-500 hover:text-indigo-600 transition duration-300 ml-2">
+            <button
+              className="text-indigo-500 hover:text-indigo-600 transition duration-300 ml-2"
+              onClick={() => router.push(`/document/${document.document_id}`)}
+            >
               <ViewDocumentCoverPageIcon height="24" width="24" />
             </button>
           </div>

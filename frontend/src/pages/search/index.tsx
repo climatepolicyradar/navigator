@@ -27,6 +27,7 @@ import Slideout from '../../components/slideout';
 import PassageMatches from '../../components/PassageMatches';
 import EmbeddedPDF from '../../components/EmbeddedPDF';
 import DocumentSlideout from '../../components/headers/DocumentSlideout';
+import Tooltip from '../../components/tooltip';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -47,7 +48,7 @@ const Search = () => {
   const resultsQuery = useSearch('searches', searchCriteria);
   const { data: { documents } = [] } = resultsQuery;
   const document = useDocument();
-  const { t, i18n, ready } = useTranslation('searchStart');
+  const { t, i18n, ready } = useTranslation(['searchStart', 'searchResults']);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
   const documentCategories = ['All', 'Executive', 'Legislative', 'Litigation'];
@@ -93,6 +94,8 @@ const Search = () => {
   useDidUpdateEffect(() => {
     resultsQuery.refetch();
   }, [searchCriteria]);
+
+  const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
 
   return (
     <>
@@ -165,6 +168,9 @@ const Search = () => {
                       id="exact-match"
                       handleSearchChange={handleSearchChange}
                     />
+                    <div className="ml-1 -mt-1">
+                      <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
+                    </div>
                   </div>
                 </div>
                 <div className="mt-4 relative">
