@@ -74,6 +74,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
             "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
             "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
+            "md5_sum": "the md5 sum",
             "type_id": 1,
             "geography_id": 1,
             "source_id": 1,
@@ -122,8 +123,10 @@ def test_post_documents(client, superuser_token_headers, test_db):
     assert response.status_code == 200
 
     doc = test_db.query(Document).first()
-    assert doc.name == "Energy Sector Strategy 1387-1391 (2007/8-2012/3)"
-    assert doc.description == "the document description"
+    assert doc.name == payload["document"]["name"]
+    assert doc.description == payload["document"]["description"]
+    assert doc.url == payload["document"]["url"]
+    assert doc.md5_sum == payload["document"]["md5_sum"]
 
     assert test_db.query(Event).first().name == "Publication"
     assert test_db.query(Sector).first().name == "Energy"

@@ -29,6 +29,12 @@ class Key:
 
 
 @dataclass
+class Event:  # noqa: D101
+    date: datetime
+    name: str
+
+
+@dataclass
 class Doc:  # noqa: D101
     doc_name: str
     doc_description: str
@@ -38,7 +44,7 @@ class Doc:  # noqa: D101
     document_date: Optional[datetime]
     document_category: str
     # metadata
-    events: List[str]
+    events: List[Event]
     sectors: List[str]
     instruments: List[str]
     frameworks: List[str]

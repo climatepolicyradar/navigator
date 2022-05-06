@@ -23,7 +23,8 @@ from app.db.models import (
     Keyword,
     DocumentKeyword,
 )
-from app.model import PolicyLookup
+from app.mapping import DEFAULT_DESCRIPTION
+from app.model import PolicyLookup, Event as SourceEvent
 from app.service.api_client import (
     get_type_id,
     get_geography_id,
@@ -173,7 +174,7 @@ def load(db: Session, policies: PolicyLookup):
             )
             db.add(event_db)
 
-            # TODO doc.events might have more events, other than publication date
+            add_events(db, document_db.id, doc.events)
 
             # Metadata - all the rest
             add_metadata(
@@ -264,7 +265,7 @@ def add_metadata(
         for sector in doc.sectors:
             sector_db = Sector(
                 name=sector,
-                description="Imported by CPR loader",
+                description=DEFAULT_DESCRIPTION,
                 source_id=source_id,
             )
             db.add(sector_db)
@@ -282,7 +283,7 @@ def add_metadata(
         for metadatum in metadata:
             meta_db = MetaType(
                 name=metadatum,
-                description="Imported by CPR loader",
+                description=DEFAULT_DESCRIPTION,
                 source_id=source_id,
             )
             db.add(meta_db)
@@ -305,7 +306,7 @@ def add_metadata(
         # TODO check if metadata already exists, and re-use the FK
         meta_db = MetaType(
             name=metadatum,
-            description="Imported by CPR loader",
+            description=DEFAULT_DESCRIPTION,
             # source_id=source_id,
         )
         if hasattr(meta_db, "source_id"):
@@ -319,3 +320,15 @@ def add_metadata(
         )
         setattr(document_meta_db, fk_column_name, meta_db.id)
         db.add(document_meta_db)
+
+
+def add_events(db: Session, doc_id: int, events: List[SourceEvent]):
+    """Adds source events to database."""
+    for event in events:
+        event_db = Event(
+            document_id=doc_id,
+            name=event.name,
+            description=DEFAULT_DESCRIPTION,
+            created_ts=event.date,
+        )
+        db.add(event_db)

@@ -7,7 +7,7 @@ Then delete this later.
 
 import os
 from functools import lru_cache
-from typing import Callable
+from typing import Callable, Tuple
 import hashlib
 
 import requests
@@ -155,7 +155,7 @@ def post_document(payload):
     return response
 
 
-def upload_document(source_url: str, file_name_without_suffix: str) -> str:
+def upload_document(source_url: str, file_name_without_suffix: str) -> Tuple[str, str]:
     """Upload a document to the cloud, and returns the cloud URL.
 
     The remote document will have the specified file_name_without_suffix_{md5_hash},
@@ -164,6 +164,8 @@ def upload_document(source_url: str, file_name_without_suffix: str) -> str:
     which is the S3 maximum path length.
 
     TODO stream the download/upload instead of downloading all-at-once first.
+
+    :returns the remote URL and the md5_sum of its contents
     """
 
     # download the document
@@ -204,4 +206,4 @@ def upload_document(source_url: str, file_name_without_suffix: str) -> str:
         headers=headers,
         files={"file": (full_path, file_content, content_type)},
     )
-    return response.json()["url"]
+    return response.json()["url"], file_content_hash

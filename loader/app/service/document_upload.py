@@ -51,7 +51,8 @@ def _upload_document(
 
     file_name = f"{country_code}-{publication_date_iso}-{doc_name}"
 
-    cloud_url = upload_document(document_db.source_url, file_name)
+    cloud_url, md5_sum = upload_document(document_db.source_url, file_name)
     document_db.url = cloud_url
+    document_db.md5_sum = md5_sum
     db.add(document_db)
     db.commit()

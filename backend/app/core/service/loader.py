@@ -3,6 +3,7 @@ from fastapi import (
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+import logging
 
 from app.db.crud.document import create_document
 from app.db.schemas.metadata import DocumentCreateWithMetadata
@@ -26,6 +27,9 @@ from app.db.models import (
 from sqlalchemy.dialects.postgresql import insert
 
 
+logger = logging.getLogger(__file__)
+
+
 def persist_document_and_metadata(
     db: Session,
     document_with_metadata: DocumentCreateWithMetadata,
@@ -38,6 +42,9 @@ def persist_document_and_metadata(
 
         return db_document
     except Exception as e:
+        logger.error(
+            f"Error saving document {document_with_metadata.document}", exc_info=e
+        )
         if isinstance(e, IntegrityError):
             raise HTTPException(409, detail="Document already exists")
         raise e
