@@ -117,3 +117,6 @@ populate_opensearch_test: run_loader
 	-v ${PWD}/search-index/test/data/description_ids_msmarco-distilbert-dot-v5_20220407-1003.csv:/desc-ids-path \
 	-v ${PWD}/search-index/test/data/description_embs_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/desc-embeddings-path \
 	search-index python /app/index_data.py --text-ids-path /text-ids-path --embeddings-path /embeddings-path --desc-ids-path /desc-ids-path --desc-embeddings-path /desc-embeddings-path -d 768
+
+postgres_dump:
+	docker-compose run --rm backend_db pg_dump -d ${BACKEND_DATABASE_URL} --data-only > backend_db_dump.sql
