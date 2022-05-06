@@ -93,7 +93,7 @@ def drop_missing_rows_from_merged_df(df_merged: pd.DataFrame) -> pd.DataFrame:
 def get_single_doc_actions_xlsx(single_doc_actions_path: Path) -> pd.DataFrame:
     return pd.read_excel(
         str(single_doc_actions_path), sheet_name="COMPLETED combined"
-    ).rename(columns={"Type": "Category"})
+    ).rename(columns={"Type": "Category", "Document Types": "Document Type"})
 
 
 class MLStripper(HTMLParser):
@@ -201,8 +201,7 @@ if __name__ == "__main__":
         )
 
     all_manual_data = pd.concat(data_list, axis=0, ignore_index=True)
-    print(f"Columns in manual data: {all_manual_data.columns}")
-    print(f"Columns in single doc actions df: {single_doc_actions_df.columns}")
+
     data_final = pd.concat(
         [all_manual_data, single_doc_actions_df], axis=0, ignore_index=True
     )
