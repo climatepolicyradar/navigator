@@ -8,3 +8,7 @@ class CCLWActionType(Enum):
 
     legislative = "Law"
     executive = "Policy"
+
+
+# the source data doesn't have descriptions for things like events, or non-lookup/predefined metadata
+DEFAULT_DESCRIPTION = "Imported by CPR loader"

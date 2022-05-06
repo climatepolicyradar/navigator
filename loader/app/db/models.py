@@ -60,9 +60,10 @@ class Document(Base, Auditable):
     loaded_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    source_url = sa.Column(sa.Text)
+    source_url = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, nullable=False)
     url = sa.Column(sa.Text)
+    md5_sum = sa.Column(sa.Text)
 
     is_valid = sa.Column(sa.Boolean, nullable=False)
     invalid_reason = sa.Column(sa.Enum(DocumentInvalidReason))
@@ -257,6 +258,13 @@ class Keyword(Base):  # noqa: D101
     id = sa.Column(sa.Integer, primary_key=True)
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
+
+    def as_dict(self):  # noqa: D102
+        return {
+            c.name: getattr(self, c.name)
+            for c in self.__table__.columns
+            if c.name not in ["id"]
+        }
 
 
 class DocumentKeyword(Base):  # noqa: D101

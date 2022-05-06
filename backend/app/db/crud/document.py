@@ -18,6 +18,7 @@ def create_document(
         loaded_ts=document.loaded_ts,
         source_id=document.source_id,
         url=document.url,
+        md5_sum=document.md5_sum,
         geography_id=document.geography_id,
         type_id=document.type_id,
         category_id=document.category_id,

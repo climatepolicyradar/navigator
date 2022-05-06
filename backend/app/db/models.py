@@ -143,9 +143,10 @@ class Document(Base, Auditable):
     loaded_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    source_url = sa.Column(sa.Text)
+    source_url = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
-    url = sa.Column(sa.Text)
+    url = sa.Column(sa.Text, nullable=False)
+    md5_sum = sa.Column(sa.Text, nullable=False)
 
     geography_id = sa.Column(
         sa.SmallInteger,
