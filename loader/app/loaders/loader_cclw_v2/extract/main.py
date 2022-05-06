@@ -22,7 +22,6 @@ csv_column_map = {
     "Year": "document_year",
     "Language": "document_language",
     "Keywords": "keywords",
-    "Description": "description",
 }
 
 
