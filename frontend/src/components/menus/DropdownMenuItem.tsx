@@ -27,7 +27,7 @@ const DropdownMenuItem = ({
     <>
       {href ? (
         <Link href={href}>
-          <a onClick={handleClick} target={target} className={cssClass}>
+          <a onClick={handleClick} className={cssClass}>
             {title}
           </a>
         </Link>

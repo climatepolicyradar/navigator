@@ -5,7 +5,7 @@ import ViewSDKClient from '../api/pdf';
 import { dummyDocument, dummyDocument2 } from '../constants/dummyDocument';
 import Loader from './Loader';
 
-const EmbeddedPDF = ({ document, passageIndex, setShowPDF }) => {
+const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
   const containerRef = useRef();
   const viewerConfig = {
     showDownloadPDF: true,
@@ -54,7 +54,8 @@ const EmbeddedPDF = ({ document, passageIndex, setShowPDF }) => {
       annotations.push(obj);
     });
     annotationManager.addAnnotations(annotations);
-    if (passageIndex) {
+    console.log(annotations);
+    if (passageIndex !== null) {
       annotationManager.selectAnnotation(annotations[passageIndex].id);
     }
   };
@@ -97,7 +98,7 @@ const EmbeddedPDF = ({ document, passageIndex, setShowPDF }) => {
           boundingBox,
           quadPoints,
           strokeColor: '#FFFF00',
-          strokeWidth: 0,
+          strokeWidth: 1,
           type: 'AdobeAnnoSelector',
           styleClass: 'highlight',
         },
@@ -126,14 +127,6 @@ const EmbeddedPDF = ({ document, passageIndex, setShowPDF }) => {
         </div>
       ) : (
         <>
-          <button
-            className="ml-6 text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300"
-            onClick={() => {
-              setShowPDF(false);
-            }}
-          >
-            &laquo; Back
-          </button>
           <div
             ref={containerRef}
             id="pdf-div"
