@@ -1,6 +1,7 @@
 import typing as t
 
-from fastapi import APIRouter, Depends, Request, Response
+from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
+from sqlalchemy.exc import IntegrityError
 
 from app.core.auth import get_current_active_superuser
 from app.core.email import send_email, EmailType
@@ -64,9 +65,15 @@ async def user_create(
     current_user=Depends(get_current_active_superuser),
 ):
     """Creates a new user"""
-    db_user = create_user(db, user)
-    activation_token = create_password_reset_token(db, db_user.id)
+    try:
+        db_user = create_user(db, user)
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail=f"Email already registered: {user.email}",
+        )
 
+    activation_token = create_password_reset_token(db, db_user.id)
     send_email(EmailType.account_new, db_user, activation_token)
 
     return db_user

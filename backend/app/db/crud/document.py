@@ -12,11 +12,13 @@ def create_document(
 ) -> Document:
     db_document = Document(
         name=document.name,
+        description=document.description,
         source_url=document.source_url,
         created_by=creator_id,
         loaded_ts=document.loaded_ts,
         source_id=document.source_id,
         url=document.url,
+        md5_sum=document.md5_sum,
         geography_id=document.geography_id,
         type_id=document.type_id,
         category_id=document.category_id,

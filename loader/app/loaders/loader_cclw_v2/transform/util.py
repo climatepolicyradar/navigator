@@ -8,7 +8,7 @@ from dateutil.parser import parse
 from pandas import DataFrame
 
 from app.mapping import CCLWActionType
-from app.model import Key, Doc, PolicyData
+from app.model import Key, Doc, PolicyData, Event
 
 DEFAULT_POLICY_DATE = datetime(1900, 1, 1)
 
@@ -17,6 +17,17 @@ logger = logging.getLogger(__file__)
 
 def prune(lst: List[str]) -> List:
     return [it.strip() for it in filter(None, lst)]
+
+
+def extract_events(events_str: str) -> List[Event]:
+    events = []
+    for event in prune(events_str.split(";")):
+        parts = event.split("|")
+        date_str = parts[0]
+        event_date = datetime.strptime(date_str, "%d/%m/%Y")
+        event_name = parts[1]
+        events.append(Event(name=event_name, date=event_date))
+    return events
 
 
 def get_policy_data(
@@ -37,12 +48,13 @@ def get_policy_data(
     for _idx, dataframe in group_dataframe.iterrows():
 
         document_name = dataframe["document_name"]
+        document_description = dataframe["document_description"]
         document_url = dataframe["document_url"]
         document_language = dataframe["document_language"]
         document_country_code = dataframe["country_code"]
         document_category = CCLWActionType[dataframe["category"]].value
         document_type = dataframe["document_type"]
-        events = prune(dataframe["events"].split("||"))
+        events = extract_events(dataframe["events"])
         sectors = prune(dataframe["sectors"].split(";"))
         instruments = prune(dataframe["instruments"].split("|"))
         frameworks = prune(dataframe["frameworks"].split(","))
@@ -74,6 +86,7 @@ def get_policy_data(
 
         doc = Doc(
             doc_name=document_name,
+            doc_description=document_description,
             doc_languages=[document_language],
             doc_url=parse_url(document_url),
             document_type=document_type,
