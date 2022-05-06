@@ -12,6 +12,7 @@ def create_document(
 ) -> Document:
     db_document = Document(
         name=document.name,
+        description=document.description,
         source_url=document.source_url,
         created_by=creator_id,
         loaded_ts=document.loaded_ts,

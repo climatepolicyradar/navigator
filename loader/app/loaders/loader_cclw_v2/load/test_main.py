@@ -48,6 +48,7 @@ def test_load_single_doc(
         doc_url="http://doc",
         doc_name="doc name",
         doc_languages=["en"],
+        doc_description="doc description",
         document_type="doc type",
         document_date=datetime(2021, 5, 4),  # ... be with you
         document_category="doc 🐱",
@@ -82,6 +83,7 @@ def test_load_single_doc(
     called_doc = mock_db.add.call_args_list[0][0][0]
 
     assert called_doc.name == doc.doc_name
+    assert called_doc.description == doc.doc_description
     assert called_doc.source_url == "http://doc"
     assert called_doc.source_id == 1
     # assert called_doc.url ==  # TODO: upload to S3
@@ -141,6 +143,7 @@ def test_load_two_related_docs(
     doc: Doc = Doc(
         doc_url="http://doc",
         doc_name="doc name",
+        doc_description="doc description",
         doc_languages=["en"],
         document_type="doc1 type",
         document_date=datetime(2021, 5, 4),  # ... be with you
@@ -156,6 +159,7 @@ def test_load_two_related_docs(
     doc2: Doc = Doc(
         doc_url="http://doc2",
         doc_name="doc name 2",
+        doc_description="doc 2 description",
         doc_languages=["af"],
         document_type="doc2 type",
         document_date=datetime(2020, 5, 4),  # ... be with you
@@ -209,6 +213,7 @@ def test_load_two_related_docs(
     called_doc = mock_db.add.call_args_list[0][0][0]
 
     assert called_doc.name == doc.doc_name
+    assert called_doc.description == doc.doc_description
     assert called_doc.source_url == "http://doc"
     assert called_doc.source_id == 1
     # assert called_doc.url ==  # TODO: upload to S3
@@ -234,6 +239,7 @@ def test_load_two_related_docs(
     called_doc2 = mock_db.add.call_args_list[3][0][0]
 
     assert called_doc2.name == doc2.doc_name
+    assert called_doc2.description == doc2.doc_description
     assert called_doc2.source_url == "http://doc2"
     assert called_doc2.source_id == 1
     # assert called_doc.url ==  # TODO: upload to S3

@@ -20,6 +20,8 @@ from app.db.models import (
     Hazard,
     DocumentHazard,
     DocumentLanguage,
+    Keyword,
+    DocumentKeyword,
 )
 from app.model import PolicyLookup
 from app.service.api_client import (
@@ -135,6 +137,7 @@ def load(db: Session, policies: PolicyLookup):
             # https://github.com/climatepolicyradar/navigator/blob/3ca2eda8de691288a66a1722908f32dd52c178f9/backend/app/api/api_v1/routers/actions.py#L81
             document_db = Document(
                 name=doc.doc_name,
+                description=doc.doc_description,
                 source_url=doc.doc_url,
                 source_id=document_source_id,
                 # url=None,  # TODO: upload to S3
@@ -217,6 +220,15 @@ def load(db: Session, policies: PolicyLookup):
                 Hazard,
                 DocumentHazard,
                 "hazard_id",
+            )
+            add_metadata(
+                db,
+                doc.keywords,
+                document_db.id,
+                document_source_id,
+                Keyword,
+                DocumentKeyword,
+                "keyword_id",
             )
 
             # doc language

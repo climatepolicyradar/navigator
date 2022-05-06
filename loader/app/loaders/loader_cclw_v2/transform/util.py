@@ -37,6 +37,7 @@ def get_policy_data(
     for _idx, dataframe in group_dataframe.iterrows():
 
         document_name = dataframe["document_name"]
+        document_description = dataframe["document_description"]
         document_url = dataframe["document_url"]
         document_language = dataframe["document_language"]
         document_country_code = dataframe["country_code"]
@@ -74,6 +75,7 @@ def get_policy_data(
 
         doc = Doc(
             doc_name=document_name,
+            doc_description=document_description,
             doc_languages=[document_language],
             doc_url=parse_url(document_url),
             document_type=document_type,

@@ -12,6 +12,7 @@ from app.db.models import (
     Instrument,
     DocumentLanguage,
     Category,
+    Keyword,
 )
 from pathlib import Path
 
@@ -70,6 +71,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
         "document": {
             "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
             "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+            "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
             "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
             "type_id": 1,
@@ -110,6 +112,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
         ],
         "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
         "hazards": [{"name": "some hazard", "description": "Imported by CPR loader"}],
+        "keywords": [{"name": "some keyword", "description": "Imported by CPR loader"}],
     }
 
     response = client.post(
@@ -120,12 +123,14 @@ def test_post_documents(client, superuser_token_headers, test_db):
 
     doc = test_db.query(Document).first()
     assert doc.name == "Energy Sector Strategy 1387-1391 (2007/8-2012/3)"
+    assert doc.description == "the document description"
 
     assert test_db.query(Event).first().name == "Publication"
     assert test_db.query(Sector).first().name == "Energy"
     assert test_db.query(Response).first().name == "Mitigation"
     assert test_db.query(Hazard).first().name == "some hazard"
     assert test_db.query(Framework).first().name == "some framework"
+    assert test_db.query(Keyword).first().name == "some keyword"
     instruments = test_db.query(Instrument).all()
     assert instruments[0].name == "some instrument"
     assert instruments[1].name == "another instrument"

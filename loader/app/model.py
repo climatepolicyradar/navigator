@@ -31,6 +31,7 @@ class Key:
 @dataclass
 class Doc:  # noqa: D101
     doc_name: str
+    doc_description: str
     doc_languages: List[str]
     doc_url: str
     document_type: str
