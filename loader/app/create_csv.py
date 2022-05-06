@@ -157,7 +157,7 @@ if __name__ == "__main__":
 
         docs_and_actions_and_descriptions_from_v1_csv_merged = pd.merge(
             left=df_merged,
-            right=df_cclw_v1_csv_with_single_url[["_url", "policy_description"]],
+            right=df_cclw_v1_csv_with_single_url[["_url", "Description"]],
             on="_url",
         )
         docs_and_actions_and_descriptions_from_v1_csv_merged = (
@@ -182,6 +182,10 @@ if __name__ == "__main__":
                 [df_cclw_v1_csv_with_single_url, row.to_frame().T]
             )
 
+    df_cclw_v1_csv_with_single_url = df_cclw_v1_csv_with_single_url.rename(
+        columns={"policy_description": "Description"}
+    )
+
     for person in person_names:
         print(f"Processing {person}")
 
@@ -197,6 +201,8 @@ if __name__ == "__main__":
         )
 
     all_manual_data = pd.concat(data_list, axis=0, ignore_index=True)
+    print(f"Columns in manual data: {all_manual_data.columns}")
+    print(f"Columns in single doc actions df: {single_doc_actions_df.columns}")
     data_final = pd.concat(
         [all_manual_data, single_doc_actions_df], axis=0, ignore_index=True
     )
