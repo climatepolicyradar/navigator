@@ -71,7 +71,7 @@ def main():
     if not csv_file:
         raise Exception(f"CSV not found at path {data_dir}")
 
-    data = extract(data_dir)
+    data = extract(csv_file)
     policies = transform(data)  # noqa: F841
     for db in get_db():
         load(db, policies)

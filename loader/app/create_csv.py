@@ -90,10 +90,27 @@ def drop_missing_rows_from_merged_df(df_merged: pd.DataFrame) -> pd.DataFrame:
     return df_merged.dropna(subset=cols_required_values)
 
 
+def transform_documents_value_in_single_actions_sheet(value: str) -> str:
+    val_split = value.split("|")
+    if len(val_split) == 2:
+        # title | url
+        return val_split[1] + "|"
+    elif len(val_split) == 3:
+        return val_split[1] + "|" + val_split[2]
+
+
 def get_single_doc_actions_xlsx(single_doc_actions_path: Path) -> pd.DataFrame:
-    return pd.read_excel(
-        str(single_doc_actions_path), sheet_name="COMPLETED combined"
-    ).rename(columns={"Type": "Category", "Document Types": "Document Type"})
+    df = (
+        pd.read_excel(str(single_doc_actions_path), sheet_name="COMPLETED combined")
+        .rename(columns={"Type": "Category", "Document Types": "Document Type"})
+        .dropna(subset=["Documents"])
+    )
+
+    df["Documents"] = df["Documents"].apply(
+        transform_documents_value_in_single_actions_sheet
+    )
+
+    return df
 
 
 class MLStripper(HTMLParser):
