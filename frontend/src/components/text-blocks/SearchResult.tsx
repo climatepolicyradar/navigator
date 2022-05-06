@@ -24,7 +24,7 @@ const SearchResult = ({ document, onClick }) => {
           </button>
         </div>
       </div>
-      
+
       <div className="flex text-xs text-indigo-400 mt-3">
         <div
           className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`}
@@ -34,7 +34,10 @@ const SearchResult = ({ document, onClick }) => {
         </span>
         <span className="ml-6">{document.document_date}</span>
       </div>
-      <p className="text-indigo-400 mt-3">{truncateString(document.document_description, 250)}</p>
+      <p className="text-indigo-400 mt-3">
+        {truncateString(document.document_description, 250)}
+      </p>
+      {/* TODO: translate below text, how to handle plurals? */}
       <button
         className="text-indigo-500 underline text-sm mt-3 transition duration-300 hover:text-indigo-600"
         onClick={onClick}

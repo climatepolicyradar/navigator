@@ -11,13 +11,13 @@ const Header = () => {
   const headerRef = useRef(null);
 
   useEffect(() => {
-    document.addEventListener('scroll', function (e) {
-      if (window.scrollY > 70) {
-        setFixed(false);
-      } else {
-        setFixed(false);
-      }
-    });
+    // document.addEventListener('scroll', function (e) {
+    //   if (window.scrollY > 70) {
+    //     setFixed(false);
+    //   } else {
+    //     setFixed(false);
+    //   }
+    // });
   }, []);
   return (
     <header
@@ -41,15 +41,6 @@ const Header = () => {
           </div>
           <div>
             <ToggleAccountMenu logout={logout} />
-            {/* <button data-cy="user-icon">
-              <img
-                className={`${
-                  fixed ? 'w-3/4' : 'w-full'
-                } transtion-all duration-300`}
-                src="/images/user.svg"
-                alt="My account"
-              />
-            </button> */}
           </div>
         </div>
         {/* Mobile only */}

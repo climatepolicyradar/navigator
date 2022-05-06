@@ -51,13 +51,13 @@ refresh_all_dbs:
 # building images
 # ----------------------------------
 build_backend:
-	docker-compose build backend
+	docker-compose build --no-cache backend
 
 build_frontend:
-	docker-compose build frontend
+	docker-compose build --no-cache frontend
 
 build_loader:
-	docker-compose build loader
+	docker-compose build --no-cache loader
 
 build_pipeline:
 	docker build -f pipeline/Dockerfile -t navigator_pipeline .
