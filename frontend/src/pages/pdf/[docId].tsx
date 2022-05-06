@@ -27,10 +27,11 @@ const PDFView = () => {
         <Layout
           title={`Navigator | ${t('Law and Policy Search PDF View')}`}
           heading={t('Law and Policy Search PDF View')}
+          screenHeight={true}
         >
           <div className="container mt-2">
             <h1 className="text-2xl font-medium">
-              {document.data.document_name}
+              {document?.data?.document_name}
             </h1>
             <BackLink href="/search" text="Back to search results" />
           </div>

@@ -36,7 +36,7 @@ const Login = () => {
     login(data);
   };
   useEffect(() => {
-    if (user?.email) router.push('/search');
+    if (user?.email) router.push('/');
   }, [user]);
   return (
     <>
