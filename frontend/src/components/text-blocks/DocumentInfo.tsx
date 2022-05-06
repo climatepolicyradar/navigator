@@ -12,7 +12,7 @@ interface DoucmentInfoProps {
 const DocumentInfo = ({ heading, text = '', list = [] }) => {
   return (
     <div className="mt-6">
-      <h4 className="text-indigo-600 font-normal">{heading}</h4>
+      <h4 className="text-base text-indigo-600 font-medium">{heading}</h4>
       {list.length ? (
         <List list={list} />
       ) : (

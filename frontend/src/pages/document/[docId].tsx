@@ -10,6 +10,7 @@ import { truncateString } from '../../helpers';
 import SearchResult from '../../components/text-blocks/SearchResult';
 import { dummyDocument, dummyDocument2 } from '../../constants/dummyDocument';
 import DocumentInfo from '../../components/text-blocks/DocumentInfo';
+import Event from '../../components/text-blocks/Event';
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -19,7 +20,7 @@ const DocumentCoverPage = () => {
 
   return (
     <Layout title={`Navigator | Document title`}>
-      {/* TODO: translate UI text */}
+      {/* TODO: translate all UI text on page */}
       <div className="container mt-2"></div>
       <section className="mb-8">
         <div className="container">
@@ -80,7 +81,8 @@ const DocumentCoverPage = () => {
                 </div>
               </section>
             </section>
-            <section className="mt-6 md:w-1/4 md:ml-12 flex-shrink-0 bg-sky p-4 rounded-lg">
+            {/* <section className="mt-6 md:w-1/4 md:ml-12 flex-shrink-0 bg-sky p-4 rounded-lg"> */}
+            <section className="border-l border-blue-100 pl-4 mt-6 md:w-2/5 lg:w-4/12 md:ml-12 flex-shrink-0">
               <h3 className="text-xl text-indigo-400">
                 Further information about this document
               </h3>
@@ -94,6 +96,18 @@ const DocumentCoverPage = () => {
                 heading="Instruments"
                 list={cover_page.instruments}
               />
+              <div className="mt-8">
+                <h4 className="text-base text-indigo-600 font-medium mb-4">
+                  Events
+                </h4>
+                {cover_page.events.map((event, index) => (
+                  <Event
+                    event={event}
+                    key={`event${index}`}
+                    last={index === cover_page.events.length - 1 ? true : false}
+                  />
+                ))}
+              </div>
             </section>
           </div>
         </div>

@@ -5,7 +5,7 @@ const List = ({ list }) => {
         <li>
           {item.name}{' '}
           {item?.children && (
-            <ul>
+            <ul className="ml-4">
               {item.children.map((child) => (
                 <li>{child.name}</li>
               ))}{' '}
