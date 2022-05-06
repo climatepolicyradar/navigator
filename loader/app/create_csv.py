@@ -152,16 +152,16 @@ if __name__ == "__main__":
         df_merged = df_merged.rename(columns={"Type": "Category"})
 
         # 'Int64' is nullable int type, as some rows have no 'Year' value
-        df_merged.loc[:, ["Year", "Id"]] = df_merged.loc[:, ["Year", "Id"]].astype(
-            "Int64"
-        )
-
-        docs_and_actions_merged = df_merged[csv_column_map.keys()]
+        df_merged.loc[:, "Year"] = df_merged.loc[:, "Year"].astype("Int64")
+        df_merged.loc[:, "Id"] = df_merged.loc[:, "Id"].astype(int)
 
         docs_and_actions_and_descriptions_from_v1_csv_merged = pd.merge(
-            left=docs_and_actions_merged,
-            right=df_cclw_v1_csv_with_single_url[["policy_description"]],
+            left=df_merged,
+            right=df_cclw_v1_csv_with_single_url[["_url", "policy_description"]],
             on="_url",
+        )
+        docs_and_actions_and_descriptions_from_v1_csv_merged = (
+            docs_and_actions_and_descriptions_from_v1_csv_merged[csv_column_map.keys()]
         )
 
         return docs_and_actions_and_descriptions_from_v1_csv_merged
