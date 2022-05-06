@@ -71,3 +71,56 @@ When prompted for the password, use the one from
 ```
 pulumi config get infra:db_password
 ```
+
+# Blue/green deployments
+
+We have two stacks: `ant` and `dev`. These will assume the roles of "ant is blue" and "dev is green" or vice versa, depending on which env is currently being pointed to by CNAME (i.e. the ones that our users see). 
+
+To see our stacks:
+
+```
+pulumi stack ls
+NAME     LAST UPDATE  RESOURCE COUNT  URL
+ant*     n/a          n/a             https://app.pulumi.com/climatepolicyradar/infra/ant
+dev      2 weeks ago  30              https://app.pulumi.com/climatepolicyradar/infra/dev 
+```
+
+To see the current stack your local environment is pointing at:
+
+``` 
+pulumi stack
+Current stack is ant:
+<snip>
+```
+
+To point to another stack:
+
+``` 
+pulumi stack select <stack name>
+```
+
+## The deployment process
+
+Sprint N:
+CNAME is currently pointing to `dev`, so leave it alone.
+Devops run `pulumi stack select ant`
+Development and changes happen against `ant`.
+Developers and internal stakeholders do UAT against `ant` (possibly via staging.api.climatepolicyradar.org or some other private domain name).
+Everyone is happy with `ant`.
+Change CNAME so that it points api.climatepolicyradar.org to `ant` (more specifically, the elastic beanstalk instance in this stack)
+Check api.climatepolicyradar.org and if you're not happy, flip the CNAME back to `dev`.
+But if you're happy:
+Change CNAME so that it points staging.api.climatepolicyradar.org to `dev` (more specifically, the elastic beanstalk instance in this stack)
+Development can bow resume against `dev`.
+
+Sprint N+1:
+CNAME is currently pointing to `ant`, so leave it alone.
+Devops run `pulumi stack select dev`
+Development and changes happen against `dev`.
+Developers and internal stakeholders do UAT against `dev` (possibly via staging.api.climatepolicyradar.org or some other private domain name).
+Everyone is happy with `dev`.
+Change CNAME so that it points api.climatepolicyradar.org to `dev` (more specifically, the elastic beanstalk instance in this stack)
+Check api.climatepolicyradar.org and if you're not happy, flip the CNAME back to `ant`.
+But if you're happy:
+Change CNAME so that it points staging.api.climatepolicyradar.org to `ant` (more specifically, the elastic beanstalk instance in this stack)
+Development can bow resume against `ant`.

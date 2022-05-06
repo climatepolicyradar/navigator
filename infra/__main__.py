@@ -1,5 +1,5 @@
 """Infra-as-code for CPR stack."""
-from cpr.backend.main import Backend
+from cpr.backend.main_with_frontend import Backend
 from cpr.deployment_resources.main import DeploymentResources
 
 # from cpr.frontend.main import Frontend

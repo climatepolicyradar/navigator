@@ -74,7 +74,11 @@ class Backend:
 
         config = pulumi.Config()
         backend_secret_key = config.require_secret("backend_secret_key")
+        opensearch_user = config.require("opensearch_user")
+        opensearch_password = config.require_secret("opensearch_password")
+        opensearch_url = config.require("opensearch_url")
 
+        # for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
         docker_compose_template = """version: '3.7'
 
 services:
@@ -92,29 +96,52 @@ services:
 
   backend:
     image: %s
-    mem_limit: 256m
+    mem_limit: 4096m
     command: python app/main.py
+    ports:
+      - 8888:8888
     environment:
       PYTHONPATH: .
+      PORT: 8888
+      OPENSEARCH_INDEX: navigator
       DATABASE_URL: %s
       SECRET_KEY: %s
+      OPENSEARCH_USER: %s
+      OPENSEARCH_PASSWORD: %s
+      OPENSEARCH_URL: %s
 
   frontend:
     image: %s
     mem_limit: 256m
-    command: npm run prod
+    command: npm run start
+    environment:
+      PORT: 3000
+    ports:
+      - 3000:3000
     volumes:
       - "${EB_LOG_BASE_DIR}/frontend:/root/.npm/_logs"
         """
 
         def fill_template(arg):
-            return docker_compose_template % (arg[0], arg[1], arg[2], arg[3], arg[4])
+            return docker_compose_template % (
+                arg[0],
+                arg[1],
+                arg[2],
+                arg[3],
+                arg[4],
+                arg[5],
+                arg[6],
+                arg[7],
+            )
 
         docker_compose_file = pulumi.Output.all(
             nginx_image.image_name,
             self.backend_image.image_name,
             storage.backend_database_connection_url,
             backend_secret_key,
+            opensearch_user,
+            opensearch_password,
+            opensearch_url,
             frontend_image.image_name,
         ).apply(fill_template)
 
@@ -201,7 +228,7 @@ services:
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:ec2:instances",
                     name="InstanceTypes",
-                    value="t3.micro",  # https://aws.amazon.com/ec2/instance-types/
+                    value="t3.medium",  # https://aws.amazon.com/ec2/instance-types/
                 ),
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:autoscaling:launchconfiguration",
@@ -227,6 +254,16 @@ services:
                     namespace="aws:elasticbeanstalk:healthreporting:system",
                     name="SystemType",
                     value="enhanced",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeType",
+                    value="gp2",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeSize",
+                    value="16",  # default is 8GB, but we're making space for pytorch
                 ),
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:elasticbeanstalk:application:environment",
