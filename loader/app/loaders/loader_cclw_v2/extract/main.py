@@ -7,6 +7,7 @@ from pandas import DataFrame
 csv_column_map = {
     "Id": "policy_id",  # for grouping related documents
     "Title": "document_name",
+    "Description": "document_description",
     "Geography ISO": "country_code",
     "Documents": "document_url",  # column is plural, but it will be only one document URL
     "Category": "category",
@@ -21,7 +22,6 @@ csv_column_map = {
     "Year": "document_year",
     "Language": "document_language",
     "Keywords": "keywords",
-    "Description": "description",
 }
 
 
