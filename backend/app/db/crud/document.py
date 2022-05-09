@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy import and_, exists
 from sqlalchemy.orm import Session
 
@@ -47,3 +48,14 @@ def is_document_exists(
             )
         )
     ).scalar()
+
+
+def get_document(db: Session, document_id: int) -> Document:
+    document = db.query(Document).filter(Document.id == document_id).first()
+    if not document:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Document not found with ID {document_id}",
+        )
+
+    return document

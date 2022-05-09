@@ -25,7 +25,7 @@ from app.db.models import (
     Keyword,
     DocumentKeyword,
 )
-from app.db.schemas.metadata import DocumentCreateWithMetadata
+from app.db.schemas.document import DocumentCreateWithMetadata
 
 logger = logging.getLogger(__file__)
 

@@ -1,6 +1,8 @@
 import logging
 import os
+from datetime import datetime
 from pathlib import Path
+from typing import cast
 
 from fastapi import (
     APIRouter,
@@ -11,10 +13,51 @@ from fastapi import (
     UploadFile,
 )
 
-from app.core.auth import get_current_active_superuser
+from app.core.auth import get_current_active_superuser, get_current_active_user
 from app.core.service.loader import persist_document_and_metadata
-from app.db.schemas.document import DocumentInDB
-from app.db.schemas.metadata import DocumentCreateWithMetadata
+from app.db.models import (
+    Association,
+    Category,
+    Document,
+    DocumentFramework,
+    DocumentHazard,
+    DocumentInstrument,
+    DocumentKeyword,
+    DocumentLanguage,
+    DocumentResponse,
+    DocumentSector,
+    DocumentType,
+    Event,
+    Framework,
+    Geography,
+    Hazard,
+    Instrument,
+    Keyword,
+    Language,
+    Response,
+    Sector,
+    Source,
+)
+from app.db.schemas.document import (
+    DocumentCreateWithMetadata,
+    DocumentInDB,
+    DocumentDetail,
+    RelatedDocument,
+)
+from app.db.schemas.metadata import (
+    Category as CategorySchema,
+    DocumentType as DocumentTypeSchema,
+    Event as EventSchema,
+    Framework as FrameworkSchema,
+    Geography as GeographySchema,
+    Hazard as HazardSchema,
+    Instrument as InstrumentSchema,
+    Keyword as KeywordSchema,
+    Language as LanguageSchema,
+    Sector as SectorSchema,
+    Source as SourceSchema,
+    Topic as TopicSchema,
+)
 from app.db.session import get_db
 from navigator.core.aws import get_s3_client
 
@@ -22,9 +65,146 @@ logger = logging.getLogger(__file__)
 
 documents_router = r = APIRouter()
 
-# TODO for get_document, return nested documents with associations
-# - only show doc IDs, association types, and a hyperlink (so the associated doc can be loaded on demand)
-# - possibly a flag so nested docs can be fully hydrated?
+
+@r.get(
+    "/documents/{document_id}",
+    response_model=DocumentDetail,
+    response_model_exclude_none=True,
+)
+async def get_document_detail(
+    document_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """Get details of the document with the given ID."""
+
+    document_data = (
+        db.query(Document, Geography, DocumentType, Category, Source)
+        .filter(Document.id == document_id)
+        .filter(Document.geography_id == Geography.id)
+        .filter(Document.type_id == DocumentType.id)
+        .filter(Document.category_id == Category.id)
+        .filter(Document.source_id == Source.id)
+    )
+    if document_data.count() < 1:
+        raise HTTPException(404, f"Document with id {document_id} could not be found.")
+    if document_data.count() > 1:
+        raise HTTPException(
+            500, f"Query returned multiple results for id {document_id}"
+        )
+
+    events = db.query(Event).filter(Event.document_id == document_id).all()
+    events = sorted(events, key=lambda e: e.created_ts)
+
+    languages = (
+        db.query(DocumentLanguage, Language)
+        .filter(DocumentLanguage.document_id == document_id)
+        .join(Language)
+    ).all()
+    sectors = (
+        db.query(DocumentSector, Sector)
+        .filter(DocumentSector.document_id == document_id)
+        .join(Sector)
+    ).all()
+    instruments = (
+        db.query(DocumentInstrument, Instrument)
+        .filter(DocumentInstrument.document_id == document_id)
+        .join(Instrument)
+    ).all()
+    frameworks = (
+        db.query(DocumentFramework, Framework)
+        .filter(DocumentFramework.document_id == document_id)
+        .join(Framework)
+    ).all()
+    responses = (
+        db.query(DocumentResponse, Response)
+        .filter(DocumentResponse.document_id == document_id)
+        .join(Response)
+    ).all()
+    hazards = (
+        db.query(DocumentHazard, Hazard)
+        .filter(DocumentHazard.document_id == document_id)
+        .join(Hazard)
+    ).all()
+    keywords = (
+        db.query(DocumentKeyword, Keyword)
+        .filter(DocumentKeyword.document_id == document_id)
+        .join(Keyword)
+    ).all()
+    related_documents = (
+        db.query(Association, Document, Geography)
+        .filter(Association.document_id_from == document_id)
+        .join(Document, Association.document_id_to == Document.id)
+        .join(Geography, Document.geography_id == Geography.id)
+    ).all()
+
+    document, geography, doc_type, category, source = document_data.first()
+    return DocumentDetail(
+        id=document_id,
+        loaded_ts=cast(datetime, document.loaded_ts),
+        name=cast(str, document.name),
+        description=cast(str, document.description),
+        year=1900,  # TODO: complete
+        source_url=cast(str, document.source_url),
+        url=cast(str, document.url),
+        geography=GeographySchema(
+            display_value=cast(str, geography.display_value),
+            value=cast(str, geography.value),
+            type=cast(str, geography.type),
+        ),
+        type=DocumentTypeSchema(
+            name=cast(str, doc_type.name),
+            description=cast(str, doc_type.description),
+        ),
+        category=CategorySchema(
+            name=cast(str, category.name),
+            description=cast(str, category.description),
+        ),
+        source=SourceSchema(
+            name=cast(str, source.name),
+        ),
+        languages=[
+            LanguageSchema(
+                language_code=l.language_code,
+                part1_code=l.part1_code,
+                part2_code=l.part2_code,
+                name=l.name,
+            )
+            for _, l in languages
+        ],
+        events=[EventSchema(name=e.name, description=e.description) for e in events],
+        frameworks=[
+            FrameworkSchema(name=f.name, description=f.description)
+            for _, f in frameworks
+        ],
+        hazards=[
+            HazardSchema(name=h.name, description=h.description) for _, h in hazards
+        ],
+        instruments=[
+            InstrumentSchema(name=i.name, description=i.description)
+            for _, i in instruments
+        ],
+        keywords=[
+            KeywordSchema(name=k.name, description=k.description) for _, k in keywords
+        ],
+        sectors=[
+            SectorSchema(name=s.name, description=s.description) for _, s in sectors
+        ],
+        topics=[
+            TopicSchema(name=t.name, description=t.description) for _, t in responses
+        ],
+        related_documents=[
+            RelatedDocument(
+                related_id=d.id,
+                name=d.name,
+                description=d.description,
+                country_code=g.value,
+                country_name=g.display_value,
+                year=1900,  # TODO: complete
+            )
+            for _, d, g in related_documents
+        ],
+    )
 
 
 @r.post("/documents", response_model=DocumentInDB)
