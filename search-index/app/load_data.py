@@ -16,111 +16,114 @@ def get_data_from_navigator_tables(
         pd.DataFrame: one row per document.
     """
     query = """
-    SELECT
-      source.name as action_source_name,
-      doc.id as document_id,
-      doc.name as document_name,
-    --   doc.description as action_description
-    --   doc.keyword as doc_keyword
-      doc_cat.name as document_category,
-      doc_cat.description as document_category_description,
-      doc_type.name as document_type,
-      doc_type.description as document_type_description,
-      event.created_ts as action_date,
-      doc_instr.instrument_id,
-      doc_instr.parent_id as instrument_parent,
-      doc_instr.name as instrument_name,
-      doc_instr.description as instrument_description,
-      doc_sect.sector_id,
-      doc_sect.parent_id as sector_parent,
-      doc_sect.name as sector_name,
-      doc_sect.description as sector_description,
-      doc_frmwrk.framework_id,
-      doc_frmwrk.name as framework_name,
-      doc_frmwrk.description as framework_description,
-      doc_hzrd.hazard_id,
-      doc_hzrd.name as hazard_name,
-      doc_hzrd.description as hazard_description,
-      geog_country.parent_id as geog_parent,
-      geog_country.type as geog_type,
-      geog_country.display_value as country_display_value,
-      geog_country.value as geography_code,
-      geog_region.display_value as region_display_value,
-      doc_lang.language_id as document_language_id
-    FROM
-      DOCUMENT doc
-      LEFT JOIN event ON (doc.id = event.document_id)
-      LEFT join source ON (source.id = doc.source_id)
-      LEFT JOIN document_type doc_type ON doc.type_id = doc_type.id
-      LEFT JOIN category doc_cat ON doc.category_id = doc_cat.id
-      LEFT JOIN document_language doc_lang ON doc.id = doc_lang.document_id
-      LEFT JOIN (
-        SELECT
-          *
-        FROM
-          document_instrument
-          LEFT JOIN (
-            SELECT
-              *
-            FROM
-              instrument
-          ) instrument ON (instrument.id = document_instrument.instrument_id)
-      ) doc_instr ON (doc.id = doc_instr.document_id)
-      LEFT JOIN (
-        SELECT
-          *
-        FROM
-          document_sector
-          LEFT JOIN (
-            SELECT
-              *
-            FROM
-              sector
-          ) sector ON (sector.id = document_sector.sector_id)
-      ) doc_sect ON (doc.id = doc_sect.document_id)
-      LEFT JOIN (
-        SELECT
-          *
-        FROM
-          document_framework
-          LEFT JOIN (
-            SELECT
-              *
-            FROM
-              framework
-          ) framework ON (framework.id = document_framework.framework_id)
-      ) doc_frmwrk ON (doc.id = doc_frmwrk.document_id)
-      LEFT JOIN (
-        SELECT
-          *
-        FROM
-          document_hazard
-          LEFT JOIN (
-            SELECT
-              *
-            FROM
-              hazard
-          ) hazard ON (hazard.id = document_hazard.hazard_id)
-      ) doc_hzrd ON (doc.id = doc_hzrd.document_id)
-      LEFT JOIN (
-        SELECT
-          *
-        FROM
-          geography
-        WHERE
-          type = 'ISO-3166'
-      ) geog_country ON doc.geography_id = geog_country.id
-      LEFT JOIN (
-        SELECT
-          *
-        FROM
-          geography
-        WHERE
-          type = 'World Bank Region'
-      ) geog_region ON doc.geography_id = geog_region.id
-    WHERE
-      event.description = 'The publication date'
-  """
+      SELECT
+        doc.source_url AS source_url,
+        source.name as action_source_name,
+        doc.id as document_id,
+        doc.name as document_name,
+        doc.description as document_description,
+        kwd.name as keyword,
+        doc_cat.name as document_category,
+        doc_cat.description as document_category_description,
+        doc_type.name as document_type,
+        doc_type.description as document_type_description,
+        event.created_ts as document_date,
+        doc_instr.instrument_id,
+        doc_instr.parent_id as instrument_parent,
+        doc_instr.name as instrument_name,
+        doc_instr.description as instrument_description,
+        doc_sect.sector_id,
+        doc_sect.parent_id as sector_parent,
+        doc_sect.name as sector_name,
+        doc_sect.description as sector_description,
+        doc_frmwrk.framework_id,
+        doc_frmwrk.name as framework_name,
+        doc_frmwrk.description as framework_description,
+        doc_hzrd.hazard_id,
+        doc_hzrd.name as hazard_name,
+        doc_hzrd.description as hazard_description,
+        geog_country.parent_id as geog_parent,
+        geog_country.type as geog_type,
+        geog_country.display_value as country_english_shortname,
+        geog_country.value as geography_code,
+        geog_region.display_value as region_value,
+        doc_lang.language_id as document_language_id
+      FROM
+        DOCUMENT doc
+        LEFT JOIN event ON (doc.id = event.document_id)
+        LEFT join source ON (source.id = doc.source_id)
+        LEFT JOIN document_type doc_type ON doc.type_id = doc_type.id
+        LEFT JOIN category doc_cat ON doc.category_id = doc_cat.id
+        LEFT JOIN document_language doc_lang ON doc.id = doc_lang.document_id
+        LEFT JOIN document_keyword doc_keyword ON doc.id = doc_keyword.document_id
+        LEFT JOIN keyword kwd ON doc_keyword.keyword_id = kwd.id
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
+            document_instrument
+            LEFT JOIN (
+              SELECT
+                *
+              FROM
+                instrument
+            ) instrument ON (instrument.id = document_instrument.instrument_id)
+        ) doc_instr ON (doc.id = doc_instr.document_id)
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
+            document_sector
+            LEFT JOIN (
+              SELECT
+                *
+              FROM
+                sector
+            ) sector ON (sector.id = document_sector.sector_id)
+        ) doc_sect ON (doc.id = doc_sect.document_id)
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
+            document_framework
+            LEFT JOIN (
+              SELECT
+                *
+              FROM
+                framework
+            ) framework ON (framework.id = document_framework.framework_id)
+        ) doc_frmwrk ON (doc.id = doc_frmwrk.document_id)
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
+            document_hazard
+            LEFT JOIN (
+              SELECT
+                *
+              FROM
+                hazard
+            ) hazard ON (hazard.id = document_hazard.hazard_id)
+        ) doc_hzrd ON (doc.id = doc_hzrd.document_id)
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
+            geography
+          WHERE
+            type = 'ISO-3166'
+        ) geog_country ON doc.geography_id = geog_country.id
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
+            geography
+          WHERE
+            type = 'World Bank Region'
+        ) geog_region ON doc.geography_id = geog_region.id
+      WHERE
+        event.description = 'The publication date'
+    """
 
     return postgres_connector.run_query(query)
 
