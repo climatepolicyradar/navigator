@@ -41,14 +41,16 @@ def get_document_generator(
     # Create name_and_id field to group by and sort on in Elasticsearch aggregation.
     # TODO: this needs to be a combination of document name and document ID when we remove
     # the concept of actions.
-    main_dataset["action_name_and_id"] = (
-        main_dataset["action_name"] + " " + main_dataset["document_id"].astype(str)
+    main_dataset["document_name_and_id"] = (
+        main_dataset["document_name"] + " " + main_dataset["document_id"].astype(str)
     )
 
-    main_dataset["action_date"] = main_dataset["action_date"].apply(
+    main_dataset["document_date"] = main_dataset["document_date"].apply(
         lambda i: i.strftime("%d/%m/%Y")
     )
-    main_dataset["action_description"] = main_dataset["action_description"].str.strip()
+    main_dataset["document_description"] = main_dataset[
+        "document_description"
+    ].str.strip()
 
     # --------------------------------------------------------------------------------------------
 
@@ -56,23 +58,29 @@ def get_document_generator(
         "document_id",
         "document_language_id",
         "document_name",
-        "action_id",
-        "action_date",
-        "action_name",
-        "action_description",
-        "action_name_and_id",
-        "action_country_code",
-        "action_geography_english_shortname",
+        "document_date",
+        "document_description",
+        "keyword",
+        "sector_name",
+        "hazard_name",
+        "instrument_name",
+        "instrument_parent",
+        "framework_name",
+        "document_category",
+        "instrument_parent",
+        "document_name_and_id",
+        "document_type",
+        "country_english_shortname",
+        "region_value",
         "action_source_name",
-        "action_type_name",
     ]
 
     # These columns are used to create one Opensearch document per CPR document, so that they're
     # searchable over as well as the text. Methods for these to be searched should be defined in
     # the index mapping.
     extra_text_columns = [
-        "action_name",
-        "action_description",
+        "document_name",
+        "document_description",
     ]
 
     for document_id, document_df in text_and_ids_data.groupby("document_id"):
@@ -222,6 +230,12 @@ def run_cli(
         main_dataset, ids_table, embs, description_embs_dict
     )
 
+    def _convert_to_bool(x):
+        if x == "True":
+            return True
+        elif x == "False":
+            return False
+
     opensearch = OpenSearchIndex(
         url=os.environ["OPENSEARCH_URL"],
         username=os.environ["OPENSEARCH_USER"],
@@ -229,13 +243,12 @@ def run_cli(
         index_name=os.environ["OPENSEARCH_INDEX"],
         # TODO: convert to env variables?
         opensearch_connector_kwargs={
-            "use_ssl": os.environ["OPENSEARCH_USE_SSL"],
-            "verify_certs": os.environ["OPENSEARCH_VERIFY_CERTS"],
+            "use_ssl": _convert_to_bool(os.environ["OPENSEARCH_USE_SSL"]),
+            "verify_certs": _convert_to_bool(os.environ["OPENSEARCH_VERIFY_CERTS"]),
             "ssl_show_warn": os.environ["OPENSEARCH_SSL_WARNINGS"],
         },
         embedding_dim=int(os.environ["OPENSEARCH_INDEX_EMBEDDING_DIM"]),
     )
-
     opensearch.delete_and_create_index(n_replicas=index_no_replicas)
     # We disable index refreshes during indexing to speed up the indexing process,
     # and to ensure only 1 segment is created per shard. This also speeds up KNN
