@@ -119,4 +119,4 @@ populate_opensearch_test: run_loader
 	search-index python /app/index_data.py --text-ids-path /text-ids-path --embeddings-path /embeddings-path --desc-ids-path /desc-ids-path --desc-embeddings-path /desc-embeddings-path -d 768
 
 postgres_dump:
-	docker-compose run --rm backend_db pg_dump -d ${BACKEND_DATABASE_URL} --data-only --exclude-table-data 'public.alembic_version' > backend_db_dump.sql
+	docker-compose run -v ${PWD}/backend:/app/data --rm backend_db pg_dump -d ${BACKEND_DATABASE_URL} --data-only -F c --file /app/data/backend_db_dump.dump
