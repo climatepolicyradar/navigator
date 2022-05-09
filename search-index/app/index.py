@@ -160,7 +160,6 @@ class OpenSearchIndex:
         Args:
             n_replicas (int): number of replicas to create for the index.
         """
-
         self.opns.indices.delete(index=self.index_name, ignore=[400, 404])
         self.opns.indices.create(
             index=self.index_name, body=self._index_body(n_replicas)
