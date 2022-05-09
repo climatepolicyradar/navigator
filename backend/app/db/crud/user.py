@@ -30,7 +30,7 @@ def get_users(db: Session, skip: int = 0, limit: int = 100) -> t.List[UserSchema
     ]
 
 
-def create_user(db: Session, user: t.Union[UserCreate, UserCreateAdmin]):
+def create_user(db: Session, user: t.Union[UserCreate, UserCreateAdmin]) -> User:
     """Create a user."""
     db_user = User(**user.dict())
     db.add(db_user)
