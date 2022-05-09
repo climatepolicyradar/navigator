@@ -183,7 +183,6 @@ def create_dataset(postgres_connector: PostgresConnector) -> pd.DataFrame:
 
     navigator_data = get_data_from_navigator_tables(postgres_connector)
     prototype_url_join = make_url_filename_join_table_from_prototype_data()
-
     return pd.merge(
         left=navigator_data,
         right=prototype_url_join,
