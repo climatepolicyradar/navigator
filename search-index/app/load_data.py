@@ -18,7 +18,7 @@ def get_data_from_navigator_tables(
     query = """
       SELECT
         doc.source_url AS source_url,
-        source.name as action_source_name,
+        source.name as document_source_name,
         doc.id as document_id,
         doc.name as document_name,
         doc.description as document_description,
@@ -45,8 +45,9 @@ def get_data_from_navigator_tables(
         geog_country.parent_id as geog_parent,
         geog_country.type as geog_type,
         geog_country.display_value as country_english_shortname,
-        geog_country.value as geography_code,
-        geog_region.display_value as region_value,
+        geog_country.value as document_country_code,
+        geog_region.display_value as region_english_shortname,
+        geog_region.value as document_region_code,
         doc_lang.language_id as document_language_id
       FROM
         DOCUMENT doc
