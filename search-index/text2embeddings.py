@@ -334,7 +334,7 @@ def run_cli(
         json.dump(text_and_ids, f)
 
     # Encode action descriptions
-    postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
+    postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
     navigator_dataset = create_dataset(postgres_connector)
     document_ids_processed = set([i["document_id"] for i in text_and_ids])
     description_data_to_encode = navigator_dataset.loc[
@@ -348,9 +348,8 @@ def run_cli(
         output_dir
         / f"description_embs_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
-
     encode_text_to_memmap(
-        description_data_to_encode["description"].tolist(),
+        description_data_to_encode["document_description"].tolist(),
         encoder,
         batch_size,
         description_embs_output_path,
