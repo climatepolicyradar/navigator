@@ -38,7 +38,7 @@ const SearchForm = ({
           value={term}
           onChange={onChange}
         />
-        <div className="rounded-lg absolute inset-0 border border-indigo-200 z-0" />
+        <div className="rounded-lg absolute inset-0 shadow-innerThin z-0 pointer-events-none" />
         {term.length > 0 && (
           <div
             data-cy="search-clear-button"
@@ -47,7 +47,7 @@ const SearchForm = ({
             <Close onClick={clearSearch} size="16" />
           </div>
         )}
-        <div className="flex items-center justify-end z-10">
+        <div className="flex items-center justify-end">
           <SearchButton onClick={(e) => handleSearchInput(e, term)} />
         </div>
       </div>

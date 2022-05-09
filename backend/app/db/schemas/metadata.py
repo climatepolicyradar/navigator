@@ -38,6 +38,11 @@ class Hazard(BaseModel):  # noqa: D101
     description: str
 
 
+class Keyword(BaseModel):  # noqa: D101
+    name: str
+    description: str
+
+
 class DocumentCreateWithMetadata(BaseModel):  # noqa: D101
     """Create a document with all its metadata."""
 
@@ -49,6 +54,7 @@ class DocumentCreateWithMetadata(BaseModel):  # noqa: D101
     frameworks: List[Framework]
     responses: List[DocumentResponse]
     hazards: List[Hazard]
+    keywords: List[Keyword]
     language_ids: List[
         int
     ]  # the loader gets this via API lookup, so it will exist on the API

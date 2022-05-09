@@ -15,7 +15,7 @@
     "jsx": "preserve",
     "incremental": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/api/pdf.js"],
   "exclude": ["node_modules"],
   "types": ["cypress", "cypress-file-upload"]
 }

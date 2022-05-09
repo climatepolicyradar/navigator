@@ -62,7 +62,7 @@ def document_upload(
         fileobj=file.file,
         bucket="cpr-document-queue",
         key=str(file_path),
-        # content_type=file.content_type,
+        content_type=file.content_type,
     )
 
     # If the above function returns False, then the upload has failed.

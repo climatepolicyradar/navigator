@@ -49,7 +49,11 @@ class S3Client:
         )
 
     def upload_fileobj(
-        self, fileobj: t.BinaryIO, bucket: str, key: str
+        self,
+        fileobj: t.BinaryIO,
+        bucket: str,
+        key: str,
+        content_type: t.Optional[str] = None,
     ) -> t.Union[S3Document, bool]:
         """Upload a file object to an S3 bucket.
 
@@ -57,13 +61,19 @@ class S3Client:
             fileobj (t.IO): a file object opened in binary mode, not text mode.
             bucket (str): name of the bucket to upload the file to.
             key (str): filename of the resulting file on s3. Should include the file extension.
+            content_type (str, optional): optional content-type of the file
 
         Returns:
             S3Document representing file if upload succeeds, False if it fails.
         """
 
         try:
-            self.client.upload_fileobj(fileobj, bucket, key)
+            if content_type:
+                self.client.upload_fileobj(
+                    fileobj, bucket, key, ExtraArgs={"ContentType": content_type}
+                )
+            else:
+                self.client.upload_fileobj(fileobj, bucket, key)
         except ClientError as e:
             logger.error(e)
             return False
@@ -71,7 +81,11 @@ class S3Client:
         return S3Document(bucket, os.getenv("AWS_REGION"), key)
 
     def upload_file(
-        self, file_name: str, bucket: str, key: t.Optional[str] = None
+        self,
+        file_name: str,
+        bucket: str,
+        key: t.Optional[str] = None,
+        content_type: t.Optional[str] = None,
     ) -> t.Union[S3Document, bool]:
         """Upload a file to an S3 bucket by providing its filename.
 
@@ -79,6 +93,7 @@ class S3Client:
             file_name (str): name of the file to upload.
             bucket (str): name of the bucket to upload the file to.
             key (str, optional): filename of the resulting file on s3. Should include the file extension. If not provided, the name of the local file is used.
+            content_type (str, optional): optional content-type of the file
 
         Returns:
             URL to file if upload succeeds, False if it fails.
@@ -90,7 +105,12 @@ class S3Client:
 
         # Upload the file
         try:
-            self.client.upload_file(file_name, bucket, key)
+            if content_type:
+                self.client.upload_file(
+                    file_name, bucket, key, ExtraArgs={"ContentType": content_type}
+                )
+            else:
+                self.client.upload_file(file_name, bucket, key)
         except ClientError as e:
             logger.error(e)
             return False
