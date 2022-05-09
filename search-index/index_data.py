@@ -60,6 +60,8 @@ def get_document_generator(
         "document_name",
         "document_date",
         "document_description",
+        "document_category",
+        "document_type",
         "keyword",
         "sector_name",
         "hazard_name",
@@ -70,9 +72,11 @@ def get_document_generator(
         "instrument_parent",
         "document_name_and_id",
         "document_type",
+        "document_country_code",
         "country_english_shortname",
-        "region_value",
-        "action_source_name",
+        "region_english_shortname",
+        "document_region_code",
+        "document_source_name",
     ]
 
     # These columns are used to create one Opensearch document per CPR document, so that they're
