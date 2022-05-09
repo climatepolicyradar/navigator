@@ -8,6 +8,10 @@ from typing import List, Optional, TextIO
 
 import requests
 
+ADMIN_EMAIL_ENV = "SUPERUSER_EMAIL"
+ADMIN_PASSWORD_ENV = "SUPERUSER_PASSWORD"
+ADMIN_TOKEN_ENV = "SUPERUSER_TOKEN"
+
 
 DEFAULT_LOGGING = {
     "version": 1,
@@ -96,8 +100,8 @@ def _log_response(response: requests.Response) -> None:
 
 
 def get_admin_token() -> str:
-    admin_user = os.getenv("ADMIN_USER")
-    admin_password = os.getenv("ADMIN_PASSWORD")
+    admin_user = os.getenv(ADMIN_EMAIL_ENV)
+    admin_password = os.getenv(ADMIN_PASSWORD_ENV)
 
     if admin_user is None or admin_password is None:
         raise RuntimeError("Admin username & password env vars must be set")
@@ -114,9 +118,9 @@ def get_admin_token() -> str:
 
 
 def get_admin_auth_headers():
-    if (admin_user_token := os.getenv("ADMIN_USER_TOKEN")) is None:
+    if (admin_user_token := os.getenv(ADMIN_TOKEN_ENV)) is None:
         admin_user_token = get_admin_token()
-        os.environ["ADMIN_USER_TOKEN"] = admin_user_token
+        os.environ[ADMIN_TOKEN_ENV] = admin_user_token
 
     return {
         "Authorization": "Bearer {}".format(admin_user_token),

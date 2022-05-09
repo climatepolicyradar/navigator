@@ -1,3 +1,6 @@
+# Database dump
+backend_db_dump.dump
+
 # Adobe PDF services keys
 pdfservices-credentials.json
 private.key

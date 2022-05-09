@@ -3,7 +3,6 @@ import logging
 from fastapi import APIRouter, Depends, Request
 
 from app.core.auth import get_current_active_user
-from app.core.email import send_email, EmailType
 from app.db.crud.user import (
     edit_user,
 )
@@ -32,5 +31,8 @@ async def user_edit(
     """Updates existing user"""
 
     updated_user = edit_user(db, current_user.id, user)
-    send_email(EmailType.account_changed, updated_user)
+
+    # TODO: send account updated email
+    # send_account_updated_email(updated_user)
+
     return updated_user

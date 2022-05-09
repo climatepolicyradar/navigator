@@ -1,11 +1,10 @@
 import datetime
 from unittest.mock import patch
 
-from app.core.email import EmailType
 from app.db.models import User, PasswordResetToken
 
 
-@patch("app.api.api_v1.routers.unauthenticated.send_email")
+@patch("app.api.api_v1.routers.unauthenticated.send_password_changed_email")
 def test_reset_password(
     mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
 ):
@@ -28,10 +27,10 @@ def test_reset_password(
     assert db_user.is_active
     assert db_user.hashed_password is not None
 
-    mock_send_email.assert_called_once_with(EmailType.password_changed, db_user)
+    mock_send_email.assert_called_once_with(db_user)
 
 
-@patch("app.api.api_v1.routers.unauthenticated.send_email")
+@patch("app.api.api_v1.routers.unauthenticated.send_password_changed_email")
 def test_reset_password_nonexistent(
     mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
 ):
@@ -48,7 +47,7 @@ def test_reset_password_nonexistent(
     mock_send_email.assert_not_called()
 
 
-@patch("app.api.api_v1.routers.unauthenticated.send_email")
+@patch("app.api.api_v1.routers.unauthenticated.send_password_changed_email")
 def test_reset_password_too_late(
     mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
 ):
@@ -69,7 +68,7 @@ def test_reset_password_too_late(
     mock_send_email.assert_not_called()
 
 
-@patch("app.api.api_v1.routers.unauthenticated.send_email")
+@patch("app.api.api_v1.routers.unauthenticated.send_password_changed_email")
 def test_reset_password_used_token(
     mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
 ):
@@ -90,7 +89,7 @@ def test_reset_password_used_token(
     mock_send_email.assert_not_called()
 
 
-@patch("app.api.api_v1.routers.unauthenticated.send_email")
+@patch("app.api.api_v1.routers.unauthenticated.send_password_changed_email")
 def test_reset_password_cancelled_token(
     mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
 ):
@@ -112,7 +111,7 @@ def test_reset_password_cancelled_token(
 
 
 @patch("app.db.crud.password_reset.get_password_reset_token_expiry_ts")
-@patch("app.api.api_v1.routers.unauthenticated.send_email")
+@patch("app.api.api_v1.routers.unauthenticated.send_password_reset_email")
 def test_password_reset_request(
     mock_send_email,
     mock_get_password_reset_token_expiry_ts,
@@ -133,9 +132,7 @@ def test_password_reset_request(
     assert not prt.is_redeemed
     mock_get_password_reset_token_expiry_ts.assert_called_once()
 
-    mock_send_email.assert_called_once_with(
-        EmailType.password_reset_requested, test_user, prt
-    )
+    mock_send_email.assert_called_once_with(test_user, prt)
 
     # calling again doesn't send email
     response = client.post(
