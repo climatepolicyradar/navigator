@@ -8,7 +8,11 @@ import MultiList from './filters/MultiList';
 import ByRange from './filters/ByRange';
 import { minYear } from '../constants/timedate';
 
-const SearchFilters = ({ handleFilterChange, handleYearChange, searchCriteria }) => {
+const SearchFilters = ({
+  handleFilterChange,
+  handleYearChange,
+  searchCriteria,
+}) => {
   const { t, i18n, ready } = useTranslation('searchResults');
   const geosQuery = useLookups('geographies');
   const { data: { geographies } = [] } = geosQuery;
@@ -34,7 +38,7 @@ const SearchFilters = ({ handleFilterChange, handleYearChange, searchCriteria })
   ];
   const documentTypeList = ['All', 'Act', 'Decree', 'Strategy', 'Law', 'Plan'];
   const now = new Date();
-  const currentYear = now.getFullYear()
+  const currentYear = now.getFullYear();
 
   // tooltip descriptions
   const regionTooltip = t('Tooltips.Region');
@@ -54,6 +58,11 @@ const SearchFilters = ({ handleFilterChange, handleYearChange, searchCriteria })
 
           <BySelect
             list={regionsList}
+            defaultValue={
+              searchCriteria.keyword_filters?.action_region
+                ? searchCriteria.keyword_filters.action_region[0]
+                : ''
+            }
             onChange={handleFilterChange}
             title={t('By region')}
             type="action_region"
@@ -84,6 +93,11 @@ const SearchFilters = ({ handleFilterChange, handleYearChange, searchCriteria })
           <BySelect
             list={sectorList}
             onChange={handleFilterChange}
+            defaultValue={
+              searchCriteria.keyword_filters?.action_sector
+                ? searchCriteria.keyword_filters.action_sector[0]
+                : ''
+            }
             title={t('By sector')}
             type="action_sector"
           />
@@ -95,6 +109,11 @@ const SearchFilters = ({ handleFilterChange, handleYearChange, searchCriteria })
           <BySelect
             list={documentTypeList}
             onChange={handleFilterChange}
+            defaultValue={
+              searchCriteria.keyword_filters?.action_document_type
+                ? searchCriteria.keyword_filters.action_document_type[0]
+                : ''
+            }
             title={t('By document type')}
             type="action_document_type"
           />
@@ -104,15 +123,17 @@ const SearchFilters = ({ handleFilterChange, handleYearChange, searchCriteria })
             <Tooltip id="doctype" tooltip={dateRangeTooltip} />
           </div>
           <div className="mx-2">
-            <ByRange 
+            <ByRange
               title={t('By date range')}
               type="year_range"
               handleChange={handleYearChange}
+              defaultValues={
+                searchCriteria.year_range ? searchCriteria.year_range : ''
+              }
               min={minYear}
               max={currentYear}
             />
           </div>
-          
         </div>
       </div>
     </>

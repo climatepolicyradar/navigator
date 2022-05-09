@@ -90,6 +90,18 @@ const Search = () => {
     setShowSlideout(true);
     setShowPDF(false);
   };
+  const getCurrentSortChoice = () => {
+    const field = searchCriteria.sort_field;
+    const order = searchCriteria.sort_order;
+    return `${field}:${order}`;
+  };
+  const getCurrentCategoryIndex = () => {
+    if (!searchCriteria.keyword_filters?.document_category) return 0;
+    const index = documentCategories.indexOf(
+      searchCriteria.keyword_filters?.document_category[0]
+    );
+    return index === -1 ? 0 : index;
+  };
 
   const renderSearch = () => {
     if (
@@ -192,6 +204,7 @@ const Search = () => {
                 </div>
                 <div className="mt-4 relative">
                   <TabbedNav
+                    activeIndex={getCurrentCategoryIndex()}
                     items={documentCategories}
                     handleTabClick={handleDocumentCategoryClick}
                   />
@@ -209,7 +222,10 @@ const Search = () => {
                 </div>
                 <div className="mt-4 mb-8 flex justify-end">
                   <div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 flex items-center">
-                    <Sort updateSort={handleSortClick} />
+                    <Sort
+                      defaultValue={getCurrentSortChoice()}
+                      updateSort={handleSortClick}
+                    />
                   </div>
                 </div>
 
