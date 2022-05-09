@@ -98,7 +98,7 @@ const Search = () => {
     ) {
       return <div className="h-96">Coming soon...</div>;
     }
-    return documents.map((doc, index: number) => (
+    return documents.map((doc: any, index: number) => (
       <div key={index} className="my-16 first:md:mt-4">
         <SearchResult
           document={doc}
