@@ -1,0 +1,11 @@
+config:
+  aws:region: eu-west-2
+  infra:backend_secret_key:
+    secure: AAABAP6pXDnXJ6797mY5GmEUnzPb1nVXGwetzQQijjWHI2NWEPovAPVA9ZVOA0rfWb8UsEvXMSRuEtwHZWiKIBr3rnk=
+  infra:db_password:
+    secure: AAABAOlREzULzg9AkORtP2wNLSN0FLmc6uuPkOSt4pgkRANU4/bMQYyJ4CL5+Aj1zU2GdRQ3niyldmEUT4Q/XPV/gRcdkHXGrEFWOzpbSro=
+  infra:db_username: navigator_db_user
+  infra:opensearch_password:
+    secure: AAABACpmQSD5m7Nta16jIdVuBTtcE8IevzI44dXT3/W8hCSA6rEbz8nVv2/JtdYo4wrZYaWaQ3YNHcYVRmaIQTA80AryoI5BFY/ZByEZ
+  infra:opensearch_url: https://search-opensearch-dev-temp-nzkttufrxxmadvl37l4teezwri.eu-west-2.es.amazonaws.com
+  infra:opensearch_user: cpr-master

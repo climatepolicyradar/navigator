@@ -26,4 +26,6 @@ ENV PATH /opt/node_app/node_modules/.bin:$PATH
 
 COPY --chown=node:node . .
 
-CMD [ "npm", "run", "build" ]
+RUN npm run build
+
+CMD [ "npm", "run", "start" ]
