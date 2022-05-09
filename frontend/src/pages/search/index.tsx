@@ -13,7 +13,7 @@ import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../api/auth';
 import SearchForm from '../../components/forms/SearchForm';
-import SearchResult from '../../components/text-blocks/SearchResult';
+import SearchResult from '../../components/blocks/SearchResult';
 import SearchFilters from '../../components/SearchFilters';
 import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';

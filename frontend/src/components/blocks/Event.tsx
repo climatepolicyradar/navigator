@@ -16,7 +16,6 @@ const Event = ({ event, last }) => {
   const arr = date.split('/');
   const year = arr[0];
   const month_day = `${arr[1]}/${arr[2]}`;
-  console.log(last);
   return (
     <div className="flex mt-1">
       <div className="flex flex-col items-center w-1/2">

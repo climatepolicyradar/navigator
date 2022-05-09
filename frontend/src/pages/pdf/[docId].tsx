@@ -7,7 +7,7 @@ import useDocument from '../../hooks/useDocument';
 import EmbeddedPDF from '../../components/EmbeddedPDF';
 import Loader from '../../components/Loader';
 import Link from 'next/link';
-import BackLink from '../../components/nav/BackLink';
+import TextLink from '../../components/nav/TextLink';
 
 const PDFView = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
@@ -33,7 +33,10 @@ const PDFView = () => {
             <h1 className="text-2xl font-medium">
               {document?.data?.document_name}
             </h1>
-            <BackLink href="/search" text="Back to search results" />
+            {/* TODO: translate below text */}
+            <TextLink href="/search">
+              <span className="text-lg">&laquo;</span>Back to search results
+            </TextLink>
           </div>
           <section className="mt-4 flex-1">
             <div className="h-full container">
