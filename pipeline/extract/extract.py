@@ -60,7 +60,7 @@ from adobe.pdfservices.operation.pdfops.extract_pdf_operation import ExtractPDFO
 
 from .document import Document, Page, TextBlock
 from .exceptions import DocumentTextExtractorException
-from .utils import split_pdf
+from .utils import split_pdf, get_md5_hash
 
 
 class DocumentTextExtractor(ABC):
@@ -77,7 +77,7 @@ class DocumentTextExtractor(ABC):
         raise NotImplementedError
 
     @abstractmethod
-    def data_to_document(self, data_path: Path, pdf_filename: str) -> Document:
+    def data_to_document(self, data_path: Path, pdf_path: Path) -> Document:
         """Converts data outputted by `pdf_to_data` into a `Document` object."""
 
         raise NotImplementedError
@@ -209,7 +209,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
         return w, h
 
-    def data_to_document(self, data_path: Path, pdf_filename: str) -> Document:
+    def data_to_document(self, data_path: Path, pdf_path: Path) -> Document:
         """Parse the alto xml document and returns document structure.
 
         Processes the xml document tree and returns the document structure as a
@@ -223,6 +223,8 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
             An instance of a Document containing the document structure and text.
         """
         pdf_xml = ElementTree.parse(data_path).getroot()
+        pdf_md5_hash = get_md5_hash(pdf_path)
+        pdf_filename = pdf_path.stem
 
         # Define the alto namespace used in the document
         xml_namespace = {"alto": "http://www.loc.gov/standards/alto/ns-v3#"}
@@ -273,7 +275,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
 
             document_pages.append(Page(page_text_blocks, page_dimensions, page_id))
 
-        return Document(document_pages, pdf_filename)
+        return Document(document_pages, pdf_filename, pdf_md5_hash)
 
     def extract(
         self, pdf_filepath: Path, data_output_dir: Path, pdf_name: Optional[str] = None
@@ -290,7 +292,7 @@ class DocumentEmbeddedTextExtractor(DocumentTextExtractor):
             An instance of a Document containing the document structure and text.
         """
         xml_path = self.pdf_to_data(pdf_filepath, data_output_dir, pdf_name)
-        doc = self.data_to_document(xml_path, pdf_filepath.name)
+        doc = self.data_to_document(xml_path, pdf_filepath)
 
         return doc
 
@@ -543,7 +545,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
     def data_to_document(
         self,
         data_path: Path,
-        pdf_filename: str,
+        pdf_path: Path,
         page_offset: int = 0,
     ) -> Document:
         """Converts an Adobe Extract API JSON into a Document object.
@@ -557,6 +559,9 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         Returns:
             Document
         """
+        pdf_md5_hash = get_md5_hash(pdf_path)
+        pdf_filename = pdf_path.stem
+
         with open(data_path, "r") as f:
             # TODO: Structure & Schema for loaded data
             data = json.load(f)
@@ -608,8 +613,9 @@ class AdobeAPIExtractor(DocumentTextExtractor):
             )
 
         document = Document(
-            pages=pages,
-            filename=pdf_filename,
+            pages,
+            pdf_filename,
+            pdf_md5_hash,
         )
 
         return document
@@ -779,7 +785,7 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         for _path in json_paths:
             temp_doc = self.data_to_document(
                 data_path=_path,
-                pdf_filename=pdf_filepath.name,
+                pdf_path=pdf_filepath,
                 page_offset=curr_page_offset,
             )
 
@@ -790,4 +796,5 @@ class AdobeAPIExtractor(DocumentTextExtractor):
         return Document(
             pages=pages,
             filename=pdf_filepath.name,
+            md5hash=get_md5_hash(pdf_filepath),
         )

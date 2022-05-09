@@ -1,6 +1,7 @@
 from typing import List
 import os
 from pathlib import Path
+import hashlib
 
 from PyPDF2 import PdfFileReader, PdfFileWriter
 
@@ -44,3 +45,17 @@ def split_pdf(pdf_path: Path, max_pages_per_split: int, output_dir: Path) -> Lis
             output.write(outputStream)
 
     return output_file_paths
+
+
+def get_md5_hash(pdf_path: Path) -> str:
+    """Return the MD5 hash of a PDF file.
+
+    Args:
+        pdf_path (Path): path to PDF
+
+    Returns:
+        str: hexadecimal MD5 hash
+    """
+
+    with open(pdf_path, "rb") as f:
+        return hashlib.md5(f.read()).hexdigest()
