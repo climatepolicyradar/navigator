@@ -44,8 +44,8 @@ const Search = () => {
     isFetching: isFetchingSearchCriteria,
     isSuccess: isSearchCriteriaSuccess,
     data: searchCriteria,
-  } = useSearchCriteria();
-  const resultsQuery = useSearch('searches', searchCriteria);
+  }: any = useSearchCriteria();
+  const resultsQuery: any = useSearch('searches', searchCriteria);
   const { data: { documents } = [] } = resultsQuery;
   const document = useDocument();
   const { t, i18n, ready } = useTranslation(['searchStart', 'searchResults']);
@@ -89,6 +89,23 @@ const Search = () => {
     updateDocument.mutate(id);
     setShowSlideout(true);
     setShowPDF(false);
+  };
+
+  const renderSearch = () => {
+    if (
+      searchCriteria.keyword_filters?.document_category &&
+      searchCriteria.keyword_filters?.document_category[0] === 'Litigation'
+    ) {
+      return <div className="h-96">Coming soon...</div>;
+    }
+    return documents.map((doc, index: number) => (
+      <div key={index} className="my-16 first:md:mt-4">
+        <SearchResult
+          document={doc}
+          onClick={() => handleDocumentClick(doc.document_id)}
+        />
+      </div>
+    ));
   };
 
   useDidUpdateEffect(() => {
@@ -202,14 +219,7 @@ const Search = () => {
                       <Loader />
                     </div>
                   ) : (
-                    documents.map((doc, index: number) => (
-                      <div key={index} className="my-16 first:md:mt-4">
-                        <SearchResult
-                          document={doc}
-                          onClick={() => handleDocumentClick(doc.document_id)}
-                        />
-                      </div>
-                    ))
+                    renderSearch()
                   )}
                 </div>
               </div>
