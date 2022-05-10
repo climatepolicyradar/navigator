@@ -8,6 +8,7 @@ import LoaderOverlay from '../components/LoaderOverlay';
 import { useAuth } from '../api/auth';
 import useSearchCriteria from '../hooks/useSearchCriteria';
 import useUpdateSearchCriteria from '../hooks/useUpdateSearchCriteria';
+import LandingSearchForm from '../components/forms/LandingSearchForm';
 
 const IndexPage = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
@@ -31,20 +32,20 @@ const IndexPage = () => {
           heading={t('Law and Policy Search')}
         >
           <div className="absolute top-0 left-0 w-full z-10 mt-52 md:mt-44 ">
-            <div className="container py-4 overflow-x-hidden">
-              <Dashboard
+            <div className="container py-4 pt-56 overflow-x-hidden">
+              {/* <Dashboard
                 terms={[
                   t('dashboard.Documents'),
                   t('dashboard.Jurisdictions'),
                   t('dashboard.New Documents'),
                 ]}
-              />
+              /> */}
               <div className="mt-8 md:mt-16">
                 <p className="sm:hidden mt-4 text-center text-white mb-4">
                   {t("Search for something, e.g. 'carbon taxes'")}
                 </p>
 
-                <SearchForm
+                <LandingSearchForm
                   handleSearchInput={handleSearchInput}
                   placeholder={t("Search for something, e.g. 'carbon taxes'")}
                 />
