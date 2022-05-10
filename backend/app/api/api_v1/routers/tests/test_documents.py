@@ -1,3 +1,5 @@
+from datetime import datetime, timezone
+
 from app.db.models import (
     Document,
     Source,
@@ -128,7 +130,9 @@ def test_post_documents(client, superuser_token_headers, test_db):
     assert doc.url == payload["document"]["url"]
     assert doc.md5_sum == payload["document"]["md5_sum"]
 
-    assert test_db.query(Event).first().name == "Publication"
+    event = test_db.query(Event).first()
+    assert event.name == "Publication"
+    assert event.created_ts == datetime(2008, 12, 25, 0, 0, tzinfo=timezone.utc)
     assert test_db.query(Sector).first().name == "Energy"
     assert test_db.query(Response).first().name == "Mitigation"
     assert test_db.query(Hazard).first().name == "some hazard"

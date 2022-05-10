@@ -343,7 +343,7 @@ class Event(Base):  # noqa: D101
     )
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
+    created_ts = sa.Column(sa.DateTime(timezone=True), nullable=False)
 
 
 class Association(Base):  # noqa: D101
