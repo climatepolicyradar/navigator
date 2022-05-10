@@ -103,7 +103,6 @@ class Document:
 
     pages: List[Page]  # List of textblocks in the document
     filename: str  # Name of the pdf file that this document relates to
-    md5hash: str  # MD5 hash of the pdf file
 
     def save_json(self, json_filepath: Path):
         """Save the document contents to json"""
@@ -136,7 +135,6 @@ class Document:
         return cls(
             pages=[Page(**page) for page in json_dict["pages"]],
             filename=json_dict["filename"],
-            md5hash=json_dict["md5hash"],
         )
 
     @classmethod
