@@ -1,0 +1,108 @@
+{
+  "events": [
+    {
+      "name": "string",
+      "date": "2006/15/12",
+      "status": "Approved",
+      "description": "Signed by president",
+      "document_url": "http://www.google.com"
+    },
+    {
+      "name": "string",
+      "date": "2007/07/01",
+      "status": "Passed",
+      "description": "Signed by president",
+      "document_url": "http://www.google.com"
+    }
+  ],
+  "sectors": [
+    {
+      "name": "Transport",
+      "description": "string"
+    },
+    {
+      "name": "Energy",
+      "description": "string"
+    },
+    {
+      "name": "Finance",
+      "description": "string"
+    }
+  ],
+  "instruments": [
+    {
+      "name": "Capacity Building",
+      "description": "string"
+    },
+    {
+      "name": "Economic",
+      "description": "string"
+    }
+  ],
+  "frameworks": [
+    {
+      "name": "string",
+      "description": "string"
+    }
+  ],
+  "topics": [
+    {
+      "name": "Mitigation",
+      "description": "string"
+    }
+  ],
+  "hazards": [
+    {
+      "name": "string",
+      "description": "string"
+    }
+  ],
+  "keywords": [
+    {
+      "name": "agriculture, farming, land, other keyword, more, keywords, go, here, keyword 2, keyword 3, etc.",
+      "description": "string"
+    }
+  ],
+  "id": 0,
+  "loaded_ts": "2022-05-09T09:41:00.025Z",
+  "name": "Energy Independence and Security Act of 2007",
+  "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque turpis eros, tincidunt ac vulputate eget, mollis eu ligula. Cras in ex neque. Maecenas vel nibh condimentum, hendrerit enim vitae, tincidunt arcu. Ut tincidunt pellentesque ipsum sed fermentum. Vestibulum rutrum, tellus eu laoreet vehicula, leo risus pharetra enim, id tristique enim mauris ut enim. Nam varius suscipit augue, et maximus risus elementum at. Nulla facilisi. Nam convallis neque ut pretium bibendum. Aliquam id pulvinar eros. Curabitur volutpat vel ante sed finibus. Nulla vel elit lobortis, egestas augue sed, aliquet ligula. Donec auctor eu arcu a venenatis. Cras sit amet semper elit. Proin vel lorem sed ipsum ullamcorper interdum. Morbi at augue felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque turpis eros, tincidunt ac vulputate eget, mollis eu ligula. Cras in ex neque. Maecenas vel nibh condimentum, hendrerit enim vitae, tincidunt arcu. Ut tincidunt pellentesque ipsum sed fermentum. Vestibulum rutrum, tellus eu laoreet vehicula, leo risus pharetra enim, id tristique enim mauris ut enim. Nam varius suscipit augue, et maximus risus elementum at. Nulla facilisi. Nam convallis neque ut pretium bibendum. Aliquam id pulvinar eros. Curabitur volutpat vel ante sed finibus. Nulla vel elit lobortis, egestas augue sed, aliquet ligula. Donec auctor eu arcu a venenatis. Cras sit amet semper elit. Proin vel lorem sed ipsum ullamcorper interdum. Morbi at augue felis.",
+  "source_url": "string",
+  "url": "string",
+  "geography": {
+    "display_value": "United States of America",
+    "value": "USA",
+    "type": "string"
+  },
+  "type": {
+    "name": "Act",
+    "description": "string"
+  },
+  "source": {
+    "name": "string"
+  },
+  "category": {
+    "name": "Legislative",
+    "description": "string"
+  },
+  "languages": [
+    {
+      "language_code": "string",
+      "part1_code": "string",
+      "part2_code": "string",
+      "name": "English"
+    }
+  ],
+  "related_documents": [
+    {
+      "related_id": 0,
+      "name": "Food and Nutrition Security Policy and Plan of Action",
+      "description": "The Food and Nutrition Security Policy aims at promoting rational food choices and healthy lifestyles by the population. It further seeks to enhance the resilience of food supplies in front of natural and socio-economic shocks, and climate change.\n\nThe Policy states that the government shall facilitate the implementation of Risk Management and Climate Change Adaptation and Mitigation strategies, including in the food sector. It charges the government to 1) establish a National Task Force for the implementation and supervision of such strategies, 2) to enable capacity building of stakeholders with respect to disaster management, 3) to develop an agricultural risk management scheme, 4) and to facilitate the re-zoning of agricultural production as necessary to reduce vulnerability to adverse effects of climate change."
+    },
+    {
+      "related_id": 1,
+      "name": "Food and Nutrition Security Policy and Plan of Action 2",
+      "description": "Another description. The Food and Nutrition Security Policy aims at promoting rational food choices and healthy lifestyles by the population. It further seeks to enhance the resilience of food supplies in front of natural and socio-economic shocks, and climate change.\n\nThe Policy states that the government shall facilitate the implementation of Risk Management and Climate Change Adaptation and Mitigation strategies, including in the food sector. It charges the government to 1) establish a National Task Force for the implementation and supervision of such strategies, 2) to enable capacity building of stakeholders with respect to disaster management, 3) to develop an agricultural risk management scheme, 4) and to facilitate the re-zoning of agricultural production as necessary to reduce vulnerability to adverse effects of climate change."
+    }
+  ]
+}

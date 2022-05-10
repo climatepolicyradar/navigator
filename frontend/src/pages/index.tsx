@@ -1,6 +1,6 @@
 import { useRouter } from 'next/router';
 import Layout from '../components/layouts/FullPageBanner';
-import Dashboard from '../components/Dashboard';
+import Dashboard from '../components/dashboard';
 import SearchForm from '../components/forms/SearchForm';
 import './i18n';
 import { useTranslation } from 'react-i18next';

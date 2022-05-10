@@ -4,10 +4,15 @@ import TabbedNavItem from './TabbedNavItem';
 interface TabbedNavProps {
   handleTabClick(e): void;
   items: string[];
+  activeIndex: number;
 }
 
-const TabbedNav = ({ handleTabClick, items }: TabbedNavProps) => {
-  const [activeTab, setActiveTab] = useState(0);
+const TabbedNav = ({
+  handleTabClick,
+  items,
+  activeIndex = 0,
+}: TabbedNavProps) => {
+  const [activeTab, setActiveTab] = useState(activeIndex);
   const onClick = (e, index) => {
     setActiveTab(index);
     handleTabClick(e);
