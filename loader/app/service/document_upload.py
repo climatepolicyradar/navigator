@@ -34,8 +34,9 @@ async def upload_all_documents(db: Session):
         try:
             await _upload_document(db, document_db, country_code, publication_date)
         except Exception as e:
-            logger.warning(
-                f"Uploading document with URL {document_db.source_url} failed: {e}"
+            logger.error(
+                f"Uploading document with URL {document_db.source_url} failed",
+                exc_info=e,
             )
 
 

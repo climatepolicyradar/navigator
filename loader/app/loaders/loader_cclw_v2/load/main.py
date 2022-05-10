@@ -126,11 +126,10 @@ async def load(db: Session, policies: PolicyLookup):
 
             if invalid_reason:
                 is_valid = False
-                # TODO: warnings have been disabled as they caused the code to freeze when run with Docker. We will want a way to log these warnings.
-                # logger.warning(
-                #     f"Invalid document, name={key.policy_name}, reason={invalid_reason} "
-                #     f"url={doc.doc_url}"
-                # )
+                logger.warning(
+                    f"Invalid document, name={key.policy_name}, reason={invalid_reason} "
+                    f"url={doc.doc_url}"
+                )
 
             # TODO for S3, see
             # https://github.com/climatepolicyradar/navigator/blob/3ca2eda8de691288a66a1722908f32dd52c178f9/backend/app/api/api_v1/routers/actions.py#L81
@@ -240,6 +239,13 @@ async def load(db: Session, policies: PolicyLookup):
             # commit for each doc, not each policy
             db.commit()
             imported_count += 1
+            logger.info(
+                f"Saved document, name={key.policy_name}, "
+                f"geography_id={geography_id}, "
+                f"type_id={document_type_id}, "
+                f"source_id={document_source_id}"
+                f"url={doc.doc_url}"
+            )
 
         main_doc = None
 

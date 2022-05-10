@@ -174,7 +174,7 @@ async def upload_document(
     """
 
     # download the document
-    async with httpx.AsyncClient(transport=transport, timeout=10) as client:
+    async with httpx.AsyncClient(transport=transport, timeout=30) as client:
         download_response = await client.get(source_url, follow_redirects=True)
 
         content_type = download_response.headers["Content-Type"]
@@ -219,4 +219,8 @@ async def upload_document(
             headers=headers,
             files={"file": (full_path, file_content, content_type)},
         )
-        return response.json()["url"], file_content_hash
+        response_json = response.json()
+        if "url" in response_json:
+            return response_json["url"], file_content_hash
+        else:
+            raise Exception(response_json["detail"])
