@@ -2,6 +2,7 @@ from dataclasses import dataclass
 
 import pytest
 
+from app.service.context import Context
 from app.service.document_upload import _upload_document
 from unittest.mock import patch, MagicMock
 
@@ -24,6 +25,7 @@ async def test_document_upload(mock_upload_document):
         commit = MagicMock()
 
     db = MockDb()
+    ctx = Context(db=db, client=None)
 
     @dataclass
     class MockDocument:
@@ -34,12 +36,12 @@ async def test_document_upload(mock_upload_document):
 
     document_db = MockDocument()
 
-    await _upload_document(db, document_db, country_code, publication_date)
+    await _upload_document(ctx, document_db, country_code, publication_date)
 
     # document_db.url = "http://bucket-url"
 
     db.add.assert_called_once_with(document_db)
     db.commit.assert_called_once()
     mock_upload_document.assert_called_once_with(
-        "http://source-url", f"{country_code}-{publication_date}-foo-1"
+        ctx, "http://source-url", f"{country_code}-{publication_date}-foo-1"
     )

@@ -13,6 +13,7 @@ import hashlib
 import httpx
 import requests
 
+from app.service.context import Context
 from app.service.tree_parser import get_unique_from_tree_by_type
 
 transport = httpx.AsyncHTTPTransport(retries=3)
@@ -159,7 +160,7 @@ def post_document(payload):
 
 
 async def upload_document(
-    source_url: str, file_name_without_suffix: str
+    ctx: Context, source_url: str, file_name_without_suffix: str
 ) -> Tuple[str, str]:
     """Upload a document to the cloud, and returns the cloud URL.
 
@@ -174,53 +175,46 @@ async def upload_document(
     """
 
     # download the document
-    async with httpx.AsyncClient(transport=transport, timeout=30) as client:
-        download_response = await client.get(source_url, follow_redirects=True)
+    download_response = await ctx.client.get(source_url, follow_redirects=True)
 
-        content_type = download_response.headers["Content-Type"]
-        file_content = download_response.content
-        file_content_hash = hashlib.md5(file_content).hexdigest()
+    content_type = download_response.headers["Content-Type"]
+    file_content = download_response.content
+    file_content_hash = hashlib.md5(file_content).hexdigest()
 
-        # determine the remote file name, including folder structure
-        parts = file_name_without_suffix.split("-")
-        folder_path = parts[0] + "/" + parts[1] + "/"
-        file_suffix = content_type.split("/")[1]
+    # determine the remote file name, including folder structure
+    parts = file_name_without_suffix.split("-")
+    folder_path = parts[0] + "/" + parts[1] + "/"
+    file_suffix = content_type.split("/")[1]
 
-        # s3 can only handle paths of up to 1024 bytes. To ensure we don't exceed that,
-        # we trim the filename if it's too long
-        filename_max_len = (
-            1024
-            - len(folder_path)
-            - len(file_suffix)
-            - len(file_content_hash)
-            - len("_.")
-        )
-        file_name_without_suffix_trimmed = file_name_without_suffix[:filename_max_len]
+    # s3 can only handle paths of up to 1024 bytes. To ensure we don't exceed that,
+    # we trim the filename if it's too long
+    filename_max_len = (
+        1024 - len(folder_path) - len(file_suffix) - len(file_content_hash) - len("_.")
+    )
+    file_name_without_suffix_trimmed = file_name_without_suffix[:filename_max_len]
 
-        file_name = (
-            f"{file_name_without_suffix_trimmed}_{file_content_hash}.{file_suffix}"
-        )
+    file_name = f"{file_name_without_suffix_trimmed}_{file_content_hash}.{file_suffix}"
 
-        # puts docs in folder <country_code>/<publication_year>/<file_name>
-        full_path = parts[0] + "/" + parts[1] + "/" + file_name
+    # puts docs in folder <country_code>/<publication_year>/<file_name>
+    full_path = parts[0] + "/" + parts[1] + "/" + file_name
 
-        machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
+    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
 
-        api_host = os.getenv("API_HOST", "http://backend:8888")
-        if api_host.endswith("/"):
-            api_host = api_host[:-1]  # strip trailing slash
+    api_host = os.getenv("API_HOST", "http://backend:8888")
+    if api_host.endswith("/"):
+        api_host = api_host[:-1]  # strip trailing slash
 
-        headers = {
-            "Authorization": "Bearer {}".format(machine_user_token),
-            "Accept": "application/json",
-        }
-        response = await client.post(
-            f"{api_host}/api/v1/document",
-            headers=headers,
-            files={"file": (full_path, file_content, content_type)},
-        )
-        response_json = response.json()
-        if "url" in response_json:
-            return response_json["url"], file_content_hash
-        else:
-            raise Exception(response_json["detail"])
+    headers = {
+        "Authorization": "Bearer {}".format(machine_user_token),
+        "Accept": "application/json",
+    }
+    response = await ctx.client.post(
+        f"{api_host}/api/v1/document",
+        headers=headers,
+        files={"file": (full_path, file_content, content_type)},
+    )
+    response_json = response.json()
+    if "url" in response_json:
+        return response_json["url"], file_content_hash
+    else:
+        raise Exception(response_json["detail"])

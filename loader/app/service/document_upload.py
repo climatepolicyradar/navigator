@@ -1,15 +1,13 @@
 import logging
 
-from sqlalchemy.orm import Session
-
 from app.db.models import Document, Event
 from app.service.api_client import upload_document, get_country_code_from_geography_id
-
+from app.service.context import Context
 
 logger = logging.getLogger(__file__)
 
 
-async def upload_all_documents(db: Session):
+async def upload_all_documents(ctx: Context):
     """Upload all source_url docs to cloud.
 
     The remote filename follows the template on
@@ -17,10 +15,10 @@ async def upload_all_documents(db: Session):
 
     """
 
-    for document_db in db.query(Document).filter(Document.is_valid).all():
+    for document_db in ctx.db.query(Document).filter(Document.is_valid).all():
         # fetch metadata required for naming the remote doc
         event: Event = (
-            db.query(Event)
+            ctx.db.query(Event)
             .filter(
                 (Event.document_id == document_db.id) & (Event.name == "Publication")
             )
@@ -32,7 +30,7 @@ async def upload_all_documents(db: Session):
         logger.debug(f"Uploading {document_db.source_url} to {document_db.url}")
         # TODO: make document upload more resilient
         try:
-            await _upload_document(db, document_db, country_code, publication_date)
+            await _upload_document(ctx, document_db, country_code, publication_date)
         except Exception as e:
             logger.error(
                 f"Uploading document with URL {document_db.source_url} failed",
@@ -41,7 +39,7 @@ async def upload_all_documents(db: Session):
 
 
 async def _upload_document(
-    db: Session, document_db: Document, country_code: str, publication_date_iso: str
+    ctx: Context, document_db: Document, country_code: str, publication_date_iso: str
 ):
     """Upload a single doc."""
 
@@ -52,8 +50,8 @@ async def _upload_document(
 
     file_name = f"{country_code}-{publication_date_iso}-{doc_name}"
 
-    cloud_url, md5_sum = await upload_document(document_db.source_url, file_name)
+    cloud_url, md5_sum = await upload_document(ctx, document_db.source_url, file_name)
     document_db.url = cloud_url
     document_db.md5_sum = md5_sum
-    db.add(document_db)
-    db.commit()
+    ctx.db.add(document_db)
+    ctx.db.commit()
