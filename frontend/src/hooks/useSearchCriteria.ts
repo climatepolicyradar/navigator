@@ -1,5 +1,6 @@
 import { useQuery, useQueryClient } from 'react-query';
 import { minYear, currentYear } from '../constants/timedate';
+import { PER_PAGE } from '../constants/paging';
 
 const initialSearchCriteria = {
   query_string: '',
@@ -9,7 +10,7 @@ const initialSearchCriteria = {
   year_range: [minYear, currentYear()],
   sort_field: 'title',
   sort_order: 'asc',
-  limit: 10,
+  limit: PER_PAGE,
   offset: 0,
 };
 

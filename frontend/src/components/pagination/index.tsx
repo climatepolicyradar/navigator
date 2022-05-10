@@ -2,36 +2,35 @@ interface PaginationProps {
   pageNumber: number;
   pageCount: number;
   onChange(page: number): void;
-  maxNeighbourDistance: number;
+  maxNeighbourDistance?: number;
 }
 
 const Pagination = ({
   pageNumber,
   pageCount,
   onChange,
-  maxNeighbourDistance,
+  maxNeighbourDistance = 2,
 }: PaginationProps) => {
   const renderPlaceholder = (page) => {
     return (
-      <span
-        key={page}
-        className=""
-      >
+      <span key={page} className="md:mx-1">
         ...
       </span>
     );
   };
   const renderPageButton = (page) => {
-    let cssClasses = 'mx-1 border border-grey rounded px-1 cursor-pointer transition duration-300 hover:bg-lightgrey';
-    if(page === pageNumber) {
-      cssClasses += ' bg-blue text-white border-blue pointer-events-none';
-    }
+    const baseCssClasses =
+      'mx-1 rounded px-3 py-1 transition duration-300 text-sm md:text-base';
+    const colorCssClasses =
+      page === pageNumber
+        ? 'bg-blue-500 text-white pointer-events-none'
+        : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-600';
     return (
       <button
         key={page}
         value={page}
         type="button"
-        className={cssClasses}
+        className={`${baseCssClasses} ${colorCssClasses}`}
         onClick={() => {
           onChange(page);
         }}
@@ -42,7 +41,7 @@ const Pagination = ({
   };
 
   return (
-    <div className="pagination w-full flex justify-center mt-8">
+    <div className="pagination w-full flex justify-center mt-6">
       {new Array(pageCount).fill(0).map((item, itemIndex) => {
         const page = itemIndex + 1;
         if (
