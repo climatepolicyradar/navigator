@@ -21,6 +21,7 @@ psycopg2-binary = "^2.9.3"
 PyJWT = "^2.3.0"
 python-multipart = "^0.0.5"
 sentence-transformers = "^2.2.0"
+sendgrid = "^6.9.7"
 SQLAlchemy = "^1.4.31"
 SQLAlchemy-Utils = "^0.38.2"
 fastapi-health = "^0.4.0"
@@ -84,4 +85,3 @@ ignore_missing_imports = "True"
 [tool.black]
 line-length = 88
 target-version = ['py38']
-

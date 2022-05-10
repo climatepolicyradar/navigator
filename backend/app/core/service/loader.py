@@ -3,6 +3,7 @@ from fastapi import (
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+import logging
 
 from app.db.crud.document import create_document
 from app.db.schemas.metadata import DocumentCreateWithMetadata
@@ -20,8 +21,13 @@ from app.db.models import (
     Instrument,
     DocumentInstrument,
     DocumentLanguage,
+    Keyword,
+    DocumentKeyword,
 )
 from sqlalchemy.dialects.postgresql import insert
+
+
+logger = logging.getLogger(__file__)
 
 
 def persist_document_and_metadata(
@@ -36,6 +42,9 @@ def persist_document_and_metadata(
 
         return db_document
     except Exception as e:
+        logger.error(
+            f"Error saving document {document_with_metadata.document}", exc_info=e
+        )
         if isinstance(e, IntegrityError):
             raise HTTPException(409, detail="Document already exists")
         raise e
@@ -145,6 +154,21 @@ def write_metadata(
             meta_id = return_value.inserted_primary_key[0]
             db_bridge = DocumentFramework(
                 framework_id=meta_id,
+                document_id=db_document.id,
+            )
+            db.add(db_bridge)
+
+    for meta in document_with_metadata.keywords:
+        insert_stmt = insert(Keyword).values(
+            name=meta.name,
+            description=meta.description,
+        )
+        do_nothing_stmt = insert_stmt.on_conflict_do_nothing()
+        return_value = db.execute(do_nothing_stmt)
+        if return_value and return_value.inserted_primary_key:
+            meta_id = return_value.inserted_primary_key[0]
+            db_bridge = DocumentKeyword(
+                keyword_id=meta_id,
                 document_id=db_document.id,
             )
             db.add(db_bridge)

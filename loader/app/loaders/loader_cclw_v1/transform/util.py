@@ -117,6 +117,7 @@ def get_policy_data(
                     keywords=[],  # not supported in v1 CSV
                     document_date=None,
                     document_category="",
+                    doc_description="",
                 )
                 docs.append(doc)
 

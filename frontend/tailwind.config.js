@@ -15,6 +15,7 @@ module.exports = {
       red: colors.rose,
       green: colors.green,
       semiTransWhite: 'rgba(255, 255, 255, 0.85)',
+      lightgray: '#F9FAFB',
       indigo: {
         100: '#f2f2f5',
         200: '#e4e6ea',
@@ -51,6 +52,12 @@ module.exports = {
       padding: '1rem',
     },
     extend: {
+      spacing: {
+        150: '150%',
+      },
+      boxShadow: {
+        innerThin: 'inset 0 0 1px 0 rgb(0 0 0 / 0.5)',
+      },
       fontSize: {
         h1: '64px',
         h2: '36px',
@@ -61,5 +68,8 @@ module.exports = {
       },
     },
   },
-  plugins: [require('@tailwindcss/forms')],
+  plugins: [require('@tailwindcss/forms'), require('tailwind-scrollbar')],
+  variants: {
+    scrollbar: ['rounded'],
+  },
 };

@@ -142,9 +142,11 @@ class Document(Base, Auditable):
     updated_by = sa.Column(sa.Integer, sa.ForeignKey(User.id))
     loaded_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
     name = sa.Column(sa.Text, nullable=False)
-    source_url = sa.Column(sa.Text)
+    description = sa.Column(sa.Text, nullable=False)
+    source_url = sa.Column(sa.Text, nullable=False)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
-    url = sa.Column(sa.Text)
+    url = sa.Column(sa.Text, nullable=False)
+    md5_sum = sa.Column(sa.Text, nullable=False)
 
     geography_id = sa.Column(
         sa.SmallInteger,
@@ -268,6 +270,28 @@ class DocumentHazard(Base):  # noqa: D101
 
     id = sa.Column(sa.Integer, primary_key=True)
     hazard_id = sa.Column(sa.Integer, sa.ForeignKey(Hazard.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+    )
+
+
+class Keyword(Base):  # noqa: D101
+    """Document keyword."""
+
+    __tablename__ = "keyword"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    name = sa.Column(sa.Text, nullable=False)
+    description = sa.Column(sa.Text, nullable=False)
+
+
+class DocumentKeyword(Base):  # noqa: D101
+    __tablename__ = "document_keyword"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    keyword_id = sa.Column(sa.Integer, sa.ForeignKey(Keyword.id), nullable=False)
     document_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(Document.id, ondelete="CASCADE"),

@@ -29,7 +29,7 @@ describe('Header', () => {
   });
   it('Account menu icon should be visible on menu icon click', () => {
     cy.get('[data-cy="menu-icon"]').click();
-    cy.get('[data-cy="account-menu"]').should('be.visible');
+    cy.get('[data-cy="dropdown-menu"]').should('be.visible');
   });
   // it('Header should become fixed to top on scroll', () => {
   //   cy.wait(2000);

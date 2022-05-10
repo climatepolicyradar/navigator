@@ -20,8 +20,11 @@ from app.db.models import (
     Hazard,
     DocumentHazard,
     DocumentLanguage,
+    Keyword,
+    DocumentKeyword,
 )
-from app.model import PolicyLookup
+from app.mapping import DEFAULT_DESCRIPTION
+from app.model import PolicyLookup, Event as SourceEvent
 from app.service.api_client import (
     get_type_id,
     get_geography_id,
@@ -91,7 +94,7 @@ def load(db: Session, policies: PolicyLookup):
             document_type_id = get_type_id(doc.document_type)
             if not document_type_id:
                 logger.warning(
-                    f"No document type found in lookup for policy type {doc.document_type}"
+                    f"No document type found in lookup for policy type {doc.document_type} (document url: {doc.doc_url})"
                 )
                 continue
 
@@ -135,6 +138,7 @@ def load(db: Session, policies: PolicyLookup):
             # https://github.com/climatepolicyradar/navigator/blob/3ca2eda8de691288a66a1722908f32dd52c178f9/backend/app/api/api_v1/routers/actions.py#L81
             document_db = Document(
                 name=doc.doc_name,
+                description=doc.doc_description,
                 source_url=doc.doc_url,
                 source_id=document_source_id,
                 # url=None,  # TODO: upload to S3
@@ -170,7 +174,7 @@ def load(db: Session, policies: PolicyLookup):
             )
             db.add(event_db)
 
-            # TODO doc.events might have more events, other than publication date
+            add_events(db, document_db.id, doc.events)
 
             # Metadata - all the rest
             add_metadata(
@@ -218,6 +222,15 @@ def load(db: Session, policies: PolicyLookup):
                 DocumentHazard,
                 "hazard_id",
             )
+            add_metadata(
+                db,
+                doc.keywords,
+                document_db.id,
+                document_source_id,
+                Keyword,
+                DocumentKeyword,
+                "keyword_id",
+            )
 
             # doc language
             document_language_db = DocumentLanguage(
@@ -252,7 +265,7 @@ def add_metadata(
         for sector in doc.sectors:
             sector_db = Sector(
                 name=sector,
-                description="Imported by CPR loader",
+                description=DEFAULT_DESCRIPTION,
                 source_id=source_id,
             )
             db.add(sector_db)
@@ -270,7 +283,7 @@ def add_metadata(
         for metadatum in metadata:
             meta_db = MetaType(
                 name=metadatum,
-                description="Imported by CPR loader",
+                description=DEFAULT_DESCRIPTION,
                 source_id=source_id,
             )
             db.add(meta_db)
@@ -293,7 +306,7 @@ def add_metadata(
         # TODO check if metadata already exists, and re-use the FK
         meta_db = MetaType(
             name=metadatum,
-            description="Imported by CPR loader",
+            description=DEFAULT_DESCRIPTION,
             # source_id=source_id,
         )
         if hasattr(meta_db, "source_id"):
@@ -307,3 +320,15 @@ def add_metadata(
         )
         setattr(document_meta_db, fk_column_name, meta_db.id)
         db.add(document_meta_db)
+
+
+def add_events(db: Session, doc_id: int, events: List[SourceEvent]):
+    """Adds source events to database."""
+    for event in events:
+        event_db = Event(
+            document_id=doc_id,
+            name=event.name,
+            description=DEFAULT_DESCRIPTION,
+            created_ts=event.date,
+        )
+        db.add(event_db)

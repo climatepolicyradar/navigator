@@ -6,7 +6,7 @@ from unittest.mock import patch, MagicMock
 
 @patch("app.service.document_upload.upload_document")
 def test_document_upload(mock_upload_document):
-    mock_upload_document.return_value = "http://bucket-url"
+    mock_upload_document.return_value = "http://bucket-url", "md5 sum"
 
     country_code = "country-code"
     publication_date = "2022-04-26"

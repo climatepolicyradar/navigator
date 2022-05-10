@@ -47,6 +47,7 @@ def test_load_single_doc(
     doc: Doc = Doc(
         doc_url="http://doc",
         doc_name="doc name",
+        doc_description="",
         doc_languages=["en"],
         document_type="doc type",
         hazards=[],
@@ -141,6 +142,7 @@ def test_load_two_related_docs(
     doc: Doc = Doc(
         doc_url="http://doc",
         doc_name="doc name",
+        doc_description="",
         doc_languages=["en"],
         document_type="doc1 type",
         hazards=[],
@@ -156,6 +158,7 @@ def test_load_two_related_docs(
     doc2: Doc = Doc(
         doc_url="http://doc2",
         doc_name="doc name 2",
+        doc_description="",
         doc_languages=["af"],
         document_type="doc2 type",
         hazards=[],

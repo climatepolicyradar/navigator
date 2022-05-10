@@ -9,7 +9,6 @@ export default function useUpdateFilters() {
   return useMutation(
     (value) => {
       const x = { value, filters };
-      console.log(value);
       return value;
     },
 
