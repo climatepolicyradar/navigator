@@ -28,14 +28,6 @@ const Event = ({ event, last }) => {
       <div className="ml-8">
         <div className="text-indigo-600">{status}</div>
         <div className="text-sm">{description}</div>
-        {document_url && (
-          <Link href={document_url}>
-            {/* TODO: translate text */}
-            <a className="text-blue-500 underline text-sm hover:text-indigo-600 duration-300 transition">
-              Link to document
-            </a>
-          </Link>
-        )}
       </div>
     </div>
   );
