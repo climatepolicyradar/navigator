@@ -334,15 +334,12 @@ def run_cli(
         json.dump(text_and_hashes, f)
 
     # Encode action descriptions
-    postgres_connector = PostgresConnector(os.environ["DATABASE_URL"])
+    postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
     navigator_dataset = create_dataset(postgres_connector)
-    document_hashes_processed = set([i["md5hash"] for i in text_and_hashes])
-    # TODO: to get document hashes from here we need to get the filename from `create_dataset`, and then regex out
-    # the md5hash from the filename. This is dependent on #440 at the moment.
+    document_hashes_processed = set([i["document_md5_hash"] for i in text_and_hashes])
     description_data_to_encode = navigator_dataset.loc[
-        navigator_dataset["prototype_filename_stem"].isin(document_hashes_processed)
+        navigator_dataset["md5_sum"].isin(document_hashes_processed)
     ]
-
     logger.info(
         f"Encoding {len(description_data_to_encode)} descriptions in batches of {batch_size}"
     )
@@ -352,7 +349,7 @@ def run_cli(
     )
 
     encode_text_to_memmap(
-        description_data_to_encode["description"].tolist(),
+        description_data_to_encode["document_description"].tolist(),
         encoder,
         batch_size,
         description_embs_output_path,
@@ -361,7 +358,7 @@ def run_cli(
     description_ids_output_path = (
         output_dir / f"description_ids_{model_name}_{curr_time}.csv"
     )
-    description_data_to_encode["prototype_filename_stem"].to_csv(
+    description_data_to_encode["md5_sum"].to_csv(
         description_ids_output_path, sep="\t", index=False, header=False
     )
 
