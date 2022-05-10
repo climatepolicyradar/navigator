@@ -13,8 +13,6 @@ from extract.document import Document, Page, TextBlock
 from extract.extract import DocumentEmbeddedTextExtractor, AdobeAPIExtractor
 from extract.utils import split_pdf
 
-from processor.postprocessor import HyphenationPostProcessor
-
 
 @pytest.fixture
 def test_pdf_path() -> Path:
@@ -151,7 +149,7 @@ def test_embedded_text_extractor(test_pdf_path, tmp_path):
     doc = text_extractor.extract(test_pdf_path, data_output_dir)
 
     # Check that the filename matches the filename of the pdf
-    assert doc.filename == test_pdf_path.name
+    assert doc.filename == test_pdf_path.name.strip(".pdf")
 
     # Check that 6 pages have been returned in the document
     assert len(doc.pages) == 6
