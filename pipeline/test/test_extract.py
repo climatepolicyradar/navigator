@@ -49,7 +49,7 @@ def document():
         page_id=1,
     )
 
-    return Document([page], "test_document.pdf")
+    return Document([page], "test_document.pdf", "86a2bb05b4358f8ce654f4121d4f7874")
 
 
 def test_document_save_json(document, tmpdir):
@@ -99,6 +99,7 @@ def test_document_save_json(document, tmpdir):
             }
         ],
         "filename": "test_document.pdf",
+        "md5hash": "86a2bb05b4358f8ce654f4121d4f7874",
     }
 
 
