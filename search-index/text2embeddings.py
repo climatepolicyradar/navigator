@@ -28,7 +28,6 @@ def get_text_from_list(text_block: dict, prev_processed_text_block: dict) -> str
 
     Format a list text block and prepend it to the previous text block, assuming it is the context of the list.
     This is a fairly strong assumption, but works most of the time. Code to handle more complex cases has been started.
-
     Args:
         text_block (dict): text block dict.
         prev_processed_text_block (dict): previous text block dict.
@@ -86,7 +85,6 @@ def get_text_from_merged_block(text_block: dict) -> str:
 
     Returns:
         str: The text block with styling that is not related to semantics removed.
-
     """
     # Text output with no processing. Note here that we do not need to join with a space as this is already
     # done upstream, where each list item in a text block has a space at the end before text blocks are merged.
@@ -197,15 +195,15 @@ def get_text_from_json_files(
     """
     text_by_document = []
 
-    for filepath in tqdm(filepaths):
+    for ix, filepath in enumerate(tqdm(filepaths)):
         with open(filepath, "r") as f:
             document = json.load(f)
 
-        document_text_and_hashes = get_text_from_document_dict(document)
+        document_text_and_ids = get_text_from_document_dict(document)
 
-        for text_and_hash in document_text_and_hashes:
-            text_and_hash.update({"document_md5_hash": document["md5hash"]})
-            text_by_document.append(text_and_hash)
+        for text_and_id in document_text_and_ids:
+            text_and_id.update({"document_id": document["filename"]})
+            text_by_document.append(text_and_id)
     return text_by_document
 
 
@@ -308,16 +306,16 @@ def run_cli(
     curr_time = get_timestamp()
 
     json_filepaths = list(input_dir.glob("*.json"))
-    text_and_hashes = get_text_from_json_files(json_filepaths)
-    logger.info(f"There are {len(text_and_hashes)} text blocks.")
+    text_and_ids = get_text_from_json_files(json_filepaths)
+    logger.info(f"There are {len(text_and_ids)} text blocks.")
     if limit:
-        text_and_hashes = text_and_hashes[:limit]
+        text_and_ids = text_and_ids[:limit]
 
     logger.info(f"Loading sentence-transformer model {model_name}")
     encoder = SBERTEncoder(model_name)
 
     logger.info(f"Encoding text in batches of {batch_size}")
-    text_by_document = [i["text"] for i in text_and_hashes]
+    text_by_document = [i["text"] for i in text_and_ids]
     # Export embeddings to numpy memmap file
     embs_output_path = (
         output_dir
@@ -331,16 +329,14 @@ def run_cli(
 
     # Save text, text block IDs and document IDs to JSON file
     with (output_dir / f"ids_{model_name}_{curr_time}.json").open("w") as f:
-        json.dump(text_and_hashes, f)
+        json.dump(text_and_ids, f)
 
     # Encode action descriptions
     postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
     navigator_dataset = create_dataset(postgres_connector)
-    document_hashes_processed = set([i["md5hash"] for i in text_and_hashes])
-    # TODO: to get document hashes from here we need to get the filename from `create_dataset`, and then regex out
-    # the md5hash from the filename. This is dependent on #440 at the moment.
+    document_ids_processed = set([i["document_id"] for i in text_and_ids])
     description_data_to_encode = navigator_dataset.loc[
-        navigator_dataset["prototype_filename_stem"].isin(document_hashes_processed)
+        navigator_dataset["prototype_filename_stem"].isin(document_ids_processed)
     ]
 
     logger.info(
@@ -350,6 +346,7 @@ def run_cli(
         output_dir
         / f"description_embs_dim_{encoder.dimension}_{model_name}_{curr_time}.memmap"
     )
+
     encode_text_to_memmap(
         description_data_to_encode["document_description"].tolist(),
         encoder,
