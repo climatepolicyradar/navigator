@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 from fastapi import (
@@ -60,7 +61,7 @@ def document_upload(
 
     s3_document = s3_client.upload_fileobj(
         fileobj=file.file,
-        bucket="cpr-document-queue",
+        bucket=os.environ.get("DOCUMENT_BUCKET", "cpr-document-queue"),
         key=str(file_path),
         content_type=file.content_type,
     )
