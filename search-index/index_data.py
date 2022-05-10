@@ -231,9 +231,9 @@ def run_cli(
     )
 
     def _convert_to_bool(x):
-        if x == "True":
+        if x.lower() == "true":
             return True
-        elif x == "False":
+        elif x.lower() == "false":
             return False
 
     opensearch = OpenSearchIndex(
