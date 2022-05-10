@@ -55,8 +55,8 @@ def get_document_generator(
     # --------------------------------------------------------------------------------------------
 
     metadata_columns = [
+        "md5_sum",
         "document_id",
-        "document_language_id",
         "document_name",
         "document_date",
         "document_description",
@@ -87,12 +87,8 @@ def get_document_generator(
         "document_name",
         "document_description",
     ]
-
-    for document_id, document_df in text_and_ids_data.groupby("document_id"):
-
-        doc_metadata = main_dataset.loc[
-            main_dataset["prototype_filename_stem"] == document_id
-        ]
+    for document_id, document_df in text_and_ids_data.groupby("document_md5_hash"):
+        doc_metadata = main_dataset.loc[main_dataset["md5_sum"] == document_id]
         if len(doc_metadata) == 0:
             logger.warning(
                 f"Skipping document {document_id} as not in the Navigator database."
@@ -119,11 +115,11 @@ def get_document_generator(
                 ]
             }
 
-            if (text_col_name == "action_description") and (
+            if (text_col_name == "document_description") and (
                 doc_description_embedding is not None
             ):
                 text_col_dict[
-                    "action_description_embedding"
+                    "document_description_embedding"
                 ] = doc_description_embedding.tolist()
 
             yield dict(doc_metadata_dict, **text_col_dict)
@@ -188,7 +184,6 @@ def load_description_embeddings_and_metadata(
 
     embs = load_embeddings(embs_path, embedding_dim)
     metadata = pd.read_csv(ids_path, header=None, names=["document_id"])
-
     output_dict = dict()
 
     for idx, doc_id in metadata["document_id"].items():
