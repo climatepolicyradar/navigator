@@ -56,7 +56,6 @@ def get_data_from_navigator_tables(
         LEFT join source ON (source.id = doc.source_id)
         LEFT JOIN document_type doc_type ON doc.type_id = doc_type.id
         LEFT JOIN category doc_cat ON doc.category_id = doc_cat.id
-        LEFT JOIN document_language doc_lang ON doc.id = doc_lang.document_id
         LEFT JOIN document_keyword doc_keyword ON doc.id = doc_keyword.document_id
         LEFT JOIN keyword kwd ON doc_keyword.keyword_id = kwd.id
         LEFT JOIN (
