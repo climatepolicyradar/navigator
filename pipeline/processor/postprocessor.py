@@ -720,4 +720,5 @@ class AdobeListGroupingPostProcessor(PostProcessor):
         doc = document.to_dict()
         new_contents = self._group_list_elements(doc)
         new_contents["filename"] = filename
+        new_contents["md5hash"] = document["md5hash"]
         return Document.from_dict(new_contents)
