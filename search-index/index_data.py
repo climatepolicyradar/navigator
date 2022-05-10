@@ -66,6 +66,7 @@ def get_document_generator(
         "sector_name",
         "hazard_name",
         "instrument_name",
+        "document_language",
         "instrument_parent",
         "framework_name",
         "document_category",
