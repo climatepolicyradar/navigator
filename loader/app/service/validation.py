@@ -1,4 +1,5 @@
 import asyncio
+import logging
 import ssl
 from typing import Optional
 
@@ -14,12 +15,16 @@ supported_content_types = [
 ]
 
 
+logger = logging.getLogger(__file__)
+
+
 def get_document_validity_sync(source_url: str) -> Optional[DocumentInvalidReason]:
     return asyncio.run(get_document_validity(source_url))
 
 
 async def get_document_validity(source_url: str) -> Optional[DocumentInvalidReason]:
     try:
+        logger.debug(f"Checking document validity for {source_url}")
         async with httpx.AsyncClient(transport=transport, timeout=10) as client:
             response = await client.head(source_url, follow_redirects=True)
             content_type = response.headers.get("content-type")

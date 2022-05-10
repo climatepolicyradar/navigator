@@ -1,3 +1,4 @@
+import asyncio
 import logging.config
 import os
 from pathlib import Path
@@ -50,7 +51,7 @@ def get_data_dir():
     return data_dir
 
 
-def main():
+async def main():
     """ETL for policy data.
 
     Extact policy data from known CCLW data source (and later this will be event-driven)
@@ -74,7 +75,7 @@ def main():
     data = extract(csv_file)
     policies = transform(data)  # noqa: F841
     for db in get_db():
-        load(db, policies)
+        await load(db, policies)
 
         # once all data has been loaded into database, upload files to cloud
         upload_all_documents(db)
@@ -93,4 +94,4 @@ if __name__ == "__main__":
         load_dotenv("../../.env")
         load_dotenv("../../.env.local")
 
-    main()
+    asyncio.run(main())

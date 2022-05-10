@@ -31,12 +31,12 @@ from app.service.api_client import (
     get_category_id,
     get_language_id_by_name,
 )
-from app.service.validation import get_document_validity_sync
+from app.service.validation import get_document_validity
 
 logger = logging.getLogger(__file__)
 
 
-def load(db: Session, policies: PolicyLookup):
+async def load(db: Session, policies: PolicyLookup):
     """Loads policy data into local database."""
 
     document_source_id = 1  # always CCLW (for alpha)
@@ -122,9 +122,7 @@ def load(db: Session, policies: PolicyLookup):
             # check doc validity
             is_valid = True
 
-            # TODO async
-            # invalid_reason = await get_document_validity(document_create.source_url)
-            invalid_reason = get_document_validity_sync(doc.doc_url)
+            invalid_reason = await get_document_validity(doc.doc_url)
 
             if invalid_reason:
                 is_valid = False
