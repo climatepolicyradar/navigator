@@ -12,6 +12,7 @@ requests = "^2.27.1"
 psycopg2-binary = "^2.9.3"
 SQLAlchemy-Utils = "^0.38.2"
 httpx = "^0.22.0"
+tenacity = "^8.0.1"
 
 [tool.poetry.dev-dependencies]
 python-dotenv = "^0.19.2"
@@ -32,6 +33,7 @@ build-backend = "poetry.core.masonry.api"
 
 [tool.pytest.ini_options]
 addopts = "-p no:cacheprovider"
+asyncio_mode = "strict"
 
 [tool.pydocstyle]
 # D100 - Missing docstring in public module

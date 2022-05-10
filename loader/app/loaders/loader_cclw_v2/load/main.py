@@ -1,3 +1,4 @@
+import asyncio
 import logging
 from datetime import datetime
 from typing import List, Type
@@ -24,7 +25,7 @@ from app.db.models import (
     DocumentKeyword,
 )
 from app.mapping import DEFAULT_DESCRIPTION
-from app.model import PolicyLookup, Event as SourceEvent
+from app.model import PolicyLookup, Event as SourceEvent, Key, PolicyData
 from app.service.api_client import (
     get_type_id,
     get_geography_id,
@@ -36,19 +37,28 @@ from app.service.validation import get_document_validity
 logger = logging.getLogger(__file__)
 
 
+document_source_id = 1  # always CCLW (for alpha)
+
+
 async def load(db: Session, policies: PolicyLookup):
     """Loads policy data into local database."""
 
-    document_source_id = 1  # always CCLW (for alpha)
-
-    imported_count = 0
-    # debug_count = 0
+    tasks = []
     for key, policy_data in policies.items():
-        # For limiting the number of docs loaded for dev
-        # debug_count += 1
-        # if debug_count > 10:
-        #     return
+        task = asyncio.ensure_future(save_action(db, key, policy_data))
+        tasks.append(task)
 
+    doc_counts = await asyncio.gather(
+        *tasks,
+        return_exceptions=True,
+    )
+
+    doc_count = sum(doc_counts)
+    logger.info(f"Done, imported {doc_count} docs from {len(policies.items())} actions")
+
+
+async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
+    try:
         # look up geography from API
         country_code = key.country_code
         geography_id = get_geography_id(country_code)
@@ -56,7 +66,8 @@ async def load(db: Session, policies: PolicyLookup):
             logger.warning(
                 f"No geography found in lookup for country code {country_code}"
             )
-            continue
+            # continue
+            return 0
 
         # this was the loader before the change to own-db:
         # https://github.com/climatepolicyradar/navigator/blob/17491aceaf9a5a852e0a6d51a1e8f88b07675801/backend/app/api/api_v1/routers/actions.py
@@ -65,6 +76,7 @@ async def load(db: Session, policies: PolicyLookup):
         # during doc looping, we set a main_doc if it hasn't been set,
         # then use it for associating with subsequent docs.
         main_doc = None
+        doc_count = 0
         for doc in policy_data.docs:
 
             document_date: datetime = doc.document_date
@@ -238,7 +250,6 @@ async def load(db: Session, policies: PolicyLookup):
 
             # commit for each doc, not each policy
             db.commit()
-            imported_count += 1
             logger.info(
                 f"Saved document, name={key.policy_name}, "
                 f"geography_id={geography_id}, "
@@ -246,12 +257,18 @@ async def load(db: Session, policies: PolicyLookup):
                 f"source_id={document_source_id}"
                 f"url={doc.doc_url}"
             )
-
-        main_doc = None
-
-    logger.info(
-        f"Done, {imported_count} documents imported from {len(policies.items())} actions"
-    )
+            doc_count += 1
+        return doc_count
+    except Exception as e:
+        logger.error(
+            f"Error saving document, name={key.policy_name}, "
+            f"geography_id={geography_id}, "
+            f"type_id={document_type_id}, "
+            f"source_id={document_source_id}"
+            f"url={doc.doc_url}",
+            exc_info=e,
+        )
+        return 0
 
 
 def add_metadata(
