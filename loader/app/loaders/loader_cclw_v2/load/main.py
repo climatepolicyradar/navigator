@@ -32,6 +32,7 @@ from app.service.api_client import (
     get_category_id,
     get_language_id_by_name,
 )
+from app.service.context import Context
 from app.service.validation import get_document_validity
 
 logger = logging.getLogger(__file__)
@@ -40,12 +41,12 @@ logger = logging.getLogger(__file__)
 document_source_id = 1  # always CCLW (for alpha)
 
 
-async def load(db: Session, policies: PolicyLookup):
+async def load(ctx: Context, policies: PolicyLookup):
     """Loads policy data into local database."""
 
     tasks = []
     for key, policy_data in policies.items():
-        task = asyncio.ensure_future(save_action(db, key, policy_data))
+        task = asyncio.ensure_future(save_action(ctx, key, policy_data))
         tasks.append(task)
 
     doc_counts = await asyncio.gather(
@@ -57,7 +58,7 @@ async def load(db: Session, policies: PolicyLookup):
     logger.info(f"Done, imported {doc_count} docs from {len(policies.items())} actions")
 
 
-async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
+async def save_action(ctx: Context, key: Key, policy_data: PolicyData) -> int:
     try:
         # look up geography from API
         country_code = key.country_code
@@ -114,7 +115,7 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
             # check if the document already exists in the DB, and skip if it does
             # (as per the unique constraint)
             maybe_existing_doc = get_document_by_unique_constraint(
-                db,
+                ctx.db,
                 doc.doc_name,
                 geography_id,
                 document_type_id,
@@ -134,7 +135,7 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
             # check doc validity
             is_valid = True
 
-            invalid_reason = await get_document_validity(doc.doc_url)
+            invalid_reason = await get_document_validity(ctx.client, doc.doc_url)
 
             if invalid_reason:
                 is_valid = False
@@ -157,9 +158,9 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                 type_id=document_type_id,
                 category_id=category_id,
             )
-            db.add(document_db)
-            db.flush()
-            db.refresh(document_db)
+            ctx.db.add(document_db)
+            ctx.db.flush()
+            ctx.db.refresh(document_db)
 
             # Association
             if len(policy_data.docs) > 1:
@@ -172,7 +173,7 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                         type="related",
                         name="related",
                     )
-                    db.add(association)
+                    ctx.db.add(association)
 
             # Metadata - events
             event_db = Event(
@@ -181,13 +182,13 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                 description="The publication date",
                 created_ts=doc.document_date,
             )
-            db.add(event_db)
+            ctx.db.add(event_db)
 
-            add_events(db, document_db.id, doc.events)
+            add_events(ctx.db, document_db.id, doc.events)
 
             # Metadata - all the rest
             add_metadata(
-                db,
+                ctx.db,
                 doc.sectors,
                 document_db.id,
                 document_source_id,
@@ -196,7 +197,7 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                 "sector_id",
             )
             add_metadata(
-                db,
+                ctx.db,
                 doc.instruments,
                 document_db.id,
                 document_source_id,
@@ -205,7 +206,7 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                 "instrument_id",
             )
             add_metadata(
-                db,
+                ctx.db,
                 doc.frameworks,
                 document_db.id,
                 document_source_id,
@@ -214,7 +215,7 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                 "framework_id",
             )
             add_metadata(
-                db,
+                ctx.db,
                 doc.responses,
                 document_db.id,
                 document_source_id,
@@ -223,7 +224,7 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                 "response_id",
             )
             add_metadata(
-                db,
+                ctx.db,
                 doc.hazards,
                 document_db.id,
                 document_source_id,
@@ -232,7 +233,7 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                 "hazard_id",
             )
             add_metadata(
-                db,
+                ctx.db,
                 doc.keywords,
                 document_db.id,
                 document_source_id,
@@ -246,10 +247,10 @@ async def save_action(db: Session, key: Key, policy_data: PolicyData) -> int:
                 language_id=language_id,
                 document_id=document_db.id,
             )
-            db.add(document_language_db)
+            ctx.db.add(document_language_db)
 
             # commit for each doc, not each policy
-            db.commit()
+            ctx.db.commit()
             logger.info(
                 f"Saved document, name={key.policy_name}, "
                 f"geography_id={geography_id}, "
@@ -289,15 +290,15 @@ def add_metadata(
                 description=DEFAULT_DESCRIPTION,
                 source_id=source_id,
             )
-            db.add(sector_db)
-            db.flush()
-            db.refresh(sector_db)
+            ctx.db.add(sector_db)
+            ctx.db.flush()
+            ctx.db.refresh(sector_db)
             document_sector_db = DocumentSector(
                 document_id=document_db.id,
-                sector_id=sector_db.id,
+                sector_id=sector_ctx.db.id,
             )
-            db.add(document_sector_db)
-            db.commit()
+            ctx.db.add(document_sector_db)
+            ctx.db.commit()
 
     Into this:
 
@@ -307,14 +308,14 @@ def add_metadata(
                 description=DEFAULT_DESCRIPTION,
                 source_id=source_id,
             )
-            db.add(meta_db)
-            db.flush()
-            db.refresh(meta_db)
+            ctx.db.add(meta_db)
+            ctx.db.flush()
+            ctx.db.refresh(meta_db)
             document_meta_db = DocumentMetaType(
                 document_id=doc_id,
             )
-            setattr(document_meta_db, fk_column_name, meta_db.id)
-            db.add(document_meta_db)
+            setattr(document_meta_db, fk_column_name, meta_ctx.db.id)
+            ctx.db.add(document_meta_db)
 
     Where:
         metadata = doc.sectors

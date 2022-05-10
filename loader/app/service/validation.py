@@ -8,8 +8,7 @@ import tenacity
 
 from app.db.models import DocumentInvalidReason
 
-# transport retries are for connection errors, not 5XX
-transport = httpx.AsyncHTTPTransport(retries=3)
+
 supported_content_types = [
     "application/pdf",
     "text/html",
@@ -20,20 +19,23 @@ supported_content_types = [
 logger = logging.getLogger(__file__)
 
 
-def get_document_validity_sync(source_url: str) -> Optional[DocumentInvalidReason]:
-    return asyncio.run(get_document_validity(source_url))
+def get_document_validity_sync(
+    client: httpx.AsyncClient, source_url: str
+) -> Optional[DocumentInvalidReason]:
+    return asyncio.run(get_document_validity(client, source_url))
 
 
-async def get_document_validity(source_url: str) -> Optional[DocumentInvalidReason]:
+async def get_document_validity(
+    client: httpx.AsyncClient, source_url: str
+) -> Optional[DocumentInvalidReason]:
     try:
         logger.debug(f"Checking document validity for {source_url}")
-        async with httpx.AsyncClient(transport=transport, timeout=10) as client:
-            response = await make_head_request(client, source_url)
-            content_type = response.headers.get("content-type")
-            if content_type not in supported_content_types:
-                return DocumentInvalidReason.unsupported_content_type
-            else:
-                return None  # no reason needed
+        response = await make_head_request(client, source_url)
+        content_type = response.headers.get("content-type")
+        if content_type not in supported_content_types:
+            return DocumentInvalidReason.unsupported_content_type
+        else:
+            return None  # no reason needed
 
     except (ssl.SSLCertVerificationError, ssl.SSLError):
         # we do not want to download insecurely
