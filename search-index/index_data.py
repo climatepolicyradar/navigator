@@ -11,7 +11,7 @@ import click
 from navigator.core.log import get_logger
 from app.db import PostgresConnector
 from app.index import OpenSearchIndex
-from app.load_data import create_dataset
+from app.load_data import get_data_from_navigator_tables
 
 logger = get_logger(__name__)
 
@@ -219,7 +219,7 @@ def run_cli(
         production three-node cluster: each primary shard has a replica on both other nodes.
     """
     postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
-    main_dataset = create_dataset(postgres_connector)
+    main_dataset = get_data_from_navigator_tables(postgres_connector)
 
     ids_table = load_text_and_ids_json(text_ids_path)
     embs = load_embeddings(embeddings_path, embedding_dim=embedding_dim)

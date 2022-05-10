@@ -16,7 +16,7 @@ from navigator.core.utils import get_timestamp
 from tqdm.auto import tqdm
 
 from app.db import PostgresConnector
-from app.load_data import create_dataset
+from app.load_data import get_data_from_navigator_tables
 from app.ml import SBERTEncoder, SentenceEncoder
 from app.utils import paginate_list
 
@@ -335,7 +335,7 @@ def run_cli(
 
     # Encode action descriptions
     postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
-    navigator_dataset = create_dataset(postgres_connector)
+    navigator_dataset = get_data_from_navigator_tables(postgres_connector)
     document_hashes_processed = set([i["document_md5_hash"] for i in text_and_hashes])
     description_data_to_encode = navigator_dataset.loc[
         navigator_dataset["md5_sum"].isin(document_hashes_processed)

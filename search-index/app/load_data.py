@@ -1,6 +1,5 @@
 """Functions to load data from database."""
 
-from pathlib import Path
 
 import pandas as pd
 
@@ -152,54 +151,3 @@ def ensure_safe(url: str) -> str:
     if "https://" not in url:
         url = url.replace("http://", "https://")
     return url
-
-
-def make_url_filename_join_table_from_prototype_data() -> pd.DataFrame:
-    """Make a join table which joins document URLs in the navigator database with filenames used in the prototype.
-
-    # TODO: this is temporary and should be removed once the PDFs are hosted somewhere.
-
-    Returns:
-        pd.DataFrame: join table
-    """
-
-    url_old_id_join = (
-        pd.read_csv(
-            "./data/processed_policies.csv",
-            index_col=0,
-            usecols=["policy_content_file", "url"],
-        )
-        .reset_index()
-        .dropna()
-    )
-    url_old_id_join["prototype_filename_stem"] = url_old_id_join[
-        "policy_content_file"
-    ].apply(lambda filename: Path(filename).stem)
-    url_old_id_join = url_old_id_join.drop(columns=["policy_content_file"])
-    url_old_id_join = url_old_id_join.loc[
-        url_old_id_join["prototype_filename_stem"].str.startswith("cclw"), :
-    ]
-    # Convert http URLs to https, as this is what the loader does
-    url_old_id_join["url"] = url_old_id_join["url"].apply(ensure_safe)
-
-    return url_old_id_join
-
-
-def create_dataset(postgres_connector: PostgresConnector) -> pd.DataFrame:
-    """Create a dataset which joins data from Navigator tables with filenames from the prototype.
-
-    # TODO: once PDFs are hosted somewhere, we can refactor this pipeline to remove its dependency on the processed_policies.csv file.
-
-    Returns:
-        pd.DataFrame
-    """
-
-    navigator_data = get_data_from_navigator_tables(postgres_connector)
-    prototype_url_join = make_url_filename_join_table_from_prototype_data()
-    return pd.merge(
-        left=navigator_data,
-        right=prototype_url_join,
-        how="left",
-        left_on="source_url",
-        right_on="url",
-    )
