@@ -49,6 +49,7 @@ async def get_document_validity(source_url: str) -> Optional[DocumentInvalidReas
         return DocumentInvalidReason.net_remote_protocol_error
     except Exception as e:
         logger.error("Unhandled error occurred", exc_info=e)
+        raise e
 
 
 @tenacity.retry(

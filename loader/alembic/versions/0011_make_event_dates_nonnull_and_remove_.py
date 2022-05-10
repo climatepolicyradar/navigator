@@ -23,7 +23,7 @@ def upgrade():
         "created_ts",
         existing_type=postgresql.TIMESTAMP(timezone=True),
         nullable=False,
-        existing_server_default=sa.text("now()"),
+        server_default=None,
     )
     # ### end Alembic commands ###
 
