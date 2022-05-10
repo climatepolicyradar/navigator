@@ -49,7 +49,7 @@ def get_data_from_navigator_tables(
         geog_country.value as document_country_code,
         geog_region.display_value as region_english_shortname,
         geog_region.value as document_region_code,
-        doc_lang.name as language
+        doc_lang.name as document_language
       FROM
         DOCUMENT doc
         LEFT JOIN event ON (doc.id = event.document_id)
