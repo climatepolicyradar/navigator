@@ -2,17 +2,22 @@ from dataclasses import dataclass
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 
+import pytest
+
 from app.loaders.loader_cclw_v2.load.main import load
 from app.model import Key, PolicyData, Doc, PolicyLookup
+
+pytest_plugins = ("pytest_asyncio",)
 
 
 @patch("app.loaders.loader_cclw_v2.load.main.get_category_id")
 @patch("app.loaders.loader_cclw_v2.load.main.get_language_id_by_name")
 @patch("app.loaders.loader_cclw_v2.load.main.get_document_by_unique_constraint")
-@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity_sync")
+@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity")
 @patch("app.loaders.loader_cclw_v2.load.main.get_geography_id")
 @patch("app.loaders.loader_cclw_v2.load.main.get_type_id")
-def test_load_single_doc(
+@pytest.mark.asyncio
+async def test_load_single_doc(
     mock_get_document_type_id,
     mock_get_geography_id,
     mock_get_document_validity_sync,
@@ -69,7 +74,7 @@ def test_load_single_doc(
         policy_key: policy_data,
     }
 
-    load(mock_db, policies)
+    await load(mock_db, policies)
 
     mock_get_document_type_id.assert_called_once_with(doc.document_type)
     mock_get_category_id.assert_called_once_with(doc.document_category)
@@ -105,10 +110,11 @@ def test_load_single_doc(
 @patch("app.loaders.loader_cclw_v2.load.main.get_category_id")
 @patch("app.loaders.loader_cclw_v2.load.main.get_language_id_by_name")
 @patch("app.loaders.loader_cclw_v2.load.main.get_document_by_unique_constraint")
-@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity_sync")
+@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity")
 @patch("app.loaders.loader_cclw_v2.load.main.get_geography_id")
 @patch("app.loaders.loader_cclw_v2.load.main.get_type_id")
-def test_load_two_related_docs(
+@pytest.mark.asyncio
+async def test_load_two_related_docs(
     mock_get_document_type_id,
     mock_get_geography_id,
     mock_get_document_validity_sync,
@@ -181,7 +187,7 @@ def test_load_two_related_docs(
         policy_key: policy_data,
     }
 
-    load(mock_db, policies)
+    await load(mock_db, policies)
 
     assert mock_get_category_id.call_args_list[0][0][0] == doc.document_category
     assert mock_get_category_id.call_args_list[1][0][0] == doc2.document_category
