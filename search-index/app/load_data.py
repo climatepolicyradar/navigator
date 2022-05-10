@@ -17,6 +17,7 @@ def get_data_from_navigator_tables(
     """
     query = """
       SELECT
+        doc.md5_sum as md5_sum,
         doc.source_url AS source_url,
         source.name as document_source_name,
         doc.id as document_id,
@@ -48,7 +49,7 @@ def get_data_from_navigator_tables(
         geog_country.value as document_country_code,
         geog_region.display_value as region_english_shortname,
         geog_region.value as document_region_code,
-        doc_lang.language_id as document_language_id
+        doc_lang.name as language
       FROM
         DOCUMENT doc
         LEFT JOIN event ON (doc.id = event.document_id)
@@ -70,6 +71,18 @@ def get_data_from_navigator_tables(
                 instrument
             ) instrument ON (instrument.id = document_instrument.instrument_id)
         ) doc_instr ON (doc.id = doc_instr.document_id)
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
+            document_language
+            LEFT JOIN (
+              SELECT
+                *
+              FROM
+                language
+            ) lang ON (lang.id = document_language.language_id)
+        ) doc_lang ON (doc.id = doc_lang.document_id)
         LEFT JOIN (
           SELECT
             *
