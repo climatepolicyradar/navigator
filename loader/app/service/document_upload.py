@@ -9,7 +9,7 @@ from app.service.api_client import upload_document, get_country_code_from_geogra
 logger = logging.getLogger(__file__)
 
 
-def upload_all_documents(db: Session):
+async def upload_all_documents(db: Session):
     """Upload all source_url docs to cloud.
 
     The remote filename follows the template on
@@ -32,14 +32,14 @@ def upload_all_documents(db: Session):
         logger.debug(f"Uploading {document_db.source_url} to {document_db.url}")
         # TODO: make document upload more resilient
         try:
-            _upload_document(db, document_db, country_code, publication_date)
+            await _upload_document(db, document_db, country_code, publication_date)
         except Exception as e:
             logger.warning(
                 f"Uploading document with URL {document_db.source_url} failed: {e}"
             )
 
 
-def _upload_document(
+async def _upload_document(
     db: Session, document_db: Document, country_code: str, publication_date_iso: str
 ):
     """Upload a single doc."""
@@ -51,7 +51,7 @@ def _upload_document(
 
     file_name = f"{country_code}-{publication_date_iso}-{doc_name}"
 
-    cloud_url, md5_sum = upload_document(document_db.source_url, file_name)
+    cloud_url, md5_sum = await upload_document(document_db.source_url, file_name)
     document_db.url = cloud_url
     document_db.md5_sum = md5_sum
     db.add(document_db)

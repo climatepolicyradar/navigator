@@ -78,7 +78,7 @@ async def main():
         await load(db, policies)
 
         # once all data has been loaded into database, upload files to cloud
-        upload_all_documents(db)
+        await upload_all_documents(db)
 
         # This will normally be triggered separately, but we're
         # expediting the load for alpha.

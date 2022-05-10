@@ -10,9 +10,12 @@ from functools import lru_cache
 from typing import Callable, Tuple
 import hashlib
 
+import httpx
 import requests
 
 from app.service.tree_parser import get_unique_from_tree_by_type
+
+transport = httpx.AsyncHTTPTransport(retries=3)
 
 
 def get_type_id(type_name):
@@ -155,7 +158,9 @@ def post_document(payload):
     return response
 
 
-def upload_document(source_url: str, file_name_without_suffix: str) -> Tuple[str, str]:
+async def upload_document(
+    source_url: str, file_name_without_suffix: str
+) -> Tuple[str, str]:
     """Upload a document to the cloud, and returns the cloud URL.
 
     The remote document will have the specified file_name_without_suffix_{md5_hash},
@@ -169,41 +174,49 @@ def upload_document(source_url: str, file_name_without_suffix: str) -> Tuple[str
     """
 
     # download the document
-    download_response = requests.get(source_url)
-    content_type = download_response.headers["Content-Type"]
-    file_content = download_response.content
-    file_content_hash = hashlib.md5(file_content).hexdigest()
+    async with httpx.AsyncClient(transport=transport, timeout=10) as client:
+        download_response = await client.get(source_url, follow_redirects=True)
 
-    # determine the remote file name, including folder structure
-    parts = file_name_without_suffix.split("-")
-    folder_path = parts[0] + "/" + parts[1] + "/"
-    file_suffix = content_type.split("/")[1]
+        content_type = download_response.headers["Content-Type"]
+        file_content = download_response.content
+        file_content_hash = hashlib.md5(file_content).hexdigest()
 
-    # s3 can only handle paths of up to 1024 bytes. To ensure we don't exceed that,
-    # we trim the filename if it's too long
-    filename_max_len = (
-        1024 - len(folder_path) - len(file_suffix) - len(file_content_hash) - len("_.")
-    )
-    file_name_without_suffix_trimmed = file_name_without_suffix[:filename_max_len]
+        # determine the remote file name, including folder structure
+        parts = file_name_without_suffix.split("-")
+        folder_path = parts[0] + "/" + parts[1] + "/"
+        file_suffix = content_type.split("/")[1]
 
-    file_name = f"{file_name_without_suffix_trimmed}_{file_content_hash}.{file_suffix}"
+        # s3 can only handle paths of up to 1024 bytes. To ensure we don't exceed that,
+        # we trim the filename if it's too long
+        filename_max_len = (
+            1024
+            - len(folder_path)
+            - len(file_suffix)
+            - len(file_content_hash)
+            - len("_.")
+        )
+        file_name_without_suffix_trimmed = file_name_without_suffix[:filename_max_len]
 
-    # puts docs in folder <country_code>/<publication_year>/<file_name>
-    full_path = parts[0] + "/" + parts[1] + "/" + file_name
+        file_name = (
+            f"{file_name_without_suffix_trimmed}_{file_content_hash}.{file_suffix}"
+        )
 
-    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
+        # puts docs in folder <country_code>/<publication_year>/<file_name>
+        full_path = parts[0] + "/" + parts[1] + "/" + file_name
 
-    api_host = os.getenv("API_HOST", "http://backend:8888")
-    if api_host.endswith("/"):
-        api_host = api_host[:-1]  # strip trailing slash
+        machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
 
-    headers = {
-        "Authorization": "Bearer {}".format(machine_user_token),
-        "Accept": "application/json",
-    }
-    response = requests.post(
-        f"{api_host}/api/v1/document",
-        headers=headers,
-        files={"file": (full_path, file_content, content_type)},
-    )
-    return response.json()["url"], file_content_hash
+        api_host = os.getenv("API_HOST", "http://backend:8888")
+        if api_host.endswith("/"):
+            api_host = api_host[:-1]  # strip trailing slash
+
+        headers = {
+            "Authorization": "Bearer {}".format(machine_user_token),
+            "Accept": "application/json",
+        }
+        response = await client.post(
+            f"{api_host}/api/v1/document",
+            headers=headers,
+            files={"file": (full_path, file_content, content_type)},
+        )
+        return response.json()["url"], file_content_hash
