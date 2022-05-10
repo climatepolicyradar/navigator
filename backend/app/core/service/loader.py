@@ -85,12 +85,21 @@ def write_metadata(
         return_value = db.execute(do_nothing_stmt)
         if return_value and return_value.inserted_primary_key:
             meta_id = return_value.inserted_primary_key[0]
-            # TODO potentially use meta_id as parent_id
-            db_bridge = DocumentSector(
-                sector_id=meta_id,
-                document_id=db_document.id,
-            )
-            db.add(db_bridge)
+        else:
+            # This is guaranteed to exist
+            existing_sector = (
+                db.query(Sector)
+                .filter(Sector.name == meta.name)
+                .filter(Sector.description == meta.description)
+                .filter(Sector.source_id == db_document.source_id)
+            ).first()
+            meta_id = existing_sector.id  # type: ignore
+
+        db_bridge = DocumentSector(
+            sector_id=meta_id,
+            document_id=db_document.id,
+        )
+        db.add(db_bridge)
 
     # instruments
     for meta in document_with_metadata.instruments:
@@ -104,12 +113,21 @@ def write_metadata(
         return_value = db.execute(do_nothing_stmt)
         if return_value and return_value.inserted_primary_key:
             meta_id = return_value.inserted_primary_key[0]
-            # TODO potentially use meta_id as parent_id
-            db_bridge = DocumentInstrument(
-                instrument_id=meta_id,
-                document_id=db_document.id,
-            )
-            db.add(db_bridge)
+        else:
+            # This is guaranteed to exist
+            existing_instrument = (
+                db.query(Instrument)
+                .filter(Instrument.name == meta.name)
+                .filter(Instrument.description == meta.description)
+                .filter(Instrument.source_id == db_document.source_id)
+            ).first()
+            meta_id = existing_instrument.id  # type: ignore
+
+        db_bridge = DocumentInstrument(
+            instrument_id=meta_id,
+            document_id=db_document.id,
+        )
+        db.add(db_bridge)
 
     # hazards
     for meta in document_with_metadata.hazards:
@@ -121,11 +139,20 @@ def write_metadata(
         return_value = db.execute(do_nothing_stmt)
         if return_value and return_value.inserted_primary_key:
             meta_id = return_value.inserted_primary_key[0]
-            db_bridge = DocumentHazard(
-                hazard_id=meta_id,
-                document_id=db_document.id,
-            )
-            db.add(db_bridge)
+        else:
+            # This is guaranteed to exist
+            existing_hazard = (
+                db.query(Hazard)
+                .filter(Hazard.name == meta.name)
+                .filter(Hazard.description == meta.description)
+            ).first()
+            meta_id = existing_hazard.id  # type: ignore
+
+        db_bridge = DocumentHazard(
+            hazard_id=meta_id,
+            document_id=db_document.id,
+        )
+        db.add(db_bridge)
 
     # responses
     for meta in document_with_metadata.responses:
@@ -137,11 +164,20 @@ def write_metadata(
         return_value = db.execute(do_nothing_stmt)
         if return_value and return_value.inserted_primary_key:
             meta_id = return_value.inserted_primary_key[0]
-            db_bridge = DocumentResponse(
-                response_id=meta_id,
-                document_id=db_document.id,
-            )
-            db.add(db_bridge)
+        else:
+            # This is guaranteed to exist
+            existing_sector = (
+                db.query(Response)
+                .filter(Response.name == meta.name)
+                .filter(Response.description == meta.description)
+            ).first()
+            meta_id = existing_sector.id  # type: ignore
+
+        db_bridge = DocumentResponse(
+            response_id=meta_id,
+            document_id=db_document.id,
+        )
+        db.add(db_bridge)
 
     # frameworks
     for meta in document_with_metadata.frameworks:
@@ -153,11 +189,20 @@ def write_metadata(
         return_value = db.execute(do_nothing_stmt)
         if return_value and return_value.inserted_primary_key:
             meta_id = return_value.inserted_primary_key[0]
-            db_bridge = DocumentFramework(
-                framework_id=meta_id,
-                document_id=db_document.id,
-            )
-            db.add(db_bridge)
+        else:
+            # This is guaranteed to exist
+            existing_framework = (
+                db.query(Framework)
+                .filter(Framework.name == meta.name)
+                .filter(Framework.description == meta.description)
+            ).first()
+            meta_id = existing_framework.id  # type: ignore
+
+        db_bridge = DocumentFramework(
+            framework_id=meta_id,
+            document_id=db_document.id,
+        )
+        db.add(db_bridge)
 
     for meta in document_with_metadata.keywords:
         insert_stmt = insert(Keyword).values(
@@ -168,8 +213,17 @@ def write_metadata(
         return_value = db.execute(do_nothing_stmt)
         if return_value and return_value.inserted_primary_key:
             meta_id = return_value.inserted_primary_key[0]
-            db_bridge = DocumentKeyword(
-                keyword_id=meta_id,
-                document_id=db_document.id,
-            )
-            db.add(db_bridge)
+        else:
+            # This is guaranteed to exist
+            existing_keyword = (
+                db.query(Keyword)
+                .filter(Keyword.name == meta.name)
+                .filter(Keyword.description == meta.description)
+            ).first()
+            meta_id = existing_keyword.id  # type: ignore
+
+        db_bridge = DocumentKeyword(
+            keyword_id=meta_id,
+            document_id=db_document.id,
+        )
+        db.add(db_bridge)

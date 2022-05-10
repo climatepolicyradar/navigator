@@ -41,8 +41,8 @@ from app.db.models import (
 from app.db.schemas.document import (
     DocumentCreateWithMetadata,
     DocumentInDB,
-    DocumentDetail,
-    RelatedDocument,
+    DocumentDetailResponse,
+    RelatedDocumentResponse,
 )
 from app.db.schemas.metadata import (
     Category as CategorySchema,
@@ -68,7 +68,7 @@ documents_router = r = APIRouter()
 
 @r.get(
     "/documents/{document_id}",
-    response_model=DocumentDetail,
+    response_model=DocumentDetailResponse,
     response_model_exclude_none=True,
 )
 async def get_document_detail(
@@ -93,23 +93,27 @@ async def get_document_detail(
             500, f"Query returned multiple results for id {document_id}"
         )
 
+    # Retrieve all events associated with this document
     events = db.query(Event).filter(Event.document_id == document_id).all()
     events = sorted(events, key=lambda e: e.created_ts)
 
+    # Retrieve all metadata associated with this document via join tables
     languages = (
         db.query(DocumentLanguage, Language)
         .filter(DocumentLanguage.document_id == document_id)
         .join(Language)
     ).all()
     sectors = (
-        db.query(DocumentSector, Sector)
+        db.query(DocumentSector, Sector, Source)
         .filter(DocumentSector.document_id == document_id)
-        .join(Sector)
+        .join(Sector, DocumentSector.sector_id == Sector.id)
+        .join(Source, Sector.source_id == Source.id)
     ).all()
     instruments = (
-        db.query(DocumentInstrument, Instrument)
+        db.query(DocumentInstrument, Instrument, Source)
         .filter(DocumentInstrument.document_id == document_id)
-        .join(Instrument)
+        .join(Instrument, DocumentInstrument.instrument_id == Instrument.id)
+        .join(Source, Instrument.source_id == Source.id)
     ).all()
     frameworks = (
         db.query(DocumentFramework, Framework)
@@ -138,8 +142,9 @@ async def get_document_detail(
         .join(Geography, Document.geography_id == Geography.id)
     ).all()
 
+    # Now build the required response object
     document, geography, doc_type, category, source = document_data.first()
-    return DocumentDetail(
+    return DocumentDetailResponse(
         id=document_id,
         loaded_ts=cast(datetime, document.loaded_ts),
         name=cast(str, document.name),
@@ -172,7 +177,10 @@ async def get_document_detail(
             )
             for _, l in languages
         ],
-        events=[EventSchema(name=e.name, description=e.description) for e in events],
+        events=[
+            EventSchema(name=e.name, description=e.description, created_ts=e.created_ts)
+            for e in events
+        ],
         frameworks=[
             FrameworkSchema(name=f.name, description=f.description)
             for _, f in frameworks
@@ -181,20 +189,27 @@ async def get_document_detail(
             HazardSchema(name=h.name, description=h.description) for _, h in hazards
         ],
         instruments=[
-            InstrumentSchema(name=i.name, description=i.description)
-            for _, i in instruments
+            InstrumentSchema(
+                name=i.name, description=i.description, source=SourceSchema(name=s.name)
+            )
+            for _, i, s in instruments
         ],
         keywords=[
             KeywordSchema(name=k.name, description=k.description) for _, k in keywords
         ],
         sectors=[
-            SectorSchema(name=s.name, description=s.description) for _, s in sectors
+            SectorSchema(
+                name=s.name,
+                description=s.description,
+                source=SourceSchema(name=src.name),
+            )
+            for _, s, src in sectors
         ],
         topics=[
             TopicSchema(name=t.name, description=t.description) for _, t in responses
         ],
         related_documents=[
-            RelatedDocument(
+            RelatedDocumentResponse(
                 related_id=d.id,
                 name=d.name,
                 description=d.description,

@@ -12,10 +12,13 @@ from app.db.schemas.metadata import (
     Geography,
     Hazard,
     Instrument,
+    InstrumentCreate,
     Keyword,
     Language,
     Sector,
+    SectorCreate,
     Source,
+    Response,
     Topic,
 )
 
@@ -65,10 +68,7 @@ class DocumentInDB(_DocumentInDBBase):
 
 class _DocumentExtraDetail(BaseModel):
     events: List[Event]
-    sectors: List[Sector]
-    instruments: List[Instrument]
     frameworks: List[Framework]
-    topics: List[Topic]
     hazards: List[Hazard]
     keywords: List[Keyword]
 
@@ -80,9 +80,14 @@ class DocumentCreateWithMetadata(_DocumentExtraDetail):  # noqa: D101
     source_id: int
     # the loader gets the language via API lookup, so it will exist on the API passages?
     language_ids: List[int]
+    # putting this here so we can rename it to topics for the frontend
+    responses: List[Response]
+    # The input varies from the output here
+    sectors: List[SectorCreate]
+    instruments: List[InstrumentCreate]
 
 
-class RelatedDocument(BaseModel):  # noqa: D101
+class RelatedDocumentResponse(BaseModel):  # noqa: D101
     related_id: int
     name: str
     description: str
@@ -91,7 +96,7 @@ class RelatedDocument(BaseModel):  # noqa: D101
     year: int
 
 
-class DocumentDetail(_DocumentExtraDetail):
+class DocumentDetailResponse(_DocumentExtraDetail):
     """A Document to return to the client for the Document cover page"""
 
     id: int
@@ -107,5 +112,6 @@ class DocumentDetail(_DocumentExtraDetail):
     category: Category
     languages: List[Language]
     sectors: List[Sector]
+    related_documents: List[RelatedDocumentResponse]
     topics: List[Topic]
-    related_documents: List[RelatedDocument]
+    instruments: List[Instrument]
