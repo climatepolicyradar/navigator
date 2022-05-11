@@ -13,7 +13,11 @@ from fastapi import (
     UploadFile,
 )
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import (
+    get_current_active_superuser,
+    get_current_active_user,
+    get_current_active_db_superuser,
+)
 from app.core.service.loader import persist_document_and_metadata
 from app.db.models import (
     Association,
@@ -227,7 +231,7 @@ async def post_document(
     request: Request,
     document_with_metadata: DocumentCreateWithMetadata,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_db_superuser),
 ):
     """Create a document, with associated metadata."""
 

@@ -3,8 +3,20 @@ import typing as t
 from pydantic import BaseModel
 
 
-class UserBaseWithoutFlags(BaseModel):  # noqa: D101
+class _User(BaseModel):  # noqa: D101
     email: str
+
+
+class UserFlags(BaseModel):  # noqa: D101
+    is_active: bool = False
+    is_superuser: bool = False
+
+
+class JWTUser(_User, UserFlags):
+    """Used by get_current_user dependency injection"""
+
+
+class UserPreferences(BaseModel):  # noqa: D101
     names: t.Optional[str] = None
     job_role: t.Optional[str] = None
     location: t.Optional[str] = None
@@ -15,9 +27,12 @@ class UserBaseWithoutFlags(BaseModel):  # noqa: D101
     data_focus_of_interest: t.Optional[t.List[str]] = None
 
 
-class UserBase(UserBaseWithoutFlags):  # noqa: D101
-    is_active: bool = False
-    is_superuser: bool = False
+class UserBaseWithoutFlags(_User, UserPreferences):  # noqa: D101
+    pass
+
+
+class UserBase(_User, UserFlags, UserPreferences):  # noqa: D101
+    pass
 
 
 class UserCreate(UserBaseWithoutFlags):  # noqa: D101

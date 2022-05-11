@@ -85,15 +85,37 @@ def _get_attribute(lookup_key: str, lookup_fn: Callable, attribute_key: str):
         return None
 
 
+def _get_api_host():
+    """Returns API host configured in environment."""
+    api_host = os.getenv("API_HOST", "http://backend:8888")
+    if api_host.endswith("/"):
+        api_host = api_host[:-1]  # strip trailing slash
+    return api_host
+
+
+@lru_cache()
+def _get_machine_user_token():
+    username = os.getenv("MACHINE_USER_LOADER_EMAIL")
+    password = os.getenv("MACHINE_USER_LOADER_PASSWORD")
+    api_host = _get_api_host()
+
+    login_data = {
+        "username": username,
+        "password": password,
+    }
+    r = requests.post(f"{api_host}/api/tokens", data=login_data)
+    tokens = r.json()
+    a_token = tokens["access_token"]
+
+    return a_token
+
+
 @lru_cache()
 def _get_lookup_from_api(model):
     """Returns a lookup from the API and caches the result."""
 
-    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
-
-    api_host = os.getenv("API_HOST", "http://backend:8888")
-    if api_host.endswith("/"):
-        api_host = api_host[:-1]  # strip trailing slash
+    machine_user_token = _get_machine_user_token()
+    api_host = _get_api_host()
 
     headers = {"Authorization": "Bearer {}".format(machine_user_token)}
     response = requests.get(f"{api_host}/api/v1/{model}", headers=headers)
@@ -143,11 +165,8 @@ def _keyed(data, lookup_key):
 
 
 def post_document(payload):
-    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
-
-    api_host = os.getenv("API_HOST", "http://backend:8888")
-    if api_host.endswith("/"):
-        api_host = api_host[:-1]  # strip trailing slash
+    machine_user_token = _get_machine_user_token()
+    api_host = _get_api_host()
 
     headers = {
         "Authorization": "Bearer {}".format(machine_user_token),
@@ -198,11 +217,8 @@ async def upload_document(
     # puts docs in folder <country_code>/<publication_year>/<file_name>
     full_path = parts[0] + "/" + parts[1] + "/" + file_name
 
-    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
-
-    api_host = os.getenv("API_HOST", "http://backend:8888")
-    if api_host.endswith("/"):
-        api_host = api_host[:-1]  # strip trailing slash
+    machine_user_token = _get_machine_user_token()
+    api_host = _get_api_host()
 
     headers = {
         "Authorization": "Bearer {}".format(machine_user_token),
