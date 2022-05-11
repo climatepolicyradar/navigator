@@ -52,8 +52,8 @@ async def load(ctx: Context, policies: PolicyLookup):
         tasks.append(task)
 
         # -- for debugging
-        # if len(tasks) > 1:
-        #     break
+        if len(tasks) > 100:
+            break
 
     doc_counts = await asyncio.gather(
         *tasks,

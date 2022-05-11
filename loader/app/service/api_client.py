@@ -178,6 +178,20 @@ def post_document(payload):
     return response
 
 
+def post_associations(payload):
+    machine_user_token = _get_machine_user_token()
+    api_host = _get_api_host()
+
+    headers = {
+        "Authorization": "Bearer {}".format(machine_user_token),
+        "Accept": "application/json",
+    }
+    response = requests.post(
+        f"{api_host}/api/v1/associations", headers=headers, json=payload
+    )
+    return response
+
+
 async def upload_document(
     ctx: Context, source_url: str, file_name_without_suffix: str
 ) -> Tuple[str, str]:

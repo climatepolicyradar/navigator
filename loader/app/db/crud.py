@@ -29,7 +29,3 @@ def get_document_by_unique_constraint(
 
 def get_all_valid_documents(db: Session) -> List[Document]:
     return db.query(Document).filter(Document.is_valid).all()
-
-
-def get_all_valid_documents_grouped_by_association(db: Session) -> List[Document]:
-    return db.query(Document).filter(Document.is_valid).all()
