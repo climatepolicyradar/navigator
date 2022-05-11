@@ -149,7 +149,7 @@ class Backend:
                     arg_list,
                 )
             )
-            return DOCKER_COMPOSE_TEMPLATE.format(template_args)
+            return DOCKER_COMPOSE_TEMPLATE.format(**template_args)
 
         docker_compose_file = pulumi.Output.all(
             nginx_image.image_name,
