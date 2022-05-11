@@ -11,6 +11,51 @@ from cpr.deployment_resources.main import DeploymentResources, default_tag
 from cpr.plumbing.main import Plumbing
 from cpr.storage.main import Storage
 
+# for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
+DOCKER_COMPOSE_TEMPLATE = """version: '3.7'
+
+services:
+
+  nginx:
+    image: {nginx_image}
+    mem_limit: 128m
+    ports:
+      - 80:80
+    volumes:
+      - "${{EB_LOG_BASE_DIR}}/nginx:/var/log/nginx"
+    depends_on:
+      - backend
+      - frontend
+
+  backend:
+    image: {backend_image}
+    mem_limit: 4096m
+    command: python app/main.py
+    ports:
+      - 8888:8888
+    environment:
+      PYTHONPATH: .
+      PORT: 8888
+      OPENSEARCH_INDEX: navigator
+      DATABASE_URL: {database_url}
+      SECRET_KEY: {secret_key}
+      OPENSEARCH_USER: {opensearch_user}
+      OPENSEARCH_PASSWORD: {opensearch_password}
+      OPENSEARCH_URL: {opensearch_url}
+      PUBLIC_APP_URL: {public_app_url}
+
+  frontend:
+    image: {frontend_image}
+    mem_limit: 256m
+    command: npm run start
+    environment:
+      PORT: 3000
+    ports:
+      - 3000:3000
+    volumes:
+      - "${{EB_LOG_BASE_DIR}}/frontend:/root/.npm/_logs"
+"""
+
 
 class Backend:
     """Deploys all resources necessary for backend API to function."""
@@ -77,72 +122,46 @@ class Backend:
         opensearch_user = config.require("opensearch_user")
         opensearch_password = config.require_secret("opensearch_password")
         opensearch_url = config.require("opensearch_url")
+        sendgrid_api_token = config.require("sendgrid_api_token")
+        sendgrid_from_email = config.require("sendgrid_from_email")
+        sendgrid_enabled = config.require("sendgrid_enabled")
+        public_app_url = config.require("public_app_url")
 
-        # for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
-        docker_compose_template = """version: '3.7'
-
-services:
-
-  nginx:
-    image: %s
-    mem_limit: 128m
-    ports:
-      - 80:80
-    volumes:
-      - "${EB_LOG_BASE_DIR}/nginx:/var/log/nginx"
-    depends_on:
-      - backend
-      - frontend
-
-  backend:
-    image: %s
-    mem_limit: 4096m
-    command: python app/main.py
-    ports:
-      - 8888:8888
-    environment:
-      PYTHONPATH: .
-      PORT: 8888
-      OPENSEARCH_INDEX: navigator
-      DATABASE_URL: %s
-      SECRET_KEY: %s
-      OPENSEARCH_USER: %s
-      OPENSEARCH_PASSWORD: %s
-      OPENSEARCH_URL: %s
-
-  frontend:
-    image: %s
-    mem_limit: 256m
-    command: npm run start
-    environment:
-      PORT: 3000
-    ports:
-      - 3000:3000
-    volumes:
-      - "${EB_LOG_BASE_DIR}/frontend:/root/.npm/_logs"
-        """
-
-        def fill_template(arg):
-            return docker_compose_template % (
-                arg[0],
-                arg[1],
-                arg[2],
-                arg[3],
-                arg[4],
-                arg[5],
-                arg[6],
-                arg[7],
+        def fill_template(arg_list):
+            template_args = dict(
+                zip(
+                    [
+                        "nginx_image",
+                        "backend_image",
+                        "frontend_image",
+                        "database_url",
+                        "secret_key",
+                        "opensearch_user",
+                        "opensearch_password",
+                        "opensearch_url",
+                        "sendgrid_api_token",
+                        "sendgrid_from_email",
+                        "sendgrid_enabled",
+                        "public_app_url",
+                    ],
+                    arg_list,
+                )
             )
+            return DOCKER_COMPOSE_TEMPLATE.format(template_args)
 
         docker_compose_file = pulumi.Output.all(
             nginx_image.image_name,
             self.backend_image.image_name,
+            frontend_image.image_name,
             storage.backend_database_connection_url,
             backend_secret_key,
             opensearch_user,
             opensearch_password,
             opensearch_url,
-            frontend_image.image_name,
+            sendgrid_api_token,
+            sendgrid_from_email,
+            sendgrid_enabled,
+            public_app_url,
         ).apply(fill_template)
 
         pulumi.export("docker_compose_file", docker_compose_file)

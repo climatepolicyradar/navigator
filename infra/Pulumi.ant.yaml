@@ -9,3 +9,9 @@ config:
     secure: AAABACpmQSD5m7Nta16jIdVuBTtcE8IevzI44dXT3/W8hCSA6rEbz8nVv2/JtdYo4wrZYaWaQ3YNHcYVRmaIQTA80AryoI5BFY/ZByEZ
   infra:opensearch_url: https://search-opensearch-dev-temp-nzkttufrxxmadvl37l4teezwri.eu-west-2.es.amazonaws.com
   infra:opensearch_user: cpr-master
+  infra:public_app_url: https://app.climatepolicyradar.org
+  infra:sendgrid_api_token:
+    secure: AAABAOdYi9vQCHT8oWxCM0r4jB2y0QCLuW14t+X2ngUoWQ83iU+BDzJwuZySy2KDCTLKLozHkxJy99Vklm00FW5W98QDfaB5xieSHlkaNeZTKFgGNa/bbcTp3RqvRoP9BVa1idA=
+  infra:sendgrid_enabled: "True"
+  infra:sendgrid_from_email:
+    secure: AAABAAUz13vgcjUK/1t5VU7Hy7/EYKkKtB8Gv16H+ZDtA0XJo1VE9unvxRG4H6bKASx2WpsYmTq7Jcbvvxg=
