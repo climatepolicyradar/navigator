@@ -11,7 +11,7 @@ import click
 from navigator.core.log import get_logger
 from app.db import PostgresConnector
 from app.index import OpenSearchIndex
-from app.load_data import create_dataset
+from app.load_data import get_data_from_navigator_tables
 
 logger = get_logger(__name__)
 
@@ -41,45 +41,54 @@ def get_document_generator(
     # Create name_and_id field to group by and sort on in Elasticsearch aggregation.
     # TODO: this needs to be a combination of document name and document ID when we remove
     # the concept of actions.
-    main_dataset["action_name_and_id"] = (
-        main_dataset["action_name"] + " " + main_dataset["document_id"].astype(str)
+    main_dataset["document_name_and_id"] = (
+        main_dataset["document_name"] + " " + main_dataset["document_id"].astype(str)
     )
 
-    main_dataset["action_date"] = main_dataset["action_date"].apply(
+    main_dataset["document_date"] = main_dataset["document_date"].apply(
         lambda i: i.strftime("%d/%m/%Y")
     )
-    main_dataset["action_description"] = main_dataset["action_description"].str.strip()
+    main_dataset["document_description"] = main_dataset[
+        "document_description"
+    ].str.strip()
 
     # --------------------------------------------------------------------------------------------
 
     metadata_columns = [
+        "md5_sum",
         "document_id",
-        "document_language_id",
         "document_name",
-        "action_id",
-        "action_date",
-        "action_name",
-        "action_description",
-        "action_name_and_id",
-        "action_country_code",
-        "action_geography_english_shortname",
-        "action_source_name",
-        "action_type_name",
+        "document_date",
+        "document_description",
+        "document_category",
+        "document_type",
+        "keyword",
+        "sector_name",
+        "hazard_name",
+        "instrument_name",
+        "document_language",
+        "instrument_parent",
+        "framework_name",
+        "document_category",
+        "instrument_parent",
+        "document_name_and_id",
+        "document_type",
+        "document_country_code",
+        "country_english_shortname",
+        "region_english_shortname",
+        "document_region_code",
+        "document_source_name",
     ]
 
     # These columns are used to create one Opensearch document per CPR document, so that they're
     # searchable over as well as the text. Methods for these to be searched should be defined in
     # the index mapping.
     extra_text_columns = [
-        "action_name",
-        "action_description",
+        "document_name",
+        "document_description",
     ]
-
-    for document_id, document_df in text_and_ids_data.groupby("document_id"):
-
-        doc_metadata = main_dataset.loc[
-            main_dataset["prototype_filename_stem"] == document_id
-        ]
+    for document_id, document_df in text_and_ids_data.groupby("document_md5_hash"):
+        doc_metadata = main_dataset.loc[main_dataset["md5_sum"] == document_id]
         if len(doc_metadata) == 0:
             logger.warning(
                 f"Skipping document {document_id} as not in the Navigator database."
@@ -106,11 +115,11 @@ def get_document_generator(
                 ]
             }
 
-            if (text_col_name == "action_description") and (
+            if (text_col_name == "document_description") and (
                 doc_description_embedding is not None
             ):
                 text_col_dict[
-                    "action_description_embedding"
+                    "document_description_embedding"
                 ] = doc_description_embedding.tolist()
 
             yield dict(doc_metadata_dict, **text_col_dict)
@@ -175,7 +184,6 @@ def load_description_embeddings_and_metadata(
 
     embs = load_embeddings(embs_path, embedding_dim)
     metadata = pd.read_csv(ids_path, header=None, names=["document_id"])
-
     output_dict = dict()
 
     for idx, doc_id in metadata["document_id"].items():
@@ -211,7 +219,7 @@ def run_cli(
         production three-node cluster: each primary shard has a replica on both other nodes.
     """
     postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
-    main_dataset = create_dataset(postgres_connector)
+    main_dataset = get_data_from_navigator_tables(postgres_connector)
 
     ids_table = load_text_and_ids_json(text_ids_path)
     embs = load_embeddings(embeddings_path, embedding_dim=embedding_dim)
@@ -222,6 +230,12 @@ def run_cli(
         main_dataset, ids_table, embs, description_embs_dict
     )
 
+    def _convert_to_bool(x):
+        if x.lower() == "true":
+            return True
+        elif x.lower() == "false":
+            return False
+
     opensearch = OpenSearchIndex(
         url=os.environ["OPENSEARCH_URL"],
         username=os.environ["OPENSEARCH_USER"],
@@ -229,13 +243,12 @@ def run_cli(
         index_name=os.environ["OPENSEARCH_INDEX"],
         # TODO: convert to env variables?
         opensearch_connector_kwargs={
-            "use_ssl": os.environ["OPENSEARCH_USE_SSL"],
-            "verify_certs": os.environ["OPENSEARCH_VERIFY_CERTS"],
+            "use_ssl": _convert_to_bool(os.environ["OPENSEARCH_USE_SSL"]),
+            "verify_certs": _convert_to_bool(os.environ["OPENSEARCH_VERIFY_CERTS"]),
             "ssl_show_warn": os.environ["OPENSEARCH_SSL_WARNINGS"],
         },
         embedding_dim=int(os.environ["OPENSEARCH_INDEX_EMBEDDING_DIM"]),
     )
-
     opensearch.delete_and_create_index(n_replicas=index_no_replicas)
     # We disable index refreshes during indexing to speed up the indexing process,
     # and to ensure only 1 segment is created per shard. This also speeds up KNN
