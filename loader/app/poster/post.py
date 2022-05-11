@@ -100,6 +100,7 @@ def post_doc(db: Session, doc: Document) -> dict:
             "source_id": doc.source_id,
             "geography_id": doc.geography_id,  # this is from backend API lookup, so will exist remotely.
             "category_id": doc.category_id,  # this is from backend API lookup, so will exist remotely.
+            "publication_ts": doc.publication_ts,
         },
         "source_id": doc.source_id,
         "events": [it.as_dict() for it in events],

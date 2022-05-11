@@ -54,7 +54,7 @@ def test_transform():
     assert doc_one.doc_languages == ["English"]
     assert doc_one.doc_url == "https://doc"
     assert doc_one.document_category == "Law"
-    assert doc_one.document_date == dt.datetime(2020, 1, 1)
+    assert doc_one.publication_date == dt.datetime(2020, 1, 1)
     assert doc_one.sectors == ["Two", "Sectors"]
     assert doc_one.document_type == "doc type"
     assert doc_one.keywords == ["keyword1", "keyword2"]
@@ -118,4 +118,6 @@ def test_transform_no_date():
     results: PolicyLookup = transform(policies_fe)
 
     keys = list(results.keys())
-    assert len(keys) == 0
+    assert (
+        len(keys) == 1
+    )  # as dates always default to 1900, in the absence of anything else.

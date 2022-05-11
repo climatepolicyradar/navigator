@@ -57,7 +57,7 @@ async def test_load_single_doc(
         doc_languages=["en"],
         doc_description="doc description",
         document_type="doc type",
-        document_date=datetime(2021, 5, 4),  # ... be with you
+        publication_date=datetime(2021, 5, 4),  # ... be with you
         document_category="doc 🐱",
         hazards=[],
         events=[],
@@ -104,7 +104,7 @@ async def test_load_single_doc(
     assert called_event.document_id == called_doc.id
     assert called_event.name == "Publication"
     assert called_event.description == "The publication date"
-    assert called_event.created_ts == doc.document_date
+    assert called_event.created_ts == doc.publication_date
 
     mock_db.commit.assert_called_once()
 
@@ -155,7 +155,7 @@ async def test_load_two_related_docs(
         doc_description="doc description",
         doc_languages=["en"],
         document_type="doc1 type",
-        document_date=datetime(2021, 5, 4),  # ... be with you
+        publication_date=datetime(2021, 5, 4),  # ... be with you
         document_category="doc 🐱",
         hazards=[],
         events=[],
@@ -171,7 +171,7 @@ async def test_load_two_related_docs(
         doc_description="doc 2 description",
         doc_languages=["af"],
         document_type="doc2 type",
-        document_date=datetime(2020, 5, 4),  # ... be with you
+        publication_date=datetime(2020, 5, 4),  # ... be with you
         document_category="doc 2 🐱",
         hazards=[],
         events=[],
@@ -237,7 +237,7 @@ async def test_load_two_related_docs(
     assert called_event.document_id == called_doc.id
     assert called_event.name == "Publication"
     assert called_event.description == "The publication date"
-    assert called_event.created_ts == doc.document_date
+    assert called_event.created_ts == doc.publication_date
 
     # assert first doc's language was added
     called_doc_language = mock_db.add.call_args_list[2][0][0]
@@ -271,7 +271,7 @@ async def test_load_two_related_docs(
     assert called_event2.document_id == called_doc2.id
     assert called_event2.name == "Publication"
     assert called_event2.description == "The publication date"
-    assert called_event2.created_ts == doc2.document_date
+    assert called_event2.created_ts == doc2.publication_date
 
     # assert second doc's language was added
     called_doc2_language = mock_db.add.call_args_list[6][0][0]
