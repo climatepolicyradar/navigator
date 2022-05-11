@@ -1,4 +1,5 @@
 import logging
+import os
 from pathlib import Path
 
 from fastapi import (
@@ -58,9 +59,10 @@ def document_upload(
     if file_path.suffix.lower() not in (".pdf", ".html", ".htm"):
         raise HTTPException(415, "Unsupported Media Type: must be PDF or HTML.")
 
+    bucket = os.environ.get("DOCUMENT_BUCKET", "cpr-document-queue")
     s3_document = s3_client.upload_fileobj(
         fileobj=file.file,
-        bucket="cpr-document-queue",
+        bucket=bucket,
         key=str(file_path),
         content_type=file.content_type,
     )

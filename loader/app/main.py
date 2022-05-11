@@ -1,12 +1,16 @@
+import asyncio
 import logging.config
 import os
 from pathlib import Path
+
+import httpx
 
 from app.db.session import get_db
 from app.loaders.loader_cclw_v2.extract.main import extract
 from app.loaders.loader_cclw_v2.load.main import load
 from app.loaders.loader_cclw_v2.transform.main import transform
 from app.poster.main import post_all_to_backend_api
+from app.service.context import Context
 from app.service.document_upload import upload_all_documents
 
 DEFAULT_LOGGING = {
@@ -40,6 +44,9 @@ logging.config.dictConfig(DEFAULT_LOGGING)
 
 logger = logging.getLogger(__file__)
 
+# transport retries are for connection errors, not 5XX
+transport = httpx.AsyncHTTPTransport(retries=3)
+
 
 def get_data_dir():
     data_dir = os.environ.get("DATA_DIR")
@@ -50,7 +57,7 @@ def get_data_dir():
     return data_dir
 
 
-def main():
+async def main():
     """ETL for policy data.
 
     Extact policy data from known CCLW data source (and later this will be event-driven)
@@ -74,14 +81,19 @@ def main():
     data = extract(csv_file)
     policies = transform(data)  # noqa: F841
     for db in get_db():
-        load(db, policies)
+        async with httpx.AsyncClient(transport=transport, timeout=10) as client:
+            ctx = Context(
+                db=db,
+                client=client,
+            )
+            await load(ctx, policies)
 
-        # once all data has been loaded into database, upload files to cloud
-        upload_all_documents(db)
+            # once all data has been loaded into database, upload files to cloud
+            await upload_all_documents(ctx)
 
-        # This will normally be triggered separately, but we're
-        # expediting the load for alpha.
-        post_all_to_backend_api(db)
+            # This will normally be triggered separately, but we're
+            # expediting the load for alpha.
+            post_all_to_backend_api(ctx)
 
 
 if __name__ == "__main__":
@@ -93,4 +105,4 @@ if __name__ == "__main__":
         load_dotenv("../../.env")
         load_dotenv("../../.env.local")
 
-    main()
+    asyncio.run(main())

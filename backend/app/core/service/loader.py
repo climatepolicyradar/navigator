@@ -1,12 +1,13 @@
+import logging
+
 from fastapi import (
     HTTPException,
 )
+from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-import logging
 
 from app.db.crud.document import create_document
-from app.db.schemas.metadata import DocumentCreateWithMetadata
 from app.db.models import (
     Document,
     Event,
@@ -24,8 +25,7 @@ from app.db.models import (
     Keyword,
     DocumentKeyword,
 )
-from sqlalchemy.dialects.postgresql import insert
-
+from app.db.schemas.metadata import DocumentCreateWithMetadata
 
 logger = logging.getLogger(__file__)
 
@@ -69,6 +69,7 @@ def write_metadata(
             document_id=db_document.id,
             name=event.name,
             description=event.description,
+            created_ts=event.created_ts,
         )
         db.add(db_event)
 
