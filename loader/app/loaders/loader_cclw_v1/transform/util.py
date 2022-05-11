@@ -115,7 +115,7 @@ def get_policy_data(
                     responses=responses,
                     hazards=hazards,
                     keywords=[],  # not supported in v1 CSV
-                    document_date=None,
+                    publication_date=None,
                     document_category="",
                     doc_description="",
                 )

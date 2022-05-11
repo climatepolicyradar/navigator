@@ -58,6 +58,7 @@ class Document(Base, Auditable):
     # created_by = sa.Column(sa.Integer, sa.ForeignKey(User.id))
     # updated_by = sa.Column(sa.Integer, sa.ForeignKey(User.id))
     loaded_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
+    publication_ts = sa.Column(sa.DateTime, nullable=False)
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     source_url = sa.Column(sa.Text, nullable=False)

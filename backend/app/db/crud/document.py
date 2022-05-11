@@ -1,3 +1,4 @@
+from fastapi import HTTPException
 from sqlalchemy import and_, exists
 from sqlalchemy.orm import Session
 
@@ -22,9 +23,12 @@ def create_document(
         geography_id=document.geography_id,
         type_id=document.type_id,
         category_id=document.category_id,
+        publication_ts=document.publication_ts,
     )
 
     db.add(db_document)
+    # TODO don't call commit here. Perhaps in a middleware somewhere before the response is returned
+    # Removing commit here will ensure: roll back the doc if there's a subsequent error persisting metadata.
     db.commit()
     db.refresh(db_document)
 
@@ -47,3 +51,14 @@ def is_document_exists(
             )
         )
     ).scalar()
+
+
+def get_document(db: Session, document_id: int) -> Document:
+    document = db.query(Document).filter(Document.id == document_id).first()
+    if not document:
+        raise HTTPException(
+            status_code=404,
+            detail=f"Document not found with ID {document_id}",
+        )
+
+    return document

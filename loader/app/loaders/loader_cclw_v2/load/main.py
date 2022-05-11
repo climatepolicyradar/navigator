@@ -84,7 +84,7 @@ async def save_action(ctx: Context, key: Key, policy_data: PolicyData) -> int:
         doc_count = 0
         for doc in policy_data.docs:
 
-            document_date: datetime = doc.document_date
+            document_date: datetime = doc.publication_date
             if document_date is None:
                 logger.warning(f"Date is null for document {doc.doc_name}")
 
@@ -161,6 +161,7 @@ async def save_action(ctx: Context, key: Key, policy_data: PolicyData) -> int:
                 geography_id=geography_id,
                 type_id=document_type_id,
                 category_id=category_id,
+                publication_ts=document_date,
             )
             ctx.db.add(document_db)
             ctx.db.flush()
@@ -184,7 +185,7 @@ async def save_action(ctx: Context, key: Key, policy_data: PolicyData) -> int:
                 document_id=document_db.id,
                 name="Publication",
                 description="The publication date",
-                created_ts=doc.document_date,
+                created_ts=doc.publication_date,
             )
             ctx.db.add(event_db)
 
