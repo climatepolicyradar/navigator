@@ -284,11 +284,6 @@ class Backend:
                     name="RootVolumeSize",
                     value="16",  # default is 8GB, but we're making space for pytorch
                 ),
-                aws.elasticbeanstalk.EnvironmentSettingArgs(
-                    namespace="aws:elasticbeanstalk:application:environment",
-                    name="SECRET_KEY",
-                    value=backend_secret_key,
-                ),
             ],
         )
 
