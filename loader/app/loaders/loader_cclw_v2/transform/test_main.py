@@ -118,4 +118,6 @@ def test_transform_no_date():
     results: PolicyLookup = transform(policies_fe)
 
     keys = list(results.keys())
-    assert len(keys) == 0
+    assert (
+        len(keys) == 1
+    )  # as dates always default to 1900, in the absence of anything else.
