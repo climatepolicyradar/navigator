@@ -127,6 +127,8 @@ class Backend:
         sendgrid_enabled = config.require("sendgrid_enabled")
         public_app_url = config.require("public_app_url")
 
+        pulumi.export("opensearch_url", opensearch_url)
+
         def fill_template(arg_list):
             template_args = dict(
                 zip(
@@ -163,8 +165,6 @@ class Backend:
             sendgrid_enabled,
             public_app_url,
         ).apply(fill_template)
-
-        pulumi.export("docker_compose_file", docker_compose_file)
 
         def create_deploy_resource(manifest):
             # TODO delete this file if it exists
