@@ -41,7 +41,7 @@ class Doc:  # noqa: D101
     doc_languages: List[str]
     doc_url: str
     document_type: str
-    document_date: Optional[datetime]
+    publication_date: datetime
     document_category: str
     # metadata
     events: List[Event]

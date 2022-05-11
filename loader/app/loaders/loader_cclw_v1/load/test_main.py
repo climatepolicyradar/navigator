@@ -57,7 +57,7 @@ def test_load_single_doc(
         sectors=[],
         instruments=[],
         keywords=[],
-        document_date=None,
+        publication_date=None,
         document_category="",
     )
     policy_data: PolicyData = PolicyData(
@@ -152,7 +152,7 @@ def test_load_two_related_docs(
         sectors=[],
         instruments=[],
         keywords=[],
-        document_date=None,
+        publication_date=None,
         document_category="",
     )
     doc2: Doc = Doc(
@@ -168,7 +168,7 @@ def test_load_two_related_docs(
         sectors=[],
         instruments=[],
         keywords=[],
-        document_date=None,
+        publication_date=None,
         document_category="",
     )
     policy_data: PolicyData = PolicyData(

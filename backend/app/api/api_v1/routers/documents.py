@@ -149,7 +149,7 @@ async def get_document_detail(
         loaded_ts=cast(datetime, document.loaded_ts),
         name=cast(str, document.name),
         description=cast(str, document.description),
-        year=1900,  # TODO: complete
+        publication_ts=document.publication_ts,
         source_url=cast(str, document.source_url),
         url=cast(str, document.url),
         geography=GeographySchema(
@@ -215,7 +215,7 @@ async def get_document_detail(
                 description=d.description,
                 country_code=g.value,
                 country_name=g.display_value,
-                year=1900,  # TODO: complete
+                publication_ts=d.publication_ts,
             )
             for _, d, g in related_documents
         ],

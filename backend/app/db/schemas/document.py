@@ -30,6 +30,7 @@ class _DocumentBase(BaseModel):  # noqa: D106
     """
 
     loaded_ts: Optional[datetime.datetime]
+    publication_ts: Optional[datetime.datetime]
     name: str
     description: str
     source_url: str
@@ -93,7 +94,7 @@ class RelatedDocumentResponse(BaseModel):  # noqa: D101
     description: str
     country_code: str
     country_name: str
-    year: int
+    publication_ts: datetime.datetime
 
 
 class DocumentDetailResponse(_DocumentExtraDetail):
@@ -103,7 +104,7 @@ class DocumentDetailResponse(_DocumentExtraDetail):
     loaded_ts: Optional[datetime.datetime]
     name: str
     description: str
-    year: Optional[int]
+    publication_ts: datetime.datetime
     source_url: str
     url: str
     geography: Geography

@@ -73,6 +73,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
     payload = {
         "document": {
             "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
+            "publication_ts": "2000-01-01T00:00:00.000000+00:00",
             "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
             "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
@@ -125,11 +126,12 @@ def test_post_documents(client, superuser_token_headers, test_db):
 
     assert response.status_code == 200
 
-    doc = test_db.query(Document).first()
+    doc: Document = test_db.query(Document).first()
     assert doc.name == payload["document"]["name"]
     assert doc.description == payload["document"]["description"]
     assert doc.url == payload["document"]["url"]
     assert doc.md5_sum == payload["document"]["md5_sum"]
+    assert doc.publication_ts == datetime(2000, 1, 1)
 
     event = test_db.query(Event).first()
     assert event.name == "Publication"
@@ -166,6 +168,7 @@ def test_document_detail(
     document1_payload = {
         "document": {
             "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
+            "publication_ts": "2000-01-01T00:00:00.000000+00:00",
             "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
             "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
@@ -222,6 +225,7 @@ def test_document_detail(
     document2_payload = {
         "document": {
             "loaded_ts": "2022-04-26T15:34:40.470413+00:00",
+            "publication_ts": "1999-01-01T00:00:00.000000+00:00",
             "name": "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)",
             "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g",
@@ -315,9 +319,7 @@ def test_document_detail(
         == "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)"
     )
     assert get_detail_json["description"] == "the document description"
-    assert (
-        get_detail_json["year"] == 1900
-    )  # TODO: Fix when year data is working correctly
+    assert get_detail_json["publication_ts"] == "1999-01-01T00:00:00"
     assert (
         get_detail_json["source_url"]
         == "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g"
@@ -345,7 +347,7 @@ def test_document_detail(
             "description": "the document description",
             "country_code": "NMFS",
             "country_name": "not my favourite subject",
-            "year": 1900,  # TODO: fix year when data is available
+            "publication_ts": "2000-01-01T00:00:00",
         },
     ]
     assert get_detail_json["events"] == document2_payload["events"]

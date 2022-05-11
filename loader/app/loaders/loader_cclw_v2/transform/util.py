@@ -4,7 +4,7 @@ from html.parser import HTMLParser
 from io import StringIO
 from typing import Tuple, List, Optional
 
-from dateutil.parser import parse
+from dateutil.parser import parse, ParserError
 from pandas import DataFrame
 
 from app.mapping import CCLWActionType
@@ -70,19 +70,10 @@ def get_policy_data(
                 f"country_code={country_code}"
             )
 
-        document_date = None
         if year:
-            document_date = datetime(int(year), 1, 1)
+            publication_date = datetime(int(year), 1, 1)
         else:
-            document_date: Optional[datetime] = extract_date(dataframe["events"])
-
-        if not document_date:
-            logger.warning(
-                f"Found no date for document, document_name={document_name}, "
-                f"policy_name={policy_id}, document_category={document_category}, "
-                f"country_code={country_code}"
-            )
-            continue
+            publication_date = extract_date(dataframe["events"])
 
         doc = Doc(
             doc_name=document_name,
@@ -90,7 +81,7 @@ def get_policy_data(
             doc_languages=[document_language],
             doc_url=parse_url(document_url),
             document_type=document_type,
-            document_date=document_date,
+            publication_date=publication_date,
             document_category=document_category,
             events=events,
             sectors=sectors,
@@ -126,13 +117,30 @@ def get_country_code(df: DataFrame):
     return df.iloc[0]["country_code"]
 
 
-def extract_date(val: Optional[str]) -> Optional[datetime]:
+def extract_date(val: Optional[str]) -> datetime:
+    """Extract the first date from possible events.
+
+    Defaults to DEFAULT_POLICY_DATE if there are any issues:
+    - missing events
+    - broken events
+    """
     if not val or not isinstance(val, str):
-        return None
-    date_str = val.split("|")[0]
+        return DEFAULT_POLICY_DATE
+
+    try:
+        date_str = val.split("|")[0]
+    except IndexError:
+        logger.warning(f"Event could not be parsed: {val}")
+        return DEFAULT_POLICY_DATE
+
     if date_str:
-        date = parse(date_str)
-        return date
+        try:
+            date = parse(date_str)
+            return date
+        except ParserError:
+            logger.warning(f"Date could not be parsed: {date_str}")
+            return DEFAULT_POLICY_DATE
+
     return DEFAULT_POLICY_DATE
 
 

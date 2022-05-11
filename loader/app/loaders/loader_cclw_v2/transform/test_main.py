@@ -54,7 +54,7 @@ def test_transform():
     assert doc_one.doc_languages == ["English"]
     assert doc_one.doc_url == "https://doc"
     assert doc_one.document_category == "Law"
-    assert doc_one.document_date == dt.datetime(2020, 1, 1)
+    assert doc_one.publication_date == dt.datetime(2020, 1, 1)
     assert doc_one.sectors == ["Two", "Sectors"]
     assert doc_one.document_type == "doc type"
     assert doc_one.keywords == ["keyword1", "keyword2"]
