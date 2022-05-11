@@ -33,18 +33,23 @@ const LandingSearchForm = ({
       <div className="max-w-screen-lg mx-auto text-white flex items-stretch relative">
         <input
           type="search"
-          className="pr-24 text-xl bg-transparent border-t-0 border-l-0 border-r-0 border-white border-b-2 focus:border-white focus:ring-0 w-full"
+          className="pr-24 text-2xl bg-transparent border-t-0 border-l-0 border-r-0 border-white border-b-2 focus:border-white focus:ring-0 w-full"
+          value={term}
+          onChange={onChange}
         />
 
         {term.length > 0 && (
           <div
             data-cy="search-clear-button"
-            className="flex text-indigo-300 items-center mx-2 shrink-0 absolute top-0 right-0 mr-16 h-full md:mr-16 z-20 h-full items-center"
+            className="flex text-indigo-300 items-center mx-2 shrink-0 absolute top-0 right-0 mr-20 h-full z-20 h-full items-center"
           >
             <Close onClick={clearSearch} size="16" />
           </div>
         )}
-        <button className="absolute top-0 right-0 -mt-1">
+        <button
+          className="absolute top-0 right-0 -mt-1"
+          onClick={(e) => handleSearchInput(e, term)}
+        >
           <SearchIcon height="40" width="80" />
         </button>
       </div>

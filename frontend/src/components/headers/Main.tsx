@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from 'react';
-import Logo from '../Logo';
+import Logo from '../svg/Logo';
 import Link from 'next/link';
 import ProductName from '../ProductName';
 import { useAuth } from '../../api/auth';
