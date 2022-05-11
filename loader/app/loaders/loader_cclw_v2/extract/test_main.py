@@ -15,4 +15,4 @@ def test_extract():
     )
 
     policies_fe = extract(csv_path)
-    assert len(policies_fe) == 1313
+    assert len(policies_fe) == 2811
