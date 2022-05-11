@@ -109,7 +109,7 @@ def post_doc(db: Session, doc: Document) -> dict:
         "responses": [it.as_dict() for it in responses],
         "hazards": [it.as_dict() for it in hazards],
         "keywords": [it.as_dict() for it in keywords],
-        "language_ids": [it.id for it in document_languages],
+        "language_ids": [it.language_id for it in document_languages],
     }
 
     response = post_document(payload)

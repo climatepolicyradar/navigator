@@ -13,7 +13,7 @@ import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../api/auth';
 import SearchForm from '../../components/forms/SearchForm';
-import SearchResult from '../../components/text-blocks/SearchResult';
+import SearchResult from '../../components/blocks/SearchResult';
 import SearchFilters from '../../components/SearchFilters';
 import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
@@ -27,12 +27,20 @@ import Slideout from '../../components/slideout';
 import PassageMatches from '../../components/PassageMatches';
 import EmbeddedPDF from '../../components/EmbeddedPDF';
 import DocumentSlideout from '../../components/headers/DocumentSlideout';
+import Tooltip from '../../components/tooltip';
+import { calculatePageCount } from '../../utils/paging';
+import Pagination from '../../components/pagination';
+import { PER_PAGE } from '../../constants/paging';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
   const [showSlideout, setShowSlideout] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
   const [passageIndex, setPassageIndex] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
+  const [pageCount, setPageCount] = useState(1);
+  const [offset, setOffset] = useState(0);
+
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
@@ -43,14 +51,23 @@ const Search = () => {
     isFetching: isFetchingSearchCriteria,
     isSuccess: isSearchCriteriaSuccess,
     data: searchCriteria,
-  } = useSearchCriteria();
-  const resultsQuery = useSearch('searches', searchCriteria);
-  const { data: { documents } = [] } = resultsQuery;
+  }: any = useSearchCriteria();
+  const resultsQuery: any = useSearch('searches', searchCriteria);
+  const {
+    data: { documents } = [],
+    data: { hits } = 0,
+    isSuccess,
+  } = resultsQuery;
   const document = useDocument();
-  const { t, i18n, ready } = useTranslation('searchStart');
+  const { t, i18n, ready } = useTranslation(['searchStart', 'searchResults']);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
   const documentCategories = ['All', 'Executive', 'Legislative', 'Litigation'];
+
+  const handlePageChange = (page: number) => {
+    setPageNumber(page);
+    setOffset((page - 1) * PER_PAGE);
+  };
 
   const handleFilterChange = (
     type: string,
@@ -59,7 +76,7 @@ const Search = () => {
   ) => {
     updateSearchFilters.mutate({ [type]: value, action });
   };
-  const handleSearchChange = (type: string, value: string) => {
+  const handleSearchChange = (type: string, value: any) => {
     updateSearchCriteria.mutate({ [type]: value });
   };
   const handleSearchInput = (e, term) => {
@@ -89,10 +106,49 @@ const Search = () => {
     setShowSlideout(true);
     setShowPDF(false);
   };
+  const getCurrentSortChoice = () => {
+    const field = searchCriteria.sort_field;
+    const order = searchCriteria.sort_order;
+    return `${field}:${order}`;
+  };
+  const getCurrentCategoryIndex = () => {
+    if (!searchCriteria.keyword_filters?.document_category) return 0;
+    const index = documentCategories.indexOf(
+      searchCriteria.keyword_filters?.document_category[0]
+    );
+    return index === -1 ? 0 : index;
+  };
 
+  const renderSearch = () => {
+    if (
+      searchCriteria.keyword_filters?.document_category &&
+      searchCriteria.keyword_filters?.document_category[0] === 'Litigation'
+    ) {
+      return <div className="h-96">Coming soon...</div>;
+    }
+    return documents.map((doc: any, index: number) => (
+      <div key={index} className="my-16 first:md:mt-4">
+        <SearchResult
+          document={doc}
+          onClick={() => handleDocumentClick(doc.document_id)}
+        />
+      </div>
+    ));
+  };
+  useDidUpdateEffect(() => {
+    handleSearchChange('offset', offset);
+    window.scrollTo(0, 0);
+  }, [offset]);
+  useEffect(() => {
+    if (hits) {
+      setPageCount(calculatePageCount(hits));
+    }
+  }, [hits]);
   useDidUpdateEffect(() => {
     resultsQuery.refetch();
   }, [searchCriteria]);
+
+  const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
 
   return (
     <>
@@ -113,11 +169,13 @@ const Search = () => {
               />
               {showPDF ? (
                 // TODO: pass in real document when api and docs are ready
-                <EmbeddedPDF
-                  document={null}
-                  passageIndex={passageIndex}
-                  setShowPDF={setShowPDF}
-                />
+                <div className="mt-4 px-6 flex-1">
+                  <EmbeddedPDF
+                    document={null}
+                    passageIndex={passageIndex}
+                    setShowPDF={setShowPDF}
+                  />
+                </div>
               ) : (
                 <PassageMatches
                   document={document}
@@ -128,7 +186,7 @@ const Search = () => {
             </div>
           </Slideout>
           <section>
-            <div className="px-4 md:flex container">
+            <div className="px-4 md:flex container border-b border-blue-200">
               <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
                 <div className="flex flex items-center justify-center w-full">
                   <FilterToggle toggle={toggleFilters} />
@@ -163,17 +221,22 @@ const Search = () => {
                       id="exact-match"
                       handleSearchChange={handleSearchChange}
                     />
+                    <div className="ml-1 -mt-1">
+                      <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
+                    </div>
                   </div>
                 </div>
                 <div className="mt-4 relative">
                   <TabbedNav
+                    activeIndex={getCurrentCategoryIndex()}
                     items={documentCategories}
                     handleTabClick={handleDocumentCategoryClick}
                   />
                   <div className="mt-4 md:absolute right-0 top-0 md:-mt-2">
                     <Button
                       color="light-hover-dark"
-                      extraClasses="text-sm py-1"
+                      thin={true}
+                      extraClasses="text-sm"
                     >
                       <div className="flex justify-center py-1">
                         <DownloadIcon />
@@ -184,7 +247,10 @@ const Search = () => {
                 </div>
                 <div className="mt-4 mb-8 flex justify-end">
                   <div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 flex items-center">
-                    <Sort updateSort={handleSortClick} />
+                    <Sort
+                      defaultValue={getCurrentSortChoice()}
+                      updateSort={handleSortClick}
+                    />
                   </div>
                 </div>
 
@@ -194,19 +260,23 @@ const Search = () => {
                       <Loader />
                     </div>
                   ) : (
-                    documents.map((doc, index: number) => (
-                      <div key={index} className="my-16 first:md:mt-4">
-                        <SearchResult
-                          document={doc}
-                          onClick={() => handleDocumentClick(doc.document_id)}
-                        />
-                      </div>
-                    ))
+                    renderSearch()
                   )}
                 </div>
               </div>
             </div>
           </section>
+          {pageCount > 1 && (
+            <section>
+              <div className="mb-12">
+                <Pagination
+                  pageNumber={pageNumber}
+                  pageCount={pageCount}
+                  onChange={handlePageChange}
+                />
+              </div>
+            </section>
+          )}
         </Layout>
       )}
     </>

@@ -7,11 +7,12 @@ import useDocument from '../../hooks/useDocument';
 import EmbeddedPDF from '../../components/EmbeddedPDF';
 import Loader from '../../components/Loader';
 import Link from 'next/link';
+import TextLink from '../../components/nav/TextLink';
 
 const PDFView = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
   const router = useRouter();
-  const document = useDocument();
+  const document: any = useDocument();
   useEffect(() => {
     console.log(document);
     if (!document.data) router.push('/');
@@ -26,15 +27,18 @@ const PDFView = () => {
         <Layout
           title={`Navigator | ${t('Law and Policy Search PDF View')}`}
           heading={t('Law and Policy Search PDF View')}
+          screenHeight={true}
         >
           <div className="container mt-2">
-            <Link href="/search">
-              <a className="ml-6 text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300">
-                &laquo; Back to search results
-              </a>
-            </Link>
+            <h1 className="text-2xl font-medium">
+              {document?.data?.document_name}
+            </h1>
+            {/* TODO: translate below text */}
+            <TextLink href="/search">
+              <span className="text-lg">&laquo;</span>Back to search results
+            </TextLink>
           </div>
-          <section className="flex-1">
+          <section className="mt-4 flex-1">
             <div className="h-full container">
               {/* TODO: pass in real document when api and docs are ready */}
               <EmbeddedPDF document={null} />

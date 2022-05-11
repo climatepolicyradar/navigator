@@ -2,17 +2,23 @@ from dataclasses import dataclass
 from datetime import datetime
 from unittest.mock import patch, MagicMock
 
+import pytest
+
 from app.loaders.loader_cclw_v2.load.main import load
 from app.model import Key, PolicyData, Doc, PolicyLookup
+from app.service.context import Context
+
+pytest_plugins = ("pytest_asyncio",)
 
 
 @patch("app.loaders.loader_cclw_v2.load.main.get_category_id")
 @patch("app.loaders.loader_cclw_v2.load.main.get_language_id_by_name")
 @patch("app.loaders.loader_cclw_v2.load.main.get_document_by_unique_constraint")
-@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity_sync")
+@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity")
 @patch("app.loaders.loader_cclw_v2.load.main.get_geography_id")
 @patch("app.loaders.loader_cclw_v2.load.main.get_type_id")
-def test_load_single_doc(
+@pytest.mark.asyncio
+async def test_load_single_doc(
     mock_get_document_type_id,
     mock_get_geography_id,
     mock_get_document_validity_sync,
@@ -37,6 +43,7 @@ def test_load_single_doc(
     mock_get_category_id.return_value = 321
 
     mock_db = MockDb()
+    ctx = Context(db=mock_db, client=None)
 
     policy_key = Key(
         policy_name="foo",
@@ -69,13 +76,13 @@ def test_load_single_doc(
         policy_key: policy_data,
     }
 
-    load(mock_db, policies)
+    await load(ctx, policies)
 
     mock_get_document_type_id.assert_called_once_with(doc.document_type)
     mock_get_category_id.assert_called_once_with(doc.document_category)
     mock_get_geography_id.assert_called_once_with(policy_data.country_code)
     mock_get_language_id.assert_called_once_with(doc.doc_languages[0])
-    mock_get_document_validity_sync.assert_called_once_with("http://doc")
+    mock_get_document_validity_sync.assert_called_once_with(ctx.client, "http://doc")
     mock_get_document_by_unique_constraint.assert_called_once_with(
         mock_db, doc.doc_name, 456, 123, 1, "http://doc"
     )
@@ -105,10 +112,11 @@ def test_load_single_doc(
 @patch("app.loaders.loader_cclw_v2.load.main.get_category_id")
 @patch("app.loaders.loader_cclw_v2.load.main.get_language_id_by_name")
 @patch("app.loaders.loader_cclw_v2.load.main.get_document_by_unique_constraint")
-@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity_sync")
+@patch("app.loaders.loader_cclw_v2.load.main.get_document_validity")
 @patch("app.loaders.loader_cclw_v2.load.main.get_geography_id")
 @patch("app.loaders.loader_cclw_v2.load.main.get_type_id")
-def test_load_two_related_docs(
+@pytest.mark.asyncio
+async def test_load_two_related_docs(
     mock_get_document_type_id,
     mock_get_geography_id,
     mock_get_document_validity_sync,
@@ -133,6 +141,7 @@ def test_load_two_related_docs(
     mock_get_category_id.return_value = 321
 
     mock_db = MockDb()
+    ctx = Context(db=mock_db, client=None)
 
     policy_key = Key(
         policy_name="foo",
@@ -181,7 +190,7 @@ def test_load_two_related_docs(
         policy_key: policy_data,
     }
 
-    load(mock_db, policies)
+    await load(ctx, policies)
 
     assert mock_get_category_id.call_args_list[0][0][0] == doc.document_category
     assert mock_get_category_id.call_args_list[1][0][0] == doc2.document_category
@@ -190,8 +199,8 @@ def test_load_two_related_docs(
     mock_get_geography_id.assert_called_once_with(policy_data.country_code)
     assert mock_get_language_id.call_args_list[0][0][0] == doc.doc_languages[0]
     assert mock_get_language_id.call_args_list[1][0][0] == doc2.doc_languages[0]
-    assert mock_get_document_validity_sync.call_args_list[0][0][0] == "http://doc"
-    assert mock_get_document_validity_sync.call_args_list[1][0][0] == "http://doc2"
+    assert mock_get_document_validity_sync.call_args_list[0][0][1] == "http://doc"
+    assert mock_get_document_validity_sync.call_args_list[1][0][1] == "http://doc2"
     assert mock_get_document_by_unique_constraint.call_args_list[0][0] == (
         mock_db,
         doc.doc_name,

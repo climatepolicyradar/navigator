@@ -80,6 +80,63 @@ export const dummyDocument = {
   document_source_name: 'CCLW',
   document_title_match: false,
   document_type_name: 'Policy',
+  cover_page: {
+    summary:
+      'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque turpis eros, tincidunt ac vulputate eget, mollis eu ligula. Cras in ex neque. Maecenas vel nibh condimentum, hendrerit enim vitae, tincidunt arcu. Ut tincidunt pellentesque ipsum sed fermentum. Vestibulum rutrum, tellus eu laoreet vehicula, leo risus pharetra enim, id tristique enim mauris ut enim. Nam varius suscipit augue, et maximus risus elementum at. Nulla facilisi. Nam convallis neque ut pretium bibendum. Aliquam id pulvinar eros. Curabitur volutpat vel ante sed finibus. Nulla vel elit lobortis, egestas augue sed, aliquet ligula. Donec auctor eu arcu a venenatis. Cras sit amet semper elit. Proin vel lorem sed ipsum ullamcorper interdum. Morbi at augue felis. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque turpis eros, tincidunt ac vulputate eget, mollis eu ligula. Cras in ex neque. Maecenas vel nibh condimentum, hendrerit enim vitae, tincidunt arcu. Ut tincidunt pellentesque ipsum sed fermentum. Vestibulum rutrum, tellus eu laoreet vehicula, leo risus pharetra enim, id tristique enim mauris ut enim. Nam varius suscipit augue, et maximus risus elementum at. Nulla facilisi. Nam convallis neque ut pretium bibendum. Aliquam id pulvinar eros. Curabitur volutpat vel ante sed finibus. Nulla vel elit lobortis, egestas augue sed, aliquet ligula. Donec auctor eu arcu a venenatis. Cras sit amet semper elit. Proin vel lorem sed ipsum ullamcorper interdum. Morbi at augue felis.',
+    category: 'Legislative',
+    type: 'Act',
+    topics: [{ name: 'Mitigation' }],
+    language: 'English',
+    keywords:
+      'agriculture, farming, land, other keyword, more, keywords, go, here, keyword 2, keyword 3, etc.',
+    sectors: [
+      {
+        name: 'Transport',
+        children: [{ name: 'Train' }, { name: 'Shipping' }, { name: 'Cars' }],
+      },
+      {
+        name: 'Energy',
+        children: [{ name: 'Nuclear' }, { name: 'Coal' }],
+      },
+      {
+        name: 'Finance',
+        children: [{ name: 'Corporate finance' }],
+      },
+    ],
+    instruments: [
+      {
+        name: 'Capacity building',
+        children: [{ name: 'Climate fund' }, { name: 'Direct investment' }],
+      },
+      {
+        name: 'Economic',
+        children: [
+          { name: 'Climate finance tools' },
+          { name: 'Carbon pricing and emissions trading' },
+          { name: 'Insurance' },
+        ],
+      },
+    ],
+    events: [
+      {
+        date: '2006/15/12',
+        status: 'Approved',
+        description: 'Signed by president',
+        document_url: 'http://www.google.com',
+      },
+      {
+        date: '2007/12/01',
+        status: 'Approved',
+        description: 'Signed by president',
+      },
+      {
+        date: '2007/25/05',
+        status: 'Approved',
+        description: 'Signed by president',
+        document_url: 'http://www.google.com',
+      },
+    ],
+  },
 };
 
 export const dummyDocument2 = {

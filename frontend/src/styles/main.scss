@@ -226,6 +226,30 @@ input[type='search']::-webkit-search-results-decoration {
       border-top-width: 6px !important;
     }
   }
+  &.place-left {
+    filter: drop-shadow(2px 1px 2px rgba(black, 0.2)) !important;
+    &:after {
+      border-left-color: white !important;
+      border-left-style: solid !important;
+      border-left-width: 6px !important;
+    }
+  }
+  &.place-right {
+    filter: drop-shadow(2px 1px 2px rgba(black, 0.2)) !important;
+    &:after {
+      border-right-color: white !important;
+      border-right-style: solid !important;
+      border-right-width: 6px !important;
+    }
+  }
+  &.place-bottom {
+    filter: drop-shadow(2px 1px 2px rgba(black, 0.2)) !important;
+    &:after {
+      border-bottom-color: white !important;
+      border-bottom-style: solid !important;
+      border-bottom-width: 6px !important;
+    }
+  }
 }
 ul li.selected {
   @apply bg-blue-200;

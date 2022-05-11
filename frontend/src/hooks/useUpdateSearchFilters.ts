@@ -4,9 +4,9 @@ import { multipleValuesAllowed } from '../constants/filters';
 
 export default function useUpdateSearchFilters() {
   const queryClient = useQueryClient();
-  const { data } = useSearchCriteria();
+  const { data }: any = useSearchCriteria();
 
-  const getKeyAndValue = (obj) => {
+  const getKeyAndValue = (obj: any): any[] => {
     // get first key and value
     const key = Object.keys(obj)[0];
     const val = Object.values(obj)[0];
@@ -49,8 +49,8 @@ export default function useUpdateSearchFilters() {
     },
   };
 
-  const processFilter = (value) => {
-    const prev = queryClient.getQueryData('searchCriteria');
+  const processFilter = (value: any) => {
+    const prev: any = queryClient.getQueryData('searchCriteria');
     const { keyword_filters } = prev;
     let [key, val] = getKeyAndValue(value);
     const { action } = val.length ? value : { action: 'delete' };
@@ -63,7 +63,7 @@ export default function useUpdateSearchFilters() {
   };
 
   return useMutation(
-    (value) => {
+    (value: any) => {
       const newObj = processFilter(value);
       return queryClient.setQueryData('searchCriteria', (old) => {
         return {

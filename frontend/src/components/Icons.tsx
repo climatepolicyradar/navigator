@@ -317,3 +317,23 @@ export function KebabMenuIcon({
     </svg>
   );
 }
+
+export function DownLongArrowIcon({
+  height = '72',
+  width = '12',
+  color = 'currentColor',
+}: IconProps) {
+  return (
+    <svg
+      style={{ width: `${width}px`, height: `${height}px` }}
+      viewBox="0 0 12 72"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M6 72L11.7735 62H0.226497L6 72ZM5 0L5 63H7L7 0L5 0Z"
+        fill={color}
+      />
+    </svg>
+  );
+}

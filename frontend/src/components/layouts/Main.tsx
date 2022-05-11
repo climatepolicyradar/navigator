@@ -6,13 +6,15 @@ import Banner from '../banner/Slim';
 type Props = {
   children?: ReactNode;
   title?: string;
-  heading: string;
+  heading?: string;
+  screenHeight?: boolean;
 };
 
 const Layout = ({
   children,
   title = 'This is the default title',
   heading = '',
+  screenHeight = false,
 }: Props) => (
   <div className="h-full">
     <Head>
@@ -24,7 +26,7 @@ const Layout = ({
       Skip to content
     </a>
     <Header />
-    <main className="h-screen flex flex-col">
+    <main className={`${screenHeight ? 'h-screen' : ''} flex flex-col`}>
       <Banner />
       {children}
     </main>

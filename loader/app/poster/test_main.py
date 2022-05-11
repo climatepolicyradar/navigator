@@ -3,6 +3,7 @@ from unittest.mock import patch, MagicMock
 
 from app.db.models import APIDocument
 from app.poster.main import post_all_to_backend_api
+from app.service.context import Context
 
 
 @patch("app.poster.main.post_doc")
@@ -26,8 +27,9 @@ def test_post_all_to_backend_api(mock_get_all_valid_documents, mock_post_doc):
         refresh = MagicMock()
 
     mock_db = MockDb()
+    ctx = Context(db=mock_db, client=None)
 
-    post_all_to_backend_api(mock_db)
+    post_all_to_backend_api(ctx)
 
     mock_get_all_valid_documents.assert_called_once_with(mock_db)
     mock_post_doc.assert_called_once_with(mock_db, doc)

@@ -2,16 +2,17 @@
   "Law and policy search": "Law and policy search",
   "Filter by": "Filter by",
   "Start typing": "Start typing...",
-  "By country": "By country",
-  "By region": "By region",
-  "By sector": "By sector",
-  "By document type": "By document type",
-  "By date range": "By date range",
+  "By country": "Country",
+  "By region": "Region",
+  "By sector": "Sector",
+  "By document type": "Document type",
+  "By date range": "Date range",
   "Tooltips": {
     "Region": "This is the explainer for filtering by region",
     "Country": "This is the explainer for filtering by country",
     "Sector": "This is the explainer for filtering by sector",
     "Document type": "This is the explainer for filtering by document type more info more info more info.",
-    "Date range": "This is the explainer for filtering by document date range more info more info more info."
+    "Date range": "This is the explainer for filtering by document date range more info more info more info.",
+    "Exact match": "This is the explainer for the exact match option."
   }
 }

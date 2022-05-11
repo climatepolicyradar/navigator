@@ -20,8 +20,7 @@ from navigator.core.aws import S3Client, get_s3_client
 @pytest.fixture
 def s3_document_bucket_names() -> dict:
     return {
-        "queue": "cpr-document-queue",
-        "store": "cpr-document-store",
+        "queue": os.environ.get("DOCUMENT_BUCKET", "cpr-document-queue"),
     }
 
 

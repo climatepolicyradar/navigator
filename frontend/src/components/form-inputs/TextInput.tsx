@@ -1,6 +1,6 @@
 import React from 'react';
 import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
-import FormFieldError from '../text-blocks/Error';
+import FormFieldError from '../blocks/Error';
 
 interface InputProps {
   label?: string;

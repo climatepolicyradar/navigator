@@ -10,9 +10,13 @@ from functools import lru_cache
 from typing import Callable, Tuple
 import hashlib
 
+import httpx
 import requests
 
+from app.service.context import Context
 from app.service.tree_parser import get_unique_from_tree_by_type
+
+transport = httpx.AsyncHTTPTransport(retries=3)
 
 
 def get_type_id(type_name):
@@ -155,7 +159,9 @@ def post_document(payload):
     return response
 
 
-def upload_document(source_url: str, file_name_without_suffix: str) -> Tuple[str, str]:
+async def upload_document(
+    ctx: Context, source_url: str, file_name_without_suffix: str
+) -> Tuple[str, str]:
     """Upload a document to the cloud, and returns the cloud URL.
 
     The remote document will have the specified file_name_without_suffix_{md5_hash},
@@ -169,7 +175,8 @@ def upload_document(source_url: str, file_name_without_suffix: str) -> Tuple[str
     """
 
     # download the document
-    download_response = requests.get(source_url)
+    download_response = await ctx.client.get(source_url, follow_redirects=True)
+
     content_type = download_response.headers["Content-Type"]
     file_content = download_response.content
     file_content_hash = hashlib.md5(file_content).hexdigest()
@@ -201,9 +208,13 @@ def upload_document(source_url: str, file_name_without_suffix: str) -> Tuple[str
         "Authorization": "Bearer {}".format(machine_user_token),
         "Accept": "application/json",
     }
-    response = requests.post(
+    response = await ctx.client.post(
         f"{api_host}/api/v1/document",
         headers=headers,
         files={"file": (full_path, file_content, content_type)},
     )
-    return response.json()["url"], file_content_hash
+    response_json = response.json()
+    if "url" in response_json:
+        return response_json["url"], file_content_hash
+    else:
+        raise Exception(response_json["detail"])
