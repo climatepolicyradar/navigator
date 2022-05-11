@@ -44,8 +44,8 @@ const LandingSearchForm = ({
             <Close onClick={clearSearch} size="16" />
           </div>
         )}
-        <button className="absolute top-0 right-0">
-          <SearchIcon height="30" width="60" />
+        <button className="absolute top-0 right-0 -mt-1">
+          <SearchIcon height="40" width="80" />
         </button>
       </div>
       {/* <div className="relative shadow-md rounded-lg bg-white flex items-stretch">
