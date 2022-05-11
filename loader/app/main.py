@@ -81,7 +81,9 @@ async def main():
     data = extract(csv_file)
     policies = transform(data)  # noqa: F841
     for db in get_db():
-        async with httpx.AsyncClient(transport=transport, timeout=10) as client:
+        # This timeout is large because there are some very large PDFs we need to upload
+        # TODO: how do we deal with the fact that we have massive PDFs with big loading times in the frontend?
+        async with httpx.AsyncClient(transport=transport, timeout=120) as client:
             ctx = Context(
                 db=db,
                 client=client,

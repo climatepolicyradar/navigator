@@ -27,6 +27,12 @@ async def upload_all_documents(ctx: Context):
         country_code = get_country_code_from_geography_id(document_db.geography_id)
         publication_date = event.created_ts.date().isoformat()
 
+        if document_db.url:
+            logger.info(
+                f"Skipping upload for {document_db.source_url} as already uploaded"
+            )
+            continue
+
         logger.debug(f"Uploading {document_db.source_url} to {document_db.url}")
         # TODO: make document upload more resilient
         try:
