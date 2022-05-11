@@ -90,7 +90,6 @@ def write_metadata(
             existing_sector = (
                 db.query(Sector)
                 .filter(Sector.name == meta.name)
-                .filter(Sector.description == meta.description)
                 .filter(Sector.source_id == db_document.source_id)
             ).first()
             meta_id = existing_sector.id  # type: ignore
@@ -118,7 +117,6 @@ def write_metadata(
             existing_instrument = (
                 db.query(Instrument)
                 .filter(Instrument.name == meta.name)
-                .filter(Instrument.description == meta.description)
                 .filter(Instrument.source_id == db_document.source_id)
             ).first()
             meta_id = existing_instrument.id  # type: ignore
@@ -142,9 +140,7 @@ def write_metadata(
         else:
             # This is guaranteed to exist
             existing_hazard = (
-                db.query(Hazard)
-                .filter(Hazard.name == meta.name)
-                .filter(Hazard.description == meta.description)
+                db.query(Hazard).filter(Hazard.name == meta.name)
             ).first()
             meta_id = existing_hazard.id  # type: ignore
 
@@ -167,9 +163,7 @@ def write_metadata(
         else:
             # This is guaranteed to exist
             existing_sector = (
-                db.query(Response)
-                .filter(Response.name == meta.name)
-                .filter(Response.description == meta.description)
+                db.query(Response).filter(Response.name == meta.name)
             ).first()
             meta_id = existing_sector.id  # type: ignore
 
@@ -192,9 +186,7 @@ def write_metadata(
         else:
             # This is guaranteed to exist
             existing_framework = (
-                db.query(Framework)
-                .filter(Framework.name == meta.name)
-                .filter(Framework.description == meta.description)
+                db.query(Framework).filter(Framework.name == meta.name)
             ).first()
             meta_id = existing_framework.id  # type: ignore
 
@@ -216,9 +208,7 @@ def write_metadata(
         else:
             # This is guaranteed to exist
             existing_keyword = (
-                db.query(Keyword)
-                .filter(Keyword.name == meta.name)
-                .filter(Keyword.description == meta.description)
+                db.query(Keyword).filter(Keyword.name == meta.name)
             ).first()
             meta_id = existing_keyword.id  # type: ignore
 

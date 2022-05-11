@@ -26,6 +26,7 @@ def create_document(
     )
 
     db.add(db_document)
+    # TODO don't call commit here. Perhaps in middleware somewhere before the response is returned
     db.commit()
     db.refresh(db_document)
 
