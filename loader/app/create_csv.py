@@ -92,6 +92,9 @@ def drop_missing_rows_from_merged_df(df_merged: pd.DataFrame) -> pd.DataFrame:
 
 def transform_documents_value_in_single_actions_sheet(value: str) -> str:
     val_split = value.split("|")
+    if len(val_split) < 2:
+        raise ValueError(f"Invalid 'documents' column value: {value}")
+
     if len(val_split) == 2:
         # title | url
         return val_split[1] + "|"
@@ -100,12 +103,23 @@ def transform_documents_value_in_single_actions_sheet(value: str) -> str:
 
 
 def get_single_doc_actions_xlsx(single_doc_actions_path: Path) -> pd.DataFrame:
-    df = (
-        pd.read_excel(str(single_doc_actions_path), sheet_name="COMPLETED combined")
-        .rename(columns={"Type": "Category", "Document Types": "Document Type"})
-        .dropna(subset=["Documents"])
+    df_all_single_doc_actions = pd.read_excel(
+        str(single_doc_actions_path), sheet_name="No multidoc actions"
+    ).dropna(subset=["Document Types"])
+    # Single document actions with a single document type
+    df_single_doc_type = df_all_single_doc_actions[
+        ~df_all_single_doc_actions["Document Types"].str.contains("/|;", regex=True)
+    ]
+
+    # Single document actions with multiple document types
+    df_multi_doc_types = pd.read_excel(
+        str(single_doc_actions_path), sheet_name="COMPLETED combined"
     )
 
+    df = pd.concat([df_single_doc_type, df_multi_doc_types], axis=0, ignore_index=True)
+    df = df.rename(
+        columns={"Type": "Category", "Document Types": "Document Type"}
+    ).dropna(subset=["Documents"])
     df["Documents"] = df["Documents"].apply(
         transform_documents_value_in_single_actions_sheet
     )
