@@ -4,8 +4,12 @@ import DropdownMenuWrapper from './DropdownMenuWrapper';
 const AccountMenu = ({ setShowMenu, logout }) => {
   return (
     <DropdownMenuWrapper setShowMenu={setShowMenu}>
-      <DropdownMenuItem first={true} href="/account" title="Account" />
-      <DropdownMenuItem onClick={logout} title="Log out" />
+      <DropdownMenuItem first={true} href="/account" title="My account" />
+      <DropdownMenuItem
+        href="https://climatepolicyradar.org"
+        title="About us"
+      />
+      <DropdownMenuItem onClick={logout} title="Sign out" />
     </DropdownMenuWrapper>
   );
 };

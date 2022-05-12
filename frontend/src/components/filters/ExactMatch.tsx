@@ -1,19 +1,27 @@
-const ExactMatch = ({ id, handleSearchChange, checked }) => {
+const ExactMatch = ({ id, handleSearchChange, checked, landing = false }) => {
   const handleClick = (e) => {
     const isChecked = e.currentTarget.checked;
     handleSearchChange('exact_match', isChecked);
   };
   return (
-    <div className="text-sm">
+    <div className={`${landing ? 'landing' : ''}`}>
       <label className="checkbox-input flex items-center" htmlFor={id}>
         <input
-          className="text-white border-blue-500 rounded"
+          className={`${
+            landing ? 'text-indigo-600/0' : 'text-white'
+          } border-blue-500 rounded`}
           id={id}
           type="checkbox"
           checked={checked}
           onChange={handleClick}
         />
-        <span className="pl-2 leading-none">Exact matches only</span>
+        <span
+          className={`${
+            landing ? 'text-lg text-white' : 'text-sm'
+          } pl-2 leading-none`}
+        >
+          Exact matches only
+        </span>
       </label>
     </div>
   );

@@ -1,4 +1,4 @@
-import Logo from '../Logo';
+import Logo from '../svg/Logo';
 
 interface AuthWrapperProps {
   heading: string;
