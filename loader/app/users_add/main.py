@@ -107,7 +107,7 @@ def get_admin_token() -> str:
         raise RuntimeError("Admin username & password env vars must be set")
 
     response = requests.post(
-        get_request_url("/api/tokens"),
+        get_request_url("/tokens"),
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         data={"username": admin_user, "password": admin_password},
     )
@@ -135,7 +135,7 @@ def get_request_url(endpoint):
 
 def post_user(payload):
     response = requests.post(
-        get_request_url("/api/v1/admin/users"),
+        get_request_url("/v1/admin/users"),
         headers=get_admin_auth_headers(),
         json=payload,
     )
