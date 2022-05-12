@@ -2,6 +2,8 @@ import React, { ReactNode } from 'react';
 import Head from 'next/head';
 import Header from '../headers/Main';
 import Banner from '../banner/Slim';
+import FooterMain from '../footer/FooterMain';
+import FooterLanding from '../footer/FooterLanding';
 
 type Props = {
   children?: ReactNode;
@@ -30,9 +32,8 @@ const Layout = ({
       <Banner />
       {children}
     </main>
-    <footer className="mb-8">
-      <hr />
-    </footer>
+    {/* <FooterMain /> */}
+    <FooterLanding />
   </div>
 );
 

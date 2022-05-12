@@ -283,3 +283,17 @@ ul li.selected {
 .dark-gradient {
   @include dark-gradient;
 }
+.text-content {
+  a {
+    @apply text-blue-500 transition duration-300 hover:text-indigo-600;
+  }
+  p {
+    @apply my-6;
+  }
+  ul {
+    @apply list-disc;
+    li {
+      @apply my-6 ml-4 pl-2;
+    }
+  }
+}

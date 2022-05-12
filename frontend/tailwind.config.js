@@ -59,8 +59,8 @@ module.exports = {
         innerThin: 'inset 0 0 1px 0 rgb(0 0 0 / 0.5)',
       },
       fontSize: {
-        h1: '64px',
-        h2: '36px',
+        h1: '48px',
+        h2: '32px',
         h3: '24px',
         h4: '21px',
         h5: '18px',
