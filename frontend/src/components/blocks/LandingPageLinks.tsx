@@ -1,7 +1,12 @@
 import { EyeIcon } from '../Icons';
 
 const LandingPageLinks = ({ handleLinkClick }) => {
-  const terms = ['Just transition', 'Banana', 'Apricot'];
+  const terms = [
+    'Adaptation strategy',
+    'Energy prices',
+    'Flood defence',
+    'Just transition',
+  ];
   return (
     <section>
       <div className="md:flex text-white">
@@ -14,7 +19,7 @@ const LandingPageLinks = ({ handleLinkClick }) => {
             {terms.map((term) => (
               <li className="my-2" key={term}>
                 <a
-                  className="hover:text-blue-300 transition duration-300"
+                  className="hover:text-blue-500 transition duration-300"
                   href="/"
                   onClick={(e) => {
                     handleLinkClick(e);
