@@ -4,7 +4,7 @@ from cpr.deployment_resources.main import DeploymentResources
 
 # from cpr.frontend.main import Frontend
 from cpr.plumbing.main import Plumbing
-from cpr.slackalert import alert_slack
+from cpr.util.slackalert import alert_slack
 from cpr.storage.main import Storage
 
 # from cpr.tasks.main import Tasks
