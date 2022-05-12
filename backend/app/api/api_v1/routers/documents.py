@@ -47,6 +47,8 @@ from app.db.schemas.document import (
     DocumentInDB,
     DocumentDetailResponse,
     RelatedDocumentResponse,
+    DocumentAssociationInDB,
+    DocumentAssociation,
 )
 from app.db.schemas.metadata import (
     Category as CategorySchema,
@@ -277,3 +279,24 @@ def document_upload(
     return {
         "url": s3_document.url,
     }
+
+
+@r.post("/associations", response_model=DocumentAssociationInDB)
+async def post_association(
+    request: Request,
+    document_association: DocumentAssociation,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a document, with associated metadata."""
+
+    db_association = Association(
+        document_id_from=document_association.document_id_from,
+        document_id_to=document_association.document_id_to,
+        name=document_association.name,
+        type=document_association.type,
+    )
+    db.add(db_association)
+    db.commit()
+
+    return DocumentAssociationInDB.from_orm(db_association)

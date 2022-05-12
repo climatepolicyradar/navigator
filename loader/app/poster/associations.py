@@ -1,11 +1,17 @@
 import logging
+from typing import List
 
 from app.db.models import Association, APIDocument
-from app.service.api_client import post_associations
+from app.db.schema import AssociationSchema
+from app.service.api_client import post_association
 from app.service.context import Context
 
-
 logger = logging.getLogger(__file__)
+
+
+def post_associations(associations: List[AssociationSchema]):
+    for association in associations:
+        post_association(association)
 
 
 def post_associations_to_backend(ctx: Context):
@@ -13,7 +19,7 @@ def post_associations_to_backend(ctx: Context):
     post_associations(associations)
 
 
-def get_associations(ctx: Context):
+def get_associations(ctx: Context) -> List[AssociationSchema]:
     associations = ctx.db.query(Association).all()
     remote_docs = ctx.db.query(APIDocument).all()
 
@@ -31,6 +37,7 @@ def get_associations(ctx: Context):
             remote_doc_id_from = doc_id_map[doc_id_from]
             remote_doc_id_to = doc_id_map[doc_id_to]
         except KeyError:
+            # the docs might not exist remotely because their URLs had issues (valid=false)
             logger.warning(
                 f"Local association does not have a remote doc: "
                 f"local doc id 'from' = {doc_id_from}, "
@@ -38,11 +45,13 @@ def get_associations(ctx: Context):
             )
             continue
 
-        remote_pair = [
-            remote_doc_id_from,
-            remote_doc_id_to,
-        ]
+        remote_assosiation = AssociationSchema(
+            document_id_from=remote_doc_id_from,
+            document_id_to=remote_doc_id_to,
+            name=association.name,
+            type=association.type,
+        )
 
-        remote_associations.append(remote_pair)
+        remote_associations.append(remote_assosiation)
 
-    print(2)
+    return remote_associations

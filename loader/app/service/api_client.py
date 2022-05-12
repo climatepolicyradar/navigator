@@ -4,19 +4,23 @@ The loader previously used lookups from the backend API,
 but as it now has it's own database, use app.service.lookups instead.
 Then delete this later.
 """
-
+import dataclasses
+import hashlib
+import logging
 import os
 from functools import lru_cache
 from typing import Callable, Tuple
-import hashlib
 
 import httpx
 import requests
 
+from app.db.schema import AssociationSchema
 from app.service.context import Context
 from app.service.tree_parser import get_unique_from_tree_by_type
 
 transport = httpx.AsyncHTTPTransport(retries=3)
+
+logger = logging.getLogger(__file__)
 
 
 def get_type_id(type_name):
@@ -178,18 +182,23 @@ def post_document(payload):
     return response
 
 
-def post_associations(payload):
+def post_association(association: AssociationSchema):
     machine_user_token = _get_machine_user_token()
     api_host = _get_api_host()
-
     headers = {
         "Authorization": "Bearer {}".format(machine_user_token),
         "Accept": "application/json",
     }
-    response = requests.post(
-        f"{api_host}/api/v1/associations", headers=headers, json=payload
-    )
-    return response
+
+    payload = dataclasses.asdict(association)
+    try:
+        response = requests.post(
+            f"{api_host}/api/v1/associations", headers=headers, json=payload
+        )
+        response.raise_for_status()
+        logger.info(f"Posted remote document association {association}")
+    except Exception as e:
+        logger.warning(f"Error posting document association {association}", exc_info=e)
 
 
 async def upload_document(

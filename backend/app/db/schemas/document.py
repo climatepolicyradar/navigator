@@ -116,3 +116,19 @@ class DocumentDetailResponse(_DocumentExtraDetail):
     related_documents: List[RelatedDocumentResponse]
     topics: List[Topic]
     instruments: List[Instrument]
+
+
+class DocumentAssociation(BaseModel):
+    """Schema for associations payload coming from loader."""
+
+    document_id_from: int
+    document_id_to: int
+    name: str
+    type: str
+
+
+class DocumentAssociationInDB(DocumentAssociation):  # noqa: D101
+    id: int
+
+    class Config:  # noqa: D106
+        orm_mode = True
