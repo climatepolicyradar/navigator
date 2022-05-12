@@ -1,7 +1,7 @@
 import logging
 from typing import List
 
-from app.db.models import Association, APIDocument
+from app.db.crud import get_all_associations, get_all_api_documents
 from app.db.schema import AssociationSchema
 from app.service.api_client import post_association
 from app.service.context import Context
@@ -20,8 +20,8 @@ def post_associations_to_backend(ctx: Context):
 
 
 def get_associations(ctx: Context) -> List[AssociationSchema]:
-    associations = ctx.db.query(Association).all()
-    remote_docs = ctx.db.query(APIDocument).all()
+    associations = get_all_associations(ctx.db)
+    remote_docs = get_all_api_documents(ctx.db)
 
     # key remote IDs by loader doc ID
     doc_id_map = {}
