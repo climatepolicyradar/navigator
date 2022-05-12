@@ -12,6 +12,8 @@ from cpr.plumbing.main import Plumbing
 from cpr.storage.main import Storage
 
 # for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
+from cpr.util.bluegreen import get_app_domain_for_current_stack
+
 DOCKER_COMPOSE_TEMPLATE = """version: '3.7'
 
 services:
@@ -53,6 +55,8 @@ services:
     command: npm run start
     environment:
       PORT: 3000
+      NEXT_PUBLIC_API_URL: {frontend_api_url}
+      NEXT_PUBLIC_LOGIN_API_URL: {frontend_api_url_login}
     ports:
       - 3000:3000
     volumes:
@@ -125,12 +129,18 @@ class Backend:
         opensearch_user = config.require("opensearch_user")
         opensearch_password = config.require_secret("opensearch_password")
         opensearch_url = config.require("opensearch_url")
+        pulumi.export("opensearch_url", opensearch_url)
         sendgrid_api_token = config.require("sendgrid_api_token")
         sendgrid_from_email = config.require("sendgrid_from_email")
         sendgrid_enabled = config.require("sendgrid_enabled")
         public_app_url = config.require("public_app_url")
+        app_domain_for_current_stack = get_app_domain_for_current_stack()
+        pulumi.export("app_domain_for_current_stack", app_domain_for_current_stack)
 
-        pulumi.export("opensearch_url", opensearch_url)
+        frontend_api_url = f"https://{app_domain_for_current_stack}/api/v1"
+        pulumi.export("frontend_api_url", frontend_api_url)
+        frontend_api_url_login = f"https://{app_domain_for_current_stack}/api/tokens"
+        pulumi.export("frontend_api_url_login", frontend_api_url_login)
 
         def fill_template(arg_list):
             template_args = dict(
@@ -148,6 +158,8 @@ class Backend:
                         "sendgrid_from_email",
                         "sendgrid_enabled",
                         "public_app_url",
+                        "frontend_api_url",
+                        "frontend_api_url_login",
                     ],
                     arg_list,
                 )
@@ -167,6 +179,8 @@ class Backend:
             sendgrid_from_email,
             sendgrid_enabled,
             public_app_url,
+            frontend_api_url,
+            frontend_api_url_login,
         ).apply(fill_template)
 
         def create_deploy_resource(manifest):

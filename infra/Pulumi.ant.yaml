@@ -5,10 +5,12 @@ config:
   infra:db_password:
     secure: AAABAOlREzULzg9AkORtP2wNLSN0FLmc6uuPkOSt4pgkRANU4/bMQYyJ4CL5+Aj1zU2GdRQ3niyldmEUT4Q/XPV/gRcdkHXGrEFWOzpbSro=
   infra:db_username: navigator_db_user
+  infra:dev_domain: dev.app.climatepolicyradar.org
   infra:opensearch_password:
     secure: AAABACpmQSD5m7Nta16jIdVuBTtcE8IevzI44dXT3/W8hCSA6rEbz8nVv2/JtdYo4wrZYaWaQ3YNHcYVRmaIQTA80AryoI5BFY/ZByEZ
   infra:opensearch_url: https://search-opensearch-dev-temp-nzkttufrxxmadvl37l4teezwri.eu-west-2.es.amazonaws.com
   infra:opensearch_user: cpr-master
+  infra:prod_domain: app.climatepolicyradar.org
   infra:public_app_url: https://app.climatepolicyradar.org
   infra:sendgrid_api_token:
     secure: AAABAOdYi9vQCHT8oWxCM0r4jB2y0QCLuW14t+X2ngUoWQ83iU+BDzJwuZySy2KDCTLKLozHkxJy99Vklm00FW5W98QDfaB5xieSHlkaNeZTKFgGNa/bbcTp3RqvRoP9BVa1idA=
