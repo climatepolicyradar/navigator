@@ -10,7 +10,12 @@ import { storage } from '../utils/storage';
 import Router from 'next/router';
 import LoaderOverlay from '../components/LoaderOverlay';
 
-const unprotectedUrls = [];
+const unprotectedUrls = [
+  '/auth/signin',
+  '/auth/activate-account',
+  '/auth/reset-password',
+  '/auth/reset-request',
+];
 
 export async function handleUserResponse(data) {
   if (data?.error) {

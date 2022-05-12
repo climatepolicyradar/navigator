@@ -1,8 +1,11 @@
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import Header from '../headers/Main';
+import Header from '../headers/LandingPage';
 import Banner from '../banner/FullHeight';
+import Summary from '../blocks/Summary';
+import Partners from '../blocks/Partners';
+import FooterLanding from '../footer/FooterLanding';
 
 type Props = {
   children?: ReactNode;
@@ -26,12 +29,13 @@ const Layout = ({
     </a>
     <Header />
     <main>
-      <Banner heading={heading} />
+      <Banner />
       {children}
     </main>
-    <footer className="my-8">
-      <hr />
-    </footer>
+    <Summary />
+    <Partners />
+
+    <FooterLanding />
   </div>
 );
 

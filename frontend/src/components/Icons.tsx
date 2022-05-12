@@ -337,3 +337,32 @@ export function DownLongArrowIcon({
     </svg>
   );
 }
+export function EyeIcon({
+  height = '80',
+  width = '80',
+  color = 'currentColor',
+}: IconProps) {
+  return (
+    <svg
+      style={{ width: `${width}px`, height: `${height}px` }}
+      viewBox="0 0 80 80"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        d="M3.33325 39.9999C3.33325 39.9999 16.6666 13.3333 39.9999 13.3333C63.3332 13.3333 76.6666 39.9999 76.6666 39.9999C76.6666 39.9999 63.3332 66.6666 39.9999 66.6666C16.6666 66.6666 3.33325 39.9999 3.33325 39.9999Z"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M39.9999 49.9999C45.5228 49.9999 49.9999 45.5228 49.9999 39.9999C49.9999 34.4771 45.5228 29.9999 39.9999 29.9999C34.4771 29.9999 29.9999 34.4771 29.9999 39.9999C29.9999 45.5228 34.4771 49.9999 39.9999 49.9999Z"
+        stroke={color}
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
