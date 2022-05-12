@@ -1,7 +1,7 @@
 import { EyeIcon } from '../Icons';
 
 const LandingPageLinks = ({ handleLinkClick }) => {
-  const terms = ['Just transtion', 'Banana', 'Apricot'];
+  const terms = ['Just transition', 'Banana', 'Apricot'];
   return (
     <section>
       <div className="md:flex text-white">

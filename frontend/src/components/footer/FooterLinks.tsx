@@ -12,11 +12,15 @@ const FooterLinks = ({ landing = false }) => {
           Terms &amp; conditions
         </a>
       </Link>
-      <Link href="/support">
-        <a className="transtion duration-300 hover:text-blue-500">Support</a>
+      <Link href="/privacy">
+        <a className="transtion duration-300 hover:text-blue-500">
+          Privacy policy
+        </a>
       </Link>
-      <Link href="/feedback">
-        <a className="transtion duration-300 hover:text-blue-500">Feedback</a>
+      <Link href="/cookies">
+        <a className="transtion duration-300 hover:text-blue-500">
+          Cookies policy
+        </a>
       </Link>
     </div>
   );
