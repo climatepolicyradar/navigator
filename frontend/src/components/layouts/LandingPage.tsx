@@ -5,6 +5,7 @@ import Header from '../headers/LandingPage';
 import Banner from '../banner/FullHeight';
 import Summary from '../blocks/Summary';
 import Partners from '../blocks/Partners';
+import FooterLanding from '../footer/FooterLanding';
 
 type Props = {
   children?: ReactNode;
@@ -34,9 +35,7 @@ const Layout = ({
     <Summary />
     <Partners />
 
-    <footer className="my-8">
-      <hr />
-    </footer>
+    <FooterLanding />
   </div>
 );
 

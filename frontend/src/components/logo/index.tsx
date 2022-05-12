@@ -4,7 +4,7 @@ import Logo from '../svg/Logo';
 
 const AlphaLogo = () => {
   return (
-    <div className="text-white flex">
+    <div className="text-white flex mr-10">
       <Link href="/">
         <a className="relative block">
           <LargeLogo />

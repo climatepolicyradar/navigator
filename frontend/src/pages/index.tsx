@@ -60,7 +60,7 @@ const IndexPage = () => {
           </div> */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
             <AlphaLogo />
-            <div className="container mt-48 max-w-screen-lg mx-auto">
+            <div className="container mt-24 md:mt-48 max-w-screen-lg mx-auto">
               {/* <p className="sm:hidden mt-4 text-center text-white mb-4">
                   {t("Search for something, e.g. 'carbon taxes'")}
                 </p> */}

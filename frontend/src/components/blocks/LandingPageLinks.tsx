@@ -10,9 +10,9 @@ const LandingPageLinks = ({ handleLinkClick }) => {
         </div>
         <div>
           <div className="font-medium text-2xl">Suggested searches</div>
-          <ul className="text-lg mt-2">
+          <ul className="text-lg mt-4">
             {terms.map((term) => (
-              <li className="my-2">
+              <li className="my-2" key={term}>
                 <a
                   className="hover:text-blue-300 transition duration-300"
                   href="/"
