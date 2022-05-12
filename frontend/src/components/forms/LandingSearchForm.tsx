@@ -40,6 +40,7 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
     <form data-cy="search-form">
       <div className="max-w-screen-lg mx-auto text-white flex items-stretch relative">
         <input
+          data-cy="search-input"
           ref={inputRef}
           type="search"
           className="placeholder:text-white pr-16 text-2xl bg-transparent border-t-0 border-l-0 border-r-0 border-white border-b-2 focus:border-white focus:ring-0 w-full"

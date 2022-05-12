@@ -1,10 +1,9 @@
 import Link from 'next/link';
 import LargeLogo from '../svg/LargeLogo';
-import Logo from '../svg/Logo';
 
 const AlphaLogo = () => {
   return (
-    <div className="text-white flex mr-10">
+    <div data-cy="cpr-logo" className="text-white flex mr-10">
       <Link href="/">
         <a className="relative block">
           <LargeLogo />
