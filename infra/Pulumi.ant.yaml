@@ -15,3 +15,5 @@ config:
   infra:sendgrid_enabled: "True"
   infra:sendgrid_from_email:
     secure: AAABAAUz13vgcjUK/1t5VU7Hy7/EYKkKtB8Gv16H+ZDtA0XJo1VE9unvxRG4H6bKASx2WpsYmTq7Jcbvvxg=
+  infra:slack_webhook_url:
+    secure: AAABAH9/ZhhD9I7pmDg3WSK2z6lCigqE3/DsYxtfvsvmICCRela3rHfDRFAw61XmX3DgugZyUr+YF7js8G64206HC1CUJ2qOD65V8udGbAmP5V+rWdJ2H3XBFDR9CKygepzGmPCbCV5m90PONHnaJNM=

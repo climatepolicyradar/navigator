@@ -35,7 +35,11 @@ app = FastAPI(title=config.PROJECT_NAME, docs_url=_docs_url, openapi_url=_openap
 # Add CORS middleware to allow cross origin requests from any port
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://app.climatepolicyradar.org",
+        "https://dev.app.climatepolicyradar.org",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
