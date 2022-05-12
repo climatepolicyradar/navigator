@@ -12,9 +12,7 @@ search_router = APIRouter()
 
 # Use configured environment for router
 _OPENSEARCH_CONFIG = OpenSearchConfig()
-_OPENSEARCH_CONNECTION = OpenSearchConnection(
-    opensearch_config=_OPENSEARCH_CONFIG
-)
+_OPENSEARCH_CONNECTION = OpenSearchConnection(opensearch_config=_OPENSEARCH_CONFIG)
 _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 
 
@@ -31,5 +29,5 @@ def search_documents(
     return _OPENSEARCH_CONNECTION.query(
         search_request_body=search_body,
         opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
-        preference=str(current_user.id)
+        preference=str(current_user.id),
     )
