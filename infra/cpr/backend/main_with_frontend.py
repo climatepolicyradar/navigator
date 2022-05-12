@@ -43,6 +43,9 @@ services:
       OPENSEARCH_PASSWORD: {opensearch_password}
       OPENSEARCH_URL: {opensearch_url}
       PUBLIC_APP_URL: {public_app_url}
+      SENDGRID_API_KEY: {sendgrid_api_token}
+      SENDGRID_FROM_EMAIL: {sendgrid_from_email}
+      SENDGRID_ENABLED: {sendgrid_enabled}
 
   frontend:
     image: {frontend_image}
