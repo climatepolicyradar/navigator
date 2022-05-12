@@ -41,6 +41,10 @@ class Storage:
             tags=default_tag,
         )
 
+        def build_rds_url(args):
+            pulumi.export("RDS Address", args[0])
+            return f"postgresql://{db_username}:{args[1]}@{args[0]}/{db_name}"
+
         self.backend_database_connection_url = pulumi.Output.all(
             rds.address, db_password
-        ).apply(lambda out: f"postgresql://{db_username}:{out[1]}@{out[0]}/{db_name}")
+        ).apply(build_rds_url)
