@@ -44,8 +44,6 @@ document_source_id = 1  # always CCLW (for alpha)
 async def load(ctx: Context, policies: PolicyLookup):
     """Loads policy data into local database."""
 
-    warmup_local_caches()
-
     tasks = []
     for key, policy_data in policies.items():
         task = asyncio.ensure_future(save_action(ctx, key, policy_data))
@@ -65,10 +63,10 @@ async def load(ctx: Context, policies: PolicyLookup):
 
 
 def warmup_local_caches():
-    get_type_id("")
-    get_geography_id("")
-    get_category_id("")
-    get_language_id_by_name("")
+    get_type_id("dummy-call-to-warm-up-cache")
+    get_geography_id("dummy-call-to-warm-up-cache")
+    get_category_id("dummy-call-to-warm-up-cache")
+    get_language_id_by_name("dummy-call-to-warm-up-cache")
 
 
 async def save_action(ctx: Context, key: Key, policy_data: PolicyData) -> int:
