@@ -52,7 +52,7 @@ class ApiClient {
 }
 
 const AuthClient = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: process.env.NEXT_PUBLIC_LOGIN_API_URL,
   responseType: 'json',
   headers: {
     accept: 'application/json',
