@@ -49,7 +49,7 @@ async def load(ctx: Context, policies: PolicyLookup):
         task = asyncio.ensure_future(save_action(ctx, key, policy_data))
         tasks.append(task)
 
-        # -- for debugging
+        # # -- for debugging
         # if len(tasks) > 1:
         #     break
 
@@ -60,6 +60,13 @@ async def load(ctx: Context, policies: PolicyLookup):
 
     doc_count = sum(doc_counts)
     logger.info(f"Done, imported {doc_count} docs from {len(policies.items())} actions")
+
+
+def warmup_local_caches():
+    get_type_id("dummy-call-to-warm-up-cache")
+    get_geography_id("dummy-call-to-warm-up-cache")
+    get_category_id("dummy-call-to-warm-up-cache")
+    get_language_id_by_name("dummy-call-to-warm-up-cache")
 
 
 async def save_action(ctx: Context, key: Key, policy_data: PolicyData) -> int:

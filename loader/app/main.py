@@ -7,7 +7,7 @@ import httpx
 
 from app.db.session import get_db
 from app.loaders.loader_cclw_v2.extract.main import extract
-from app.loaders.loader_cclw_v2.load.main import load
+from app.loaders.loader_cclw_v2.load.main import load, warmup_local_caches
 from app.loaders.loader_cclw_v2.transform.main import transform
 from app.poster.main import post_all_to_backend_api
 from app.service.context import Context
@@ -88,6 +88,7 @@ async def main():
                 db=db,
                 client=client,
             )
+            warmup_local_caches()
             await load(ctx, policies)
 
             # once all data has been loaded into database, upload files to cloud

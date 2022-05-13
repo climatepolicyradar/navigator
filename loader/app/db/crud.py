@@ -2,7 +2,7 @@ from typing import Optional, List
 
 from sqlalchemy.orm import Session
 
-from app.db.models import Document
+from app.db.models import Document, Association, APIDocument
 
 
 def get_document_by_unique_constraint(
@@ -29,3 +29,11 @@ def get_document_by_unique_constraint(
 
 def get_all_valid_documents(db: Session) -> List[Document]:
     return db.query(Document).filter(Document.is_valid).all()
+
+
+def get_all_associations(db: Session):
+    return db.query(Association).all()
+
+
+def get_all_api_documents(db: Session):
+    return db.query(APIDocument).all()

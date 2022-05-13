@@ -13,7 +13,11 @@ from fastapi import (
     UploadFile,
 )
 
-from app.core.auth import get_current_active_superuser, get_current_active_user
+from app.core.auth import (
+    get_current_active_superuser,
+    get_current_active_user,
+    get_current_active_db_superuser,
+)
 from app.core.service.loader import persist_document_and_metadata
 from app.db.models import (
     Association,
@@ -43,6 +47,8 @@ from app.db.schemas.document import (
     DocumentInDB,
     DocumentDetailResponse,
     RelatedDocumentResponse,
+    DocumentAssociationInDB,
+    DocumentAssociation,
 )
 from app.db.schemas.metadata import (
     Category as CategorySchema,
@@ -227,7 +233,7 @@ async def post_document(
     request: Request,
     document_with_metadata: DocumentCreateWithMetadata,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
+    current_user=Depends(get_current_active_db_superuser),
 ):
     """Create a document, with associated metadata."""
 
@@ -273,3 +279,24 @@ def document_upload(
     return {
         "url": s3_document.url,
     }
+
+
+@r.post("/associations", response_model=DocumentAssociationInDB)
+async def post_association(
+    request: Request,
+    document_association: DocumentAssociation,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a document, with associated metadata."""
+
+    db_association = Association(
+        document_id_from=document_association.document_id_from,
+        document_id_to=document_association.document_id_to,
+        name=document_association.name,
+        type=document_association.type,
+    )
+    db.add(db_association)
+    db.commit()
+
+    return DocumentAssociationInDB.from_orm(db_association)
