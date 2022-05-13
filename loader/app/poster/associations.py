@@ -45,13 +45,13 @@ def get_associations(ctx: Context) -> List[AssociationSchema]:
             )
             continue
 
-        remote_assosiation = AssociationSchema(
+        remote_association = AssociationSchema(
             document_id_from=remote_doc_id_from,
             document_id_to=remote_doc_id_to,
             name=association.name,
             type=association.type,
         )
 
-        remote_associations.append(remote_assosiation)
+        remote_associations.append(remote_association)
 
     return remote_associations
