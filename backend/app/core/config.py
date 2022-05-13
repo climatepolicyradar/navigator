@@ -41,16 +41,16 @@ OPENSEARCH_INDEX_DESCRIPTION_BOOST: int = int(
     os.getenv("OPENSEARCH_INDEX_DESCRIPTION_BOOST", "10")
 )
 OPENSEARCH_INDEX_NAME_KEY: str = os.getenv(
-    "OPENSEARCH_INDEX_NAME_KEY", "for_search_action_name"
+    "OPENSEARCH_INDEX_NAME_KEY", "for_search_document_name"
 )
 OPENSEARCH_INDEX_DESCRIPTION_KEY: str = os.getenv(
-    "OPENSEARCH_INDEX_DESCRIPTION_KEY", "for_search_action_description"
+    "OPENSEARCH_INDEX_DESCRIPTION_KEY", "for_search_document_description"
 )
 OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY: str = os.getenv(
-    "OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY", "action_description_embedding"
+    "OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY", "document_description_embedding"
 )
 OPENSEARCH_INDEX_INDEX_KEY: str = os.getenv(
-    "OPENSEARCH_INDEX_INDEX_KEY", "action_name_and_id"
+    "OPENSEARCH_INDEX_INDEX_KEY", "document_name_and_id"
 )
 OPENSEARCH_INDEX_TEXT_BLOCK_KEY: str = os.getenv(
     "OPENSEARCH_INDEX_TEXT_BLOCK_KEY", "text_block_id"

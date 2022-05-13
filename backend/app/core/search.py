@@ -49,19 +49,25 @@ _ENCODER = SentenceTransformer(
 )
 # Map a sort field type to the document key used by OpenSearch
 _SORT_FIELD_MAP: Mapping[SortField, str] = {
-    SortField.DATE: "action_date",
-    SortField.TITLE: "action_name",
+    SortField.DATE: "document_date",
+    SortField.TITLE: "document_name",
 }
 # TODO: Map a filter field type to the document key used by OpenSearch
 _FILTER_FIELD_MAP: Mapping[FilterField, str] = {
-    FilterField.SOURCE: "action_source_name",
-    FilterField.GEOGRAPHY: "action_geography_english_shortname",
-    # Mapping for the below fields TBD
-    FilterField.INSTRUMENT: "instruments",
-    FilterField.SECTOR: "sectors",
-    FilterField.TYPE: "types",
-    FilterField.CATEGORY: "categories",
-    FilterField.TOPIC: "topic",
+    FilterField.SOURCE: "document_source_name",
+    FilterField.COUNTRY: "document_country_english_shortname",
+    FilterField.REGION: "document_region_english_shortname",
+    FilterField.SECTOR: "document_sector_name",
+    FilterField.TYPE: "document_type",
+    FilterField.CATEGORY: "document_category",
+    FilterField.KEYWORD: "document_keyword",
+    FilterField.HAZARD: "document_hazard_name",
+    FilterField.LANGUAGE: "document_language",
+    FilterField.FRAMEWORK: "document_framework_name",
+    # TODO: we need to fix the lookup API for instruments
+    FilterField.INSTRUMENT: "document_instrument_name",
+    # TODO: we still call this 'response' in the database. We might want to propagate the rename to 'topic' everywhere.
+    FilterField.TOPIC: "document_response_name",
 }
 
 
@@ -148,7 +154,9 @@ class OpenSearchConnection:
             offset=search_request_body.offset,
         )
 
-    def raw_query(self, request_body: Dict[str, Any], preference: Optional[str]) -> OpenSearchResponse:
+    def raw_query(
+        self, request_body: Dict[str, Any], preference: Optional[str]
+    ) -> OpenSearchResponse:
         """Query the configured OpenSearch instance with a JSON OpenSearch body."""
 
         if self._opensearch_connection is None:
@@ -211,7 +219,7 @@ def _year_range_filter(
         policy_year_conditions["lte"] = f"31/12/{year_range[1]}"
 
     if policy_year_conditions:
-        return {"range": {"action_date": policy_year_conditions}}
+        return {"range": {"document_date": policy_year_conditions}}
 
     return None
 
@@ -292,7 +300,7 @@ class QueryBuilder:
                         },
                     },
                 },
-                "no_unique_docs": {"cardinality": {"field": "action_name_and_id"}},
+                "no_unique_docs": {"cardinality": {"field": "document_name_and_id"}},
             },
         }
 
@@ -514,14 +522,14 @@ def create_search_response_document(
     passage_match: OpenSearchResponseMatchBase,
 ):
     return SearchResponseDocument(
-        document_name=passage_match.action_name,
-        document_description=passage_match.action_description,
-        document_country_code=passage_match.action_country_code,
-        document_source_name=passage_match.action_source_name,
-        document_date=passage_match.action_date,
+        document_name=passage_match.document_name,
+        document_description=passage_match.document_description,
+        document_country_code=passage_match.document_country_code,
+        document_source_name=passage_match.document_source_name,
+        document_date=passage_match.document_date,
         document_id=passage_match.document_id,
-        document_geography_english_shortname=passage_match.action_geography_english_shortname,
-        document_type_name=passage_match.action_type_name,
+        document_country_english_shortname=passage_match.document_country_english_shortname,
+        document_type=passage_match.document_type,
         document_title_match=False,
         document_description_match=False,
         document_passage_matches=[],
