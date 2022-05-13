@@ -530,6 +530,7 @@ def create_search_response_document(
         document_id=passage_match.document_id,
         document_country_english_shortname=passage_match.document_country_english_shortname,
         document_type=passage_match.document_type,
+        document_url=passage_match.document_url,
         document_title_match=False,
         document_description_match=False,
         document_passage_matches=[],

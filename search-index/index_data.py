@@ -1,6 +1,7 @@
 """Index data into a running Opensearch index."""
 
 import os
+import re
 from pathlib import Path
 from typing import Generator, Dict
 
@@ -14,6 +15,21 @@ from app.index import OpenSearchIndex
 from app.load_data import get_data_from_navigator_tables
 
 logger = get_logger(__name__)
+
+CDN_URL: str = os.getenv("CDN_URL", "https://cdn.climatepolicyradar.org")
+
+
+def s3_to_cdn_url(s3_url: str) -> str:
+    """Convert a URL to a PDF in our s3 bucket to a URL to a PDF in our CDN.
+
+    Args:
+        s3_url (str): URL to a PDF in our s3 bucket.
+
+    Returns:
+        str: URL to a PDF in our CDN bucket.
+    """
+
+    return re.sub(r"https:\/\/.*\.s3\..*\.amazonaws.com", CDN_URL, s3_url)
 
 
 def get_document_generator(
@@ -52,10 +68,12 @@ def get_document_generator(
         "document_description"
     ].str.strip()
 
+    main_dataset["document_url"] = main_dataset["document_url"].apply(s3_to_cdn_url)
     # --------------------------------------------------------------------------------------------
 
     metadata_columns = [
         "md5_sum",
+        "document_url",
         "document_id",
         "document_name",
         "document_date",
@@ -251,7 +269,7 @@ def run_cli(
         opensearch_connector_kwargs={
             "use_ssl": _convert_to_bool(os.environ["OPENSEARCH_USE_SSL"]),
             "verify_certs": _convert_to_bool(os.environ["OPENSEARCH_VERIFY_CERTS"]),
-            "ssl_show_warn": os.environ["OPENSEARCH_SSL_WARNINGS"],
+            "ssl_show_warn": _convert_to_bool(os.environ["OPENSEARCH_SSL_WARNINGS"]),
         },
         embedding_dim=int(os.environ["OPENSEARCH_INDEX_EMBEDDING_DIM"]),
     )

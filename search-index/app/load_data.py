@@ -17,7 +17,7 @@ def get_data_from_navigator_tables(
     query = """
       SELECT
         doc.md5_sum as md5_sum,
-        doc.source_url AS source_url,
+        doc.url AS document_url,
         source.name as document_source_name,
         doc.id as document_id,
         doc.name as document_name,
@@ -149,7 +149,7 @@ def get_data_from_navigator_tables(
             type = 'World Bank Region'
         ) geog_region ON geog_country.parent_id = geog_region.id
       WHERE
-        event.description = 'The publication date'
+        event.description = 'The publication date' AND url IS NOT NULL
     """
 
     return postgres_connector.run_query(query)
