@@ -37,98 +37,143 @@ The following snippets are examples of the structure of different documents in t
 
 ``` json
 {
-          "document_id" : 1297,
-          "document_name" : "Full text",
-          "document_date" : "02/01/2009",
-          "document_name" : "National Policy for Disaster Management",
-          "document_description" : "The policy recognizes that climate change contributes significantly to Kenya's increasing vulnerability to disasters in the last two decades and affects seriously the lives and livelihoods of communities. The policy therefore aims to institutionalise mechanisms to address these disasters and associated vulnerabilities stressing the central role of climate change in any sustainable and integrated National Strategy for Disaster Management.  The policy emphasises preparedness on the part of the government, communities and other stakeholders and proposes to establish and strengthen Disaster Management institutions, partnerships and networking. It proposes to mainstream Disaster Risk Reduction in the development process and strengthen the resilience of vulnerable groups.  Disaster Risk Management encompasses a full continuum from preparedness, relief and rehabilitation, mitigation and prevention including t diversification of vulnerable livelihoods and coping mechanisms. Ministry of State for Special Programmes in the Office of President is appointed as the chief national co-ordinator.",
-          "document_name_and_id" : "National Policy for Disaster Management 1297",
-          "document_country_code" : "KEN",
-          "document_language" : "en",
-          "document_region_code" : "",
-          "document_cateogory": "Policy",
-          "document_type" : "Strategy",
-          "sector_name" : "Adaptation",
-          "instrument_name" : "",
-          "country_english_shortname" : "Kenya",
-          "region_english_shortname" : "",
-          "document_source_name" : "CCLW",
-          "text_block_id" : "p0_b1",
-          "text" : "GOVERNMENT OF KENYA",
-          "text_embedding" : [<768xfloat>],
-          "text_block_coords" : [
-            [
-              237.1199951171875,
-              207.72000122070312
-            ],
-            [
-              391.66815185546875,
-              207.72000122070312
-            ],
-            [
-              237.1199951171875,
-              224.3520050048828
-            ],
-            [
-              391.66815185546875,
-              224.3520050048828
-            ]
-          ],
-          "text_block_page" : 0
-        }
+    "md5_sum" : "1c11e58a696ca5741fdc3454b4369564",
+    "document_url" : "https://cdn.climatepolicyradar.org/PHL/2020/PHL-2020-03-19-Sustainable Finance Policy Framework of 2020-319_1c11e58a696ca5741fdc3454b4369564.pdf",
+    "document_id" : 167,
+    "document_name" : "Sustainable Finance Policy Framework of 2020",
+    "document_date" : "19/03/2020",
+    "document_description" : "This document was approved by circular 1085/2020 of Philippines' central bank. It defines the bank's vision to integrate sustainability principles in corporate governance and risk management frameworks as well as in strategic objectives of banks.&nbsp;",
+    "document_category" : "Policy",
+    "document_type" : "Framework",
+    "document_keyword" : [
+      "Finance",
+      "Central Bank"
+    ],
+    "document_sector_name" : "Finance",
+    "document_hazard_name" : [ ],
+    "document_instrument_name" : [
+      "Processes, plans and strategies|Governance",
+      "Capacity building|Governance"
+    ],
+    "document_language" : "English",
+    "document_instrument_parent" : [ ],
+    "document_framework_name" : [ ],
+    "document_response_name" : [
+      "Mitigation",
+      "Adaptation"
+    ],
+    "document_name_and_id" : "Sustainable Finance Policy Framework of 2020 167",
+    "document_country_code" : "PHL",
+    "document_country_english_shortname" : "Philippines",
+    "document_region_english_shortname" : "East Asia & Pacific",
+    "document_region_code" : "East Asia & Pacific",
+    "document_source_name" : "CCLW",
+    "text_block_id" : "p0_b1",
+    "text" : "CIRCULAR NO. 1085",
+    "text_embedding" : [x768],
+    "text_block_coords" : [
+      [
+        263.2799987792969,
+        709.3638153076172
+      ],
+      [
+        364.5785827636719,
+        709.3638153076172
+      ],
+      [
+        364.5785827636719,
+        720.4228668212891
+      ],
+      [
+        263.2799987792969,
+        720.4228668212891
+      ]
+    ],
+    "text_block_page" : 0
+}
 ```
 
 **Example Opensearch document with title:**
 
-Note the `for_search_action_name` field which is used for title search; the `action_name` field is identical to this field but appears on all documents for sorting purposes.
+Note the `for_search_document_name` field which is used for title search; the `document_name` field is identical to this field but appears on all documents for sorting purposes.
 
 ``` json
 {
-          "document_id" : 1297,
-          "document_name" : "Full text",
-          "document_date" : "02/01/2009",
-          "document_name" : "National Policy for Disaster Management",
-          "document_description" : "The policy recognizes that climate change contributes significantly to Kenya's increasing vulnerability to disasters in the last two decades and affects seriously the lives and livelihoods of communities. The policy therefore aims to institutionalise mechanisms to address these disasters and associated vulnerabilities stressing the central role of climate change in any sustainable and integrated National Strategy for Disaster Management.  The policy emphasises preparedness on the part of the government, communities and other stakeholders and proposes to establish and strengthen Disaster Management institutions, partnerships and networking. It proposes to mainstream Disaster Risk Reduction in the development process and strengthen the resilience of vulnerable groups.  Disaster Risk Management encompasses a full continuum from preparedness, relief and rehabilitation, mitigation and prevention including t diversification of vulnerable livelihoods and coping mechanisms. Ministry of State for Special Programmes in the Office of President is appointed as the chief national co-ordinator.",
-          "document_name_and_id" : "National Policy for Disaster Management 1297",
-          "document_country_code" : "KEN",
-          "document_language" : "en",
-          "document_region_code" : "",
-          "document_cateogory": "Policy",
-          "document_type" : "Strategy",
-          "sector_name" : "Adaptation",
-          "instrument_name" : "",
-          "country_english_shortname" : "Kenya",
-          "region_english_shortname" : "",
-          "document_source_name" : "CCLW",
-          "for_search_action_name" : "National Policy for Disaster Management"
-        }
+  "md5_sum" : "1c11e58a696ca5741fdc3454b4369564",
+  "document_url" : "https://cdn.climatepolicyradar.org/PHL/2020/PHL-2020-03-19-Sustainable Finance Policy Framework of 2020-319_1c11e58a696ca5741fdc3454b4369564.pdf",
+  "document_id" : 167,
+  "document_name" : "Sustainable Finance Policy Framework of 2020",
+  "document_date" : "19/03/2020",
+  "document_description" : "This document was approved by circular 1085/2020 of Philippines' central bank. It defines the bank's vision to integrate sustainability principles in corporate governance and risk management frameworks as well as in strategic objectives of banks.&nbsp;",
+  "document_category" : "Policy",
+  "document_type" : "Framework",
+  "document_keyword" : [
+    "Finance",
+    "Central Bank"
+  ],
+  "document_sector_name" : "Finance",
+  "document_hazard_name" : [ ],
+  "document_instrument_name" : [
+    "Processes, plans and strategies|Governance",
+    "Capacity building|Governance"
+  ],
+  "document_language" : "English",
+  "document_instrument_parent" : [ ],
+  "document_framework_name" : [ ],
+  "document_response_name" : [
+    "Mitigation",
+    "Adaptation"
+  ],
+  "document_name_and_id" : "Sustainable Finance Policy Framework of 2020 167",
+  "document_country_code" : "PHL",
+  "document_country_english_shortname" : "Philippines",
+  "document_region_english_shortname" : "East Asia & Pacific",
+  "document_region_code" : "East Asia & Pacific",
+  "document_source_name" : "CCLW",
+  "for_search_document_name" : "Sustainable Finance Policy Framework of 2020"
+}
 ```
 
 **Example text block with description:**
 
-Note the `for_search_action_description` field and the `action_description` field - see comment about titles.
+Note the `for_search_document_description` field and the `document_description` field - see comment about titles.
 
 ``` json
 {
-          "document_id" : 1297,
-          "document_name" : "Full text",
-          "document_date" : "02/01/2009",
-          "document_name" : "National Policy for Disaster Management",
-          "document_description" : "The policy recognizes that climate change contributes significantly to Kenya's increasing vulnerability to disasters in the last two decades and affects seriously the lives and livelihoods of communities. The policy therefore aims to institutionalise mechanisms to address these disasters and associated vulnerabilities stressing the central role of climate change in any sustainable and integrated National Strategy for Disaster Management.  The policy emphasises preparedness on the part of the government, communities and other stakeholders and proposes to establish and strengthen Disaster Management institutions, partnerships and networking. It proposes to mainstream Disaster Risk Reduction in the development process and strengthen the resilience of vulnerable groups.  Disaster Risk Management encompasses a full continuum from preparedness, relief and rehabilitation, mitigation and prevention including t diversification of vulnerable livelihoods and coping mechanisms. Ministry of State for Special Programmes in the Office of President is appointed as the chief national co-ordinator.",
-          "document_name_and_id" : "National Policy for Disaster Management 1297",
-          "document_country_code" : "KEN",
-          "document_language" : "en",
-          "document_region_code" : "",
-          "document_cateogory": "Policy",
-          "document_type" : "Strategy",
-          "sector_name" : "Adaptation",
-          "instrument_name" : "",
-          "country_english_shortname" : "Kenya",
-          "region_english_shortname" : "",
-          "document_source_name" : "CCLW",
-          "for_search_action_description" : "The policy recognizes that climate change contributes significantly to Kenya's increasing vulnerability to disasters in the last two decades and affects seriously the lives and livelihoods of communities. The policy therefore aims to institutionalise mechanisms to address these disasters and associated vulnerabilities stressing the central role of climate change in any sustainable and integrated National Strategy for Disaster Management.  The policy emphasises preparedness on the part of the government, communities and other stakeholders and proposes to establish and strengthen Disaster Management institutions, partnerships and networking. It proposes to mainstream Disaster Risk Reduction in the development process and strengthen the resilience of vulnerable groups.  Disaster Risk Management encompasses a full continuum from preparedness, relief and rehabilitation, mitigation and prevention including t diversification of vulnerable livelihoods and coping mechanisms. Ministry of State for Special Programmes in the Office of President is appointed as the chief national co-ordinator.",
-          "action_description_embedding" : [<768xfloat>]
-        }
+  "md5_sum" : "1c11e58a696ca5741fdc3454b4369564",
+  "document_url" : "https://cdn.climatepolicyradar.org/PHL/2020/PHL-2020-03-19-Sustainable Finance Policy Framework of 2020-319_1c11e58a696ca5741fdc3454b4369564.pdf",
+  "document_id" : 167,
+  "document_name" : "Sustainable Finance Policy Framework of 2020",
+  "document_date" : "19/03/2020",
+  "document_description" : "This document was approved by circular 1085/2020 of Philippines' central bank. It defines the bank's vision to integrate sustainability principles in corporate governance and risk management frameworks as well as in strategic objectives of banks.&nbsp;",
+  "document_category" : "Policy",
+  "document_type" : "Framework",
+  "document_keyword" : [
+    "Finance",
+    "Central Bank"
+  ],
+  "document_sector_name" : "Finance",
+  "document_hazard_name" : [ ],
+  "document_instrument_name" : [
+    "Processes, plans and strategies|Governance",
+    "Capacity building|Governance"
+  ],
+  "document_language" : "English",
+  "document_instrument_parent" : [ ],
+  "document_framework_name" : [ ],
+  "document_response_name" : [
+    "Mitigation",
+    "Adaptation"
+  ],
+  "document_name_and_id" : "Sustainable Finance Policy Framework of 2020 167",
+  "document_country_code" : "PHL",
+  "document_country_english_shortname" : "Philippines",
+  "document_region_english_shortname" : "East Asia & Pacific",
+  "document_region_code" : "East Asia & Pacific",
+  "document_source_name" : "CCLW",
+  "for_search_document_description" : "This document was approved by circular 1085/2020 of Philippines' central bank. It defines the bank's vision to integrate sustainability principles in corporate governance and risk management frameworks as well as in strategic objectives of banks.&nbsp;",
+  "document_description_embedding" : [x768],
+}
 ```
 
 # Common issues
