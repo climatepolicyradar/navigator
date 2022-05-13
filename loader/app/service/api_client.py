@@ -4,19 +4,23 @@ The loader previously used lookups from the backend API,
 but as it now has it's own database, use app.service.lookups instead.
 Then delete this later.
 """
-
+import dataclasses
+import hashlib
+import logging
 import os
 from functools import lru_cache
 from typing import Callable, Tuple
-import hashlib
 
 import httpx
 import requests
 
+from app.db.schema import AssociationSchema
 from app.service.context import Context
 from app.service.tree_parser import get_unique_from_tree_by_type
 
 transport = httpx.AsyncHTTPTransport(retries=3)
+
+logger = logging.getLogger(__file__)
 
 
 def get_type_id(type_name):
@@ -85,15 +89,37 @@ def _get_attribute(lookup_key: str, lookup_fn: Callable, attribute_key: str):
         return None
 
 
+def _get_api_host():
+    """Returns API host configured in environment."""
+    api_host = os.getenv("API_HOST", "http://backend:8888")
+    if api_host.endswith("/"):
+        api_host = api_host[:-1]  # strip trailing slash
+    return api_host
+
+
+@lru_cache()
+def _get_machine_user_token():
+    username = os.getenv("MACHINE_USER_LOADER_EMAIL")
+    password = os.getenv("MACHINE_USER_LOADER_PASSWORD")
+    api_host = _get_api_host()
+
+    login_data = {
+        "username": username,
+        "password": password,
+    }
+    r = requests.post(f"{api_host}/api/tokens", data=login_data)
+    tokens = r.json()
+    a_token = tokens["access_token"]
+
+    return a_token
+
+
 @lru_cache()
 def _get_lookup_from_api(model):
     """Returns a lookup from the API and caches the result."""
 
-    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
-
-    api_host = os.getenv("API_HOST", "http://backend:8888")
-    if api_host.endswith("/"):
-        api_host = api_host[:-1]  # strip trailing slash
+    machine_user_token = _get_machine_user_token()
+    api_host = _get_api_host()
 
     headers = {"Authorization": "Bearer {}".format(machine_user_token)}
     response = requests.get(f"{api_host}/api/v1/{model}", headers=headers)
@@ -143,11 +169,8 @@ def _keyed(data, lookup_key):
 
 
 def post_document(payload):
-    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
-
-    api_host = os.getenv("API_HOST", "http://backend:8888")
-    if api_host.endswith("/"):
-        api_host = api_host[:-1]  # strip trailing slash
+    machine_user_token = _get_machine_user_token()
+    api_host = _get_api_host()
 
     headers = {
         "Authorization": "Bearer {}".format(machine_user_token),
@@ -157,6 +180,25 @@ def post_document(payload):
         f"{api_host}/api/v1/documents", headers=headers, json=payload
     )
     return response
+
+
+def post_association(association: AssociationSchema):
+    machine_user_token = _get_machine_user_token()
+    api_host = _get_api_host()
+    headers = {
+        "Authorization": "Bearer {}".format(machine_user_token),
+        "Accept": "application/json",
+    }
+
+    payload = dataclasses.asdict(association)
+    try:
+        response = requests.post(
+            f"{api_host}/api/v1/associations", headers=headers, json=payload
+        )
+        response.raise_for_status()
+        logger.info(f"Posted remote document association {association}")
+    except Exception as e:
+        logger.warning(f"Error posting document association {association}", exc_info=e)
 
 
 async def upload_document(
@@ -198,11 +240,8 @@ async def upload_document(
     # puts docs in folder <country_code>/<publication_year>/<file_name>
     full_path = parts[0] + "/" + parts[1] + "/" + file_name
 
-    machine_user_token = os.getenv("MACHINE_USER_LOADER_JWT")
-
-    api_host = os.getenv("API_HOST", "http://backend:8888")
-    if api_host.endswith("/"):
-        api_host = api_host[:-1]  # strip trailing slash
+    machine_user_token = _get_machine_user_token()
+    api_host = _get_api_host()
 
     headers = {
         "Authorization": "Bearer {}".format(machine_user_token),

@@ -12,6 +12,8 @@ from cpr.plumbing.main import Plumbing
 from cpr.storage.main import Storage
 
 # for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
+from cpr.util.bluegreen import get_app_domain_for_current_stack
+
 DOCKER_COMPOSE_TEMPLATE = """version: '3.7'
 
 services:
@@ -45,7 +47,7 @@ services:
       PUBLIC_APP_URL: {public_app_url}
       SENDGRID_API_KEY: {sendgrid_api_token}
       SENDGRID_FROM_EMAIL: {sendgrid_from_email}
-      SENDGRID_ENABLED: {sendgrid_enabled}
+      SENDGRID_ENABLED: "{sendgrid_enabled}"
 
   frontend:
     image: {frontend_image}
@@ -53,6 +55,9 @@ services:
     command: npm run start
     environment:
       PORT: 3000
+      # not sure if these 2 need to be here, as it's already baked into the image.
+      NEXT_PUBLIC_API_URL: {frontend_api_url}
+      NEXT_PUBLIC_LOGIN_API_URL: {frontend_api_url_login}
     ports:
       - 3000:3000
     volumes:
@@ -69,6 +74,24 @@ class Backend:
         plumbing: Plumbing,
         storage: Storage,
     ):
+        # get all config
+        config = pulumi.Config()
+        backend_secret_key = config.require_secret("backend_secret_key")
+        opensearch_user = config.require("opensearch_user")
+        opensearch_password = config.require_secret("opensearch_password")
+        opensearch_url = config.require("opensearch_url")
+        pulumi.export("opensearch_url", opensearch_url)
+        sendgrid_api_token = config.require("sendgrid_api_token")
+        sendgrid_from_email = config.require("sendgrid_from_email")
+        sendgrid_enabled = config.require("sendgrid_enabled")
+        app_domain_for_current_stack = get_app_domain_for_current_stack()
+        pulumi.export("app_domain_for_current_stack", app_domain_for_current_stack)
+        public_app_url = f"https://{app_domain_for_current_stack}"
+        frontend_api_url = f"https://{app_domain_for_current_stack}/api/v1"
+        pulumi.export("frontend_api_url", frontend_api_url)
+        frontend_api_url_login = f"https://{app_domain_for_current_stack}/api/tokens"
+        pulumi.export("frontend_api_url_login", frontend_api_url_login)
+
         # context has to be one level below 'backend' as backend Dockerfile references '../common'
         docker_context = Path(os.getcwd()) / ".."
         docker_context = docker_context.resolve().as_posix()
@@ -97,7 +120,10 @@ class Backend:
             build=docker.DockerBuild(
                 context=docker_context,
                 dockerfile=frontend_dockerfile,
-                args={"NEXT_PUBLIC_API_URL": "https://api.climatepolicyradar.org/"},
+                args={
+                    "NEXT_PUBLIC_API_URL": frontend_api_url,
+                    "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
+                },
             ),
             image_name=deployment_resources.ecr_repo.repository_url,
             skip_push=False,
@@ -120,18 +146,6 @@ class Backend:
             registry=deployment_resources.docker_registry,
         )
 
-        config = pulumi.Config()
-        backend_secret_key = config.require_secret("backend_secret_key")
-        opensearch_user = config.require("opensearch_user")
-        opensearch_password = config.require_secret("opensearch_password")
-        opensearch_url = config.require("opensearch_url")
-        sendgrid_api_token = config.require("sendgrid_api_token")
-        sendgrid_from_email = config.require("sendgrid_from_email")
-        sendgrid_enabled = config.require("sendgrid_enabled")
-        public_app_url = config.require("public_app_url")
-
-        pulumi.export("opensearch_url", opensearch_url)
-
         def fill_template(arg_list):
             template_args = dict(
                 zip(
@@ -148,6 +162,8 @@ class Backend:
                         "sendgrid_from_email",
                         "sendgrid_enabled",
                         "public_app_url",
+                        "frontend_api_url",
+                        "frontend_api_url_login",
                     ],
                     arg_list,
                 )
@@ -167,6 +183,8 @@ class Backend:
             sendgrid_from_email,
             sendgrid_enabled,
             public_app_url,
+            frontend_api_url,
+            frontend_api_url_login,
         ).apply(fill_template)
 
         def create_deploy_resource(manifest):

@@ -1,7 +1,7 @@
 from datetime import datetime, timezone
+from pathlib import Path
 
 from app.db.models import (
-    Association,
     Document,
     Source,
     Geography,
@@ -17,7 +17,7 @@ from app.db.models import (
     Category,
     Keyword,
 )
-from pathlib import Path
+from app.db.schemas.document import DocumentAssociation
 
 
 def test_document_upload(
@@ -296,15 +296,19 @@ def test_document_detail(
     assert response2.status_code == 200
     response2_document = response2.json()
 
-    test_db.add(
-        Association(
-            document_id_from=response2_document["id"],
-            document_id_to=response1_document["id"],
-            type="related",
-            name="related",
-        )
+    doc_association_payload = DocumentAssociation(
+        document_id_from=response2_document["id"],
+        document_id_to=response1_document["id"],
+        name="related",
+        type="related",
+    ).dict()
+
+    response_assoc = client.post(
+        "/api/v1/associations",
+        headers=superuser_token_headers,
+        json=doc_association_payload,
     )
-    test_db.commit()
+    assert response_assoc.status_code == 200
 
     get_detail_response = client.get(
         f"/api/v1/documents/{response2_document['id']}",

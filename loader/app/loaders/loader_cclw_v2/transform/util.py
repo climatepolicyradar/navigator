@@ -56,10 +56,10 @@ def get_policy_data(
         document_type = dataframe["document_type"]
         events = extract_events(dataframe["events"])
         sectors = prune(dataframe["sectors"].split(";"))
-        instruments = prune(dataframe["instruments"].split("|"))
-        frameworks = prune(dataframe["frameworks"].split(","))
-        responses = prune(dataframe["responses"].split(","))
-        hazards = prune(dataframe["hazards"].split(","))
+        instruments = prune(dataframe["instruments"].split(";"))
+        frameworks = prune(dataframe["frameworks"].split(";"))
+        responses = prune(dataframe["responses"].split(";"))
+        hazards = prune(dataframe["hazards"].split(";"))
         keywords = prune(dataframe["keywords"].split(";"))
         year = dataframe["document_year"]
 

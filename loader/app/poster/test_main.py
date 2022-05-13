@@ -6,9 +6,12 @@ from app.poster.main import post_all_to_backend_api
 from app.service.context import Context
 
 
+@patch("app.poster.main.post_associations_to_backend")
 @patch("app.poster.main.post_doc")
 @patch("app.poster.main.get_all_valid_documents")
-def test_post_all_to_backend_api(mock_get_all_valid_documents, mock_post_doc):
+def test_post_all_to_backend_api(
+    mock_get_all_valid_documents, mock_post_doc, mock_post_associations_to_backend
+):
     @dataclass
     class SomethingWithAnID:
         id: int
@@ -37,3 +40,4 @@ def test_post_all_to_backend_api(mock_get_all_valid_documents, mock_post_doc):
     assert isinstance(mock_db.add.call_args.args[0], APIDocument)
     assert mock_db.add.call_args[0][0].document_id == 3
     assert mock_db.add.call_args[0][0].remote_document_id == 7
+    mock_post_associations_to_backend.assert_called_once_with(ctx)

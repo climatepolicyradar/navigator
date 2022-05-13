@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, Request
 
-from app.core.auth import get_current_active_user
+from app.core.auth import get_current_active_db_user
 from app.core.search import (
     OpenSearchConnection,
     OpenSearchConfig,
@@ -23,7 +23,7 @@ _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 def search_documents(
     request: Request,
     search_body: SearchRequestBody,
-    current_user=Depends(get_current_active_user),
+    current_user=Depends(get_current_active_db_user),
 ):
     """Search for documents matching the search criteria."""
     return _OPENSEARCH_CONNECTION.query(

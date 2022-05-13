@@ -5,6 +5,7 @@ from app.db.models import (
     APIDocument,
     Document,
 )
+from app.poster.associations import post_associations_to_backend
 from app.poster.post import post_doc
 from app.service.context import Context
 
@@ -23,7 +24,7 @@ def post_all_to_backend_api(ctx: Context):
                 exc_info=e,
             )
 
-    # post associations
+    post_associations_to_backend(ctx)
 
 
 def post_doc_to_backend_api(ctx: Context, doc: Document):

@@ -18,6 +18,12 @@ async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depen
             detail="Incorrect username or password",
             headers={"WWW-Authenticate": "Bearer"},
         )
+    if not user.is_active:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="User is de-activated",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
 
     access_token_expires = timedelta(minutes=security.ACCESS_TOKEN_EXPIRE_MINUTES)
     if user.is_superuser:
@@ -25,7 +31,11 @@ async def login(db=Depends(get_db), form_data: OAuth2PasswordRequestForm = Depen
     else:
         permissions = "user"
     access_token = security.create_access_token(
-        data={"sub": user.email, "permissions": permissions},
+        data={
+            "sub": user.email,
+            "permissions": permissions,
+            "is_active": user.is_active,
+        },
         expires_delta=access_token_expires,
     )
 
