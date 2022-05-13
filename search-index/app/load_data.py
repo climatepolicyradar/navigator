@@ -42,6 +42,9 @@ def get_data_from_navigator_tables(
         doc_hzrd.hazard_id,
         doc_hzrd.name as hazard_name,
         doc_hzrd.description as hazard_description,
+        doc_rspnse.response_id,
+        doc_rspnse.name as response_name,
+        doc_rspnse.description as response_description,
         geog_country.parent_id as geog_parent,
         geog_country.type as geog_type,
         geog_country.display_value as country_english_shortname,
@@ -117,6 +120,18 @@ def get_data_from_navigator_tables(
                 hazard
             ) hazard ON (hazard.id = document_hazard.hazard_id)
         ) doc_hzrd ON (doc.id = doc_hzrd.document_id)
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
+            document_response
+            LEFT JOIN (
+              SELECT
+                *
+              FROM
+                response
+            ) response ON (response.id = document_response.response_id)
+        ) doc_rspnse ON (doc.id = doc_rspnse.document_id)
         LEFT JOIN (
           SELECT
             *

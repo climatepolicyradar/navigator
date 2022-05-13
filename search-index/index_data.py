@@ -69,6 +69,7 @@ def get_document_generator(
         "document_language",
         "instrument_parent",
         "framework_name",
+        "response_name",
         "document_category",
         "instrument_parent",
         "document_name_and_id",
@@ -95,10 +96,16 @@ def get_document_generator(
             )
             continue
 
-        doc_metadata_dict = doc_metadata[metadata_columns].iloc[0].to_dict()
-        doc_metadata_dict = {
-            k: v for k, v in doc_metadata_dict.items() if v and str(v) != "nan"
-        }
+        doc_metadata_dict = {}
+
+        for col in metadata_columns:
+            metadata_values = doc_metadata[col].unique().tolist()
+            metadata_values = [v for v in metadata_values if v and str(v) != "nan"]
+
+            if len(metadata_values) == 1:
+                doc_metadata_dict[col] = metadata_values[0]
+            else:
+                doc_metadata_dict[col] = metadata_values
 
         doc_description_embedding = description_embeddings_dict.get(document_id)
         if doc_description_embedding is None:
