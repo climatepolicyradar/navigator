@@ -131,7 +131,7 @@ def test_keyword_filters(
         json={
             "query_string": "disaster",
             "exact_match": False,
-            "keyword_filters": {"geographies": ["Kenya"]},
+            "keyword_filters": {"countries": ["Kenya"]},
         },
         headers=user_token_headers,
     )
@@ -140,7 +140,7 @@ def test_keyword_filters(
     query_body = query_spy.mock_calls[0].args[0]
 
     assert {
-        "terms": {_FILTER_FIELD_MAP[FilterField("geographies")]: ["Kenya"]}
+        "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["Kenya"]}
     } in query_body["query"]["bool"]["filter"]
 
 
@@ -197,7 +197,7 @@ def test_year_range_filters(
     if year_range[0] or year_range[1]:
         expected_range_check = {
             "range": {
-                "action_date": dict(
+                "document_date": dict(
                     [
                         r
                         for r in zip(
@@ -236,7 +236,7 @@ def test_multiple_filters(
             "query_string": "disaster",
             "exact_match": False,
             "keyword_filters": {
-                "geographies": ["Kenya"],
+                "countries": ["Kenya"],
                 "sources": ["CCLW"],
             },
             "year_range": (1900, 2020),
@@ -248,13 +248,13 @@ def test_multiple_filters(
     query_body = query_spy.mock_calls[0].args[0]
 
     assert {
-        "terms": {_FILTER_FIELD_MAP[FilterField("geographies")]: ["Kenya"]}
+        "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["Kenya"]}
     } in query_body["query"]["bool"]["filter"]
     assert {
         "terms": {_FILTER_FIELD_MAP[FilterField("sources")]: ["CCLW"]}
     } in query_body["query"]["bool"]["filter"]
     assert {
-        "range": {"action_date": {"gte": "01/01/1900", "lte": "31/12/2020"}}
+        "range": {"document_date": {"gte": "01/01/1900", "lte": "31/12/2020"}}
     } in query_body["query"]["bool"]["filter"]
 
 
