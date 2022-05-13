@@ -7,6 +7,114 @@ import pulumi_aws as aws
 from cpr.deployment_resources.main import default_tag
 
 
+def get_instance_profile() -> aws.iam.InstanceProfile:
+    instance_profile_role = aws.iam.Role(
+        "eb-ec2-role",
+        assume_role_policy=json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": "sts:AssumeRole",
+                        "Effect": "Allow",
+                        "Sid": "",
+                        "Principal": {
+                            "Service": "ec2.amazonaws.com",
+                        },
+                    }
+                ],
+            }
+        ),
+        tags=default_tag,
+    )
+
+    # policy attachments for profile role
+    aws.iam.RolePolicyAttachment(
+        "profile-role-policy-attach-AWSElasticBeanstalkWebTier",
+        role=instance_profile_role.name,
+        policy_arn="arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier",
+    )
+    aws.iam.RolePolicyAttachment(
+        "profile-role-policy-attach-AWSElasticBeanstalkWorkerTier",
+        role=instance_profile_role.name,
+        policy_arn="arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier",
+    )
+    aws.iam.RolePolicyAttachment(
+        "profile-role-policy-attach-AWSElasticBeanstalkMulticontainerDocker",
+        role=instance_profile_role.name,
+        policy_arn="arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker",
+    )
+    aws.iam.RolePolicyAttachment(
+        "profile-role-policy-attach-AmazonEC2ContainerRegistryReadOnly",
+        role=instance_profile_role.name,
+        policy_arn="arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
+    )
+
+    return aws.iam.InstanceProfile(
+        "eb-ec2-instance-profile",
+        role=instance_profile_role.name,
+        tags=default_tag,
+    )
+
+
+def get_instance_profile_for_bastion() -> aws.iam.InstanceProfile:
+    instance_profile_role = aws.iam.Role(
+        "bastion-role",
+        assume_role_policy=json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Action": "sts:AssumeRole",
+                        "Effect": "Allow",
+                        "Sid": "",
+                        "Principal": {
+                            "Service": "ec2.amazonaws.com",
+                        },
+                    },
+                ],
+            }
+        ),
+        tags=default_tag,
+    )
+
+    policy = aws.iam.Policy(
+        "allow-ssh-over-ssm",
+        policy=json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Action": [
+                            "ssm:StartSession",
+                        ],
+                        "Resource": "arn:aws:ssm:*:*:document/AWS-StartSSHSession",
+                    },
+                ],
+            }
+        ),
+    )
+
+    # policy attachments for bastion role
+    aws.iam.RolePolicyAttachment(
+        "bastion-role-policy-attach-AmazonSSMManagedInstanceCore",
+        role=instance_profile_role.name,
+        policy_arn="arn:aws:iam::aws:policy/AmazonSSMManagedInstanceCore",
+    )
+    aws.iam.RolePolicyAttachment(
+        "bastion-role-policy-attach-allow-ssh-over-ssm",
+        role=instance_profile_role.name,
+        policy_arn=policy.arn,
+    )
+
+    return aws.iam.InstanceProfile(
+        "bastion-instance-profile",
+        role=instance_profile_role.name,
+        tags=default_tag,
+    )
+
+
 class Plumbing:
     """Deploys necessary "glue" components for the stack.
 
@@ -138,53 +246,7 @@ class Plumbing:
         )
 
         # api
-        instance_profile_role = aws.iam.Role(
-            "eb-ec2-role",
-            assume_role_policy=json.dumps(
-                {
-                    "Version": "2012-10-17",
-                    "Statement": [
-                        {
-                            "Action": "sts:AssumeRole",
-                            "Effect": "Allow",
-                            "Sid": "",
-                            "Principal": {
-                                "Service": "ec2.amazonaws.com",
-                            },
-                        }
-                    ],
-                }
-            ),
-            tags=default_tag,
-        )
-
-        # policy attachments for profile role
-        aws.iam.RolePolicyAttachment(
-            "profile-role-policy-attach-AWSElasticBeanstalkWebTier",
-            role=instance_profile_role.name,
-            policy_arn="arn:aws:iam::aws:policy/AWSElasticBeanstalkWebTier",
-        )
-        aws.iam.RolePolicyAttachment(
-            "profile-role-policy-attach-AWSElasticBeanstalkWorkerTier",
-            role=instance_profile_role.name,
-            policy_arn="arn:aws:iam::aws:policy/AWSElasticBeanstalkWorkerTier",
-        )
-        aws.iam.RolePolicyAttachment(
-            "profile-role-policy-attach-AWSElasticBeanstalkMulticontainerDocker",
-            role=instance_profile_role.name,
-            policy_arn="arn:aws:iam::aws:policy/AWSElasticBeanstalkMulticontainerDocker",
-        )
-        aws.iam.RolePolicyAttachment(
-            "profile-role-policy-attach-AmazonEC2ContainerRegistryReadOnly",
-            role=instance_profile_role.name,
-            policy_arn="arn:aws:iam::aws:policy/AmazonEC2ContainerRegistryReadOnly",
-        )
-
-        self.instance_profile = aws.iam.InstanceProfile(
-            "eb-ec2-instance-profile",
-            role=instance_profile_role.name,
-            tags=default_tag,
-        )
+        self.instance_profile = get_instance_profile()
 
         # service role
         service_role_txt = json.dumps(
@@ -258,7 +320,9 @@ class Plumbing:
             subnet_id=default_az1.id,
             user_data=user_data,
             tags=default_tag,
+            iam_instance_profile=get_instance_profile_for_bastion().name,
         )
 
         pulumi.export("bastion.public_dns", instance.public_dns)
         pulumi.export("bastion.public_ip", instance.public_ip)
+        pulumi.export("bastion.id", instance.id)
