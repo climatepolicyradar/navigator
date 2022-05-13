@@ -52,15 +52,15 @@ cat graph.dot|dot -Tpng > output.png
 
 ## Bastion server
 
-`pulumi up` will export the bastion server's IP address, or you can find it via [the AWS console](https://eu-west-2.console.aws.amazon.com/ec2/v2/home?region=eu-west-2#NIC:securityGroup=bastion*) in the `Public IPv4 address` column.
+The bastion server's instance ID will be exported as `bastion.id` via Pulumi.
 
-Then connect to it (provided your SSH public key is provisioned for):
+To connect to it, ensure you have the [Session Manager plugin installed](https://docs.aws.amazon.com/systems-manager/latest/userguide/session-manager-working-with-install-plugin.html):
 
 ```shell
-ssh ec2-user@<the-ip>
+aws ssm start-session --target <instance-id>
 ```
 
-Then run migrations via psql:
+Then run migrations via psql. The RDS URL will be exported as `rds.address` via Pulumi:
 
 ```shell
 psql -h rds-instance<random>.<random>.eu-west-2.rds.amazonaws.com -U navigator_db_user navigator
@@ -80,17 +80,13 @@ To see our stacks:
 
 ```
 pulumi stack ls
-NAME     LAST UPDATE  RESOURCE COUNT  URL
-ant*     n/a          n/a             https://app.pulumi.com/climatepolicyradar/infra/ant
-dev      2 weeks ago  30              https://app.pulumi.com/climatepolicyradar/infra/dev 
 ```
 
 To see the current stack your local environment is pointing at:
 
 ``` 
-pulumi stack
-Current stack is ant:
-<snip>
+pulumi stack | head -n1
+Current stack is ...:
 ```
 
 To point to another stack:
