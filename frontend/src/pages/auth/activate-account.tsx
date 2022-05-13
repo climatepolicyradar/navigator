@@ -41,7 +41,7 @@ const ActivateAccount = () => {
       {!ready ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Navigator | ${t('Activate your account')}`}>
+        <Layout title={`Climate Policy Radar | ${t('Activate your account')}`}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper

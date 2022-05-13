@@ -27,7 +27,7 @@ const DocumentCoverPage = () => {
   }: any = useDocumentDetail(router.query.docId as string);
 
   return (
-    <Layout title={`Navigator | Document title`}>
+    <Layout title={`Climate Policy Radar | Document title`}>
       {isFetching ? (
         <div className="w-full flex justify-center h-96">
           <Loader />

@@ -12,7 +12,7 @@ const Terms = () => {
       {!user ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Navigator | ${t('Terms')}`}>
+        <Layout title={`Climate Policy Radar | ${t('Terms')}`}>
           <section>
             <div className="text-content px-4 container mb-12">
               <h1 className="my-8">Terms of Use</h1>

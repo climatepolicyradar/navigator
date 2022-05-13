@@ -2,8 +2,7 @@ import React, { ReactNode } from 'react';
 import Head from 'next/head';
 import Header from '../headers/Main';
 import Banner from '../banner/Slim';
-import FooterMain from '../footer/FooterMain';
-import FooterLanding from '../footer/FooterLanding';
+import Footer from '../footer/Footer';
 
 type Props = {
   children?: ReactNode;
@@ -18,7 +17,7 @@ const Layout = ({
   heading = '',
   screenHeight = false,
 }: Props) => (
-  <div className="h-full">
+  <div className="h-full flex flex-col">
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />
@@ -28,12 +27,11 @@ const Layout = ({
       Skip to content
     </a>
     <Header />
-    <main className={`${screenHeight ? 'h-screen' : ''} flex flex-col`}>
+    <main className={`${screenHeight ? 'h-screen' : ''} flex flex-col flex-1`}>
       <Banner />
       {children}
     </main>
-    {/* <FooterMain /> */}
-    <FooterLanding />
+    <Footer />
   </div>
 );
 

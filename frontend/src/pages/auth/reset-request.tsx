@@ -31,7 +31,7 @@ const ResetRequest = () => {
       {!ready ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Navigator | ${t('Reset your password')}`}>
+        <Layout title={`Climate Policy Radar | ${t('Reset your password')}`}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper

@@ -156,7 +156,7 @@ const Search = () => {
         <LoaderOverlay />
       ) : (
         <Layout
-          title={`Navigator | ${t('Law and Policy Search')}`}
+          title={`Climate Policy Radar | ${t('Law and Policy Search')}`}
           heading={t('Law and Policy Search')}
         >
           <Slideout show={showSlideout} setShowSlideout={setShowSlideout}>

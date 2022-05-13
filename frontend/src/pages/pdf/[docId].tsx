@@ -25,7 +25,9 @@ const PDFView = () => {
         </div>
       ) : (
         <Layout
-          title={`Navigator | ${t('Law and Policy Search PDF View')}`}
+          title={`Climate Policy Radar | ${t(
+            'Law and Policy Search PDF View'
+          )}`}
           heading={t('Law and Policy Search PDF View')}
           screenHeight={true}
         >

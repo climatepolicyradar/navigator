@@ -43,7 +43,9 @@ const Login = () => {
       {!ready ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Navigator | ${t('Sign in to your account')}`}>
+        <Layout
+          title={`Climate Policy Radar | ${t('Sign in to your account')}`}
+        >
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper
