@@ -88,10 +88,10 @@ export function getUserProfile() {
 export async function registerWithEmailAndPassword(
   data
 ): Promise<AuthResponse> {
-  return window
-    .fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-    .then(handleApiResponse);
+  return await AuthClient.post(`${API_URL}/activations`, data, {
+    headers: {
+      accept: 'application/json',
+      'Content-Type': 'application/json',
+    },
+  }).then(handleApiResponse);
 }

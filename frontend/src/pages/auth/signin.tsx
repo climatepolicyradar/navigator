@@ -40,7 +40,7 @@ const Login = () => {
   }, [user]);
   return (
     <>
-      {!ready ? (
+      {isSubmitting ? (
         <LoaderOverlay />
       ) : (
         <Layout title={`Navigator | ${t('Sign in to your account')}`}>
