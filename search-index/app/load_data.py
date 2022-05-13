@@ -147,7 +147,7 @@ def get_data_from_navigator_tables(
             geography
           WHERE
             type = 'World Bank Region'
-        ) geog_region ON doc.geography_id = geog_region.id
+        ) geog_region ON geog_country.parent_id = geog_region.id
       WHERE
         event.description = 'The publication date'
     """
