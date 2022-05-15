@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { ReadMoreIcon } from '../Icons';
+import { ReadMoreIcon } from '../svg/Icons';
 
 const Summary = () => {
   return (

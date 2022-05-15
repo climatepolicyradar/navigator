@@ -19,7 +19,7 @@ import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
 import Loader from '../../components/Loader';
 import Sort from '../../components/filters/Sort';
-import { DownloadIcon } from '../../components/Icons';
+import { DownloadIcon } from '../../components/svg/Icons';
 import Button from '../../components/buttons/Button';
 import Close from '../../components/buttons/Close';
 import FilterToggle from '../../components/buttons/FilterToggle';

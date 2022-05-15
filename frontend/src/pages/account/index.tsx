@@ -12,7 +12,7 @@ import Select from '../../components/form-inputs/Select';
 import Checkbox from '../../components/form-inputs/Checkbox';
 import Button from '../../components/buttons/Button';
 import { geo_scope, affiliation_types } from '../../constants/formOptions';
-import { EditIcon } from '../../components/Icons';
+import { EditIcon } from '../../components/svg/Icons';
 import Link from 'next/link';
 import { useAuth } from '../../api/auth';
 import useUpdateAccount from '../../hooks/useUpdateAccount';

@@ -4,21 +4,14 @@ import Link from 'next/link';
 import ProductName from '../ProductName';
 import { useAuth } from '../../api/auth';
 import ToggleAccountMenu from '../menus/ToggleAccountMenu';
+import AlphaLogoSmall from '../logo/AlphaLogoSmall';
 
 const Header = () => {
   const [fixed, setFixed] = useState(false);
   const { logout } = useAuth();
   const headerRef = useRef(null);
 
-  useEffect(() => {
-    // document.addEventListener('scroll', function (e) {
-    //   if (window.scrollY > 70) {
-    //     setFixed(false);
-    //   } else {
-    //     setFixed(false);
-    //   }
-    // });
-  }, []);
+  useEffect(() => {}, []);
   return (
     <header
       data-cy="header"
@@ -29,23 +22,11 @@ const Header = () => {
     >
       <div className="container my-4">
         <div className="flex items-start justify-between">
-          <span className={`${fixed ? 'text-indigo-600' : 'text-white'}`}>
-            <Link href="https://climatepolicyradar.org">
-              <a>
-                <Logo fixed={fixed} />
-              </a>
-            </Link>
-          </span>
-          <div className="hidden md:block">
-            <ProductName fixed={fixed} />
-          </div>
+          <AlphaLogoSmall />
+
           <div>
             <ToggleAccountMenu logout={logout} />
           </div>
-        </div>
-        {/* Mobile only */}
-        <div className="md:hidden">
-          <ProductName fixed={fixed} />
         </div>
       </div>
     </header>

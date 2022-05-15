@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import Close from '../buttons/Close';
 import useWindowResize from '../../hooks/useWindowResize';
-import { SearchIcon } from '../Icons';
+import { SearchIcon } from '../svg/Icons';
 import { StartTextAnimation } from '../../utils/typewriter';
 
 interface SearchFormProps {

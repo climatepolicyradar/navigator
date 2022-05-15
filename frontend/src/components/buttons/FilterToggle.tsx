@@ -1,4 +1,4 @@
-import { DownArrowIcon } from '../Icons';
+import { DownArrowIcon } from '../svg/Icons';
 
 interface FilterToggleProps {
   toggle(): void;

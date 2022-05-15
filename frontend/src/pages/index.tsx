@@ -9,9 +9,8 @@ import { useAuth } from '../api/auth';
 import useSearchCriteria from '../hooks/useSearchCriteria';
 import useUpdateSearchCriteria from '../hooks/useUpdateSearchCriteria';
 import LandingSearchForm from '../components/forms/LandingSearchForm';
-import AlphaLogo from '../components/logo';
+import AlphaLogo from '../components/logo/AlphaLogo';
 import ExactMatch from '../components/filters/ExactMatch';
-import Summary from '../components/blocks/Summary';
 import LandingPageLinks from '../components/blocks/LandingPageLinks';
 
 const IndexPage = () => {

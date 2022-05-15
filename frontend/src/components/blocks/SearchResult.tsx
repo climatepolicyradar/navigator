@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { DownloadPDFIcon, ViewDocumentCoverPageIcon } from '../Icons';
+import { DownloadPDFIcon, ViewDocumentCoverPageIcon } from '../svg/Icons';
 import { truncateString } from '../../helpers';
 
 interface SearchResultProps {

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import Close from '../buttons/Close';
 import SearchButton from '../buttons/SearchButton';
-import { SearchIcon } from '../Icons';
+import { SearchIcon } from '../svg/Icons';
 import useWindowResize from '../../hooks/useWindowResize';
 
 interface SearchFormProps {

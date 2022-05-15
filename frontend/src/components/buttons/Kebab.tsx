@@ -1,4 +1,4 @@
-import { KebabMenuIcon } from '../Icons';
+import { KebabMenuIcon } from '../svg/Icons';
 interface KebabProps {
   onClick(): void;
 }
