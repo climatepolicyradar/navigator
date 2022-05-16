@@ -105,59 +105,76 @@ def get_document_generator(
         "document_name",
         "document_description",
     ]
-    for document_id, document_df in text_and_ids_data.groupby("document_md5_hash"):
-        doc_metadata = main_dataset.loc[main_dataset["md5_sum"] == document_id]
-        if len(doc_metadata) == 0:
+
+    for document_hash, document_df in text_and_ids_data.groupby("document_md5_hash"):
+        doc_metadata_by_md5_hash = main_dataset.loc[
+            main_dataset["md5_sum"] == document_hash
+        ]
+
+        if len(doc_metadata_by_md5_hash["document_id"].unique()) > 1:
             logger.warning(
-                f"Skipping document {document_id} as not in the Navigator database."
+                f"Found multiple documents with the same md5 sum: {document_hash}",
+            )
+
+        if len(doc_metadata_by_md5_hash) == 0:
+            logger.warning(
+                f"Skipping document {document_hash} as not in the Navigator database."
             )
             continue
 
-        doc_metadata_dict = {}
+        for document_id, doc_metadata_by_id in doc_metadata_by_md5_hash.groupby(
+            "document_id"
+        ):
+            doc_metadata_dict = {}
 
-        for col in metadata_columns:
-            metadata_values = doc_metadata[col].unique().tolist()
-            metadata_values = [v for v in metadata_values if v and str(v) != "nan"]
+            for col in metadata_columns:
+                metadata_values = doc_metadata_by_id[col].unique().tolist()
+                metadata_values = [v for v in metadata_values if v and str(v) != "nan"]
 
-            if len(metadata_values) == 1:
-                doc_metadata_dict[col] = metadata_values[0]
-            else:
-                doc_metadata_dict[col] = metadata_values
+                if len(metadata_values) == 1:
+                    doc_metadata_dict[col] = metadata_values[0]
+                else:
+                    doc_metadata_dict[col] = metadata_values
 
-        doc_description_embedding = description_embeddings_dict.get(document_id)
-        if doc_description_embedding is None:
-            logger.warning(
-                f"No description embedding has been generated for document {document_id}. Skipping adding the embedding to Opensearch, which will likely result in unexpected search results."
-            )
+            doc_description_embedding = description_embeddings_dict.get(document_hash)
+            if doc_description_embedding is None:
+                logger.warning(
+                    f"No description embedding has been generated for document {document_hash}. Skipping adding the embedding to Opensearch, which will likely result in unexpected search results."
+                )
 
-        # We add the `for_search_` prefix to extra text fields we want made available to search,
-        # as some of these will also be repeated over documents so they can be aggregated on.
-        for text_col_name in extra_text_columns:
-            text_col_dict = {
-                f"for_search_{text_col_name}": doc_metadata.iloc[
-                    0, doc_metadata.columns.get_loc(text_col_name)
-                ]
-            }
+            # We add the `for_search_` prefix to extra text fields we want made available to search,
+            # as some of these will also be repeated over documents so they can be aggregated on.
+            for text_col_name in extra_text_columns:
+                text_col_dict = {
+                    f"for_search_{text_col_name}": doc_metadata_by_id.iloc[
+                        0, doc_metadata_by_id.columns.get_loc(text_col_name)
+                    ]
+                }
 
-            if (text_col_name == "document_description") and (
-                doc_description_embedding is not None
-            ):
-                text_col_dict[
-                    "document_description_embedding"
-                ] = doc_description_embedding.tolist()
+                if (text_col_name == "document_description") and (
+                    doc_description_embedding is not None
+                ):
+                    text_col_dict[
+                        "document_description_embedding"
+                    ] = doc_description_embedding.tolist()
 
-            yield dict(doc_metadata_dict, **text_col_dict)
+                yield dict(doc_metadata_dict, **text_col_dict)
 
-        for idx, row in document_df.iterrows():
-            text_block_dict = {
-                "text_block_id": row.text_block_id,
-                "text": row.text,
-                "text_embedding": embeddings[idx, :].tolist(),
-                "text_block_coords": row.coords,
-                "text_block_page": row.page_num,
-            }
+            # TODO: we drop duplicates on text block ID here because the text extraction and embeddings generation produces
+            # duplicate text and embeddings when there are multiple PDFs with the same MD5 hash. We should ideally handle this
+            # earlier on in the pipeline.
+            for idx, row in document_df.drop_duplicates(
+                subset="text_block_id"
+            ).iterrows():
+                text_block_dict = {
+                    "text_block_id": row.text_block_id,
+                    "text": row.text,
+                    "text_embedding": embeddings[idx, :].tolist(),
+                    "text_block_coords": row.coords,
+                    "text_block_page": row.page_num,
+                }
 
-            yield dict(doc_metadata_dict, **text_block_dict)
+                yield dict(doc_metadata_dict, **text_block_dict)
 
 
 def load_text_and_ids_json(ids_path: Path) -> pd.DataFrame:
