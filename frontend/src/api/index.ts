@@ -56,7 +56,7 @@ export async function handleApiSuccess(response) {
 }
 export async function handleApiError(error) {
   let status = { error: 'There was an error, please try again.' };
-  if (error.response.status === 401) {
+  if (error.response?.status === 401) {
     status = { error: 'Invalid credentials' };
   }
   return status;
@@ -88,10 +88,16 @@ export function getUserProfile() {
 export async function registerWithEmailAndPassword(
   data
 ): Promise<AuthResponse> {
-  return await AuthClient.post(`${API_URL}/activations`, data, {
-    headers: {
-      accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-  }).then(handleApiResponse);
+  return await apiClient
+    .post(
+      `/activations`,
+      data
+      // {
+      //   headers: {
+      //     accept: 'application/json',
+      //     'Content-Type': 'application/json',
+      //   },
+      // }
+    )
+    .then(handleApiResponse);
 }
