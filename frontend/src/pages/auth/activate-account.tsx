@@ -1,5 +1,5 @@
 import '../i18n';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../../components/LoaderOverlay';
@@ -13,6 +13,7 @@ import Button from '../../components/buttons/Button';
 import { useAuth } from '../../api/auth';
 
 const ActivateAccount = () => {
+  const [status, setStatus] = useState(null);
   const router = useRouter();
   const { t, i18n, ready } = useTranslation('auth');
   const { user, register: activate } = useAuth();
@@ -39,18 +40,14 @@ const ActivateAccount = () => {
     // defaultValues: initialValues,
   });
   const submitForm = async (data) => {
-    console.log(data);
-    console.log(router.query);
     const { password } = data;
     const token = router.query.token;
-    const x = await activate({ password, token });
-    console.log(x);
+    const response = await activate({ password, token });
+    setStatus(response);
   };
   useEffect(() => {
-    console.log(user);
-    if (user?.email) router.push('/auth/signin');
-    console.log(user);
-  }, [user]);
+    if (status?.activated) router.push('/auth/signin?activated=true');
+  }, [status]);
   return (
     <>
       {isSubmitting ? (
@@ -63,6 +60,9 @@ const ActivateAccount = () => {
                 heading={t('Activate your account')}
                 description={t('Specify your password')}
               >
+                {status?.error && (
+                  <p className="text-red-500 font-bold mt-4">{status.error}</p>
+                )}
                 <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                   <div className="form-row text-white">
                     <TextInput

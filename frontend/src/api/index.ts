@@ -16,6 +16,7 @@ export interface User {
   is_active: boolean;
   is_superuser: boolean;
   error?: { error: string };
+  activated?: boolean;
 }
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
@@ -23,7 +24,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL;
 export const signIn = async (credentials) => {
   return await AuthClient.post(
     '',
-    `grant_type=&username=${credentials.email}&password=${credentials.password}&scope=&client_id=test&client_secret=super_secret`
+    `username=${credentials.email}&password=${credentials.password}`
   )
     .then(handleApiSuccess)
     .catch(handleApiError);
@@ -47,8 +48,8 @@ export const postFile = async (req: string, data): Promise<any> => {
 };
 
 export async function handleApiSuccess(response) {
-  const data = await response.data;
-  if (response.statusText === 'OK') {
+  const data = await response;
+  if (response.status === 200) {
     return data;
   } else {
     return Promise.reject(data);
@@ -56,48 +57,25 @@ export async function handleApiSuccess(response) {
 }
 export async function handleApiError(error) {
   let status = { error: 'There was an error, please try again.' };
-  if (error.response?.status === 401) {
+  if (error?.response?.status === 401) {
     status = { error: 'Invalid credentials' };
   }
+  if (error?.response?.status === 404) {
+    status = { error: error.response.data.detail };
+  }
+  console.log(status);
   return status;
 }
-export async function handleApiResponse(response) {
-  const data = await response.data;
-  if (response.statusText === 'OK') {
-    return data;
-  } else {
-    return { error: true };
-  }
+
+export async function getUserProfile() {
+  return await apiClient.get('/users/me', null);
 }
-
-export function getUserProfile() {
-  return apiClient.get('/users/me', null);
-}
-
-// export async function loginWithEmailAndPassword(data): Promise<AuthResponse> {
-//   return window
-//     .fetch(`${API_URL}/auth/login`, {
-//       method: 'POST',
-//       body: JSON.stringify(data),
-//     })
-//     .then(handleApiResponse);
-// }
-
-// Not using this (yet), will need to rewrite
 
 export async function registerWithEmailAndPassword(
   data
 ): Promise<AuthResponse> {
   return await apiClient
-    .post(
-      `/activations`,
-      data
-      // {
-      //   headers: {
-      //     accept: 'application/json',
-      //     'Content-Type': 'application/json',
-      //   },
-      // }
-    )
-    .then(handleApiResponse);
+    .post(`/activations`, data)
+    .then(handleApiSuccess)
+    .catch(handleApiError);
 }

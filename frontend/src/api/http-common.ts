@@ -28,13 +28,13 @@ class ApiClient {
   get(url, params) {
     return this.axiosClient
       .get(`${this.baseUrl}${url}`, { params })
-      .then((res) => res.data)
+      .then((res) => res)
       .catch((err) => Promise.reject(err));
   }
   post(url, values) {
     return this.axiosClient
       .post(`${this.baseUrl}${url}`, values)
-      .then((res) => res.data)
+      .then((res) => res)
       .catch((err) => {
         console.log(err);
         return Promise.reject(err);
@@ -43,7 +43,7 @@ class ApiClient {
   put(url, values) {
     return this.axiosClient
       .put(`${this.baseUrl}${url}`, values)
-      .then((res) => res.data)
+      .then((res) => res)
       .catch((err) => {
         console.log(err);
         return Promise.reject(err);

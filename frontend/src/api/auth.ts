@@ -17,27 +17,28 @@ const unprotectedUrls = [
   '/auth/reset-request',
 ];
 
-export async function handleUserResponse(data) {
-  if (data?.error) {
-    return data;
+export async function handleUserResponse(response) {
+  const res = await response;
+  if (res.error) return res;
+
+  // user has logged in
+  if (res.data?.access_token) {
+    const { access_token } = res.data;
+    storage.clearToken();
+    storage.setToken(access_token);
+    return loadUser();
   }
-  const { access_token } = data;
-  storage.clearToken();
-  storage.setToken(access_token);
-  //return user;
-  return loadUser();
+  // user has activated
+  return { activated: true };
 }
 
 async function loadUser() {
   let user = null;
-  if (storage.getToken()) {
-    try {
-      const data = await getUserProfile();
-      user = data;
-    } catch (error) {
-      console.log(error);
-    }
-  }
+
+  try {
+    const response = await getUserProfile();
+    user = response.data;
+  } catch (error) {}
 
   if (user === null && unprotectedUrls.indexOf(Router.router.pathname) === -1) {
     Router.push('/auth/signin');
@@ -48,7 +49,6 @@ async function loadUser() {
 
 async function loginFn(data) {
   const response = await signIn(data);
-
   const user = await handleUserResponse(response);
   return user;
 }
