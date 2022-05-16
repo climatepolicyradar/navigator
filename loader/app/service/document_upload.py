@@ -58,10 +58,8 @@ async def _upload_document(
 ):
     """Upload a single doc."""
 
-    # TODO this depends on the new CSV layout for multi-doc actions,
-    # but in the meantime, we just use "<doc name> <doc id>"
     # We replace forward slashes with underscores because S3 recognises them as directory splitters
-    doc_name = f"{document_db.name}-{document_db.id}".replace("/", "_")
+    doc_name = f"{document_db.name}".replace("/", "_")
 
     file_name = f"{country_code}-{publication_date_iso}-{doc_name}"
 
