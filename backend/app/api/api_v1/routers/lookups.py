@@ -105,10 +105,8 @@ def lookup_instruments(
     current_user=Depends(get_current_active_user),
 ):
     """Get tree of instruments and associated metadata."""
-    return table_to_json(table=Instrument, db=db)
-    # TODO: once hierarchical instruments are used, the following code should be used for
-    # this lookup API instead.
-    # return tree_table_to_json(table=Instrument, db=db)
+    # TODO: this should follow a flat instruments structure for now.
+    return tree_table_to_json(table=Instrument, db=db)
 
 
 @r.get(
