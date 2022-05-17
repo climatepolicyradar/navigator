@@ -124,7 +124,44 @@ const Search = () => {
       searchCriteria.keyword_filters?.document_category &&
       searchCriteria.keyword_filters?.document_category[0] === 'Litigation'
     ) {
-      return <div className="h-96">Coming soon...</div>;
+      return (
+        // TODO: translate
+        <div className="h-96">
+          Climate litigation case documents are coming soon to Climate Policy
+          Radar! In the meantime, head to{' '}
+          <a
+            className="text-blue-500 transition duration-300 hover:text-indigo-600"
+            href="https://climate-laws.org/litigation_cases"
+          >
+            climate-laws.org/litigation_cases
+          </a>
+        </div>
+      );
+    }
+    if (
+      searchCriteria.keyword_filters?.document_category &&
+      searchCriteria.keyword_filters?.document_category[0] === 'Legislative' &&
+      documents.length === 0
+    ) {
+      return (
+        <div className="h-96">
+          Your search returned no results from documents in the legislative
+          category. Please try the executive category, or conduct a new search.
+        </div>
+      );
+    }
+    if (
+      searchCriteria.keyword_filters?.document_category &&
+      searchCriteria.keyword_filters?.document_category[0] === 'Executive' &&
+      documents.length === 0
+    ) {
+      return (
+        <div className="h-96">
+          Your search returned no results from documents in the executive
+          category. Please try the legislative category, or conduct a new
+          search.
+        </div>
+      );
     }
     return documents.map((doc: any, index: number) => (
       <div key={index} className="my-16 first:md:mt-4">
@@ -149,6 +186,10 @@ const Search = () => {
   }, [searchCriteria]);
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
+  const sortByTooltip = t('Tooltips.Sort by', { ns: 'searchResults' });
+  const downloadPDFTooltip = t('Tooltips.Download PDF', {
+    ns: 'searchResults',
+  });
 
   return (
     <>
@@ -221,21 +262,22 @@ const Search = () => {
                       id="exact-match"
                       handleSearchChange={handleSearchChange}
                     />
-                    <div className="ml-1 -mt-1">
+                    <div className="ml-1 -mt-1 text-sm">
                       <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
                     </div>
                   </div>
                 </div>
-                <div className="mt-4 relative">
+                <div className="mt-4 relative z-10">
                   <TabbedNav
                     activeIndex={getCurrentCategoryIndex()}
                     items={documentCategories}
                     handleTabClick={handleDocumentCategoryClick}
                   />
-                  <div className="mt-4 md:absolute right-0 top-0 md:-mt-2">
+                  <div className="mt-4 md:absolute right-0 top-0 md:-mt-2 flex z-10">
                     <Button
                       color="light-hover-dark"
                       thin={true}
+                      disabled={true}
                       extraClasses="text-sm"
                     >
                       <div className="flex justify-center py-1">
@@ -243,6 +285,9 @@ const Search = () => {
                         <span>Download</span>
                       </div>
                     </Button>
+                    <div className="ml-1 mt-1">
+                      <Tooltip id="download-tt" tooltip={downloadPDFTooltip} />
+                    </div>
                   </div>
                 </div>
                 <div className="mt-4 mb-8 flex justify-end">
@@ -251,6 +296,9 @@ const Search = () => {
                       defaultValue={getCurrentSortChoice()}
                       updateSort={handleSortClick}
                     />
+                    <div className="ml-1 -mt-1">
+                      <Tooltip id="sortby-tt" tooltip={sortByTooltip} />
+                    </div>
                   </div>
                 </div>
 

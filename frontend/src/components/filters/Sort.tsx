@@ -5,7 +5,7 @@ const Sort = ({ updateSort, defaultValue }) => {
     <>
       <div className="flex-shrink-0 font-medium text-indigo-400">Sort by:</div>
       <select
-        className="border border-indigo-200 small ml-2"
+        className="border border-indigo-200 small ml-2 z-0"
         onChange={updateSort}
         defaultValue={defaultValue}
       >

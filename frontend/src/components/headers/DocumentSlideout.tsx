@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import ToggleDocumentMenu from '../menus/ToggleDocumentMenu';
 import TextLink from '../nav/TextLink';
 
@@ -13,9 +14,14 @@ const DocumentSlideout = ({
         <>
           <div className="border-b border-blue-200 pb-4 flex justify-between relative">
             <div className="pl-6 pr-10 mt-2">
-              <h1 className="text-lg text-blue-500 font-medium">
-                {document.document_name}
-              </h1>
+              <Link href={`/document/${document.document_id}`}>
+                <a>
+                  <h1 className="text-lg text-blue-500 font-medium">
+                    {document.document_name}
+                  </h1>
+                </a>
+              </Link>
+
               {/* TODO: translate below text, how to handle plurals? */}
               <p className="text-indigo-500 text-sm">
                 {document.document_passage_matches.length}{' '}

@@ -37,6 +37,8 @@ const SearchFilters = ({
     'Economy-wide',
   ];
   const documentTypeList = ['All', 'Act', 'Decree', 'Strategy', 'Law', 'Plan'];
+  const instrumentList = ['All', 'Tax incentive', 'Something else'];
+
   const now = new Date();
   const currentYear = now.getFullYear();
 
@@ -45,7 +47,7 @@ const SearchFilters = ({
   const countryTooltip = t('Tooltips.Country');
   const sectorTooltip = t('Tooltips.Sector');
   const doctypeTooltip = t('Tooltips.Document type');
-  const dateRangeTooltip = t('Tooltips.Date range');
+  const instrumentTooltip = t('Tooltips.Instrument');
 
   return (
     <>
@@ -69,7 +71,7 @@ const SearchFilters = ({
           />
         </div>
         <div className="relative mt-6">
-          <div className="absolute top-0 right-0 z-10">
+          <div className="absolute top-0 right-0 z-20">
             <Tooltip id="country" tooltip={countryTooltip} />
           </div>
           <ByTextInput
@@ -87,7 +89,7 @@ const SearchFilters = ({
           />
         </div>
         <div className="relative mt-6">
-          <div className="absolute top-0 right-0 z-10">
+          <div className="absolute top-0 right-0 z-20">
             <Tooltip id="sector" tooltip={sectorTooltip} />
           </div>
           <BySelect
@@ -103,7 +105,7 @@ const SearchFilters = ({
           />
         </div>
         <div className="relative mt-6">
-          <div className="absolute top-0 right-0 z-10">
+          <div className="absolute top-0 right-0 z-20">
             <Tooltip id="doctype" tooltip={doctypeTooltip} />
           </div>
           <BySelect
@@ -119,9 +121,22 @@ const SearchFilters = ({
           />
         </div>
         <div className="relative mt-6">
-          <div className="absolute top-0 right-0 z-10">
-            <Tooltip id="doctype" tooltip={dateRangeTooltip} />
+          <div className="absolute top-0 right-0 z-20">
+            <Tooltip id="instrument" tooltip={instrumentTooltip} />
           </div>
+          <BySelect
+            list={instrumentList}
+            onChange={handleFilterChange}
+            defaultValue={
+              searchCriteria.keyword_filters?.action_instrument
+                ? searchCriteria.keyword_filters.action_instrument[0]
+                : ''
+            }
+            title={t('By instrument')}
+            type="action_instrument"
+          />
+        </div>
+        <div className="relative mt-6">
           <div className="mx-2">
             <ByRange
               title={t('By date range')}

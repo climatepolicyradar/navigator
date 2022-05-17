@@ -230,7 +230,7 @@ input[type='search']::-webkit-search-results-decoration {
 
 .customTooltip {
   @apply bg-white text-indigo-600 border-indigo-200 #{!important};
-  max-width: 200px !important;
+  max-width: 300px !important;
   &.place-top {
     filter: drop-shadow(2px 1px 2px rgba(black, 0.2)) !important;
     &:after {
