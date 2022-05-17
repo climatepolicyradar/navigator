@@ -14,8 +14,14 @@ interface ResetResponse {
 export interface User {
   id: number;
   email: string;
-  first_name?: string;
-  last_name?: string;
+  names: string;
+  job_role?: string;
+  location?: string;
+  affiliation_organisation?: string;
+  affiliation_type?: string[];
+  policy_type_of_interest?: string[];
+  geographies_of_interest?: string[];
+  data_focus_of_interest?: string[];
   is_active: boolean;
   is_superuser: boolean;
   error?: { error: string };
@@ -64,7 +70,9 @@ export async function handleApiError(error) {
 }
 
 export async function getUserProfile() {
-  return await apiClient.get('/users/me', null);
+  const u = await apiClient.get('/users/me', null);
+  console.log(u);
+  return u;
 }
 
 export async function registerWithEmailAndPassword(

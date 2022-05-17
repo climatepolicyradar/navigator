@@ -34,11 +34,14 @@ export async function handleUserResponse(response) {
 
 async function loadUser() {
   let user = null;
-
+  console.log('load user');
   try {
     const response = await getUserProfile();
     user = response.data;
-  } catch (error) {}
+    console.log(user);
+  } catch (error) {
+    console.log(error);
+  }
 
   if (user === null && unprotectedUrls.indexOf(Router.router.pathname) === -1) {
     Router.push('/auth/signin');

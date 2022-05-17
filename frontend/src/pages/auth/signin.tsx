@@ -56,7 +56,7 @@ const Login = () => {
   }, [status]);
   return (
     <>
-      {isSubmitting && !user?.email ? (
+      {isSubmitting || isSubmitSuccessful ? (
         <LoaderOverlay />
       ) : (
         <Layout title={`Navigator | ${t('Sign in to your account')}`}>
