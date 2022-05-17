@@ -17,36 +17,39 @@ def get_data_from_navigator_tables(
     query = """
       SELECT
         doc.md5_sum as md5_sum,
-        doc.source_url AS source_url,
+        doc.url AS document_url,
         source.name as document_source_name,
         doc.id as document_id,
         doc.name as document_name,
         doc.description as document_description,
-        kwd.name as keyword,
+        kwd.name as document_keyword,
         doc_cat.name as document_category,
         doc_cat.description as document_category_description,
         doc_type.name as document_type,
         doc_type.description as document_type_description,
         event.created_ts as document_date,
         doc_instr.instrument_id,
-        doc_instr.parent_id as instrument_parent,
-        doc_instr.name as instrument_name,
+        doc_instr.parent_id as document_instrument_parent,
+        doc_instr.name as document_instrument_name,
         doc_instr.description as instrument_description,
         doc_sect.sector_id,
         doc_sect.parent_id as sector_parent,
-        doc_sect.name as sector_name,
+        doc_sect.name as document_sector_name,
         doc_sect.description as sector_description,
         doc_frmwrk.framework_id,
-        doc_frmwrk.name as framework_name,
+        doc_frmwrk.name as document_framework_name,
         doc_frmwrk.description as framework_description,
         doc_hzrd.hazard_id,
-        doc_hzrd.name as hazard_name,
+        doc_hzrd.name as document_hazard_name,
         doc_hzrd.description as hazard_description,
+        doc_rspnse.response_id,
+        doc_rspnse.name as document_response_name,
+        doc_rspnse.description as response_description,
         geog_country.parent_id as geog_parent,
         geog_country.type as geog_type,
-        geog_country.display_value as country_english_shortname,
+        geog_country.display_value as document_country_english_shortname,
         geog_country.value as document_country_code,
-        geog_region.display_value as region_english_shortname,
+        geog_region.display_value as document_region_english_shortname,
         geog_region.value as document_region_code,
         doc_lang.name as document_language
       FROM
@@ -121,6 +124,18 @@ def get_data_from_navigator_tables(
           SELECT
             *
           FROM
+            document_response
+            LEFT JOIN (
+              SELECT
+                *
+              FROM
+                response
+            ) response ON (response.id = document_response.response_id)
+        ) doc_rspnse ON (doc.id = doc_rspnse.document_id)
+        LEFT JOIN (
+          SELECT
+            *
+          FROM
             geography
           WHERE
             type = 'ISO-3166'
@@ -132,9 +147,9 @@ def get_data_from_navigator_tables(
             geography
           WHERE
             type = 'World Bank Region'
-        ) geog_region ON doc.geography_id = geog_region.id
+        ) geog_region ON geog_country.parent_id = geog_region.id
       WHERE
-        event.description = 'The publication date'
+        event.description = 'The publication date' AND url IS NOT NULL
     """
 
     return postgres_connector.run_query(query)

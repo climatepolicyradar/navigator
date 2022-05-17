@@ -170,67 +170,68 @@ def upgrade():
         )
 
     # add instruments
-    instruments_dict = {}
-    for instrument in [
-        ["Direct investment", "Early warning systems"],
-        ["Direct investment", "Green procurement"],
-        ["Direct investment", "Nature based solutions and ecosystem restoration"],
-        ["Direct investment", "Other"],
-        ["Direct investment", "Provision of climate funds"],
-        ["Economic", "Carbon pricing and emissions trading"],
-        ["Economic", "Climate finance tools"],
-        ["Economic", "Insurance"],
-        ["Economic", "Subsidies"],
-        ["Economic", "Tax incentives"],
-        ["Economic", "Other"],
-        ["Governance", "Capacity building"],
-        ["Governance", "Institutional mandates"],
-        ["Governance", "International cooperation"],
-        ["Governance", "MRV"],
-        ["Governance", "Other"],
-        ["Governance", "Planning"],
-        ["Governance", "Processes, plans and strategies"],
-        ["Governance", "Subnational and citizen participation"],
-        ["Information", "Education, training and knowledge dissemination"],
-        ["Information", "Research and development, knowledge generation"],
-        ["Regulation", "Disclosure obligations"],
-        ["Regulation", "Moratoria and bans"],
-        ["Regulation", "Other"],
-        ["Regulation", "Standards, obligations and norms"],
-        ["Regulation", "Zoning and spatial planning"],
-    ]:
-        parent_instrument = instrument[0]
-        child_instrument = instrument[1]
-        if parent_instrument not in instruments_dict:
-            instruments_dict[parent_instrument] = [child_instrument]
-        else:
-            instruments_dict[parent_instrument].append(child_instrument)
+    # TODO: re-enable hierarchical instrument structure: adjust the loader and the lookup API.
+    # instruments_dict = {}
+    # for instrument in [
+    #     ["Direct investment", "Early warning systems"],
+    #     ["Direct investment", "Green procurement"],
+    #     ["Direct investment", "Nature based solutions and ecosystem restoration"],
+    #     ["Direct investment", "Other"],
+    #     ["Direct investment", "Provision of climate funds"],
+    #     ["Economic", "Carbon pricing and emissions trading"],
+    #     ["Economic", "Climate finance tools"],
+    #     ["Economic", "Insurance"],
+    #     ["Economic", "Subsidies"],
+    #     ["Economic", "Tax incentives"],
+    #     ["Economic", "Other"],
+    #     ["Governance", "Capacity building"],
+    #     ["Governance", "Institutional mandates"],
+    #     ["Governance", "International cooperation"],
+    #     ["Governance", "MRV"],
+    #     ["Governance", "Other"],
+    #     ["Governance", "Planning"],
+    #     ["Governance", "Processes, plans and strategies"],
+    #     ["Governance", "Subnational and citizen participation"],
+    #     ["Information", "Education, training and knowledge dissemination"],
+    #     ["Information", "Research and development, knowledge generation"],
+    #     ["Regulation", "Disclosure obligations"],
+    #     ["Regulation", "Moratoria and bans"],
+    #     ["Regulation", "Other"],
+    #     ["Regulation", "Standards, obligations and norms"],
+    #     ["Regulation", "Zoning and spatial planning"],
+    # ]:
+    #     parent_instrument = instrument[0]
+    #     child_instrument = instrument[1]
+    #     if parent_instrument not in instruments_dict:
+    #         instruments_dict[parent_instrument] = [child_instrument]
+    #     else:
+    #         instruments_dict[parent_instrument].append(child_instrument)
 
-    for parent, children in instruments_dict.items():
-        op.execute(
-            instrument_tbl.insert().values(
-                name=parent,
-                description=parent,
-                source_id=1,
-            )
-        )
+    # for parent, children in instruments_dict.items():
+    #     op.execute(
+    #         instrument_tbl.insert().values(
+    #             name=parent,
+    #             description=parent,
+    #             source_id=1,
+    #         )
+    #     )
 
-        parent_id = (
-            instrument_tbl.select()
-            .with_only_columns(instrument_tbl.columns["id"])
-            .where(instrument_tbl.columns["name"] == parent)
-            .scalar_subquery()
-        )
+    #     parent_id = (
+    #         instrument_tbl.select()
+    #         .with_only_columns(instrument_tbl.columns["id"])
+    #         .where(instrument_tbl.columns["name"] == parent)
+    #         .scalar_subquery()
+    #     )
 
-        for child in children:
-            op.execute(
-                instrument_tbl.insert().values(
-                    name=child,
-                    description=child,
-                    source_id=1,
-                    parent_id=parent_id,
-                )
-            )
+    #     for child in children:
+    #         op.execute(
+    #             instrument_tbl.insert().values(
+    #                 name=child,
+    #                 description=child,
+    #                 source_id=1,
+    #                 parent_id=parent_id,
+    #             )
+    #         )
 
 
 def downgrade():

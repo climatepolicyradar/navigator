@@ -105,6 +105,7 @@ def lookup_instruments(
     current_user=Depends(get_current_active_user),
 ):
     """Get tree of instruments and associated metadata."""
+    # TODO: this should follow a flat instruments structure for now.
     return tree_table_to_json(table=Instrument, db=db)
 
 

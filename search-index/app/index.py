@@ -90,28 +90,41 @@ class OpenSearchIndex:
             },
             "mappings": {
                 "properties": {
-                    # Document metadata. This will be revised once we remove the concept of actions.
                     "document_id": {"type": "keyword"},
-                    "document_name": {"type": "text"},
-                    "action_name": {"type": "keyword", "normalizer": "folding"},
-                    "action_description": {"type": "keyword", "normalizer": "folding"},
-                    "action_name_and_id": {
+                    "document_name": {"type": "keyword", "normalizer": "folding"},
+                    "document_description": {
+                        "type": "keyword",
+                        "normalizer": "folding",
+                    },
+                    "document_name_and_id": {
                         "type": "keyword",
                         "normalizer": "folding",
                         # Load ordinals on indexing for this field for faster aggregations.
                         "eager_global_ordinals": True,
                     },
-                    "action_date": {"type": "date", "format": "dd/MM/yyyy"},
-                    "action_country_code": {"type": "keyword"},
-                    "action_geography_english_shortname": {"type": "keyword"},
-                    "action_source_name": {"type": "keyword"},
-                    "action_type_name": {"type": "keyword"},
+                    "md5_sum": {"type": "keyword"},
+                    "document_url": {"type": "keyword"},
+                    "document_date": {"type": "date", "format": "dd/MM/yyyy"},
+                    "document_country_code": {"type": "keyword"},
+                    "document_country_english_shortname": {"type": "keyword"},
+                    "document_region_code": {"type": "keyword"},
+                    "document_region_english_shortname": {"type": "keyword"},
+                    "document_source_name": {"type": "keyword"},
+                    "document_type": {"type": "keyword"},
+                    "document_category": {"type": "keyword"},
+                    "document_framework_name": {"type": "keyword"},
+                    "document_hazard_name": {"type": "keyword"},
+                    "document_instrument_name": {"type": "keyword"},
+                    "document_response_name": {"type": "keyword"},
+                    "document_sector_name": {"type": "keyword"},
+                    "document_keyword": {"type": "keyword"},
+                    "document_language": {"type": "keyword"},
                     # Searchable
-                    "for_search_action_name": {
+                    "for_search_document_name": {
                         "type": "text",
                         "analyzer": "folding",
                     },
-                    "for_search_action_description": {
+                    "for_search_document_description": {
                         "type": "text",
                         "analyzer": "folding",
                     },
@@ -137,7 +150,7 @@ class OpenSearchIndex:
                     "text_block_page": {
                         "type": "integer",
                     },
-                    "action_description_embedding": {
+                    "document_description_embedding": {
                         "type": "knn_vector",
                         "dimension": self.embedding_dim,
                         "method": {
