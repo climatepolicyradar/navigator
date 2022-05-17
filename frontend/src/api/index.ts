@@ -7,6 +7,9 @@ const apiClient = new ApiClient();
 interface AuthResponse {
   jwt: string;
 }
+interface ResetResponse {
+  value: boolean;
+}
 
 export interface User {
   id: number;
@@ -18,8 +21,6 @@ export interface User {
   error?: { error: string };
   activated?: boolean;
 }
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export const signIn = async (credentials) => {
   return await AuthClient.post(
@@ -56,15 +57,10 @@ export async function handleApiSuccess(response) {
   }
 }
 export async function handleApiError(error) {
-  let status = { error: 'There was an error, please try again.' };
-  if (error?.response?.status === 401) {
-    status = { error: 'Invalid credentials' };
-  }
-  if (error?.response?.status === 404) {
-    status = { error: error.response.data.detail };
-  }
-  console.log(status);
-  return status;
+  const message = error?.response?.data.detail
+    ? error?.response?.data.detail
+    : 'There was an error, please try again later.';
+  return { error: message };
 }
 
 export async function getUserProfile() {
@@ -76,6 +72,13 @@ export async function registerWithEmailAndPassword(
 ): Promise<AuthResponse> {
   return await apiClient
     .post(`/activations`, data)
+    .then(handleApiSuccess)
+    .catch(handleApiError);
+}
+
+export async function handleResetRequest(data: string): Promise<ResetResponse> {
+  return await apiClient
+    .post(`/password-reset/${data}`, null)
     .then(handleApiSuccess)
     .catch(handleApiError);
 }

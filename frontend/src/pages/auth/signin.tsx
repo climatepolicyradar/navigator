@@ -32,9 +32,18 @@ const Login = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const welcomeMessage = router?.query?.activated
-    ? t('Your account has been activated! please sign in below.')
-    : t('Welcome back! Please enter your details.');
+
+  const welcomeMessage = () => {
+    let message = t('Welcome back! Please enter your details.');
+    if (router?.query?.activated) {
+      message = t('Your account has been activated! please sign in below.');
+    } else if (router?.query?.reset) {
+      message = t(
+        'Your password has been reset successfully. Please sign in below.'
+      );
+    }
+    return message;
+  };
   const submitForm = async (data) => {
     const newData = { ...data, email: encodeURIComponent(data.email) };
     const status = await login(newData);
@@ -47,7 +56,7 @@ const Login = () => {
   }, [status]);
   return (
     <>
-      {isSubmitting ? (
+      {isSubmitting && !user?.email ? (
         <LoaderOverlay />
       ) : (
         <Layout title={`Navigator | ${t('Sign in to your account')}`}>
@@ -55,7 +64,7 @@ const Login = () => {
             <div className="container py-4">
               <AuthWrapper
                 heading={t('Sign in to your account')}
-                description={welcomeMessage}
+                description={welcomeMessage()}
               >
                 {status?.error && (
                   <p className="text-red-500 font-bold mt-4">{status.error}</p>

@@ -3,8 +3,8 @@ import {
   signIn,
   getUserProfile,
   registerWithEmailAndPassword,
-  // loginWithEmailAndPassword,
   User,
+  handleResetRequest,
 } from '.';
 import { storage } from '../utils/storage';
 import Router from 'next/router';
@@ -66,6 +66,11 @@ async function logoutFn() {
 
 const loaderComponent = () => LoaderOverlay;
 
+const resetRequest = async (data: string) => {
+  const response = await handleResetRequest(data);
+  return response;
+};
+
 const authConfig = {
   loadUser,
   loginFn,
@@ -77,4 +82,4 @@ const authConfig = {
 
 const { AuthProvider, useAuth } = initReactQueryAuth<User>(authConfig);
 
-export { AuthProvider, useAuth };
+export { AuthProvider, useAuth, resetRequest };

@@ -1,18 +1,23 @@
+import { useEffect, useState } from 'react';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../../components/LoaderOverlay';
 import Layout from '../../components/layouts/Auth';
 import AuthWrapper from '../../components/auth/AuthWrapper';
 import { useForm } from 'react-hook-form';
+import { useAuth } from '../../api/auth';
+import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from '../../components/form-inputs/TextInput';
 import Button from '../../components/buttons/Button';
 
-const ActivateAccount = () => {
+const ResetPassword = () => {
+  const [status, setStatus] = useState(null);
   const { t, i18n, ready } = useTranslation('auth');
+  const { user, register: reset } = useAuth();
+  const router = useRouter();
   const schema = Yup.object({
-    /* TODO: decide on password requirements */
     password: Yup.string()
       .required(t('Password is required'))
       .min(8, t('Minimum 8 chars')),
@@ -28,12 +33,18 @@ const ActivateAccount = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const submitForm = (data) => {
-    console.log(data);
+  const submitForm = async (data) => {
+    const { password } = data;
+    const token = router.query.token;
+    const response = await reset({ password, token });
+    setStatus(response);
   };
+  useEffect(() => {
+    if (status?.activated) router.push('/auth/signin?reset=true');
+  }, [status]);
   return (
     <>
-      {!ready ? (
+      {isSubmitting ? (
         <LoaderOverlay />
       ) : (
         <Layout title={`Navigator | ${t('Reset your password')}`}>
@@ -43,6 +54,9 @@ const ActivateAccount = () => {
                 heading={t('Reset your password')}
                 description={t('Specify your new password')}
               >
+                {status?.error && (
+                  <p className="text-red-500 font-bold mt-4">{status.error}</p>
+                )}
                 <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                   <div className="form-row text-white">
                     <TextInput
@@ -85,4 +99,4 @@ const ActivateAccount = () => {
   );
 };
 
-export default ActivateAccount;
+export default ResetPassword;
