@@ -1,18 +1,20 @@
 import { useQuery } from 'react-query';
 import { ApiClient } from '../api/http-common';
 
-export default function useGeographies() {
+export default function useGeographies(filter = null) {
   const client = new ApiClient();
-  const results = useQuery('geographies', () =>
+  const geosQuery = useQuery('geographies', () =>
     client.get(`/geographies`, null)
   );
-  // note: use above 2 lines instead of below 2 lines when lookups api is back!
-  // const client = new ApiClient('http://localhost:3000/');
-  // const results = useQuery(
-  //   path,
-  //   () => client.get(`testdata/${path}.json`, null) // dummy data
-  // );
+  const { data } = geosQuery;
+  let arr = [];
+  let geographies = [];
+  if (data) {
+    arr = data?.data.map((item) => {
+      return [...arr, ...item.children];
+    });
+    geographies = arr.flat().map((item) => item.node);
+  }
 
-  // const regions =
-  return results;
+  return { geosQuery, geographies };
 }

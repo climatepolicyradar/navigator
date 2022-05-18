@@ -8,6 +8,7 @@ import MultiList from './filters/MultiList';
 import ByRange from './filters/ByRange';
 import { minYear } from '../constants/timedate';
 import useGeographies from '../hooks/useGeographies';
+import useRegions from '../hooks/useRegions';
 
 const SearchFilters = ({
   handleFilterChange,
@@ -15,21 +16,14 @@ const SearchFilters = ({
   searchCriteria,
 }) => {
   const { t, i18n, ready } = useTranslation('searchResults');
-  const geosQuery = useGeographies();
-  const { data: { geographies } = [] } = geosQuery;
+  const { geosQuery, geographies } = useGeographies();
+  const { regionsQuery, regions } = useRegions();
+  const sectorsQuery = useLookups('sectors');
   const {
-    keyword_filters: { action_geography_english_shortname = [] },
+    keyword_filters: { countries: geoFilters = [] },
   } = searchCriteria;
   // the 3 lists below may come dynamically from db at some point?
-  const regionsList = [
-    'All',
-    'Africa',
-    'East Asia & Pacific',
-    'Europe & Central Asia',
-    'Latin America & the Caribbean',
-    'Middle East & North Africa',
-    'South Asia',
-  ];
+
   const sectorList = [
     'All',
     'Adaptation',
@@ -52,6 +46,7 @@ const SearchFilters = ({
 
   return (
     <>
+      {console.log(sectorsQuery.data)}
       <div className="text-indigo-400 font-medium">{t('Filter by')}</div>
       <div className="my-4 text-sm text-indigo-500">
         <div className="relative">
@@ -60,15 +55,16 @@ const SearchFilters = ({
           </div>
 
           <BySelect
-            list={regionsList}
+            list={regions}
             defaultValue={
-              searchCriteria.keyword_filters?.action_region
-                ? searchCriteria.keyword_filters.action_region[0]
+              searchCriteria.keyword_filters?.region
+                ? searchCriteria.keyword_filters.region[0]
                 : ''
             }
             onChange={handleFilterChange}
             title={t('By region')}
-            type="action_region"
+            keyField="display_value"
+            filterType="regions"
           />
         </div>
         <div className="relative mt-6">
@@ -78,22 +74,22 @@ const SearchFilters = ({
           <ByTextInput
             title={t('By country')}
             list={geographies}
-            selectedList={action_geography_english_shortname}
-            keyField="english_shortname"
-            type="action_geography_english_shortname"
+            selectedList={geoFilters}
+            keyField="display_value"
+            filterType="countries"
             handleFilterChange={handleFilterChange}
           />
           <MultiList
-            list={action_geography_english_shortname}
+            list={geoFilters}
             removeFilter={handleFilterChange}
-            type="action_geography_english_shortname"
+            type="countries"
           />
         </div>
         <div className="relative mt-6">
           <div className="absolute top-0 right-0 z-20">
             <Tooltip id="sector" tooltip={sectorTooltip} />
           </div>
-          <BySelect
+          {/* <BySelect
             list={sectorList}
             onChange={handleFilterChange}
             defaultValue={
@@ -103,13 +99,13 @@ const SearchFilters = ({
             }
             title={t('By sector')}
             type="action_sector"
-          />
+          /> */}
         </div>
         <div className="relative mt-6">
           <div className="absolute top-0 right-0 z-20">
             <Tooltip id="doctype" tooltip={doctypeTooltip} />
           </div>
-          <BySelect
+          {/* <BySelect
             list={documentTypeList}
             onChange={handleFilterChange}
             defaultValue={
@@ -119,13 +115,13 @@ const SearchFilters = ({
             }
             title={t('By document type')}
             type="action_document_type"
-          />
+          /> */}
         </div>
         <div className="relative mt-6">
           <div className="absolute top-0 right-0 z-20">
             <Tooltip id="instrument" tooltip={instrumentTooltip} />
           </div>
-          <BySelect
+          {/* <BySelect
             list={instrumentList}
             onChange={handleFilterChange}
             defaultValue={
@@ -135,7 +131,7 @@ const SearchFilters = ({
             }
             title={t('By instrument')}
             type="action_instrument"
-          />
+          /> */}
         </div>
         <div className="relative mt-6">
           <div className="mx-2">

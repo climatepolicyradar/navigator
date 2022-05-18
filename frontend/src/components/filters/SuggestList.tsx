@@ -1,7 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { addClass, removeClass } from '../../utils/cssClass';
 
-const SuggestList = ({ list, setList, keyField, type, setInput, onClick }) => {
+const SuggestList = ({
+  list,
+  setList,
+  keyField,
+  type,
+  setInput,
+  handleFilterChange,
+}) => {
   const ulRef = useRef(null);
   let liSelected;
   let index = -1;
@@ -56,7 +63,8 @@ const SuggestList = ({ list, setList, keyField, type, setInput, onClick }) => {
   };
 
   const handleClick = (item) => {
-    onClick(type, item[keyField]);
+    // console.log(item, keyField);
+    handleFilterChange(type, item[keyField]);
     setList([]);
     setInput('');
     liSelected = null;
@@ -79,17 +87,20 @@ const SuggestList = ({ list, setList, keyField, type, setInput, onClick }) => {
       ref={ulRef}
       className="bg-white rounded-b-lg border-t-dotted border-b border-l border-r"
     >
-      {list.map((item, index) => (
-        <li
-          key={index}
-          onClick={() => {
-            handleClick(item);
-          }}
-          className="hover:bg-blue-200 cursor-pointer my-1 p-2"
-        >
-          {item[keyField]}
-        </li>
-      ))}
+      {list.map(
+        (item, index) =>
+          index < 10 && (
+            <li
+              key={index}
+              onClick={() => {
+                handleClick(item);
+              }}
+              className="hover:bg-blue-200 cursor-pointer my-1 p-2"
+            >
+              {item[keyField]}
+            </li>
+          )
+      )}
     </ul>
   );
 };

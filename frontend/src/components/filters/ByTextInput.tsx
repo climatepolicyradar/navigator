@@ -8,8 +8,8 @@ interface ByTextInputProps {
   list: Object[];
   selectedList: string[];
   keyField: string;
-  type: string;
-  handleFilterChange(type: string, value: string): void;
+  filterType: string;
+  handleFilterChange(filterType: string, value: string): void;
 }
 
 const ByTextInput = ({
@@ -17,7 +17,7 @@ const ByTextInput = ({
   list,
   selectedList,
   keyField,
-  type,
+  filterType,
   handleFilterChange,
 }: ByTextInputProps) => {
   const [input, setInput] = useState('');
@@ -32,7 +32,7 @@ const ByTextInput = ({
       return;
     }
     const filteredList = list.filter((item) => {
-      /* Make sure item hasn't already been selected */
+      /* Make sure item hasn't already been selected and limit list to 20 items */
       return (
         item[keyField].toLowerCase().indexOf(input.toLowerCase()) > -1 &&
         selectedList.indexOf(item[keyField]) === -1
@@ -55,14 +55,14 @@ const ByTextInput = ({
       />
 
       {suggestList.length > 0 && (
-        <div className="absolute top-3 mt-12 left-0 w-full z-20">
+        <div className="absolute top-3 mt-12 left-0 w-full z-30">
           <SuggestList
             list={suggestList}
             setList={setSuggestList}
             keyField={keyField}
-            type={type}
+            type={filterType}
             setInput={setInput}
-            onClick={handleFilterChange}
+            handleFilterChange={handleFilterChange}
           />
         </div>
       )}
