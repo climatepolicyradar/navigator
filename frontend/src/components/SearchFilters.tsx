@@ -7,6 +7,7 @@ import Tooltip from './tooltip';
 import MultiList from './filters/MultiList';
 import ByRange from './filters/ByRange';
 import { minYear } from '../constants/timedate';
+import useGeographies from '../hooks/useGeographies';
 
 const SearchFilters = ({
   handleFilterChange,
@@ -14,7 +15,7 @@ const SearchFilters = ({
   searchCriteria,
 }) => {
   const { t, i18n, ready } = useTranslation('searchResults');
-  const geosQuery = useLookups('geographies');
+  const geosQuery = useGeographies();
   const { data: { geographies } = [] } = geosQuery;
   const {
     keyword_filters: { action_geography_english_shortname = [] },
