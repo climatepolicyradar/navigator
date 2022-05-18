@@ -229,7 +229,7 @@ def test_document_detail(
             "name": "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)",
             "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g",
-            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)-1.pdf",
+            "url": "https://juan-test-bucket.s3.eu-west-2.amazonaws.com/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)-1.pdf",
             "md5_sum": "the other md5 sum",
             "type_id": 1,
             "geography_id": 1,
@@ -330,7 +330,7 @@ def test_document_detail(
     )
     assert (
         get_detail_json["url"]
-        == "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)-1.pdf"
+        == "https://cdn.climatepolicyradar.org/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)-1.pdf"
     )
     assert get_detail_json["source"] == {"name": "may it be with you"}
     assert get_detail_json["geography"] == {

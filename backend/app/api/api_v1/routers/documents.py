@@ -1,5 +1,6 @@
 import logging
 import os
+import re
 from datetime import datetime
 from pathlib import Path
 from typing import cast
@@ -70,6 +71,21 @@ from navigator.core.aws import get_s3_client
 logger = logging.getLogger(__file__)
 
 documents_router = r = APIRouter()
+
+CDN_URL: str = os.getenv("CDN_URL", "https://cdn.climatepolicyradar.org")
+
+
+def s3_to_cdn_url(s3_url: str) -> str:
+    """Convert a URL to a PDF in our s3 bucket to a URL to a PDF in our CDN.
+
+    Args:
+        s3_url (str): URL to a PDF in our s3 bucket.
+
+    Returns:
+        str: URL to the PDF via our CDN domain.
+    """
+
+    return re.sub(r"https:\/\/.*\.s3\..*\.amazonaws.com", CDN_URL, s3_url)
 
 
 @r.get(
@@ -157,7 +173,7 @@ async def get_document_detail(
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
         source_url=cast(str, document.source_url),
-        url=cast(str, document.url),
+        url=s3_to_cdn_url(document.url),
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),
             value=cast(str, geography.value),
