@@ -1,4 +1,5 @@
 import logging
+from typing import cast
 
 from fastapi import APIRouter, Depends, Request, HTTPException
 
@@ -32,7 +33,7 @@ async def set_password(
     """Activates a new user and sets a password."""
 
     reset_token = get_password_reset_token_by_token(db, payload.token)
-    user = get_user(db, reset_token.user_id)
+    user = get_user(db, cast(int, reset_token.user_id))
     activated_user = activate_user(db, user, reset_token, payload.password)
     send_password_changed_email(activated_user)
     return activated_user
@@ -57,9 +58,15 @@ async def request_password_reset(
 
     try:
         user = get_user_by_email(db, email)
-        password_reset_token = get_password_reset_token_by_user_id(db, user.id)
+        password_reset_token = get_password_reset_token_by_user_id(
+            db,
+            cast(int, user.id),
+        )
         if password_reset_token is None:
-            password_reset_token = create_password_reset_token(db, user.id)
+            password_reset_token = create_password_reset_token(
+                db,
+                cast(int, user.id),
+            )
         send_password_reset_email(user, password_reset_token)
     except HTTPException:
         # if the user for this email couldn't be found, don't 404

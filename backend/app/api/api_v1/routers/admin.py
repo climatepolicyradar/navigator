@@ -25,6 +25,9 @@ from app.core.ratelimit import limiter
 
 admin_users_router = r = APIRouter()
 
+# TODO: revisit activation timeout
+ACCOUNT_ACTIVATION_EXPIRE_MINUTES = 4 * 7 * 24 * 60  # 4 weeks
+
 
 @r.get(
     "/users",
@@ -76,7 +79,9 @@ async def user_create(
             detail=f"Email already registered: {user.email}",
         )
 
-    activation_token = create_password_reset_token(db, t.cast(int, db_user.id))
+    activation_token = create_password_reset_token(
+        db, t.cast(int, db_user.id), minutes=ACCOUNT_ACTIVATION_EXPIRE_MINUTES
+    )
     send_new_account_email(db_user, activation_token)
 
     return db_user

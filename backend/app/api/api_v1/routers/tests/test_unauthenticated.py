@@ -142,7 +142,7 @@ def test_password_reset_request(
     assert prt.user_id == 1
     assert prt.expiry_ts == datetime.datetime(2099, 1, 1)
     assert not prt.is_redeemed
-    mock_get_password_reset_token_expiry_ts.assert_called_once()
+    mock_get_password_reset_token_expiry_ts.assert_called_once_with(minutes=None)
 
     mock_send_email.assert_called_once_with(test_user, prt)
 

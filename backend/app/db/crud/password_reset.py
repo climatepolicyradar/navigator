@@ -68,8 +68,9 @@ def get_password_reset_token_by_user_id(
 def create_password_reset_token(
     db: Session,
     user_id: int,
+    minutes: Optional[int] = None,
 ) -> PasswordResetToken:
-    expiry_ts = get_password_reset_token_expiry_ts()
+    expiry_ts = get_password_reset_token_expiry_ts(minutes=minutes)
 
     row = PasswordResetToken(
         user_id=user_id, token=random_string(), expiry_ts=expiry_ts
