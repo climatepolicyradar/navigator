@@ -1,10 +1,14 @@
 import { ApiClient } from '../api/http-common';
-import { useMutation } from 'react-query';
+import { useMutation, useQueryClient } from 'react-query';
 
 const useUpdateAccount = () => {
   const client = new ApiClient();
-
-  return useMutation((values) => client.put(`/users/${values.id}`, values), {
+  const queryClient = useQueryClient();
+  return useMutation((values) => client.put(`/users/me`, values), {
+    onSuccess: (data: any) => {
+      console.log(data);
+      queryClient.setQueryData('auth-user', data.data);
+    },
     onError: (err) => {
       console.log(err);
     },

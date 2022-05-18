@@ -53,9 +53,10 @@ const Search = () => {
     data: searchCriteria,
   }: any = useSearchCriteria();
   const resultsQuery: any = useSearch('searches', searchCriteria);
+
   const {
-    data: { documents } = [],
-    data: { hits } = 0,
+    data: { data: { documents } = [] } = [],
+    data: { data: { hits } = 0 } = 0,
     isSuccess,
   } = resultsQuery;
   const document = useDocument();
@@ -121,8 +122,8 @@ const Search = () => {
 
   const renderSearch = () => {
     if (
-      searchCriteria.keyword_filters?.document_category &&
-      searchCriteria.keyword_filters?.document_category[0] === 'Litigation'
+      searchCriteria?.keyword_filters?.document_category &&
+      searchCriteria?.keyword_filters?.document_category[0] === 'Litigation'
     ) {
       return (
         // TODO: translate
@@ -163,7 +164,7 @@ const Search = () => {
         </div>
       );
     }
-    return documents.map((doc: any, index: number) => (
+    return documents?.map((doc: any, index: number) => (
       <div key={index} className="my-16 first:md:mt-4">
         <SearchResult
           document={doc}

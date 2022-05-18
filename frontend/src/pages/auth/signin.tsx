@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
@@ -14,6 +14,7 @@ import Link from 'next/link';
 import { useAuth } from '../../api/auth';
 
 const Login = () => {
+  const [status, setStatus] = useState(null);
   const { t, i18n, ready } = useTranslation('auth');
   const { user, login } = useAuth();
   const router = useRouter();
@@ -31,16 +32,31 @@ const Login = () => {
   } = useForm({
     resolver: yupResolver(schema),
   });
-  const submitForm = (data) => {
-    // console.log(data);
-    login(data);
+
+  const welcomeMessage = () => {
+    let message = t('Welcome back! Please enter your details.');
+    if (router?.query?.activated) {
+      message = t('Your account has been activated! please sign in below.');
+    } else if (router?.query?.reset) {
+      message = t(
+        'Your password has been reset successfully. Please sign in below.'
+      );
+    }
+    return message;
   };
+  const submitForm = async (data) => {
+    const newData = { ...data, email: encodeURIComponent(data.email) };
+    const status = await login(newData);
+    setStatus(status);
+  };
+
   useEffect(() => {
-    if (user?.email) router.push('/');
-  }, [user]);
+    // checks if a user account is returned rather than an error
+    if (status?.email) router.push('/');
+  }, [status]);
   return (
     <>
-      {!ready ? (
+      {isSubmitting || isSubmitSuccessful ? (
         <LoaderOverlay />
       ) : (
         <Layout
@@ -50,11 +66,12 @@ const Login = () => {
             <div className="container py-4">
               <AuthWrapper
                 heading={t('Sign in to your account')}
-                description={t('Welcome back! Please enter your details.')}
+                description={welcomeMessage()}
               >
-                {user?.error && (
-                  <p className="text-red-500 font-bold mt-4">{user.error}</p>
+                {status?.error && (
+                  <p className="text-red-500 font-bold mt-4">{status.error}</p>
                 )}
+
                 <form
                   className="w-full"
                   onSubmit={handleSubmit(submitForm)}
