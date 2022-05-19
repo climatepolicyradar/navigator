@@ -9,6 +9,7 @@ import useDocument from '../../hooks/useDocument';
 import useUpdateDocument from '../../hooks/useUpdateDocument';
 import useUpdateSearchCriteria from '../../hooks/useUpdateSearchCriteria';
 import useUpdateSearchFilters from '../../hooks/useUpdateSearchFilters';
+import useUpdateCountries from '../../hooks/useUpdateCountries';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../api/auth';
@@ -31,6 +32,10 @@ import Tooltip from '../../components/tooltip';
 import { calculatePageCount } from '../../utils/paging';
 import Pagination from '../../components/pagination';
 import { PER_PAGE } from '../../constants/paging';
+import useNestedLookups from '../../hooks/useNestedLookups';
+import useLookups from '../../hooks/useLookups';
+import useFilteredCountries from '../../hooks/useFilteredCountries';
+import SearchResultList from '../../components/blocks/SearchResultList';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -44,8 +49,23 @@ const Search = () => {
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
+  const updateCountries = useUpdateCountries();
   const { user } = useAuth();
   const router = useRouter();
+
+  // lookups/filters
+  const {
+    nestedLookupsQuery: geosQuery,
+    level1: regions,
+    level2: countries,
+  } = useNestedLookups('geographies', '', 2);
+  const { data: filteredCountries } = useFilteredCountries(countries);
+  const { nestedLookupsQuery: sectorsQuery, level1: sectors } =
+    useNestedLookups('sectors', 'name');
+  const { lookupsQuery: documentTypesQuery, list: documentTypes } =
+    useLookups('document_types');
+  const { nestedLookupsQuery: instrumentsQuery, level1: instruments } =
+    useNestedLookups('instruments', 'name');
 
   const {
     isFetching: isFetchingSearchCriteria,
@@ -65,6 +85,19 @@ const Search = () => {
 
   const documentCategories = ['All', 'Executive', 'Legislative', 'Litigation'];
 
+  const resetPaging = () => {
+    setOffset(0);
+    setPageNumber(1);
+  };
+
+  const handleRegionChange = (type, regionName) => {
+    handleFilterChange(type, regionName);
+    updateCountries.mutate({
+      regionName,
+      regions,
+      countries,
+    });
+  };
   const handlePageChange = (page: number) => {
     setPageNumber(page);
     setOffset((page - 1) * PER_PAGE);
@@ -75,9 +108,11 @@ const Search = () => {
     value: string,
     action: string = 'update'
   ) => {
+    resetPaging();
     updateSearchFilters.mutate({ [type]: value, action });
   };
   const handleSearchChange = (type: string, value: any) => {
+    if (type !== 'offset') resetPaging();
     updateSearchCriteria.mutate({ [type]: value });
   };
   const handleSearchInput = (e, term) => {
@@ -120,59 +155,6 @@ const Search = () => {
     return index === -1 ? 0 : index;
   };
 
-  const renderSearch = () => {
-    if (
-      searchCriteria?.keyword_filters?.categories &&
-      searchCriteria?.keyword_filters?.categories[0] === 'Litigation'
-    ) {
-      return (
-        // TODO: translate
-        <div className="h-96">
-          Climate litigation case documents are coming soon to Climate Policy
-          Radar! In the meantime, head to{' '}
-          <a
-            className="text-blue-500 transition duration-300 hover:text-indigo-600"
-            href="https://climate-laws.org/litigation_cases"
-          >
-            climate-laws.org/litigation_cases
-          </a>
-        </div>
-      );
-    }
-    if (
-      searchCriteria.keyword_filters?.categories &&
-      searchCriteria.keyword_filters?.categories[0] === 'Legislative' &&
-      documents.length === 0
-    ) {
-      return (
-        <div className="h-96">
-          Your search returned no results from documents in the legislative
-          category. Please try the executive category, or conduct a new search.
-        </div>
-      );
-    }
-    if (
-      searchCriteria.keyword_filters?.categories &&
-      searchCriteria.keyword_filters?.categories[0] === 'Executive' &&
-      documents.length === 0
-    ) {
-      return (
-        <div className="h-96">
-          Your search returned no results from documents in the executive
-          category. Please try the legislative category, or conduct a new
-          search.
-        </div>
-      );
-    }
-    return documents?.map((doc: any, index: number) => (
-      <div key={index} className="my-16 first:md:mt-4">
-        <SearchResult
-          document={doc}
-          onClick={() => handleDocumentClick(doc.document_id)}
-        />
-      </div>
-    ));
-  };
   useDidUpdateEffect(() => {
     handleSearchChange('offset', offset);
     window.scrollTo(0, 0);
@@ -183,13 +165,12 @@ const Search = () => {
     }
   }, [hits]);
   useDidUpdateEffect(() => {
-    // console.log(searchCriteria);
     resultsQuery.refetch();
   }, [searchCriteria]);
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
   const sortByTooltip = t('Tooltips.Sort by', { ns: 'searchResults' });
-  const downloadPDFTooltip = t('Tooltips.Download CSV', {
+  const downloadCSVTooltip = t('Tooltips.Download CSV', {
     ns: 'searchResults',
   });
 
@@ -214,7 +195,7 @@ const Search = () => {
                 // TODO: pass in real document when api and docs are ready
                 <div className="mt-4 px-6 flex-1">
                   <EmbeddedPDF
-                    document={null}
+                    document={document.data}
                     passageIndex={passageIndex}
                     setShowPDF={setShowPDF}
                   />
@@ -243,11 +224,24 @@ const Search = () => {
                   <div className="md:hidden absolute right-0 top-0">
                     <Close onClick={() => setShowFilters(false)} size="16" />
                   </div>
-                  <SearchFilters
-                    handleFilterChange={handleFilterChange}
-                    searchCriteria={searchCriteria}
-                    handleYearChange={handleYearChange}
-                  />
+                  {geosQuery.isFetching ||
+                  sectorsQuery.isFetching ||
+                  documentTypesQuery.isFetching ||
+                  instrumentsQuery.isFetching ? (
+                    <p>Loading filters...</p>
+                  ) : (
+                    <SearchFilters
+                      handleFilterChange={handleFilterChange}
+                      searchCriteria={searchCriteria}
+                      handleYearChange={handleYearChange}
+                      handleRegionChange={handleRegionChange}
+                      regions={regions}
+                      filteredCountries={filteredCountries}
+                      sectors={sectors}
+                      documentTypes={documentTypes}
+                      instruments={instruments}
+                    />
+                  )}
                 </div>
               </div>
               <div className="md:w-3/4">
@@ -288,7 +282,7 @@ const Search = () => {
                       </div>
                     </Button>
                     <div className="ml-1 mt-1">
-                      <Tooltip id="download-tt" tooltip={downloadPDFTooltip} />
+                      <Tooltip id="download-tt" tooltip={downloadCSVTooltip} />
                     </div>
                   </div>
                 </div>
@@ -310,7 +304,11 @@ const Search = () => {
                       <Loader />
                     </div>
                   ) : (
-                    renderSearch()
+                    <SearchResultList
+                      searchCriteria={searchCriteria}
+                      documents={documents}
+                      handleDocumentClick={handleDocumentClick}
+                    />
                   )}
                 </div>
               </div>

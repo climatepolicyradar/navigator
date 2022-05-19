@@ -25,7 +25,7 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
     doc = dummyDocument2;
   } else {
     //const { data: doc } = document;
-    doc = document.data;
+    doc = document;
   }
 
   const previewPDF = () => {

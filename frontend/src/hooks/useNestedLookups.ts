@@ -10,7 +10,9 @@ export default function useNestedLookups(id, filterProp = '', levels = 1) {
   */
 
   const client = new ApiClient();
-  const nestedLookupsQuery = useQuery(id, () => client.get(`/${id}`, null));
+  const nestedLookupsQuery = useQuery(id, () => client.get(`/${id}`, null), {
+    refetchOnWindowFocus: false,
+  });
   /* assuming the data structure is:
   data: [
     {
