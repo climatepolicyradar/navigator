@@ -2,6 +2,7 @@ import datetime
 from unittest.mock import patch
 
 from app.db.models import User, PasswordResetToken
+from app.api.api_v1.routers.admin import ACCOUNT_ACTIVATION_EXPIRE_MINUTES
 
 
 def test_get_users(client, test_superuser, superuser_token_headers):
@@ -177,7 +178,9 @@ def test_create_user(
     assert prt.user_id == 2
     assert prt.expiry_ts == datetime.datetime(2099, 1, 1)
     assert not prt.is_redeemed
-    mock_get_password_reset_token_expiry_ts.assert_called_once()
+    mock_get_password_reset_token_expiry_ts.assert_called_once_with(
+        minutes=ACCOUNT_ACTIVATION_EXPIRE_MINUTES
+    )
 
     db_user = test_db.query(User).filter(User.id == 2).first()
     mock_send_email.assert_called_once_with(db_user, prt)
