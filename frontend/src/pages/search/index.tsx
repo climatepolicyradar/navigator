@@ -189,7 +189,7 @@ const Search = () => {
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
   const sortByTooltip = t('Tooltips.Sort by', { ns: 'searchResults' });
-  const downloadPDFTooltip = t('Tooltips.Download PDF', {
+  const downloadPDFTooltip = t('Tooltips.Download CSV', {
     ns: 'searchResults',
   });
 

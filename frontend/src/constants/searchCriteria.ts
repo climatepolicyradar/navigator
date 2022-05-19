@@ -2,7 +2,7 @@ import { minYear, currentYear } from '../constants/timedate';
 import { PER_PAGE } from '../constants/paging';
 
 export const initialSearchCriteria = {
-  query_string: 'electric vehicles',
+  query_string: 'carbon taxes',
   exact_match: false,
   max_passages_per_doc: 10,
   keyword_filters: {},

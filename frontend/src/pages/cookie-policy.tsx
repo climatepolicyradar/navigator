@@ -19,7 +19,7 @@ const Cookies = () => {
               <p>
                 Read about what cookies are, which cookies Climate Policy Radar
                 (CPR) use on the Climate Policy Radar Website (CPR Website and
-                Ap), and how can you manage your cookies.
+                App), and how can you manage your cookies.
               </p>
               <h2>What are cookies?</h2>
               <p>
