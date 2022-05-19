@@ -20,16 +20,21 @@ const DocumentCoverPage = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
   const router = useRouter();
 
-  const {
-    data: page,
-    isFetching,
-    isError,
-    error,
-  }: any = useDocumentDetail(router.query.docId as string);
+  // const {
+  //   data: response,
+  //   isFetching,
+  //   isError,
+  //   error,
+  // }: any = useDocumentDetail(router.query.docId as string);
+  const documentQuery = useDocumentDetail(router.query.docId as string);
+
+  const { isFetching, isError, error, data } = documentQuery;
+  const { data: { data: page } = {} } = documentQuery;
 
   return (
     <Layout title={`Climate Policy Radar | Document title`}>
-      {isFetching ? (
+      {console.log(page)}
+      {isFetching || !page?.name ? (
         <div className="w-full flex justify-center h-96">
           <Loader />
         </div>
@@ -45,16 +50,16 @@ const DocumentCoverPage = () => {
             <h1 className="mt-6 text-3xl font-medium">{page.name}</h1>
             <div className="flex text-xs text-indigo-400 mt-3">
               <div
-                className={`rounded-sm border border-black flag-icon-background flag-icon-usa`}
+                className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`}
               />
-              <span className="ml-2">United States of America</span>
+              <span className="ml-2">{page.geography.display_value}</span>
               <div className="ml-1">
                 <Tooltip
                   id="date-tt"
                   tooltip="The jurisdiction in which the document was published. For more information, see our Methodology page"
                 />
               </div>
-              <span className="ml-6">2009</span>
+              <span className="ml-6">{page.publication_ts}</span>
               <div className="ml-1">
                 <Tooltip
                   id="juris-tt"
@@ -67,7 +72,7 @@ const DocumentCoverPage = () => {
                 <section className="mt-6">
                   {showFullSummary
                     ? page.description
-                    : truncateString(page.description, 350)}
+                    : truncateString(page.description, 500)}
                 </section>
                 <section className="mt-6 flex justify-end">
                   {showFullSummary ? (
@@ -157,13 +162,13 @@ const DocumentCoverPage = () => {
                   <h4 className="text-base text-indigo-600 font-medium mb-4">
                     Events
                   </h4>
-                  {page.events.map((event, index) => (
+                  {/* {page.events.map((event, index) => (
                     <Event
                       event={event}
                       key={`event${index}`}
                       last={index === page.events.length - 1 ? true : false}
                     />
-                  ))}
+                  ))} */}
                 </div>
               </section>
             </div>

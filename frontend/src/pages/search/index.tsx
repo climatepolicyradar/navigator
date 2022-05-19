@@ -183,6 +183,7 @@ const Search = () => {
     }
   }, [hits]);
   useDidUpdateEffect(() => {
+    // console.log(searchCriteria);
     resultsQuery.refetch();
   }, [searchCriteria]);
 
