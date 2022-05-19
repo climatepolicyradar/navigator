@@ -45,7 +45,7 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
           className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`}
         />
         <span className="ml-2">
-          {document.document_geography_english_shortname}
+          {document.document_country_english_shortname}
         </span>
         <span className="ml-6">{document.document_date}</span>
         <div className="ml-1 -mt-1">

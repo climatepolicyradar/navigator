@@ -1,6 +1,4 @@
 import { useQuery, useQueryClient } from 'react-query';
-import { minYear, currentYear } from '../constants/timedate';
-import { PER_PAGE } from '../constants/paging';
 import { initialSearchCriteria } from '../constants/searchCriteria';
 
 export default function useSearchCriteria() {

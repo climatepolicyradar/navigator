@@ -14,7 +14,6 @@ const PDFView = () => {
   const router = useRouter();
   const document: any = useDocument();
   useEffect(() => {
-    console.log(document);
     if (!document.data) router.push('/');
   }, []);
   return (
@@ -42,8 +41,7 @@ const PDFView = () => {
           </div>
           <section className="mt-4 flex-1">
             <div className="h-full container">
-              {/* TODO: pass in real document when api and docs are ready */}
-              <EmbeddedPDF document={null} />
+              <EmbeddedPDF document={document.data} />
             </div>
           </section>
         </Layout>

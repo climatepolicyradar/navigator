@@ -4,7 +4,9 @@ import { removeDuplicates } from '../utils/removeDuplicates';
 
 export default function useLookups(path: string, filterProp: string = '') {
   const client = new ApiClient();
-  const lookupsQuery = useQuery(path, () => client.get(`/${path}`, null));
+  const lookupsQuery = useQuery(path, () => client.get(`/${path}`, null), {
+    refetchOnWindowFocus: false,
+  });
   const { data } = lookupsQuery;
 
   let list = [];
