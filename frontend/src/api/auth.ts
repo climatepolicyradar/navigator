@@ -34,11 +34,9 @@ export async function handleUserResponse(response) {
 
 async function loadUser() {
   let user = null;
-  console.log('load user');
   try {
     const response = await getUserProfile();
     user = response.data;
-    console.log(user);
   } catch (error) {
     console.log(error);
   }

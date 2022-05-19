@@ -70,9 +70,8 @@ export async function handleApiError(error) {
 }
 
 export async function getUserProfile() {
-  const u = await apiClient.get('/users/me', null);
-  console.log(u);
-  return u;
+  const user = await apiClient.get('/users/me', null);
+  return user;
 }
 
 export async function registerWithEmailAndPassword(

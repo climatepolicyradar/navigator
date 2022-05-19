@@ -87,7 +87,7 @@ const Search = () => {
   const handleDocumentCategoryClick = (e) => {
     const val = e.currentTarget.textContent;
     const action = val === 'All' ? 'delete' : 'update';
-    handleFilterChange('document_category', val, action);
+    handleFilterChange('categories', val, action);
   };
   const handleSortClick = (e) => {
     const val = e.currentTarget.value;
@@ -113,17 +113,17 @@ const Search = () => {
     return `${field}:${order}`;
   };
   const getCurrentCategoryIndex = () => {
-    if (!searchCriteria.keyword_filters?.document_category) return 0;
+    if (!searchCriteria.keyword_filters?.categories) return 0;
     const index = documentCategories.indexOf(
-      searchCriteria.keyword_filters?.document_category[0]
+      searchCriteria.keyword_filters?.categories[0]
     );
     return index === -1 ? 0 : index;
   };
 
   const renderSearch = () => {
     if (
-      searchCriteria?.keyword_filters?.document_category &&
-      searchCriteria?.keyword_filters?.document_category[0] === 'Litigation'
+      searchCriteria?.keyword_filters?.categories &&
+      searchCriteria?.keyword_filters?.categories[0] === 'Litigation'
     ) {
       return (
         // TODO: translate
@@ -140,8 +140,8 @@ const Search = () => {
       );
     }
     if (
-      searchCriteria.keyword_filters?.document_category &&
-      searchCriteria.keyword_filters?.document_category[0] === 'Legislative' &&
+      searchCriteria.keyword_filters?.categories &&
+      searchCriteria.keyword_filters?.categories[0] === 'Legislative' &&
       documents.length === 0
     ) {
       return (
@@ -152,8 +152,8 @@ const Search = () => {
       );
     }
     if (
-      searchCriteria.keyword_filters?.document_category &&
-      searchCriteria.keyword_filters?.document_category[0] === 'Executive' &&
+      searchCriteria.keyword_filters?.categories &&
+      searchCriteria.keyword_filters?.categories[0] === 'Executive' &&
       documents.length === 0
     ) {
       return (

@@ -1,18 +1,19 @@
 import { useQuery } from 'react-query';
 import { ApiClient } from '../api/http-common';
+import { removeDuplicates } from '../utils/removeDuplicates';
 
-export default function useLookups(path: string) {
+export default function useLookups(path: string, filterProp: string = '') {
   const client = new ApiClient();
   const lookupsQuery = useQuery(path, () => client.get(`/${path}`, null));
   const { data } = lookupsQuery;
 
-  // filter for dupes
-  let filteredList = [];
+  let list = [];
   if (data) {
-    filteredList = data?.data.filter((item) => {
-      // return [...arr, ...item.children];
-    });
+    list = data?.data;
+    if (filterProp.length) {
+      list == removeDuplicates(list, filterProp);
+    }
   }
 
-  return { lookupsQuery, filteredList };
+  return { lookupsQuery, list };
 }

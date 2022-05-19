@@ -7,14 +7,19 @@ export default function useGeographies(filter = null) {
     client.get(`/geographies`, null)
   );
   const { data } = geosQuery;
-  let arr = [];
-  let geographies = [];
+  let regions = [];
+  let geosNested = [];
+  let countries = [];
   if (data) {
-    arr = data?.data.map((item) => {
-      return [...arr, ...item.children];
+    regions = data?.data.map((item) => {
+      return item.node;
     });
-    geographies = arr.flat().map((item) => item.node);
+    geosNested = data?.data.map((item) => {
+      return [...geosNested, ...item.children];
+    });
+
+    countries = geosNested.flat().map((item) => item.node);
   }
 
-  return { geosQuery, geographies };
+  return { geosQuery, regions, countries };
 }
