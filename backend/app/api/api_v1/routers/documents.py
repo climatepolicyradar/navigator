@@ -157,12 +157,67 @@ async def get_document_detail(
         .filter(DocumentKeyword.document_id == document_id)
         .join(Keyword)
     ).all()
-    related_documents = (
-        db.query(Association, Document, Geography)
-        .filter(Association.document_id_from == document_id)
-        .join(Document, Association.document_id_to == Document.id)
-        .join(Geography, Document.geography_id == Geography.id)
-    ).all()
+
+    # Get all associated documents
+    # start with all documents with a reference from this document_id
+    related_documents_to = set(
+        RelatedDocumentResponse(
+            related_id=d.id,
+            name=d.name,
+            description=d.description,
+            country_code=g.value,
+            country_name=g.display_value,
+            publication_ts=d.publication_ts,
+        )
+        for _, d, g in (
+            db.query(Association, Document, Geography)
+            .filter(Association.document_id_from == document_id)
+            .join(Document, Association.document_id_to == Document.id)
+            .join(Geography, Document.geography_id == Geography.id)
+        ).all()
+    )
+    # if the above query has results, it contains a "master doc" for a group,
+    # so collect all children
+    related_to_master_documents = set()
+    # for alpha this list should have at most one entry
+    for related_doc in related_documents_to:
+        related_to_master_documents |= set(
+            RelatedDocumentResponse(
+                related_id=d.id,
+                name=d.name,
+                description=d.description,
+                country_code=g.value,
+                country_name=g.display_value,
+                publication_ts=d.publication_ts,
+            )
+            for _, d, g in (
+                db.query(Association, Document, Geography)
+                .filter(Association.document_id_to == related_doc.related_id)
+                .filter(Association.document_id_from != document_id)
+                .join(Document, Association.document_id_from == Document.id)
+                .join(Geography, Document.geography_id == Geography.id)
+            ).all()
+        )
+    # finally find all (child) documents that refer to this document_id
+    related_documents_from = set(
+        RelatedDocumentResponse(
+            related_id=d.id,
+            name=d.name,
+            description=d.description,
+            country_code=g.value,
+            country_name=g.display_value,
+            publication_ts=d.publication_ts,
+        )
+        for _, d, g in (
+            db.query(Association, Document, Geography)
+            .filter(Association.document_id_to == document_id)
+            .join(Document, Association.document_id_from == Document.id)
+            .join(Geography, Document.geography_id == Geography.id)
+        ).all()
+    )
+    related_docs = (
+        related_documents_to | related_to_master_documents | related_documents_from
+    )
 
     # Now build the required response object
     document, geography, doc_type, category, source = document_data.first()
@@ -230,17 +285,7 @@ async def get_document_detail(
         topics=[
             TopicSchema(name=t.name, description=t.description) for _, t in responses
         ],
-        related_documents=[
-            RelatedDocumentResponse(
-                related_id=d.id,
-                name=d.name,
-                description=d.description,
-                country_code=g.value,
-                country_name=g.display_value,
-                publication_ts=d.publication_ts,
-            )
-            for _, d, g in related_documents
-        ],
+        related_documents=list(related_docs),
     )
 
 
