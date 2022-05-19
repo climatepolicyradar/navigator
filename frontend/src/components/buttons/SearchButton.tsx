@@ -1,4 +1,4 @@
-import { SearchIcon } from '../Icons';
+import { SearchIcon } from '../svg/Icons';
 
 interface SearchButtonProps {
   onClick?(event: React.FormEvent<HTMLButtonElement>): void;

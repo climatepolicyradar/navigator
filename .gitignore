@@ -22,6 +22,9 @@ certificate_pub.crt
 /frontend/.next/
 /frontend/out/
 
+# https certificate for localhost (front end)
+/frontend/certificates
+
 #design files
 /psd/
 

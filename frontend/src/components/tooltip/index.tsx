@@ -10,7 +10,7 @@ const Tooltip = ({ id, tooltip }: TooltipProps) => {
       <button
         data-tip="React-tooltip"
         data-for={id}
-        className="circle-sm rounded-full bg-blue-400 text-white flex justify-center items-center"
+        className="circle-sm rounded-full bg-blue-400 text-white flex justify-center items-center text-sm"
       >
         ?
       </button>

@@ -29,7 +29,7 @@ const SearchForm = ({
   }, [input]);
   return (
     <form data-cy="search-form">
-      <div className="relative shadow-md rounded-lg bg-white flex items-stretch">
+      <div className="relative shadow-md rounded-lg bg-white flex items-stretch z-0">
         <input
           data-cy="search-input"
           className="bg-transparent text-indigo-600 appearance-none py-2 pl-2 z-10 rounded-lg relative flex-grow mr-8 placeholder:text-indigo-400 border-transparent"

@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
 import Link from 'next/link';
 import Head from 'next/head';
-import Header from '../headers/Admin';
-import Banner from '../banner/Slim';
+import Header from '../headers/Main';
+import Banner from '../banner/Main';
 
 type Props = {
   children?: ReactNode;
@@ -23,7 +23,7 @@ const Layout = ({
     </Head>
     <Header />
     <main>
-      <Banner heading={heading} />
+      <Banner />
       {children}
     </main>
     <footer className="my-8">

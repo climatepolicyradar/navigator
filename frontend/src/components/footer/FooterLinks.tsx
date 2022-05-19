@@ -17,7 +17,7 @@ const FooterLinks = ({ landing = false }) => {
           Privacy policy
         </a>
       </Link>
-      <Link href="/cookies">
+      <Link href="/cookie-policy">
         <a className="transtion duration-300 hover:text-blue-500">
           Cookies policy
         </a>

@@ -2,17 +2,20 @@
   "Law and policy search": "Law and policy search",
   "Filter by": "Filter by",
   "Start typing": "Start typing...",
-  "By country": "Country",
+  "By country": "Jurisdiction",
   "By region": "Region",
   "By sector": "Sector",
+  "By instrument": "Instrument",
   "By document type": "Document type",
   "By date range": "Date range",
   "Tooltips": {
-    "Region": "This is the explainer for filtering by region",
-    "Country": "This is the explainer for filtering by country",
-    "Sector": "This is the explainer for filtering by sector",
-    "Document type": "This is the explainer for filtering by document type more info more info more info.",
-    "Date range": "This is the explainer for filtering by document date range more info more info more info.",
-    "Exact match": "This is the explainer for the exact match option."
+    "Region": "We use World Bank definitions; see https://www.worldbank.org/en/about/unit",
+    "Country": "The jurisdictions in which documents were published (for example India, or European Union). For more information, see our Methodology page",
+    "Sector": "The broad areas of economic activity to which the content of documents relates, for example, agriculture or transport. For more information, see our Methodology page",
+    "Instrument": "The interventions or measures contained in documents, for example, taxes or standards. For more information, see our Methodology page",
+    "Document type": "What types of document they are - for example, a law, strategy, or decree",
+    "Exact match": "By default, you'll be shown both exact matches and results which are related to your search. Tick this box to see only exact matches",
+    "Sort by": "Results can be sorted by relevance (default), by year of document publication, or alphabetically",
+    "Download CSV": "Click to download a CSV file of documents in the results list, providing their metadata and URLs to PDFs. Note - this will be available as soon as possible"
   }
 }

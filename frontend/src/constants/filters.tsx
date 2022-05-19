@@ -1,1 +1,1 @@
-export const multipleValuesAllowed = ['action_geography_english_shortname'];
+export const multipleValuesAllowed = ['countries'];

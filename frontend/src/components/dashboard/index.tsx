@@ -1,5 +1,5 @@
 import DashboardPanel from './DashboardPanel';
-import { DocumentsIcon, JurisdictionsIcon, AddIcon } from '../Icons';
+import { DocumentsIcon, JurisdictionsIcon, AddIcon } from '../svg/Icons';
 
 interface DashboardProps {
   terms: string[];

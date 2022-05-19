@@ -1,7 +1,8 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
-import { DownloadPDFIcon, ViewDocumentCoverPageIcon } from '../Icons';
+import { DownloadPDFIcon, ViewDocumentCoverPageIcon } from '../svg/Icons';
 import { truncateString } from '../../helpers';
+import Tooltip from '../tooltip';
 
 interface SearchResultProps {
   document: any;
@@ -47,6 +48,13 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
           {document.document_geography_english_shortname}
         </span>
         <span className="ml-6">{document.document_date}</span>
+        <div className="ml-1 -mt-1">
+          {/* TODO: translate below text */}
+          <Tooltip
+            id={`doc${document.document_id}`}
+            tooltip="The years in which documents were first published"
+          />
+        </div>
       </div>
       <p className="text-indigo-400 mt-3">
         {truncateString(document.document_description, 250)}

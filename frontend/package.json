@@ -4,6 +4,7 @@
     "dev": "next",
     "build": "next build",
     "start": "next start",
+    "starthttps": "node server.js",
     "prod": "next build && next start",
     "type-check": "tsc",
     "lint": "next lint",

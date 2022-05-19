@@ -1,4 +1,4 @@
-import { EyeIcon } from '../Icons';
+import { EyeIcon } from '../svg/Icons';
 
 const LandingPageLinks = ({ handleLinkClick }) => {
   const terms = [

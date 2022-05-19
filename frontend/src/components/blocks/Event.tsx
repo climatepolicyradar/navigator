@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { DownLongArrowIcon } from '../Icons';
+import { DownLongArrowIcon } from '../svg/Icons';
 
 interface Event {
   date: string;

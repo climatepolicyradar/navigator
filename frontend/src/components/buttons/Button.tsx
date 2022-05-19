@@ -51,9 +51,11 @@ const Button = ({
       data-cy={props['data-cy']}
       className={`${colorClasses} ${
         thin ? 'py-1' : 'py-3'
-      } button transition duration-300 px-4 rounded-3xl md:px-8 pointer-events-auto w-full ${extraClasses} ${
-        !fullWidth ? 'md:w-auto' : ''
-      }`}
+      } button transition duration-300 px-4 rounded-3xl md:px-8 pointer-events-auto w-full ${
+        disabled
+          ? 'pointer-events-none bg-indigo-300 text-indigo-200 border-indigo-300 hover:bg-indigo-300 hover:text-indigo-200 hover:border-indigo-300'
+          : ''
+      } ${extraClasses} ${!fullWidth ? 'md:w-auto' : ''}`}
       {...props}
     >
       {children}

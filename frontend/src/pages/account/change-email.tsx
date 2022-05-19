@@ -37,7 +37,10 @@ const Account = () => {
   };
 
   return (
-    <Layout title={`Navigator | ${t('My account')}`} heading={t('My account')}>
+    <Layout
+      title={`Climate Policy Radar | ${t('My account')}`}
+      heading={t('My account')}
+    >
       <section>
         <div className="container py-4">
           <AccountNav />

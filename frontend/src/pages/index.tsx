@@ -9,9 +9,8 @@ import { useAuth } from '../api/auth';
 import useSearchCriteria from '../hooks/useSearchCriteria';
 import useUpdateSearchCriteria from '../hooks/useUpdateSearchCriteria';
 import LandingSearchForm from '../components/forms/LandingSearchForm';
-import AlphaLogo from '../components/logo';
+import AlphaLogo from '../components/logo/AlphaLogo';
 import ExactMatch from '../components/filters/ExactMatch';
-import Summary from '../components/blocks/Summary';
 import LandingPageLinks from '../components/blocks/LandingPageLinks';
 
 const IndexPage = () => {
@@ -36,35 +35,16 @@ const IndexPage = () => {
 
   return (
     <>
-      {!ready || !user ? (
+      {!ready || !user || !searchCriteria ? (
         <LoaderOverlay />
       ) : (
         <Layout
-          title={`Navigator | ${t('Law and Policy Search')}`}
+          title={`Climate Policy Radar | ${t('Law and Policy Search')}`}
           heading={t('Law and Policy Search')}
         >
-          {/* <div className="absolute top-0 left-0 w-full z-10 mt-52 md:mt-44 ">
-            <div className="container py-4 pt-56 overflow-x-hidden">
-              <AlphaLogo />
-              <div className="mt-8 md:mt-16">
-                <p className="sm:hidden mt-4 text-center text-white mb-4">
-                  {t("Search for something, e.g. 'carbon taxes'")}
-                </p>
-
-                <LandingSearchForm
-                  handleSearchInput={handleSearchInput}
-                  placeholder={t("Search for something, e.g. 'carbon taxes'")}
-                />
-              </div>
-            </div>
-          </div> */}
           <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
             <AlphaLogo />
             <div className="container mt-24 md:mt-48 max-w-screen-lg mx-auto">
-              {/* <p className="sm:hidden mt-4 text-center text-white mb-4">
-                  {t("Search for something, e.g. 'carbon taxes'")}
-                </p> */}
-
               <LandingSearchForm
                 handleSearchInput={handleSearchInput}
                 placeholder={t("Search for something, e.g. 'carbon taxes'")}

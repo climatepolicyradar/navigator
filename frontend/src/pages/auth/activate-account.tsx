@@ -1,4 +1,6 @@
 import '../i18n';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../../components/LoaderOverlay';
 import Layout from '../../components/layouts/Auth';
@@ -8,9 +10,13 @@ import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from '../../components/form-inputs/TextInput';
 import Button from '../../components/buttons/Button';
+import { useAuth } from '../../api/auth';
 
 const ActivateAccount = () => {
+  const [status, setStatus] = useState(null);
+  const router = useRouter();
   const { t, i18n, ready } = useTranslation('auth');
+  const { user, register: activate } = useAuth();
   const schema = Yup.object({
     /* TODO: decide on password requirements */
     password: Yup.string()
@@ -33,21 +39,30 @@ const ActivateAccount = () => {
     resolver: yupResolver(schema),
     // defaultValues: initialValues,
   });
-  const submitForm = (data) => {
-    console.log(data);
+  const submitForm = async (data) => {
+    const { password } = data;
+    const token = router.query.token;
+    const response = await activate({ password, token });
+    setStatus(response);
   };
+  useEffect(() => {
+    if (status?.activated) router.push('/auth/signin?activated=true');
+  }, [status]);
   return (
     <>
-      {!ready ? (
+      {isSubmitting ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Navigator | ${t('Activate your account')}`}>
+        <Layout title={`Climate Policy Radar | ${t('Activate your account')}`}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper
                 heading={t('Activate your account')}
                 description={t('Specify your password')}
               >
+                {status?.error && (
+                  <p className="text-red-500 font-bold mt-4">{status.error}</p>
+                )}
                 <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                   <div className="form-row text-white">
                     <TextInput

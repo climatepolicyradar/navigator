@@ -1,4 +1,4 @@
-import { CloseIcon } from '../Icons';
+import { CloseIcon } from '../svg/Icons';
 
 interface CloseProps {
   onClick(event: React.FormEvent<HTMLButtonElement>): void;
