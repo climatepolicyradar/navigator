@@ -8,7 +8,7 @@ config:
   infra:dev_domain: dev.app.climatepolicyradar.org
   infra:opensearch_password:
     secure: AAABALq5E+uTV97AuqlVSULUdMYsX7h66Ui0bGTURcgd79k44K78tmpI7Eo=
-  infra:opensearch_url: https://search-opensearch-dev-temp-nzkttufrxxmadvl37l4teezwri.eu-west-2.es.amazonaws.com
+  infra:opensearch_url: https://search-navigator-alpha-g5fgeoght3wpmpk2jjxopbaaue.eu-west-2.es.amazonaws.com
   infra:opensearch_user: cpr-master
   infra:prod_domain: app.climatepolicyradar.org
   infra:sendgrid_api_token:
