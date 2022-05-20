@@ -43,7 +43,7 @@ const DocumentCoverPage = () => {
   }, [page, showFullSummary]);
 
   useEffect(() => {
-    if (router?.query) {
+    if (router?.query.docId) {
       documentQuery.refetch();
     }
   }, [router.query]);
