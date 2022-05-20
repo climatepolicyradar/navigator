@@ -80,7 +80,7 @@ const Search = () => {
     data: { data: { hits } = 0 } = 0,
     isSuccess,
   } = resultsQuery;
-  const document = useDocument();
+  const document: any = useDocument();
   const { t, i18n, ready } = useTranslation(['searchStart', 'searchResults']);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
@@ -153,9 +153,13 @@ const Search = () => {
     setShowFilters(!showFilters);
   };
   const handleDocumentClick = (id) => {
+    if (document.data.document_passage_matches > 0) {
+      setShowSlideout(true);
+      setShowPDF(false);
+    } else {
+      router.push(`/document/${document.data.document_id}`);
+    }
     updateDocument.mutate(id);
-    setShowSlideout(true);
-    setShowPDF(false);
   };
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;

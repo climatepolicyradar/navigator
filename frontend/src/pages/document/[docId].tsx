@@ -150,47 +150,59 @@ const DocumentCoverPage = () => {
                   heading="Type"
                   text={page.type.name}
                 />
-                {/* Topics maps to responses */}
-                <DocumentInfo
-                  id="topics-tt"
-                  tooltip="Broad areas of climate action contained in the document, e.g. mitigation or adaptation. For more information, see our Methodology page"
-                  heading="Topics"
-                  list={page.topics}
-                />
-                <DocumentInfo
-                  heading="Language"
-                  text={page.languages[0].name}
-                />
-                <DocumentInfo
-                  id="keywords-tt"
-                  tooltip="Key terms relating to the content of the document"
-                  heading="Keywords"
-                  text={page.keywords[0].name}
-                />
-                <DocumentInfo
-                  id="sectors-tt"
-                  tooltip="The broad areas of economic activity to which the content of the document relates, e.g. agriculture or transport. For more information, see our Methodology page"
-                  heading="Sectors"
-                  list={page.sectors}
-                />
-                <DocumentInfo
-                  id="instruments-tt"
-                  tooltip="The interventions or measures contained in the document, e.g. taxes or standards. For more information, see our Methodology page"
-                  heading="Instruments"
-                  list={page.instruments}
-                />
-                <div className="mt-8">
-                  <h4 className="text-base text-indigo-600 font-medium mb-4">
-                    Events
-                  </h4>
-                  {page.events.map((event, index) => (
-                    <Event
-                      event={event}
-                      key={`event${index}`}
-                      last={index === page.events.length - 1 ? true : false}
-                    />
-                  ))}
-                </div>
+                {page.topics.length > 0 && (
+                  <DocumentInfo
+                    id="topics-tt"
+                    tooltip="Broad areas of climate action contained in the document, e.g. mitigation or adaptation. For more information, see our Methodology page"
+                    heading="Topics"
+                    list={page.topics}
+                  />
+                )}
+
+                {page.languages.length > 0 && (
+                  <DocumentInfo
+                    heading="Language"
+                    text={page.languages[0].name}
+                  />
+                )}
+                {page.keywords.length > 0 && (
+                  <DocumentInfo
+                    id="keywords-tt"
+                    tooltip="Key terms relating to the content of the document"
+                    heading="Keywords"
+                    text={page.keywords[0].name}
+                  />
+                )}
+                {page.sectors.length > 0 && (
+                  <DocumentInfo
+                    id="sectors-tt"
+                    tooltip="The broad areas of economic activity to which the content of the document relates, e.g. agriculture or transport. For more information, see our Methodology page"
+                    heading="Sectors"
+                    list={page.sectors}
+                  />
+                )}
+                {page.instruments.length > 0 && (
+                  <DocumentInfo
+                    id="instruments-tt"
+                    tooltip="The interventions or measures contained in the document, e.g. taxes or standards. For more information, see our Methodology page"
+                    heading="Instruments"
+                    list={page.instruments}
+                  />
+                )}
+                {page.events.length > 0 && (
+                  <div className="mt-8">
+                    <h4 className="text-base text-indigo-600 font-medium mb-4">
+                      Events
+                    </h4>
+                    {page.events.map((event, index) => (
+                      <Event
+                        event={event}
+                        key={`event${index}`}
+                        last={index === page.events.length - 1 ? true : false}
+                      />
+                    ))}
+                  </div>
+                )}
               </section>
             </div>
           </div>

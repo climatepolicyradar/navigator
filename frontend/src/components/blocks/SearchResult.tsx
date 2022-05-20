@@ -11,6 +11,7 @@ interface SearchResultProps {
 
 const SearchResult = ({ document, onClick }: SearchResultProps) => {
   const router = useRouter();
+
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
@@ -63,14 +64,16 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
         )}
       </p>
       {/* TODO: translate below text, how to handle plurals? */}
-      <button
-        className="text-indigo-500 underline text-sm mt-3 transition duration-300 hover:text-indigo-600"
-        onClick={onClick}
-      >
-        {document.document_passage_matches.length} match
-        {`${document.document_passage_matches.length === 1 ? '' : 'es'}`} in
-        document
-      </button>
+      {document.document_passage_matches.length > 0 && (
+        <button
+          className="text-indigo-500 underline text-sm mt-3 transition duration-300 hover:text-indigo-600"
+          onClick={onClick}
+        >
+          {document.document_passage_matches.length} match
+          {`${document.document_passage_matches.length === 1 ? '' : 'es'}`} in
+          document
+        </button>
+      )}
     </div>
   );
 };
