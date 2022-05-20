@@ -140,7 +140,7 @@ class Backend:
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:ec2:instances",
                     name="InstanceTypes",
-                    value="t3.medium",  # https://aws.amazon.com/ec2/instance-types/
+                    value="t3.large",  # https://aws.amazon.com/ec2/instance-types/
                 ),
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:autoscaling:launchconfiguration",

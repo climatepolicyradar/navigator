@@ -11,6 +11,8 @@ config:
   infra:opensearch_url: https://search-navigator-alpha-g5fgeoght3wpmpk2jjxopbaaue.eu-west-2.es.amazonaws.com
   infra:opensearch_user: cpr-master
   infra:prod_domain: app.climatepolicyradar.org
+  infra:prod_pdf_embed_key:
+    secure: AAABAIQYSKk1nFvo9QZBVkiKnYOIQcueM9QarPpws/bO9wHyC/IqjhP0XN35Oh4SFt7sgBl0P/ZcMsk+PnvKrA==
   infra:sendgrid_api_token:
     secure: AAABAM9Xv/4U8jQRGjZQNVWNJtAf8C71HMvJEYQNL28so773EqItQFVyjkwUs2FWgt/nExg7HRk3fbR2aW/lWV8ZX/7SLlZbIArMUZLLSuOe3SxExb6iD3a74WYhBck12RBcdfQ=
   infra:sendgrid_enabled: "True"

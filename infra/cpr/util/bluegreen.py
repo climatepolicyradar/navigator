@@ -21,3 +21,11 @@ def get_app_domain_for_current_stack() -> str:
     domain = config.require(f"{status}_domain")
     print(f"Pulumi is using domain {domain} for stack {pulumi.get_stack()}")
     return domain
+
+
+def get_pdf_embed_key_for_current_stack() -> str:
+    status = get_bluegreen_status_for_current_stack()
+    config = pulumi.Config()
+    key = config.require(f"{status}_pdf_embed_key")
+    print(f"Pulumi is using PDF embed key for stack {pulumi.get_stack()}")
+    return key
