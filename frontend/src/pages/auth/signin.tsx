@@ -54,6 +54,10 @@ const Login = () => {
     // checks if a user account is returned rather than an error
     if (status?.email) router.push('/');
   }, [status]);
+  useEffect(() => {
+    // redirect if already signed in
+    if (user?.email) router.push('/');
+  }, [user]);
   return (
     <>
       {isSubmitting || isSubmitSuccessful ? (

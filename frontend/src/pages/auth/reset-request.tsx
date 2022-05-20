@@ -1,5 +1,5 @@
 import '../i18n';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../../components/LoaderOverlay';
 import Layout from '../../components/layouts/Auth';
@@ -10,10 +10,13 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from '../../components/form-inputs/TextInput';
 import Button from '../../components/buttons/Button';
 import { useAuth, resetRequest } from '../../api/auth';
+import { useRouter } from 'next/router';
 
 const ResetRequest = () => {
   const [status, setStatus] = useState(null);
   const { t, i18n, ready } = useTranslation('auth');
+  const router = useRouter();
+  const { user, register: reset } = useAuth();
   const schema = Yup.object({
     email: Yup.string()
       .email(t('Invalid email format'))
@@ -30,6 +33,10 @@ const ResetRequest = () => {
     const status = await resetRequest(encodeURIComponent(data.email));
     setStatus(status);
   };
+  useEffect(() => {
+    // redirect if already signed in
+    if (user?.email) router.push('/');
+  }, [user]);
   return (
     <>
       {isSubmitting ? (

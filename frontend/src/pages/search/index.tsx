@@ -153,13 +153,14 @@ const Search = () => {
     setShowFilters(!showFilters);
   };
   const handleDocumentClick = (id) => {
-    if (document.data.document_passage_matches > 0) {
+    updateDocument.mutate(id);
+    const doc = documents.find((item) => item.document_id === id);
+    if (doc.document_passage_matches.length > 0) {
       setShowSlideout(true);
       setShowPDF(false);
     } else {
-      router.push(`/document/${document.data.document_id}`);
+      router.push(`/document/${id}`);
     }
-    updateDocument.mutate(id);
   };
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
@@ -227,7 +228,6 @@ const Search = () => {
                 setPassageIndex={setPassageIndex}
               />
               {showPDF ? (
-                // TODO: pass in real document when api and docs are ready
                 <div className="mt-4 px-6 flex-1">
                   <EmbeddedPDF
                     document={document.data}
