@@ -2,7 +2,6 @@ import Script from 'next/script';
 import { useRef, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ViewSDKClient from '../api/pdf';
-import { dummyDocument, dummyDocument2 } from '../constants/dummyDocument';
 import Loader from './Loader';
 
 const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
@@ -20,13 +19,14 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
     downloadWithAnnotations: true,
     printWithAnnotations: true,
   };
-  let doc;
-  if (document === null) {
-    doc = dummyDocument2;
-  } else {
-    //const { data: doc } = document;
-    doc = document;
-  }
+  // let doc;
+  // if (document === null) {
+  //   doc = dummyDocument2;
+  // } else {
+  //   //const { data: doc } = document;
+  //   doc = document;
+  // }
+  const doc = document;
 
   const previewPDF = () => {
     const viewSDKClient = new ViewSDKClient();
@@ -54,7 +54,7 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
       annotations.push(obj);
     });
     annotationManager.addAnnotations(annotations);
-    console.log(annotations);
+    // console.log(annotations);
     if (passageIndex !== null) {
       annotationManager.selectAnnotation(annotations[passageIndex].id);
     }

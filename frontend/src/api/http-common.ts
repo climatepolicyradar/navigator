@@ -32,8 +32,6 @@ class ApiClient {
       .catch((err) => Promise.reject(err));
   }
   post(url, values, config = {}) {
-    // console.log('values: ');
-    // console.log(values);
     return this.axiosClient
       .post(`${this.baseUrl}${url}`, values, config)
       .then((res) => res)

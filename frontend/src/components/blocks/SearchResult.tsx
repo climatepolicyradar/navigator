@@ -57,7 +57,10 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
         </div>
       </div>
       <p className="text-indigo-400 mt-3">
-        {truncateString(document.document_description, 250)}
+        {truncateString(
+          document.document_description.replace(/(<([^>]+)>)/gi, ''),
+          250
+        )}
       </p>
       {/* TODO: translate below text, how to handle plurals? */}
       <button

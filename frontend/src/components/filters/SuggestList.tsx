@@ -21,7 +21,6 @@ const SuggestList = ({
       index += 1;
       // down
       if (liSelected) {
-        console.log(liSelected);
         removeClass(liSelected, 'selected');
         let next = ul.getElementsByTagName('li')[index];
         if (typeof next !== undefined && index <= len) {
@@ -63,7 +62,6 @@ const SuggestList = ({
   };
 
   const handleClick = (item) => {
-    // console.log(item, keyField);
     handleFilterChange(type, item[keyField]);
     setList([]);
     setInput('');

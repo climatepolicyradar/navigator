@@ -1,5 +1,9 @@
 export const sortOptions = [
   {
+    label: 'Relevance',
+    value: 'relevance',
+  },
+  {
     label: 'Title: A - Z',
     value: 'title:asc',
   },

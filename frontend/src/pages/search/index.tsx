@@ -45,6 +45,7 @@ const Search = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [offset, setOffset] = useState(0);
+  const [noQuery, setNoQuery] = useState(false);
 
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
@@ -121,14 +122,28 @@ const Search = () => {
   };
   const handleDocumentCategoryClick = (e) => {
     const val = e.currentTarget.textContent;
+    let category = val;
+    // map to values that the api knows
+    if (val === 'Legislative') {
+      category = 'Law';
+    }
+    if (val === 'Executive') {
+      category = 'Policy';
+    }
     const action = val === 'All' ? 'delete' : 'update';
-    handleFilterChange('categories', val, action);
+    handleFilterChange('categories', category, action);
   };
   const handleSortClick = (e) => {
     const val = e.currentTarget.value;
-    const valArray = val.split(':');
-    handleSearchChange('sort_field', valArray[0]);
-    handleSearchChange('sort_order', valArray[1]);
+    let field = null;
+    let order = 'desc';
+    if (val !== 'relevance') {
+      const valArray = val.split(':');
+      field = valArray[0];
+      order = valArray[1];
+    }
+    handleSearchChange('sort_field', field);
+    handleSearchChange('sort_order', order);
   };
   const handleYearChange = (values) => {
     const newVals = values.map((value) => value.toFixed(0));
@@ -145,13 +160,24 @@ const Search = () => {
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
     const order = searchCriteria.sort_order;
+    if (field === null && order === 'desc') {
+      return 'relevance';
+    }
     return `${field}:${order}`;
   };
   const getCurrentCategoryIndex = () => {
     if (!searchCriteria.keyword_filters?.categories) return 0;
-    const index = documentCategories.indexOf(
+    let index = documentCategories.indexOf(
       searchCriteria.keyword_filters?.categories[0]
     );
+    // ['All', 'Executive', 'Legislative', 'Litigation']
+    // hack to get correct previously selected category
+    if (searchCriteria.keyword_filters?.categories[0] === 'Policy') {
+      index = 1;
+    }
+    if (searchCriteria.keyword_filters?.categories[0] === 'Law') {
+      index = 2;
+    }
     return index === -1 ? 0 : index;
   };
 
@@ -164,8 +190,13 @@ const Search = () => {
       setPageCount(calculatePageCount(hits));
     }
   }, [hits]);
-  useDidUpdateEffect(() => {
-    resultsQuery.refetch();
+  useEffect(() => {
+    if (searchCriteria?.query_string.length) {
+      resultsQuery.refetch();
+      setNoQuery(false);
+    } else {
+      setNoQuery(true);
+    }
   }, [searchCriteria]);
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
@@ -303,6 +334,10 @@ const Search = () => {
                     <div className="w-full flex justify-center h-96">
                       <Loader />
                     </div>
+                  ) : noQuery ? (
+                    <p className="font-bold text-red-500">
+                      Please enter some search terms.
+                    </p>
                   ) : (
                     <SearchResultList
                       searchCriteria={searchCriteria}
@@ -314,7 +349,7 @@ const Search = () => {
               </div>
             </div>
           </section>
-          {pageCount > 1 && (
+          {pageCount > 1 && !noQuery && (
             <section>
               <div className="mb-12">
                 <Pagination

@@ -76,7 +76,7 @@ const Account = () => {
   };
 
   const resetAccount = () => {
-    console.log(user.geographies_of_interest);
+    // console.log(user.geographies_of_interest);
     const geos = user.geographies_of_interest
       ? user.geographies_of_interest
       : [];

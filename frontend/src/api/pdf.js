@@ -1,5 +1,3 @@
-import { PDF_API_KEY } from '../constants/adobePDF';
-
 /*
 Copyright 2020 Adobe
 All Rights Reserved.
@@ -33,7 +31,7 @@ class ViewSDKClient {
   previewFile(doc, divId, viewerConfig) {
     const config = {
       /* Pass your registered client id */
-      clientId: PDF_API_KEY,
+      clientId: process.env.NEXT_PUBLIC_ADOBE_API_KEY,
     };
     if (divId) {
       /* Optional only for Light Box embed mode */
@@ -78,7 +76,7 @@ class ViewSDKClient {
   previewFileBlob(doc, divId, viewerConfig) {
     const config = {
       /* Pass your registered client id */
-      clientId: PDF_API_KEY,
+      clientId: process.env.NEXT_PUBLIC_ADOBE_API_KEY,
     };
     if (divId) {
       /* Optional only for Light Box embed mode */
@@ -114,7 +112,7 @@ class ViewSDKClient {
     /* Initialize the AdobeDC View object */
     this.adobeDCView = new window.AdobeDC.View({
       /* Pass your registered client id */
-      clientId: PDF_API_KEY,
+      clientId: process.env.NEXT_PUBLIC_ADOBE_API_KEY,
       /* Pass the div id in which PDF should be rendered */
       divId,
     });
@@ -140,7 +138,7 @@ class ViewSDKClient {
   registerSaveApiHandler() {
     /* Define Save API Handler */
     const saveApiHandler = (metaData, content, options) => {
-      console.log(metaData, content, options);
+      // console.log(metaData, content, options);
       return new Promise((resolve) => {
         /* Dummy implementation of Save API, replace with your business logic */
         setTimeout(() => {
@@ -171,7 +169,7 @@ class ViewSDKClient {
       window.AdobeDC.View.Enum.CallbackType.EVENT_LISTENER,
       /* call back function */
       (event) => {
-        console.log(event);
+        // console.log(event);
       },
       /* options to control the callback execution */
       {
