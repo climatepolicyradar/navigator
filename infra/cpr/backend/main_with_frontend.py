@@ -12,7 +12,10 @@ from cpr.plumbing.main import Plumbing
 from cpr.storage.main import Storage
 
 # for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
-from cpr.util.bluegreen import get_app_domain_for_current_stack
+from cpr.util.bluegreen import (
+    get_app_domain_for_current_stack,
+    get_pdf_embed_key_for_current_stack,
+)
 
 DOCKER_COMPOSE_TEMPLATE = """version: '3.7'
 
@@ -58,6 +61,7 @@ services:
       # not sure if these 2 need to be here, as it's already baked into the image.
       NEXT_PUBLIC_API_URL: {frontend_api_url}
       NEXT_PUBLIC_LOGIN_API_URL: {frontend_api_url_login}
+      NEXT_PUBLIC_ADOBE_API_KEY: {frontend_pdf_embed_key}
     ports:
       - 3000:3000
     volumes:
@@ -91,6 +95,7 @@ class Backend:
         pulumi.export("frontend_api_url", frontend_api_url)
         frontend_api_url_login = f"https://{app_domain_for_current_stack}/api/tokens"
         pulumi.export("frontend_api_url_login", frontend_api_url_login)
+        frontend_pdf_embed_key = get_pdf_embed_key_for_current_stack()
 
         # context has to be one level below 'backend' as backend Dockerfile references '../common'
         docker_context = Path(os.getcwd()) / ".."
@@ -164,6 +169,7 @@ class Backend:
                         "public_app_url",
                         "frontend_api_url",
                         "frontend_api_url_login",
+                        "frontend_pdf_embed_key",
                     ],
                     arg_list,
                 )
@@ -185,6 +191,7 @@ class Backend:
             public_app_url,
             frontend_api_url,
             frontend_api_url_login,
+            frontend_pdf_embed_key,
         ).apply(fill_template)
 
         def create_deploy_resource(manifest):
