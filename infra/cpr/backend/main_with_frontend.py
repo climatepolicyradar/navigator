@@ -58,7 +58,7 @@ services:
     command: npm run start
     environment:
       PORT: 3000
-      # not sure if these 2 need to be here, as it's already baked into the image.
+      # not sure if these 3 need to be here, as it's already baked into the image.
       NEXT_PUBLIC_API_URL: {frontend_api_url}
       NEXT_PUBLIC_LOGIN_API_URL: {frontend_api_url_login}
       NEXT_PUBLIC_ADOBE_API_KEY: {frontend_pdf_embed_key}
@@ -128,6 +128,7 @@ class Backend:
                 args={
                     "NEXT_PUBLIC_API_URL": frontend_api_url,
                     "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
+                    "NEXT_PUBLIC_ADOBE_API_KEY": frontend_pdf_embed_key,
                 },
             ),
             image_name=deployment_resources.ecr_repo.repository_url,
