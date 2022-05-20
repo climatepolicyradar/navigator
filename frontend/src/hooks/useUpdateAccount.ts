@@ -6,7 +6,6 @@ const useUpdateAccount = () => {
   const queryClient = useQueryClient();
   return useMutation((values) => client.put(`/users/me`, values), {
     onSuccess: (data: any) => {
-      console.log(data);
       queryClient.setQueryData('auth-user', data.data);
     },
     onError: (err) => {

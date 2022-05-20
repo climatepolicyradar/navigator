@@ -1,5 +1,6 @@
 import { useRouter } from 'next/router';
 import { truncateString } from '../../helpers';
+import { convertDate } from '../../utils/timedate';
 
 interface RelatedDocumentProps {
   document: any;
@@ -8,6 +9,7 @@ interface RelatedDocumentProps {
 
 const RelatedDocument = ({ document, onClick }: RelatedDocumentProps) => {
   const router = useRouter();
+  const [year, day, month] = convertDate(document?.publication_ts);
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
@@ -20,16 +22,15 @@ const RelatedDocument = ({ document, onClick }: RelatedDocumentProps) => {
           </button>
         </h2>
       </div>
-      {/* TODO: need country and date info */}
       <div className="flex text-xs text-indigo-400 mt-3">
         <div
-          className={`rounded-sm border border-black flag-icon-background flag-icon-usa`}
+          className={`rounded-sm border border-black flag-icon-background flag-icon-${document.country_code.toLowerCase()}`}
         />
-        <span className="ml-2">United States of America</span>
-        <span className="ml-6">2009</span>
+        <span className="ml-2">{document.country_name}</span>
+        <span className="ml-6">{year}</span>
       </div>
       <p className="text-indigo-400 mt-3">
-        {truncateString(document.description, 250)}
+        {truncateString(document.description.replace(/(<([^>]+)>)/gi, ''), 250)}
       </p>
     </div>
   );
