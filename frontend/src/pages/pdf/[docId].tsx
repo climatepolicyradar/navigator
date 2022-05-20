@@ -13,9 +13,9 @@ const PDFView = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
   const router = useRouter();
   const document: any = useDocument();
-  useEffect(() => {
-    if (!document.data) router.push('/');
-  }, []);
+  // useEffect(() => {
+  //   if (!document.data) router.push('/');
+  // }, []);
   return (
     <>
       {!document ? (
