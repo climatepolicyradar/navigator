@@ -25,13 +25,10 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
         </h2>
 
         <div className="flex pl-2">
-          {/* TODO: need pdf url */}
-          <button
-            className="text-indigo-500 hover:text-indigo-600 transition duration-300"
-            onClick={() => router.push(`/pdf/${document.document_id}`)}
-          >
+          <a target="_blank" href={document.document_url}>
+            <span className="sr-only">Download PDF</span>
             <DownloadPDFIcon height="24" width="24" />
-          </button>
+          </a>
           <button
             className="text-indigo-500 hover:text-indigo-600 transition duration-300 ml-2"
             onClick={() => router.push(`/document/${document.document_id}`)}
