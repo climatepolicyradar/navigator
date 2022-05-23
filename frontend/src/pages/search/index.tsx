@@ -67,6 +67,7 @@ const Search = () => {
   const { nestedLookupsQuery: instrumentsQuery, level1: instruments } =
     useNestedLookups('instruments', 'name');
 
+  // search request
   const {
     isFetching: isFetchingSearchCriteria,
     isSuccess: isSearchCriteriaSuccess,
@@ -184,6 +185,10 @@ const Search = () => {
     }
     return index === -1 ? 0 : index;
   };
+  const getCurrentPage = () => {
+    console.log(searchCriteria.offset / PER_PAGE + 1);
+    return searchCriteria.offset / PER_PAGE + 1;
+  };
 
   useDidUpdateEffect(() => {
     handleSearchChange('offset', offset);
@@ -202,6 +207,12 @@ const Search = () => {
       setNoQuery(true);
     }
   }, [searchCriteria]);
+
+  useEffect(() => {
+    // get page number if returning from another page
+    const currentPage = getCurrentPage();
+    setPageNumber(currentPage);
+  }, []);
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
   const sortByTooltip = t('Tooltips.Sort by', { ns: 'searchResults' });
