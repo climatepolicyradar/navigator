@@ -34,6 +34,7 @@ const Login = () => {
   });
 
   const welcomeMessage = () => {
+    // set message based on how the user arrived to the page
     let message = t('Welcome back! Please enter your details.');
     if (router?.query?.activated) {
       message = t('Your account has been activated! please sign in below.');
@@ -60,7 +61,7 @@ const Login = () => {
   }, [user]);
   return (
     <>
-      {isSubmitting || isSubmitSuccessful ? (
+      {isSubmitting || (isSubmitSuccessful && status?.email) ? (
         <LoaderOverlay />
       ) : (
         <Layout
