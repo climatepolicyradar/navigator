@@ -12,6 +12,7 @@ import useDocumentDetail from '../../hooks/useDocumentDetail';
 import RelatedDocument from '../../components/blocks/RelatedDocument';
 import Tooltip from '../../components/tooltip';
 import { convertDate } from '../../utils/timedate';
+import { DownloadPDFIcon } from '../../components/svg/Icons';
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -56,17 +57,14 @@ const DocumentCoverPage = () => {
         </div>
       ) : (
         // TODO: translate all UI text
-        <section className="mb-8">
+        <section className="mt-4 mb-8">
           <div className="container">
             <TextLink href="/search">
-              <span className="text-lg">&laquo;</span>Back to search results
-            </TextLink>{' '}
-            <span className="mx-1">|</span>
-            <TextLink target="_blank" href={page.url}>
-              Download PDF
+              <span>&laquo;</span> Back to search results
             </TextLink>
+
             <h1 className="mt-6 text-3xl font-medium">{page.name}</h1>
-            <div className="flex text-xs text-indigo-400 mt-3">
+            <div className="flex text-xs text-indigo-400 mt-3 items-center w-full">
               <div
                 className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`}
               />
@@ -84,6 +82,19 @@ const DocumentCoverPage = () => {
                   tooltip="The year in which the document was first published"
                 />
               </div>
+              {page.content_type === 'application/pdf' && (
+                <div className="ml-6">
+                  <a
+                    target="_blank"
+                    className="bg-blue-500 rounded-full py-2 px-4 text-white flex items-center transition duration-300 hover:bg-indigo-600"
+                    href={page.url}
+                  >
+                    <span className="sr-only">Download PDF</span>
+                    <DownloadPDFIcon height="24" width="24" />{' '}
+                    <span className="ml-1">Download</span>
+                  </a>
+                </div>
+              )}
             </div>
             <div className="md:flex">
               <section className="flex-1">
@@ -134,7 +145,7 @@ const DocumentCoverPage = () => {
                   </section>
                 ) : null}
               </section>
-              <section className="border-l border-blue-100 pl-4 mt-6 md:w-2/5 lg:w-4/12 md:ml-12 flex-shrink-0">
+              <section className="md:border-l md:border-blue-100 md:pl-4 mt-6 md:w-2/5 lg:w-4/12 md:ml-12 flex-shrink-0">
                 <h3 className="text-xl text-indigo-400">
                   Further information about this document
                 </h3>
@@ -151,46 +162,59 @@ const DocumentCoverPage = () => {
                   text={page.type.name}
                 />
                 {/* Topics maps to responses */}
-                <DocumentInfo
-                  id="topics-tt"
-                  tooltip="Broad areas of climate action contained in the document, e.g. mitigation or adaptation. For more information, see our Methodology page"
-                  heading="Topics"
-                  list={page.topics}
-                />
-                <DocumentInfo
-                  heading="Language"
-                  text={page.languages[0].name}
-                />
-                <DocumentInfo
-                  id="keywords-tt"
-                  tooltip="Key terms relating to the content of the document"
-                  heading="Keywords"
-                  text={page.keywords[0].name}
-                />
-                <DocumentInfo
-                  id="sectors-tt"
-                  tooltip="The broad areas of economic activity to which the content of the document relates, e.g. agriculture or transport. For more information, see our Methodology page"
-                  heading="Sectors"
-                  list={page.sectors}
-                />
-                <DocumentInfo
-                  id="instruments-tt"
-                  tooltip="The interventions or measures contained in the document, e.g. taxes or standards. For more information, see our Methodology page"
-                  heading="Instruments"
-                  list={page.instruments}
-                />
-                <div className="mt-8">
-                  <h4 className="text-base text-indigo-600 font-medium mb-4">
-                    Events
-                  </h4>
-                  {page.events.map((event, index) => (
-                    <Event
-                      event={event}
-                      key={`event${index}`}
-                      last={index === page.events.length - 1 ? true : false}
-                    />
-                  ))}
-                </div>
+                {page.topics.length > 0 && (
+                  <DocumentInfo
+                    id="topics-tt"
+                    tooltip="Broad areas of climate action contained in the document, e.g. mitigation or adaptation. For more information, see our Methodology page"
+                    heading="Topics"
+                    list={page.topics}
+                  />
+                )}
+
+                {page.languages.length > 0 && (
+                  <DocumentInfo
+                    heading="Language"
+                    text={page.languages[0].name}
+                  />
+                )}
+                {page.keywords.length > 0 && (
+                  <DocumentInfo
+                    id="keywords-tt"
+                    tooltip="Key terms relating to the content of the document"
+                    heading="Keywords"
+                    text={page.keywords[0].name}
+                  />
+                )}
+                {page.sectors.length > 0 && (
+                  <DocumentInfo
+                    id="sectors-tt"
+                    tooltip="The broad areas of economic activity to which the content of the document relates, e.g. agriculture or transport. For more information, see our Methodology page"
+                    heading="Sectors"
+                    list={page.sectors}
+                  />
+                )}
+                {page.instruments.length > 0 && (
+                  <DocumentInfo
+                    id="instruments-tt"
+                    tooltip="The interventions or measures contained in the document, e.g. taxes or standards. For more information, see our Methodology page"
+                    heading="Instruments"
+                    list={page.instruments}
+                  />
+                )}
+                {page.events.length > 0 && (
+                  <div className="mt-8">
+                    <h4 className="text-base text-indigo-600 font-medium mb-4">
+                      Events
+                    </h4>
+                    {page.events.map((event, index) => (
+                      <Event
+                        event={event}
+                        key={`event${index}`}
+                        last={index === page.events.length - 1 ? true : false}
+                      />
+                    ))}
+                  </div>
+                )}
               </section>
             </div>
           </div>

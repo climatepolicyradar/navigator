@@ -16,28 +16,20 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-start">
           <button
-            onClick={onClick}
+            onClick={() => router.push(`/document/${document.document_id}`)}
             className="text-left text-blue-500 font-medium text-lg transition duration-300 hover:text-indigo-600 leading-tight"
           >
             {truncateString(document.document_name, 80)}
           </button>
         </h2>
-
-        <div className="flex pl-2">
-          {/* TODO: need pdf url */}
-          <button
-            className="text-indigo-500 hover:text-indigo-600 transition duration-300"
-            onClick={() => router.push(`/pdf/${document.document_id}`)}
-          >
-            <DownloadPDFIcon height="24" width="24" />
-          </button>
-          <button
-            className="text-indigo-500 hover:text-indigo-600 transition duration-300 ml-2"
-            onClick={() => router.push(`/document/${document.document_id}`)}
-          >
-            <ViewDocumentCoverPageIcon height="24" width="24" />
-          </button>
-        </div>
+        {document.content_type === 'application/pdf' && (
+          <div className="flex pl-2">
+            <a target="_blank" href={document.document_url}>
+              <span className="sr-only">Download PDF</span>
+              <DownloadPDFIcon height="24" width="24" />
+            </a>
+          </div>
+        )}
       </div>
 
       <div className="flex text-xs text-indigo-400 mt-3">
@@ -63,14 +55,17 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
         )}
       </p>
       {/* TODO: translate below text, how to handle plurals? */}
-      <button
-        className="text-indigo-500 underline text-sm mt-3 transition duration-300 hover:text-indigo-600"
-        onClick={onClick}
-      >
-        {document.document_passage_matches.length} match
-        {`${document.document_passage_matches.length === 1 ? '' : 'es'}`} in
-        document
-      </button>
+      {document.document_passage_matches.length > 0 &&
+        document.content_type === 'application/pdf' && (
+          <button
+            className="text-indigo-500 underline text-sm mt-3 transition duration-300 hover:text-indigo-600"
+            onClick={onClick}
+          >
+            {document.document_passage_matches.length} match
+            {`${document.document_passage_matches.length === 1 ? '' : 'es'}`} in
+            document
+          </button>
+        )}
     </div>
   );
 };
