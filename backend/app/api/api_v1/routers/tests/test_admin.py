@@ -16,6 +16,7 @@ def test_get_users(client, test_superuser, superuser_token_headers):
             "is_superuser": test_superuser.is_superuser,
         }
     ]
+    assert response.headers.get("Cache-Control") == "no-cache, no-store, private"
 
 
 def test_deactivate_user(client, test_superuser, test_db, superuser_token_headers):
@@ -60,6 +61,7 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
     assert response.status_code == 200
     new_user["id"] = test_superuser.id
     assert response.json() == new_user
+    assert response.headers.get("Cache-Control") == "no-cache, no-store, private"
     # mock_send_email.assert_called_with(EmailType.account_changed, test_superuser)
 
 
@@ -84,6 +86,7 @@ def test_edit_other_user(
     )
     assert response.status_code == 200
     assert test_user.is_active is not old_is_active
+    assert response.headers.get("Cache-Control") == "no-cache, no-store, private"
     # mock_send_email.assert_called_with(EmailType.account_changed, test_user)
 
 
@@ -117,6 +120,7 @@ def test_get_user(
         "is_active": bool(test_user.is_active),
         "is_superuser": test_user.is_superuser,
     }
+    assert response.headers.get("Cache-Control") == "no-cache, no-store, private"
 
 
 def test_user_not_found(client, superuser_token_headers):

@@ -7,6 +7,7 @@ from app.db.models import User
 def test_authenticated_user_me(client, user_token_headers):
     response = client.get("/api/v1/users/me", headers=user_token_headers)
     assert response.status_code == 200
+    assert response.headers.get("Cache-Control") == "no-cache, no-store, private"
 
 
 def test_unauthenticated_routes(client):
@@ -39,4 +40,5 @@ def test_edit_user(client, test_user, user_token_headers, test_db):
     assert db_user.is_superuser == test_user.is_superuser  # original value maintained
     assert db_user.affiliation_organisation == "org"
     assert db_user.affiliation_type == ["type 1", "type 2"]
+    assert response.headers.get("Cache-Control") == "no-cache, no-store, private"
     # mock_send_email.assert_called_once_with(EmailType.account_changed, db_user)
