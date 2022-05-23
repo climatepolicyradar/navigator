@@ -186,7 +186,6 @@ const Search = () => {
     return index === -1 ? 0 : index;
   };
   const getCurrentPage = () => {
-    console.log(searchCriteria.offset / PER_PAGE + 1);
     return searchCriteria.offset / PER_PAGE + 1;
   };
 
@@ -200,6 +199,7 @@ const Search = () => {
     }
   }, [hits]);
   useEffect(() => {
+    setOffset(searchCriteria?.offset);
     if (searchCriteria?.query_string.length) {
       resultsQuery.refetch();
       setNoQuery(false);
@@ -210,6 +210,7 @@ const Search = () => {
 
   useEffect(() => {
     // get page number if returning from another page
+    // gets page number based on the last offset set in the search criteria
     const currentPage = getCurrentPage();
     setPageNumber(currentPage);
   }, []);
