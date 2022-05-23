@@ -1,7 +1,7 @@
 import asyncio
 import logging
 
-from app.db.crud import get_all_valid_documents
+from app.db.crud import get_all_documents
 from app.db.models import Document, Event
 from app.service.api_client import upload_document, get_country_code_from_geography_id
 from app.service.context import Context
@@ -9,15 +9,20 @@ from app.service.context import Context
 logger = logging.getLogger(__file__)
 
 
-async def upload_all_documents(ctx: Context):
-    """Upload all source_url docs to cloud.
+async def handle_all_documents(ctx: Context):
+    """Handle all documents.
+
+    For each document:
+      - If document is a PDF, upload doc.source_url to cloud storage & set doc.url.
+      - If document is not a PDF, just set doc.url to doc.source_url.
+      - Set doc.content_type to appropriate value.
 
     The remote filename follows the template on
     https://www.notion.so/climatepolicyradar/Document-names-on-S3-6f3cd748c96141d3b714a95b42842aeb
 
     """
     tasks = []
-    for document_db in get_all_valid_documents(ctx.db):
+    for document_db in get_all_documents(ctx.db):
         task = asyncio.ensure_future(_handle_doc(ctx, document_db))
         tasks.append(task)
 
@@ -43,8 +48,9 @@ async def _handle_doc(ctx: Context, document_db: Document):
     publication_date = event.created_ts.date().isoformat()
 
     logger.info(f"Uploading {document_db.source_url} to {document_db.url}")
-    # TODO: make document upload more resilient
+
     try:
+        # TODO: make document upload more resilient
         await _upload_document(ctx, document_db, country_code, publication_date)
     except Exception as e:
         logger.error(

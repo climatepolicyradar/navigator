@@ -11,7 +11,7 @@ from app.loaders.loader_cclw_v2.load.main import load, warmup_local_caches
 from app.loaders.loader_cclw_v2.transform.main import transform
 from app.poster.main import post_all_to_backend_api
 from app.service.context import Context
-from app.service.document_upload import upload_all_documents
+from app.service.document_upload import handle_all_documents
 
 DEFAULT_LOGGING = {
     "version": 1,
@@ -92,7 +92,7 @@ async def main():
             await load(ctx, policies)
 
             # once all data has been loaded into database, upload files to cloud
-            await upload_all_documents(ctx)
+            await handle_all_documents(ctx)
 
             # This will normally be triggered separately, but we're
             # expediting the load for alpha.

@@ -73,6 +73,13 @@ logger = logging.getLogger(__file__)
 documents_router = r = APIRouter()
 
 CDN_URL: str = os.getenv("CDN_URL", "https://cdn.climatepolicyradar.org")
+# TODO: remove & replace with proper content-type handling through pipeline
+CONTENT_TYPE_MAP = {
+    ".pdf": "application/pdf",
+    ".html": "text/html",
+    ".htm": "text/html",
+    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+}
 
 
 def s3_to_cdn_url(s3_url: str) -> str:
@@ -221,6 +228,7 @@ async def get_document_detail(
 
     # Now build the required response object
     document, geography, doc_type, category, source = document_data.first()
+    suffix = Path(document.url).suffix
     return DocumentDetailResponse(
         id=document_id,
         loaded_ts=cast(datetime, document.loaded_ts),
@@ -229,6 +237,8 @@ async def get_document_detail(
         publication_ts=document.publication_ts,
         source_url=cast(str, document.source_url),
         url=s3_to_cdn_url(document.url),
+        # TODO: replace with proper content type handling
+        content_type=CONTENT_TYPE_MAP.get(suffix, "unknown"),
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),
             value=cast(str, geography.value),
@@ -318,7 +328,8 @@ def document_upload(
 
     file_path = Path(file.filename)
 
-    if file_path.suffix.lower() not in (".pdf", ".html", ".htm"):
+    # TODO: proper content-type validation
+    if file_path.suffix.lower() not in CONTENT_TYPE_MAP:
         raise HTTPException(415, "Unsupported Media Type: must be PDF or HTML.")
 
     bucket = os.environ.get("DOCUMENT_BUCKET", "cpr-document-queue")

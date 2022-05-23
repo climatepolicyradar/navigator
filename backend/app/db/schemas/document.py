@@ -110,6 +110,7 @@ class DocumentDetailResponse(_DocumentExtraDetail):
     publication_ts: datetime.datetime
     source_url: str
     url: str
+    content_type: str
     geography: Geography
     type: DocumentType
     source: Source
