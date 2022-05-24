@@ -134,10 +134,11 @@ def get_text_from_merged_block(text_block: dict) -> str:
     except KeyError:
         # TODO: Fix problem that creates need for this exception (see comment above) handling (low priority).
         #  c.f page 17 of cclw-9460 first block for an example.
-        logger.debug(
-            "No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
-            "italics). "
-        )
+        # TODO: this warning crops up multiple times when running text2embeddings. Do we want to do anything to resolve its root cause, or re-enable a more suitable warning?
+        # logger.debug(
+        #     "No style spans found for this merged text block. Some semantics may be missing from this block (e.g. "
+        #     "italics). "
+        # )
         return text_output_text
 
 
@@ -193,7 +194,7 @@ def get_text_from_json_files(
         filepaths (List[Union[Path, CloudPath]]): list of paths to JSON files outputted by the pdf2text CLI.
 
     Returns:
-        List[Dict[str, str]]: dicts are {"text": "", "text_block_id": "", "document_id": ""}.
+        List[Dict[str, str]]: dicts are {"text": "", "text_block_id": "", "document_md5_hash": ""}.
     """
     text_by_document = []
 
@@ -307,8 +308,20 @@ def run_cli(
         output_dir = Path(output_dir)
     curr_time = get_timestamp()
 
+    # Get document metadata from app database
+    postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
+    navigator_dataset = get_data_from_navigator_tables(postgres_connector)
+    md5_hashes_in_db = navigator_dataset["md5_sum"].unique().tolist()
+
+    # Encode text from pdf2text pipeline. This is the text from the subset of JSONs in the input directory
+    # that represent documents which are in the app database.
     json_filepaths = list(input_dir.glob("*.json"))
-    text_and_hashes = get_text_from_json_files(json_filepaths)
+    text_and_hashes = [
+        i
+        for i in get_text_from_json_files(json_filepaths)
+        if i["document_md5_hash"] in md5_hashes_in_db
+    ]
+
     logger.info(f"There are {len(text_and_hashes)} text blocks.")
     if limit:
         text_and_hashes = text_and_hashes[:limit]
@@ -333,15 +346,11 @@ def run_cli(
     with (output_dir / f"ids_{model_name}_{curr_time}.json").open("w") as f:
         json.dump(text_and_hashes, f)
 
-    # Encode action descriptions
-    postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
-    navigator_dataset = get_data_from_navigator_tables(postgres_connector)
-    document_hashes_processed = set([i["document_md5_hash"] for i in text_and_hashes])
-    description_data_to_encode = navigator_dataset.loc[
-        navigator_dataset["md5_sum"].isin(document_hashes_processed)
-    ]
+    # Encode action descriptions.
+    # These are the descriptions of every document in the database, regardless of whether there
+    # is full text for it.
     logger.info(
-        f"Encoding {len(description_data_to_encode)} descriptions in batches of {batch_size}"
+        f"Encoding {len(navigator_dataset)} descriptions in batches of {batch_size}"
     )
     description_embs_output_path = (
         output_dir
@@ -349,7 +358,7 @@ def run_cli(
     )
 
     encode_text_to_memmap(
-        description_data_to_encode["document_description"].tolist(),
+        navigator_dataset["document_description"].tolist(),
         encoder,
         batch_size,
         description_embs_output_path,
@@ -358,7 +367,7 @@ def run_cli(
     description_ids_output_path = (
         output_dir / f"description_ids_{model_name}_{curr_time}.csv"
     )
-    description_data_to_encode["md5_sum"].to_csv(
+    navigator_dataset["md5_sum"].to_csv(
         description_ids_output_path, sep="\t", index=False, header=False
     )
 
