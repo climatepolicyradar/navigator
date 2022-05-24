@@ -311,7 +311,6 @@ def run_cli(
     # Get document metadata from app database
     postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
     navigator_dataset = get_data_from_navigator_tables(postgres_connector)
-    md5_hashes_in_db = navigator_dataset["md5_sum"].unique().tolist()
 
     # Encode text from pdf2text pipeline. This is the text from the subset of JSONs in the input directory
     # that represent documents which are in the app database.
@@ -319,7 +318,7 @@ def run_cli(
     text_and_hashes = [
         i
         for i in get_text_from_json_files(json_filepaths)
-        if i["document_md5_hash"] in md5_hashes_in_db
+        if i["document_md5_hash"] in navigator_dataset["md5_sum"].unique()
     ]
 
     logger.info(f"There are {len(text_and_hashes)} text blocks.")
@@ -386,6 +385,6 @@ def run_cli(
 if __name__ == "__main__":
     import logging
 
-    logger_fname = f"debuglogs_{get_timestamp()}.log"
+    logger_fname = f"text2embeddings_logs_{get_timestamp()}.log"
     logging.basicConfig(filename=logger_fname, level=logging.INFO)
     run_cli()
