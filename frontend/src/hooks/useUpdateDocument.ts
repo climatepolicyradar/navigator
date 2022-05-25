@@ -7,7 +7,7 @@ export default function useUpdateDocument() {
   return useMutation((value) => {
     const {
       data: { documents },
-    } = queryClient.getQueryData('searches');
+    }: any = queryClient.getQueryData('searches');
     const document = documents.find((item) => item.document_id === value);
     // add fileid for Adobe PDF embed
     const newDocument = { ...document, document_fileid: uuidv4() };

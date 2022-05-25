@@ -42,7 +42,9 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
           //console.log('added');
         }
       });
-      addAnnotations(annotationManager);
+      if (document?.document_passage_matches?.length) {
+        addAnnotations(annotationManager);
+      }
     });
   };
   const addAnnotations = (annotationManager) => {
