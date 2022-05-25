@@ -124,7 +124,7 @@ const DocumentCoverPage = () => {
 
                 {page.related_documents.length ? (
                   <section>
-                    <h2 className="text-xl flex">
+                    <h2 className="text-xl flex mt-8">
                       Associated Documents
                       <div className="ml-1 text-xs">
                         <Tooltip
@@ -135,12 +135,7 @@ const DocumentCoverPage = () => {
                     </h2>
                     {page.related_documents.map((doc) => (
                       <div key={doc.related_id} className="my-8">
-                        <RelatedDocument
-                          document={doc}
-                          onClick={() => {
-                            router.push(`/document/${doc.related_id}`);
-                          }}
-                        />
+                        <RelatedDocument document={doc} />
                       </div>
                     ))}
                   </section>

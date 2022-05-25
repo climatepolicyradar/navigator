@@ -3,6 +3,7 @@ import { useRouter } from 'next/router';
 import { DownloadPDFIcon, ViewDocumentCoverPageIcon } from '../svg/Icons';
 import { truncateString } from '../../helpers';
 import Tooltip from '../tooltip';
+import Link from 'next/link';
 
 interface SearchResultProps {
   document: any;
@@ -16,12 +17,11 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
     <div className="relative">
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-start">
-          <button
-            onClick={() => router.push(`/document/${document.document_id}`)}
-            className="text-left text-blue-500 font-medium text-lg transition duration-300 hover:text-indigo-600 leading-tight"
-          >
-            {truncateString(document.document_name, 80)}
-          </button>
+          <Link href={`/document/${document.document_id}`}>
+            <a className="text-left text-blue-500 font-medium text-lg transition duration-300 hover:text-indigo-600 leading-tight">
+              {truncateString(document.document_name, 80)}
+            </a>
+          </Link>
         </h2>
         {/* {document.document_content_type === 'application/pdf' && (
           <div className="flex pl-2">

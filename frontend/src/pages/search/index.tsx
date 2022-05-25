@@ -186,7 +186,7 @@ const Search = () => {
     return index === -1 ? 0 : index;
   };
   const getCurrentPage = () => {
-    return searchCriteria.offset / PER_PAGE + 1;
+    return searchCriteria?.offset / PER_PAGE + 1;
   };
 
   useDidUpdateEffect(() => {
