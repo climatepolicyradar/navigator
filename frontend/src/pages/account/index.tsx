@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
 import Layout from '../../components/layouts/Admin';
-import { useForm } from 'react-hook-form';
+import { useForm, useFieldArray } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import AccountNav from '../../components/nav/AccountNav';
@@ -30,6 +30,10 @@ const Account = () => {
     is_active: false,
     is_superuser: false,
     affiliation_organisation: '',
+    // need to use 'afftype' to get the string value
+    // and then send 'affiliation_type' which is converted to an array
+    // as required by api
+    afftype: [''],
     affiliation_type: [],
     job_role: '',
     location: '',
@@ -44,6 +48,7 @@ const Account = () => {
   });
   const {
     register,
+    control,
     handleSubmit,
     reset,
     getValues,
@@ -52,6 +57,10 @@ const Account = () => {
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
+  });
+  const { fields, append } = useFieldArray({
+    control,
+    name: 'geographies_of_interest',
   });
   const checkBoxChange = (e) => {
     let arr = [];
@@ -62,8 +71,6 @@ const Account = () => {
       arr = geos.filter((geo) => geo != val);
     }
     setGeos(arr);
-    // setAccount({ ...account, geographies: arr });
-    // updateAccount.mutate({ ...account, geographies: arr });
   };
   const submitForm = (data) => {
     console.log(data);
@@ -75,8 +82,12 @@ const Account = () => {
     resetAccount();
   };
 
+  const selectValueToArray = (e, name) => {
+    const value = e.currentTarget.value;
+    setValue(name, value.split());
+  };
+
   const resetAccount = () => {
-    // console.log(user.geographies_of_interest);
     const geos = user.geographies_of_interest
       ? user.geographies_of_interest
       : [];
@@ -88,11 +99,16 @@ const Account = () => {
       is_superuser: user.is_superuser,
       affiliation_organisation: user.affiliation_organisation,
       affiliation_type: user.affiliation_type,
+      afftype: user.affiliation_type,
       job_role: user.job_role,
       location: user.location,
       geographies_of_interest: geos,
     });
     setGeos(geos);
+    // custom field which is used to
+    // convert afftype field string value to array
+    // as required by api
+    register('affiliation_type');
   };
 
   useEffect(() => {
@@ -161,10 +177,13 @@ const Account = () => {
                   </label>
                   <div className="flex-grow">
                     <Select
-                      name="affiliation_type"
+                      name="afftype"
                       errors={errors}
                       required
                       register={register}
+                      onChange={(e) => {
+                        selectValueToArray(e, 'affiliation_type');
+                      }}
                     >
                       <option value="">{t('Choose a type')}</option>
                       {affiliation_types.map((type, index) => (

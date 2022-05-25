@@ -37,8 +37,9 @@ const Button = ({
         'bg-blue-500 border border-blue-500 text-white hover:bg-indigo-600 hover:border-indigo-600 hover:text-white';
       break;
     case 'clear':
-      colorClasses =
-        'clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white';
+      colorClasses = !disabled
+        ? 'clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white'
+        : '';
       break;
   }
 
