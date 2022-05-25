@@ -19,7 +19,6 @@ from app.service.context import Context
 from app.service.tree_parser import get_unique_from_tree_by_type
 from app.service.validation import (
     ADDITIONAL_SUPPORTED_CONTENT_TYPES,
-    SINGLE_FILE_CONTENT_TYPES,
     SUPPORTED_CONTENT_TYPES,
 )
 
@@ -271,9 +270,6 @@ async def upload_document(
 
     if "url" in response_json:
         # For single file content types, return the URL to the CPR cache copy
-        if content_type in SINGLE_FILE_CONTENT_TYPES:
-            return response_json["url"], file_content_hash
-        if content_type in ADDITIONAL_SUPPORTED_CONTENT_TYPES:
-            return source_url, file_content_hash
+        return response_json["url"], file_content_hash
 
     raise Exception(response_json["detail"])

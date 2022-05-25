@@ -1,6 +1,5 @@
 import logging
 import os
-import re
 from datetime import datetime
 from pathlib import Path
 from typing import cast
@@ -20,6 +19,7 @@ from app.core.auth import (
     get_current_active_db_superuser,
 )
 from app.core.service.loader import persist_document_and_metadata
+from app.core.util import CONTENT_TYPE_MAP, content_type_from_path, s3_to_cdn_url
 from app.db.models import (
     Association,
     Category,
@@ -71,28 +71,6 @@ from navigator.core.aws import get_s3_client
 logger = logging.getLogger(__file__)
 
 documents_router = r = APIRouter()
-
-CDN_URL: str = os.getenv("CDN_URL", "https://cdn.climatepolicyradar.org")
-# TODO: remove & replace with proper content-type handling through pipeline
-CONTENT_TYPE_MAP = {
-    ".pdf": "application/pdf",
-    ".html": "text/html",
-    ".htm": "text/html",
-    ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-}
-
-
-def s3_to_cdn_url(s3_url: str) -> str:
-    """Convert a URL to a PDF in our s3 bucket to a URL to a PDF in our CDN.
-
-    Args:
-        s3_url (str): URL to a PDF in our s3 bucket.
-
-    Returns:
-        str: URL to the PDF via our CDN domain.
-    """
-
-    return re.sub(r"https:\/\/.*\.s3\..*\.amazonaws.com", CDN_URL, s3_url)
 
 
 @r.get(
@@ -228,7 +206,6 @@ async def get_document_detail(
 
     # Now build the required response object
     document, geography, doc_type, category, source = document_data.first()
-    suffix = Path(document.url).suffix
     return DocumentDetailResponse(
         id=document_id,
         loaded_ts=cast(datetime, document.loaded_ts),
@@ -238,7 +215,7 @@ async def get_document_detail(
         source_url=cast(str, document.source_url),
         url=s3_to_cdn_url(document.url),
         # TODO: replace with proper content type handling
-        content_type=CONTENT_TYPE_MAP.get(suffix, "unknown"),
+        content_type=content_type_from_path(document.url),
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),
             value=cast(str, geography.value),
