@@ -151,11 +151,11 @@ const Account = () => {
                     {t('common:Email')}
                   </label>
                   <div className="flex-grow">{user?.email}</div>
-                  <Link href="/account/change-email">
+                  {/* <Link href="/account/change-email">
                     <a>
                       <EditIcon />
                     </a>
-                  </Link>
+                  </Link> */}
                 </div>
                 <div className="form-row__border md:flex">
                   <label className="flex-shrink-0 md:w-1/4">
