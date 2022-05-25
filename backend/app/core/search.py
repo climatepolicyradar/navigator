@@ -29,6 +29,7 @@ from app.core.config import (
     OPENSEARCH_VERIFY_CERTS,
     OPENSEARCH_SSL_WARNINGS,
 )
+from app.core.util import content_type_from_path, s3_to_cdn_url
 from app.db.schemas.search import (
     FilterField,
     OpenSearchResponseDescriptionMatch,
@@ -519,18 +520,20 @@ def process_opensearch_response_body(
 
 
 def create_search_response_document(
-    passage_match: OpenSearchResponseMatchBase,
+    opensearch_match: OpenSearchResponseMatchBase,
 ):
     return SearchResponseDocument(
-        document_name=passage_match.document_name,
-        document_description=passage_match.document_description,
-        document_country_code=passage_match.document_country_code,
-        document_source_name=passage_match.document_source_name,
-        document_date=passage_match.document_date,
-        document_id=passage_match.document_id,
-        document_country_english_shortname=passage_match.document_country_english_shortname,
-        document_type=passage_match.document_type,
-        document_url=passage_match.document_url,
+        document_name=opensearch_match.document_name,
+        document_description=opensearch_match.document_description,
+        document_country_code=opensearch_match.document_country_code,
+        document_source_name=opensearch_match.document_source_name,
+        document_date=opensearch_match.document_date,
+        document_id=opensearch_match.document_id,
+        document_country_english_shortname=opensearch_match.document_country_english_shortname,
+        document_type=opensearch_match.document_type,
+        document_source_url=opensearch_match.document_source_url,
+        document_url=s3_to_cdn_url(opensearch_match.document_url),
+        document_content_type=content_type_from_path(opensearch_match.document_url),
         document_title_match=False,
         document_description_match=False,
         document_passage_matches=[],

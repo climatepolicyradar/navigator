@@ -234,7 +234,7 @@ def test_document_detail(
             "name": "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)",
             "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g",
-            "url": "https://juan-test-bucket.s3.eu-west-2.amazonaws.com/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)-1.pdf",
+            "url": "https://juan-test-bucket.s3.eu-west-2.amazonaws.com/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)-1.html",
             "md5_sum": "the other md5 sum",
             "type_id": 1,
             "geography_id": 1,
@@ -309,7 +309,7 @@ def test_document_detail(
             "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
             "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2010-12-25-Energy Sector Strategy 1387-1391 (2009/8-2014/3)-1.pdf",
+            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2010-12-25-Energy Sector Strategy 1387-1391 (2009/8-2014/3)-1.docx",
             "md5_sum": "the md5 sum",
             "type_id": 1,
             "geography_id": 2,
@@ -365,7 +365,7 @@ def test_document_detail(
             "name": "Energy Sector Strategy 1387-1391 (2010/8-2015/3)",
             "description": "the document description",
             "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2012-12-25-Energy Sector Strategy 1387-1391 (2010/8-2015/3)-1.pdf",
+            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2012-12-25-Energy Sector Strategy 1387-1391 (2010/8-2015/3)-1.arrrr",
             "md5_sum": "the md5 sum",
             "type_id": 1,
             "geography_id": 1,
@@ -461,7 +461,7 @@ def test_document_detail(
     )
     assert (
         get_detail_json_2["url"]
-        == "https://cdn.climatepolicyradar.org/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)-1.pdf"
+        == "https://cdn.climatepolicyradar.org/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)-1.html"
     )
     assert get_detail_json_2["source"] == {"name": "may it be with you"}
     assert get_detail_json_2["geography"] == {
@@ -556,3 +556,12 @@ def test_document_detail(
     get_detail_json_4 = get_detail_response_4.json()
 
     assert get_detail_json_4["related_documents"] == []
+
+    # Check content types
+    assert get_detail_json_1["content_type"] == "application/pdf"
+    assert get_detail_json_2["content_type"] == "text/html"
+    assert (
+        get_detail_json_3["content_type"]
+        == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    )
+    assert get_detail_json_4["content_type"] == "unknown"

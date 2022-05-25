@@ -9,11 +9,12 @@ import tenacity
 from app.db.models import DocumentInvalidReason
 
 
-supported_content_types = [
+SINGLE_FILE_CONTENT_TYPES = {
     "application/pdf",
-    "text/html",
     "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
-]
+}
+ADDITIONAL_SUPPORTED_CONTENT_TYPES = {"text/html"}
+SUPPORTED_CONTENT_TYPES = SINGLE_FILE_CONTENT_TYPES | ADDITIONAL_SUPPORTED_CONTENT_TYPES
 
 
 logger = logging.getLogger(__file__)
@@ -32,7 +33,7 @@ async def get_document_validity(
         logger.debug(f"Checking document validity for {source_url}")
         response = await make_head_request(client, source_url)
         content_type = response.headers.get("content-type")
-        if content_type not in supported_content_types:
+        if content_type not in SUPPORTED_CONTENT_TYPES:
             return DocumentInvalidReason.unsupported_content_type
         else:
             return None  # no reason needed

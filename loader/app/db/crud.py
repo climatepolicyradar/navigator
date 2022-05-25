@@ -1,4 +1,4 @@
-from typing import Optional, List
+from typing import Iterable, Optional
 
 from sqlalchemy.orm import Session
 
@@ -27,7 +27,12 @@ def get_document_by_unique_constraint(
     return maybe_existing_doc
 
 
-def get_all_valid_documents(db: Session) -> List[Document]:
+def get_all_documents(db: Session) -> Iterable[Document]:
+    # TODO: we may want to refine this to a set of validity types in future.
+    return db.query(Document).all()
+
+
+def get_all_valid_documents(db: Session) -> Iterable[Document]:
     return db.query(Document).filter(Document.is_valid).all()
 
 

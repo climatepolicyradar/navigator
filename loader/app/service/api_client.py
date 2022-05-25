@@ -17,6 +17,10 @@ import requests
 from app.db.schema import AssociationSchema
 from app.service.context import Context
 from app.service.tree_parser import get_unique_from_tree_by_type
+from app.service.validation import (
+    ADDITIONAL_SUPPORTED_CONTENT_TYPES,
+    SUPPORTED_CONTENT_TYPES,
+)
 
 transport = httpx.AsyncHTTPTransport(retries=3)
 
@@ -215,11 +219,21 @@ async def upload_document(
 
     :returns the remote URL and the md5_sum of its contents
     """
-
     # download the document
     download_response = await ctx.client.get(source_url, follow_redirects=True)
-
     content_type = download_response.headers["Content-Type"]
+
+    # TODO: in the event of HTML, handle appropriately
+    if content_type in ADDITIONAL_SUPPORTED_CONTENT_TYPES:
+        logger.warn(
+            "Uploads for complex document structures are not currently fully supported"
+        )
+
+    if content_type not in SUPPORTED_CONTENT_TYPES:
+        raise Exception(f"Unsupported content type: {content_type}")
+
+    logger.debug(f"Uploading document at {source_url}")
+
     file_content = download_response.content
     file_content_hash = hashlib.md5(file_content).hexdigest()
 
@@ -253,7 +267,9 @@ async def upload_document(
         files={"file": (full_path, file_content, content_type)},
     )
     response_json = response.json()
+
     if "url" in response_json:
+        # For single file content types, return the URL to the CPR cache copy
         return response_json["url"], file_content_hash
-    else:
-        raise Exception(response_json["detail"])
+
+    raise Exception(response_json["detail"])
