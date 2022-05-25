@@ -23,7 +23,7 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
             {truncateString(document.document_name, 80)}
           </button>
         </h2>
-        {/* {document.content_type === 'application/pdf' && (
+        {/* {document.document_content_type === 'application/pdf' && (
           <div className="flex pl-2">
             <a target="_blank" href={document.document_url}>
               <span className="sr-only">Download PDF</span>
@@ -57,7 +57,7 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
       </p>
       {/* TODO: translate below text, how to handle plurals? */}
       {document.document_passage_matches.length > 0 &&
-        document.content_type === 'application/pdf' && (
+        document.document_content_type === 'application/pdf' && (
           <button
             className="text-indigo-500 underline text-sm mt-3 transition duration-300 hover:text-indigo-600"
             onClick={onClick}

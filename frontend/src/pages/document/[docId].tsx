@@ -82,6 +82,7 @@ const DocumentCoverPage = () => {
                   tooltip="The year in which the document was first published"
                 />
               </div>
+              {/* Note: link to non-pdf document is page.source_url */}
               {page.content_type === 'application/pdf' && (
                 <div className="ml-6">
                   <a
