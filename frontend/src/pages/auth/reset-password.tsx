@@ -44,7 +44,7 @@ const ResetPassword = () => {
   }, [status]);
   useEffect(() => {
     // redirect if already signed in
-    if (user?.email) router.push('/');
+    // if (user?.email) router.push('/');
   }, [user]);
   return (
     <>

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
-import Layout from '../../components/layouts/Admin';
+import Layout from '../../components/layouts/Main';
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';

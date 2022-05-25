@@ -14,8 +14,14 @@
   "New password": "New password",
   "Confirm new password": "Confirm new password",
   "Update password": "Update password",
+  "Request password change": "Request password change",
+  "Password change requested": "Password change requested",
   "Change email": "Change email",
   "New email": "New email",
+  "Your email address": "Your email address",
   "You will receive an email to confirm this change. Your email will not be updated until you click the confirm link in the email.": "You will receive an email to confirm this change. Your email will not be updated until you click the confirm link in the email.",
-  "Update email": "Update email"
+  "You will receive an email to confirm this change. Your password will not be updated until you click the confirm link in the email.": "You will receive an email to confirm this change. Your password will not be updated until you click the confirm link in the email.",
+  "Please check your email for the link to change your password.": "Please check your email for the link to change your password.",
+  "Update email": "Update email",
+  "Your password must be at least 8 characters": "Your password must be at least 8 characters."
 }
