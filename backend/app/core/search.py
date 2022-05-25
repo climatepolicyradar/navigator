@@ -14,6 +14,7 @@ from app.core.config import (
     OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD,
     OPENSEARCH_INDEX_NAME_BOOST,
     OPENSEARCH_INDEX_DESCRIPTION_BOOST,
+    OPENSEARCH_INDEX_EMBEDDED_TEXT_BOOST,
     OPENSEARCH_INDEX_NAME_KEY,
     OPENSEARCH_INDEX_DESCRIPTION_KEY,
     OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY,
@@ -92,6 +93,7 @@ class OpenSearchQueryConfig:
 
     name_boost: int = OPENSEARCH_INDEX_NAME_BOOST
     description_boost: int = OPENSEARCH_INDEX_DESCRIPTION_BOOST
+    embedded_text_boost: int = OPENSEARCH_INDEX_EMBEDDED_TEXT_BOOST
     lucene_threshold: float = _innerproduct_threshold_to_lucene_threshold(
         OPENSEARCH_INDEX_INNER_PRODUCT_THRESHOLD
     )  # TODO: tune me separately for descriptions?
@@ -229,7 +231,6 @@ def build_opensearch_request_body(
     opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
 ) -> Dict[str, Any]:
     """Build a complete OpenSearch request body."""
-
     search_config = opensearch_internal_config or OpenSearchQueryConfig(
         max_passages_per_doc=search_request.max_passages_per_doc,
     )
@@ -391,6 +392,7 @@ class QueryBuilder:
                         },
                     ],
                     "minimum_should_match": 1,
+                    "boost": self._search_config.embedded_text_boost,
                 }
             },
         ]
