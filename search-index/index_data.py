@@ -72,6 +72,7 @@ def get_document_generator(
     metadata_columns = [
         "md5_sum",
         "document_url",
+        "document_source_url",
         "document_id",
         "document_name",
         "document_date",

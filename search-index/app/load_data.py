@@ -18,6 +18,7 @@ def get_data_from_navigator_tables(
       SELECT
         doc.md5_sum as md5_sum,
         doc.url AS document_url,
+        doc.source_url AS document_source_url,
         source.name as document_source_name,
         doc.id as document_id,
         doc.name as document_name,
