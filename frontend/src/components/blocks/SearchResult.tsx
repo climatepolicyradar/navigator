@@ -22,14 +22,14 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
             {truncateString(document.document_name, 80)}
           </button>
         </h2>
-        {document.content_type === 'application/pdf' && (
+        {/* {document.content_type === 'application/pdf' && (
           <div className="flex pl-2">
             <a target="_blank" href={document.document_url}>
               <span className="sr-only">Download PDF</span>
               <DownloadPDFIcon height="24" width="24" />
             </a>
           </div>
-        )}
+        )} */}
       </div>
 
       <div className="flex text-xs text-indigo-400 mt-3">
