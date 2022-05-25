@@ -42,10 +42,10 @@ migrations: migrations_docker_backend migrations_docker_loader
 	@:
 
 new_migration_backend:
-	docker-compose run --rm backend alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
 
 new_migration_loader:
-	docker-compose run --rm loader alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
 
 refresh_all_dbs:
 	docker-compose down -v

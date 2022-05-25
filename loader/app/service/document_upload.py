@@ -28,7 +28,6 @@ async def handle_all_documents(ctx: Context):
 
     await asyncio.gather(
         *tasks,
-        return_exceptions=True,
     )
     logger.info("Done uploading documents")
 
@@ -69,8 +68,16 @@ async def _upload_document(
 
     file_name = f"{country_code}-{publication_date_iso}-{doc_name}"
 
-    cloud_url, md5_sum = await upload_document(ctx, document_db.source_url, file_name)
-    document_db.url = cloud_url
-    document_db.md5_sum = md5_sum
+    if document_db.source_url.strip():
+        cloud_url, md5_sum = await upload_document(
+            ctx,
+            document_db.source_url,
+            file_name,
+        )
+        document_db.url = cloud_url
+        document_db.md5_sum = md5_sum
+    else:
+        logger.info(f"Empty Source URL: Skipping upload for '{doc_name}'")
+
     ctx.db.add(document_db)
     ctx.db.commit()
