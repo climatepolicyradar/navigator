@@ -11,7 +11,7 @@ def test_transform():
     policies_fe = pd.DataFrame(
         {
             "policy_id": ["1", "2"],
-            "document_name": ["foo", "will be dropped as has no URL"],
+            "document_name": ["foo", "will not be dropped but has no URL"],
             "document_description": ["some description", "another description"],
             "country_code": ["cc", "xx"],
             "document_url": ["http://doc|en", None],
@@ -33,7 +33,7 @@ def test_transform():
     results: PolicyLookup = transform(policies_fe)
 
     keys = list(results.keys())
-    assert len(keys) == 1
+    assert len(keys) == 2
 
     key: Key = keys[0]
     policy: PolicyData = results[key]
@@ -89,7 +89,7 @@ def test_transform_no_url():
     results: PolicyLookup = transform(policies_fe)
 
     keys = list(results.keys())
-    assert len(keys) == 0
+    assert len(keys) == 1
 
 
 def test_transform_no_date():

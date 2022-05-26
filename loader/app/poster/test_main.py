@@ -8,16 +8,16 @@ from app.service.context import Context
 
 @patch("app.poster.main.post_associations_to_backend")
 @patch("app.poster.main.post_doc")
-@patch("app.poster.main.get_all_valid_documents")
+@patch("app.poster.main.get_all_documents")
 def test_post_all_to_backend_api(
-    mock_get_all_valid_documents, mock_post_doc, mock_post_associations_to_backend
+    mock_get_all_documents, mock_post_doc, mock_post_associations_to_backend
 ):
     @dataclass
     class SomethingWithAnID:
         id: int
 
     doc = SomethingWithAnID(id=3)
-    mock_get_all_valid_documents.return_value = [doc]
+    mock_get_all_documents.return_value = [doc]
     mock_post_doc.return_value = {"id": 7}
 
     @dataclass
@@ -34,7 +34,7 @@ def test_post_all_to_backend_api(
 
     post_all_to_backend_api(ctx)
 
-    mock_get_all_valid_documents.assert_called_once_with(mock_db)
+    mock_get_all_documents.assert_called_once_with(mock_db)
     mock_post_doc.assert_called_once_with(mock_db, doc)
 
     assert isinstance(mock_db.add.call_args.args[0], APIDocument)
