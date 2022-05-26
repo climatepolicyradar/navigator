@@ -44,6 +44,7 @@ async def users_list(
     users = get_users(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(users)}"
+    response.headers["Cache-Control"] = "no-cache, no-store, private"
     return users
 
 
@@ -54,12 +55,14 @@ async def users_list(
 )
 async def user_details(
     request: Request,
+    response: Response,
     user_id: int,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """Gets any user details"""
     user = get_user(db, user_id)
+    response.headers["Cache-Control"] = "no-cache, no-store, private"
     return user
 
 
@@ -90,6 +93,7 @@ async def user_create(
 @r.put("/users/{user_id}", response_model=User, response_model_exclude_none=True)
 async def user_edit(
     request: Request,
+    response: Response,
     user_id: int,
     user: UserCreateAdmin,
     db=Depends(get_db),
@@ -100,6 +104,7 @@ async def user_edit(
 
     # send_email(EmailType.account_changed, updated_user)
 
+    response.headers["Cache-Control"] = "no-cache, no-store, private"
     return updated_user
 
 
