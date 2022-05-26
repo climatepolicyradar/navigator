@@ -1,6 +1,6 @@
 import logging
 
-from app.db.crud import get_all_valid_documents
+from app.db.crud import get_all_documents
 from app.db.models import (
     APIDocument,
     Document,
@@ -14,7 +14,7 @@ logger = logging.getLogger(__file__)
 
 def post_all_to_backend_api(ctx: Context):
     """Posts everything in the local database to the remote backend API."""
-    for doc in get_all_valid_documents(ctx.db):
+    for doc in get_all_documents(ctx.db):
         # TODO: optimisation: check if we've uploaded already? (via APIDocument)
         try:
             post_doc_to_backend_api(ctx, doc)

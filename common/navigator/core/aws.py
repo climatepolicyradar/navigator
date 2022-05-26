@@ -1,3 +1,4 @@
+"""AWS Helper classes."""
 import boto3
 import os
 import re
@@ -13,24 +14,23 @@ logger = get_logger(__name__)
 class S3Document:
     """A class representing an S3 document."""
 
-    def __init__(self, bucket_name: str, region: str, key: str):
+    def __init__(self, bucket_name: str, region: str, key: str):  # noqa: D107
         self.bucket_name = bucket_name
         self.region = region
         self.key = key
 
     @property
     def url(self):
-        """Returns the URL for this S3 document."""
+        """Return the URL for this S3 document."""
         return f"https://{self.bucket_name}.s3.{self.region}.amazonaws.com/{self.key}"
 
     @classmethod
     def from_url(cls, url: str) -> "S3Document":
-        """Create an S3 document from a URL
+        """Create an S3 document from a URL.
 
         Returns:
             S3Document
         """
-
         bucket_name, region, key = re.findall(
             r"https:\/\/([\w-]+).s3.([\w-]+).amazonaws.com\/([\w.-]+)", url
         )[0]
@@ -41,7 +41,7 @@ class S3Document:
 class S3Client:
     """Helper class to connect to S3 and perform actions on buckets and documents."""
 
-    def __init__(self):
+    def __init__(self):  # noqa: D107
         self.client = boto3.client(
             "s3",
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
@@ -66,7 +66,6 @@ class S3Client:
         Returns:
             S3Document representing file if upload succeeds, False if it fails.
         """
-
         try:
             if content_type:
                 self.client.upload_fileobj(
@@ -98,7 +97,6 @@ class S3Client:
         Returns:
             URL to file if upload succeeds, False if it fails.
         """
-
         # If S3 object_name was not specified, use file_name
         if key is None:
             key = os.path.basename(file_name)
@@ -131,7 +129,6 @@ class S3Client:
         Returns:
             S3Document: representing the copied document.
         """
-
         copy_source = {"Bucket": s3_document.bucket_name, "Key": s3_document.key}
 
         if not new_key:
@@ -147,7 +144,6 @@ class S3Client:
         Args:
             s3_document (S3Document): document to delete.
         """
-
         self.client.delete_object(Bucket=s3_document.bucket_name, Key=s3_document.key)
 
     def move_document(
@@ -164,7 +160,6 @@ class S3Client:
         Returns:
             S3Document: representing the moved document.
         """
-
         self.copy_document(s3_document, new_bucket, new_key)
 
         self.delete_document(s3_document)
@@ -176,7 +171,7 @@ class S3Client:
     def list_files(
         self, bucket: str, max_keys=1000
     ) -> t.Union[t.Generator[S3Document, None, None], bool]:
-        """Yields the documents contained in a bucket on S3
+        """Yield the documents contained in a bucket on S3.
 
         Calls the s3 list_objects_v2 function to return all the keys in a given s3 bucket.
         The argument max_keys can be used to control how many keys are returned in each
@@ -192,7 +187,6 @@ class S3Client:
         Yields:
             S3Document: representing each document.
         """
-
         is_truncated = True
         next_continuation_token = None
         try:
@@ -219,7 +213,7 @@ class S3Client:
             return False
 
     def download_file(self, s3_document: S3Document) -> StreamingBody:
-        """Downloads a file from S3
+        """Download a file from S3.
 
         Args:
             s3_document (S3Document): s3 document to retrieve
@@ -227,7 +221,6 @@ class S3Client:
         Returns:
             Streaming file object
         """
-
         try:
             response = self.client.get_object(
                 Bucket=s3_document.bucket_name, Key=s3_document.key
@@ -242,4 +235,5 @@ class S3Client:
 
 
 def get_s3_client():
+    """Get s3 client for API."""
     return S3Client()
