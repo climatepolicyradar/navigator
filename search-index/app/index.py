@@ -104,6 +104,7 @@ class OpenSearchIndex:
                     },
                     "md5_sum": {"type": "keyword"},
                     "document_url": {"type": "keyword"},
+                    "document_source_url": {"type": "keyword"},
                     "document_date": {"type": "date", "format": "dd/MM/yyyy"},
                     "document_country_code": {"type": "keyword"},
                     "document_country_english_shortname": {"type": "keyword"},

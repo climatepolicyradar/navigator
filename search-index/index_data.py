@@ -55,8 +55,6 @@ def get_document_generator(
 
     # DATA TRANSFORMATION STEPS. We may want to put these in another method.
     # Create name_and_id field to group by and sort on in Elasticsearch aggregation.
-    # TODO: this needs to be a combination of document name and document ID when we remove
-    # the concept of actions.
     main_dataset["document_name_and_id"] = (
         main_dataset["document_name"] + " " + main_dataset["document_id"].astype(str)
     )
@@ -74,6 +72,7 @@ def get_document_generator(
     metadata_columns = [
         "md5_sum",
         "document_url",
+        "document_source_url",
         "document_id",
         "document_name",
         "document_date",
@@ -106,14 +105,14 @@ def get_document_generator(
         "document_description",
     ]
 
-    for document_hash, document_df in text_and_ids_data.groupby("document_md5_hash"):
+    for document_hash, description_embedding in description_embeddings_dict.items():
         doc_metadata_by_md5_hash = main_dataset.loc[
             main_dataset["md5_sum"] == document_hash
         ]
 
         if len(doc_metadata_by_md5_hash["document_id"].unique()) > 1:
             logger.warning(
-                f"Found multiple documents with the same md5 sum: {document_hash}",
+                f"Found multiple documents with the same md5 sum: {document_hash}. Each will be processed separately, but these duplicates should be resolved manually.",
             )
 
         if len(doc_metadata_by_md5_hash) == 0:
@@ -122,6 +121,8 @@ def get_document_generator(
             )
             continue
 
+        # We loop over multiple document IDs per md5 hash to accommodate for multiple documents in the database
+        # that have the same md5 sum.
         for document_id, doc_metadata_by_id in doc_metadata_by_md5_hash.groupby(
             "document_id"
         ):
@@ -136,12 +137,6 @@ def get_document_generator(
                 else:
                     doc_metadata_dict[col] = metadata_values
 
-            doc_description_embedding = description_embeddings_dict.get(document_hash)
-            if doc_description_embedding is None:
-                logger.warning(
-                    f"No description embedding has been generated for document {document_hash}. Skipping adding the embedding to Opensearch, which will likely result in unexpected search results."
-                )
-
             # We add the `for_search_` prefix to extra text fields we want made available to search,
             # as some of these will also be repeated over documents so they can be aggregated on.
             for text_col_name in extra_text_columns:
@@ -151,30 +146,33 @@ def get_document_generator(
                     ]
                 }
 
-                if (text_col_name == "document_description") and (
-                    doc_description_embedding is not None
-                ):
+                if text_col_name == "document_description":
                     text_col_dict[
                         "document_description_embedding"
-                    ] = doc_description_embedding.tolist()
+                    ] = description_embedding.tolist()
 
                 yield dict(doc_metadata_dict, **text_col_dict)
 
-            # TODO: we drop duplicates on text block ID here because the text extraction and embeddings generation produces
-            # duplicate text and embeddings when there are multiple PDFs with the same MD5 hash. We should ideally handle this
-            # earlier on in the pipeline.
-            for idx, row in document_df.drop_duplicates(
-                subset="text_block_id"
-            ).iterrows():
-                text_block_dict = {
-                    "text_block_id": row.text_block_id,
-                    "text": row.text,
-                    "text_embedding": embeddings[idx, :].tolist(),
-                    "text_block_coords": row.coords,
-                    "text_block_page": row.page_num,
-                }
+            if document_hash in text_and_ids_data["document_md5_hash"].unique():
+                text_and_ids_for_document = text_and_ids_data.loc[
+                    text_and_ids_data["document_md5_hash"] == document_hash
+                ]
 
-                yield dict(doc_metadata_dict, **text_block_dict)
+                # TODO: we drop duplicates on text block ID here because the text extraction and embeddings generation produces
+                # duplicate text and embeddings when there are multiple PDFs with the same MD5 hash. We should ideally handle this
+                # earlier on in the pipeline.
+                for idx, row in text_and_ids_for_document.drop_duplicates(
+                    subset="text_block_id"
+                ).iterrows():
+                    text_block_dict = {
+                        "text_block_id": row.text_block_id,
+                        "text": row.text,
+                        "text_embedding": embeddings[idx, :].tolist(),
+                        "text_block_coords": row.coords,
+                        "text_block_page": row.page_num,
+                    }
+
+                    yield dict(doc_metadata_dict, **text_block_dict)
 
 
 def load_text_and_ids_json(ids_path: Path) -> pd.DataFrame:
@@ -184,7 +182,7 @@ def load_text_and_ids_json(ids_path: Path) -> pd.DataFrame:
         ids_path (Path): path to JSON file.
 
     Returns:
-        pd.DataFrame: contains columns 'text', 'text_block_id' and 'document_id'
+        pd.DataFrame: contains columns 'text', 'text_block_id' and 'document_md5_hash'
     """
 
     data = pd.read_json(ids_path, orient="records")
