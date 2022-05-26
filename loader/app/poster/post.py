@@ -94,8 +94,8 @@ def post_doc(db: Session, doc: Document) -> dict:
             "name": doc.name,
             "description": doc.description,
             "source_url": doc.source_url,
-            "url": doc.url,
-            "md5_sum": doc.md5_sum,
+            "url": doc.url or "",
+            "md5_sum": doc.md5_sum or "",
             "type_id": doc.type_id,  # this is from backend API lookup, so will exist remotely.
             "source_id": doc.source_id,
             "geography_id": doc.geography_id,  # this is from backend API lookup, so will exist remotely.

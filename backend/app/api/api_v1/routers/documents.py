@@ -302,6 +302,8 @@ def document_upload(
     s3_client=Depends(get_s3_client),
 ):
     """Upload a document to the queue bucket."""
+    bucket = os.environ.get("DOCUMENT_BUCKET", "cpr-document-queue")
+    logger.info(f"Attempting to upload {file.filename} to {bucket}")
 
     file_path = Path(file.filename)
 
@@ -309,13 +311,18 @@ def document_upload(
     if file_path.suffix.lower() not in CONTENT_TYPE_MAP:
         raise HTTPException(415, "Unsupported Media Type: must be PDF or HTML.")
 
-    bucket = os.environ.get("DOCUMENT_BUCKET", "cpr-document-queue")
-    s3_document = s3_client.upload_fileobj(
-        fileobj=file.file,
-        bucket=bucket,
-        key=str(file_path),
-        content_type=file.content_type,
-    )
+    try:
+        s3_document = s3_client.upload_fileobj(
+            fileobj=file.file,
+            bucket=bucket,
+            key=str(file_path),
+            content_type=file.content_type,
+        )
+    except Exception:
+        raise HTTPException(
+            500,
+            "Internal Server Error: upload error.",
+        )
 
     # If the above function returns False, then the upload has failed.
     if not s3_document:
@@ -324,7 +331,7 @@ def document_upload(
             "Internal Server Error: upload failed.",
         )
 
-    logging.info(f"Document uploaded to cloud at {s3_document.url}")
+    logger.info(f"Document uploaded to cloud at {s3_document.url}")
     return {
         "url": s3_document.url,
     }

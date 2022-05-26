@@ -86,7 +86,7 @@ def _get_attribute(lookup_key: str, lookup_fn: Callable, attribute_key: str):
     as per attribute_key (e.g. "geography_id")
     """
     lookup = lookup_fn()
-    match = lookup.get(lookup_key)
+    match = lookup.get(f"{lookup_key}".lower())
     if match:
         return match[attribute_key]
     else:
@@ -95,10 +95,7 @@ def _get_attribute(lookup_key: str, lookup_fn: Callable, attribute_key: str):
 
 def _get_api_host():
     """Returns API host configured in environment."""
-    api_host = os.getenv("API_HOST", "http://backend:8888")
-    if api_host.endswith("/"):
-        api_host = api_host[:-1]  # strip trailing slash
-    return api_host
+    return os.getenv("API_HOST", "http://backend:8888").rstrip("/")
 
 
 @lru_cache()
@@ -168,7 +165,7 @@ def _keyed(data, lookup_key):
     """
     lookup = {}
     for datum in data:
-        lookup[datum[lookup_key]] = datum
+        lookup[f"{datum[lookup_key]}".lower()] = datum
     return lookup
 
 
@@ -221,7 +218,7 @@ async def upload_document(
     """
     # download the document
     download_response = await ctx.client.get(source_url, follow_redirects=True)
-    content_type = download_response.headers["Content-Type"]
+    content_type = download_response.headers["Content-Type"].split(";")[0]
 
     # TODO: in the event of HTML, handle appropriately
     if content_type in ADDITIONAL_SUPPORTED_CONTENT_TYPES:
@@ -261,6 +258,7 @@ async def upload_document(
         "Authorization": "Bearer {}".format(machine_user_token),
         "Accept": "application/json",
     }
+    logger.info(f"Making POST request to: '{api_host}/api/v1/document' for {full_path}")
     response = await ctx.client.post(
         f"{api_host}/api/v1/document",
         headers=headers,

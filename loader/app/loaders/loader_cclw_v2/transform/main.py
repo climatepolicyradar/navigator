@@ -10,9 +10,6 @@ logger = logging.getLogger(__file__)
 
 
 def transform(cclw_policy_fe_df: DataFrame) -> PolicyLookup:
-    # Drop entries with no policy document list
-    cclw_policy_fe_df.dropna(subset=["document_url"], inplace=True)
-
     policies: PolicyLookup = {}
 
     cclw_policy_fe_df = cclw_policy_fe_df.replace({np.nan: ""})

@@ -29,8 +29,12 @@ def get_document_validity_sync(
 async def get_document_validity(
     client: httpx.AsyncClient, source_url: str
 ) -> Optional[DocumentInvalidReason]:
+    if not source_url.strip():
+        logger.info("Skipping validity check for empty source URL")
+        return DocumentInvalidReason.empty_source
+
+    logger.debug(f"Checking document validity for '{source_url}'")
     try:
-        logger.debug(f"Checking document validity for {source_url}")
         response = await make_head_request(client, source_url)
         content_type = response.headers.get("content-type")
         if content_type not in SUPPORTED_CONTENT_TYPES:
@@ -50,9 +54,9 @@ async def get_document_validity(
         return DocumentInvalidReason.net_too_many_redirects
     except httpx.RemoteProtocolError:
         return DocumentInvalidReason.net_remote_protocol_error
-    except Exception as e:
-        logger.error("Unhandled error occurred", exc_info=e)
-        raise e
+    except Exception:
+        logger.exception("Unexpected error occurred")
+        return DocumentInvalidReason.unexpected_failure
 
 
 @tenacity.retry(
