@@ -1,3 +1,5 @@
+import { useEffect, useRef } from 'react';
+
 const BySelect = ({
   onChange,
   list,
@@ -6,10 +8,17 @@ const BySelect = ({
   filterType,
   defaultValue,
 }) => {
+  const selectRef = useRef(null);
+  useEffect(() => {
+    if (selectRef?.current) {
+      selectRef.current.value = defaultValue;
+    }
+  }, [defaultValue, selectRef]);
   return (
     <div>
       <div>{title}</div>
       <select
+        ref={selectRef}
         className="border border-indigo-200 mt-2 small"
         defaultValue={defaultValue}
         onChange={(e) => {

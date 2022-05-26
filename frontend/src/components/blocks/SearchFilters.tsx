@@ -1,23 +1,26 @@
-import '../pages/i18n';
+import '../../pages/i18n';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ByTextInput from './filters/ByTextInput';
-import BySelect from './filters/BySelect';
-import Tooltip from './tooltip';
-import MultiList from './filters/MultiList';
-import ByRange from './filters/ByRange';
-import { minYear } from '../constants/timedate';
+import ByTextInput from '../filters/ByTextInput';
+import BySelect from '../filters/BySelect';
+import Tooltip from '../tooltip';
+import MultiList from '../filters/MultiList';
+import ByRange from '../filters/ByRange';
+import { minYear } from '../../constants/timedate';
 
 const SearchFilters = ({
   handleFilterChange,
   handleYearChange,
   searchCriteria,
   handleRegionChange,
+  handleClearSearch,
   regions,
   filteredCountries,
   sectors,
   documentTypes,
   instruments,
 }) => {
+  const [showClear, setShowClear] = useState(false);
   const { t, i18n, ready } = useTranslation('searchResults');
 
   const {
@@ -34,9 +37,35 @@ const SearchFilters = ({
   const doctypeTooltip = t('Tooltips.Document type');
   const instrumentTooltip = t('Tooltips.Instrument');
 
+  useEffect(() => {
+    if (
+      searchCriteria.year_range[0] !== minYear &&
+      searchCriteria.year_range[1] !== currentYear
+    ) {
+      setShowClear(true);
+    } else if (Object.keys(searchCriteria.keyword_filters).length > 0) {
+      setShowClear(true);
+    } else {
+      setShowClear(false);
+    }
+  }, [searchCriteria]);
+
   return (
     <>
-      <div className="text-indigo-400 font-medium">{t('Filter by')}</div>
+      <div className="flex md:justify-between items-center mt-2 md:mt-0">
+        <div className="text-indigo-400 font-medium mr-2 md:mr-0">
+          {t('Filter by')}
+        </div>
+        {showClear && (
+          <button
+            className="underline text-sm text-blue-500 hover:text-indigo-600 transition duration-300"
+            onClick={handleClearSearch}
+          >
+            Clear all filters
+          </button>
+        )}
+      </div>
+
       <div className="my-4 text-sm text-indigo-500">
         <div className="relative">
           <div className="absolute top-0 right-0 z-20">
@@ -126,15 +155,20 @@ const SearchFilters = ({
           />
         </div>
 
-        <div className="relative mt-6 mb-12">
+        <div className="relative mt-8 mb-12">
           <div className="mx-2">
+            <div className="absolute top-0 right-0">
+              {/* TODO: translate below text */}
+              <Tooltip
+                id="year-range"
+                tooltip="The years in which documents were first published"
+              />
+            </div>
             <ByRange
               title={t('By date range')}
               type="year_range"
               handleChange={handleYearChange}
-              defaultValues={
-                searchCriteria.year_range ? searchCriteria.year_range : ''
-              }
+              defaultValues={searchCriteria.year_range}
               min={minYear}
               max={currentYear}
             />

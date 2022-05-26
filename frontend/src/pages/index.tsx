@@ -1,7 +1,6 @@
 import { useRouter } from 'next/router';
+import { useEffect } from 'react';
 import Layout from '../components/layouts/LandingPage';
-import Dashboard from '../components/dashboard';
-import SearchForm from '../components/forms/SearchForm';
 import './i18n';
 import { useTranslation } from 'react-i18next';
 import LoaderOverlay from '../components/LoaderOverlay';
@@ -12,6 +11,9 @@ import LandingSearchForm from '../components/forms/LandingSearchForm';
 import AlphaLogo from '../components/logo/AlphaLogo';
 import ExactMatch from '../components/filters/ExactMatch';
 import LandingPageLinks from '../components/blocks/LandingPageLinks';
+import { initialSearchCriteria } from '../constants/searchCriteria';
+import useNestedLookups from '../hooks/useNestedLookups';
+import useUpdateCountries from '../hooks/useUpdateCountries';
 
 const IndexPage = () => {
   const { t, i18n, ready } = useTranslation('searchStart');
@@ -19,6 +21,18 @@ const IndexPage = () => {
   const router = useRouter();
   const { data: searchCriteria }: any = useSearchCriteria();
   const updateSearchCriteria = useUpdateSearchCriteria();
+  const updateCountries = useUpdateCountries();
+
+  /* need this lookup to be able to reset filtered countries
+  (sets suggest list that appears when typing a jurisdiction)
+  when returning to this page from a previous search
+  */
+  const {
+    nestedLookupsQuery: geosQuery,
+    level1: regions,
+    level2: countries,
+  } = useNestedLookups('geographies', '', 2);
+
   const handleSearchInput = (e, term) => {
     e.preventDefault();
     updateSearchCriteria.mutate({ ['query_string']: term });
@@ -32,7 +46,24 @@ const IndexPage = () => {
     const term = e.currentTarget.textContent;
     handleSearchInput(e, term);
   };
-
+  const clearAllFilters = () => {
+    /*
+    clear all previously set filters if returning from
+    a previous search
+    */
+    const { query_string, ...initial } = initialSearchCriteria;
+    updateSearchCriteria.mutate(initial);
+    // reset filtered countries which show in suggest list
+    // when typing in a jurisdiction/country
+    updateCountries.mutate({
+      regionName: '',
+      regions,
+      countries,
+    });
+  };
+  useEffect(() => {
+    clearAllFilters();
+  }, []);
   return (
     <>
       {!ready || !user || !searchCriteria ? (

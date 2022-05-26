@@ -14,7 +14,7 @@ import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../api/auth';
 import SearchForm from '../../components/forms/SearchForm';
-import SearchFilters from '../../components/SearchFilters';
+import SearchFilters from '../../components/blocks/SearchFilters';
 import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
 import Loader from '../../components/Loader';
@@ -35,6 +35,7 @@ import useNestedLookups from '../../hooks/useNestedLookups';
 import useLookups from '../../hooks/useLookups';
 import useFilteredCountries from '../../hooks/useFilteredCountries';
 import SearchResultList from '../../components/blocks/SearchResultList';
+import { initialSearchCriteria } from '../../constants/searchCriteria';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -45,6 +46,7 @@ const Search = () => {
   const [pageCount, setPageCount] = useState(1);
   const [offset, setOffset] = useState(0);
   const [noQuery, setNoQuery] = useState(false);
+  const [categoryIndex, setCategoryIndex] = useState(0);
 
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
@@ -149,6 +151,18 @@ const Search = () => {
     const newVals = values.map((value) => value.toFixed(0));
     handleSearchChange('year_range', newVals);
   };
+  const handleClearSearch = () => {
+    const { query_string, exact_match, sort_field, sort_order, ...initial } =
+      initialSearchCriteria;
+    updateSearchCriteria.mutate(initial);
+    // reset filtered countries which show in suggest list
+    // when typing in a jurisdiction/country
+    updateCountries.mutate({
+      regionName: '',
+      regions,
+      countries,
+    });
+  };
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
@@ -170,8 +184,11 @@ const Search = () => {
     }
     return `${field}:${order}`;
   };
-  const getCurrentCategoryIndex = () => {
-    if (!searchCriteria.keyword_filters?.categories) return 0;
+  const setCurrentCategoryIndex = () => {
+    if (!searchCriteria.keyword_filters?.categories) {
+      setCategoryIndex(0);
+      return;
+    }
     let index = documentCategories.indexOf(
       searchCriteria.keyword_filters?.categories[0]
     );
@@ -183,7 +200,8 @@ const Search = () => {
     if (searchCriteria.keyword_filters?.categories[0] === 'Law') {
       index = 2;
     }
-    return index === -1 ? 0 : index;
+    const catIndex = index === -1 ? 0 : index;
+    setCategoryIndex(catIndex);
   };
   const getCurrentPage = () => {
     return searchCriteria?.offset / PER_PAGE + 1;
@@ -199,6 +217,7 @@ const Search = () => {
     }
   }, [hits]);
   useEffect(() => {
+    setCurrentCategoryIndex();
     setOffset(searchCriteria?.offset);
     if (searchCriteria?.query_string.length) {
       resultsQuery.refetch();
@@ -281,6 +300,7 @@ const Search = () => {
                       searchCriteria={searchCriteria}
                       handleYearChange={handleYearChange}
                       handleRegionChange={handleRegionChange}
+                      handleClearSearch={handleClearSearch}
                       regions={regions}
                       filteredCountries={filteredCountries}
                       sectors={sectors}
@@ -311,7 +331,7 @@ const Search = () => {
                 </div>
                 <div className="mt-4 relative z-10">
                   <TabbedNav
-                    activeIndex={getCurrentCategoryIndex()}
+                    activeIndex={categoryIndex}
                     items={documentCategories}
                     handleTabClick={handleDocumentCategoryClick}
                   />

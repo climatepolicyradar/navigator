@@ -40,13 +40,6 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
           {document.document_country_english_shortname}
         </span>
         <span className="ml-6">{`${day} ${month} ${year}`}</span>
-        <div className="ml-1 -mt-1">
-          {/* TODO: translate below text */}
-          <Tooltip
-            id={`doc${document.document_id}`}
-            tooltip="The years in which documents were first published"
-          />
-        </div>
       </div>
       {/* TODO: translate below text, how to handle plurals? */}
       {document.document_passage_matches.length > 0 &&

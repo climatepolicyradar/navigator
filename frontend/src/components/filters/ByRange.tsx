@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Range, getTrackBackground } from 'react-range';
 interface ByRangeProps {
   title: string;
@@ -21,6 +21,13 @@ const ByRange = ({
     parseInt(defaultValues[0] as string),
     parseInt(defaultValues[1] as string),
   ]);
+
+  useEffect(() => {
+    setValues([
+      parseInt(defaultValues[0] as string),
+      parseInt(defaultValues[1] as string),
+    ]);
+  }, [defaultValues]);
 
   return (
     <div>
