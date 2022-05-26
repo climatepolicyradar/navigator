@@ -19,7 +19,7 @@ const DocumentCoverPage = () => {
   const [summary, setSummary] = useState('');
   const { t, i18n, ready } = useTranslation('searchStart');
   const router = useRouter();
-  const collapsedLength = 700;
+  const collapsedLength = 1400;
 
   const documentQuery = useDocumentDetail(router.query.docId as string);
 
@@ -132,7 +132,7 @@ const DocumentCoverPage = () => {
                     )}
                   </section>
                 )}
-                <p className="text-sm">
+                <p className="text-sm mt-4">
                   <span className="font-medium">Source: </span>{' '}
                   {page.source.name}
                 </p>

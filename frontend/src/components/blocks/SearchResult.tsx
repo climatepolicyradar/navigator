@@ -68,7 +68,7 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
       <p className="text-indigo-400 mt-3">
         {truncateString(
           document.document_description.replace(/(<([^>]+)>)/gi, ''),
-          250
+          375
         )}
       </p>
     </div>
