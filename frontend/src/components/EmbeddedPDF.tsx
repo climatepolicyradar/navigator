@@ -31,6 +31,14 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
       );
       previewFilePromise.then((adobeViewer) => {
         createAnnotationManager(adobeViewer);
+        adobeViewer.getAPIs().then((apis) => {
+          setTimeout(() => {
+            apis.getZoomAPIs().zoomIn();
+            apis.gotoLocation(
+              document.document_passage_matches[passageIndex].text_block_page
+            );
+          }, 500);
+        });
       });
     });
   };

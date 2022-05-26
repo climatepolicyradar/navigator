@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/router';
 import { useDidUpdateEffect } from '../../hooks/useDidUpdateEffect';
 import Layout from '../../components/layouts/Main';
@@ -36,6 +36,7 @@ import useLookups from '../../hooks/useLookups';
 import useFilteredCountries from '../../hooks/useFilteredCountries';
 import SearchResultList from '../../components/blocks/SearchResultList';
 import { initialSearchCriteria } from '../../constants/searchCriteria';
+import useOutsideAlerter from '../../hooks/useOutsideAlerter';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -54,6 +55,14 @@ const Search = () => {
   const updateCountries = useUpdateCountries();
   const { user } = useAuth();
   const router = useRouter();
+  const slideoutRef = useRef(null);
+
+  useOutsideAlerter(slideoutRef, (e) => {
+    if (e.target.nodeName === 'BUTTON') {
+      return;
+    }
+    setShowSlideout(false);
+  });
 
   // lookups/filters
   const {
@@ -168,13 +177,8 @@ const Search = () => {
   };
   const handleDocumentClick = (id) => {
     updateDocument.mutate(id);
-    const doc = documents.find((item) => item.document_id === id);
-    if (doc.document_passage_matches.length > 0) {
-      setShowSlideout(true);
-      setShowPDF(false);
-    } else {
-      router.push(`/document/${id}`);
-    }
+    setShowSlideout(!showSlideout);
+    setShowPDF(false);
   };
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
@@ -185,7 +189,7 @@ const Search = () => {
     return `${field}:${order}`;
   };
   const setCurrentCategoryIndex = () => {
-    if (!searchCriteria.keyword_filters?.categories) {
+    if (!searchCriteria?.keyword_filters?.categories) {
       setCategoryIndex(0);
       return;
     }
@@ -249,7 +253,11 @@ const Search = () => {
           title={`Climate Policy Radar | ${t('Law and Policy Search')}`}
           heading={t('Law and Policy Search')}
         >
-          <Slideout show={showSlideout} setShowSlideout={setShowSlideout}>
+          <Slideout
+            ref={slideoutRef}
+            show={showSlideout}
+            setShowSlideout={setShowSlideout}
+          >
             <div className="flex flex-col h-full">
               <DocumentSlideout
                 document={document.data}

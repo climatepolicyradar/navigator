@@ -1,5 +1,4 @@
 import { truncateString } from '../../helpers';
-import Tooltip from '../tooltip';
 import Link from 'next/link';
 import { convertDate } from '../../utils/timedate';
 
