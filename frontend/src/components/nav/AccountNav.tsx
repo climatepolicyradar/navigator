@@ -10,12 +10,12 @@ const AccountNav = () => {
     },
     {
       title: 'Change password',
-      href: '/account/change-password',
+      href: '/account/change-password-request',
     },
-    {
-      title: 'Change email',
-      href: '/account/change-email',
-    },
+    // {
+    //   title: 'Change email',
+    //   href: '/account/change-email',
+    // },
   ];
 
   const router = useRouter();

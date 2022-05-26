@@ -28,6 +28,7 @@ const Checkbox = ({
     <div>
       <label className="checkbox-input" htmlFor={id}>
         <input
+          className="text-white border-blue-500 rounded"
           id={id}
           type="checkbox"
           value={value}

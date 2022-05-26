@@ -14,7 +14,6 @@ import '../i18n';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../api/auth';
 import SearchForm from '../../components/forms/SearchForm';
-import SearchResult from '../../components/blocks/SearchResult';
 import SearchFilters from '../../components/SearchFilters';
 import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
@@ -68,6 +67,7 @@ const Search = () => {
   const { nestedLookupsQuery: instrumentsQuery, level1: instruments } =
     useNestedLookups('instruments', 'name');
 
+  // search request
   const {
     isFetching: isFetchingSearchCriteria,
     isSuccess: isSearchCriteriaSuccess,
@@ -80,7 +80,7 @@ const Search = () => {
     data: { data: { hits } = 0 } = 0,
     isSuccess,
   } = resultsQuery;
-  const document = useDocument();
+  const document: any = useDocument();
   const { t, i18n, ready } = useTranslation(['searchStart', 'searchResults']);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
@@ -154,8 +154,13 @@ const Search = () => {
   };
   const handleDocumentClick = (id) => {
     updateDocument.mutate(id);
-    setShowSlideout(true);
-    setShowPDF(false);
+    const doc = documents.find((item) => item.document_id === id);
+    if (doc.document_passage_matches.length > 0) {
+      setShowSlideout(true);
+      setShowPDF(false);
+    } else {
+      router.push(`/document/${id}`);
+    }
   };
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
@@ -180,6 +185,9 @@ const Search = () => {
     }
     return index === -1 ? 0 : index;
   };
+  const getCurrentPage = () => {
+    return searchCriteria?.offset / PER_PAGE + 1;
+  };
 
   useDidUpdateEffect(() => {
     handleSearchChange('offset', offset);
@@ -191,6 +199,7 @@ const Search = () => {
     }
   }, [hits]);
   useEffect(() => {
+    setOffset(searchCriteria?.offset);
     if (searchCriteria?.query_string.length) {
       resultsQuery.refetch();
       setNoQuery(false);
@@ -198,6 +207,13 @@ const Search = () => {
       setNoQuery(true);
     }
   }, [searchCriteria]);
+
+  useEffect(() => {
+    // get page number if returning from another page
+    // gets page number based on the last offset set in the search criteria
+    const currentPage = getCurrentPage();
+    setPageNumber(currentPage);
+  }, []);
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
   const sortByTooltip = t('Tooltips.Sort by', { ns: 'searchResults' });
@@ -223,7 +239,6 @@ const Search = () => {
                 setPassageIndex={setPassageIndex}
               />
               {showPDF ? (
-                // TODO: pass in real document when api and docs are ready
                 <div className="mt-4 px-6 flex-1">
                   <EmbeddedPDF
                     document={document.data}

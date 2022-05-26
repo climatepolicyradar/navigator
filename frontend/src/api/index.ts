@@ -28,15 +28,6 @@ export interface User {
   activated?: boolean;
 }
 
-export const signIn = async (credentials) => {
-  return await AuthClient.post(
-    '',
-    `username=${credentials.email}&password=${credentials.password}`
-  )
-    .then(handleApiSuccess)
-    .catch(handleApiError);
-};
-
 // may not be using this so not rewriting it for now
 export const postFile = async (req: string, data): Promise<any> => {
   return await axios({
@@ -54,16 +45,26 @@ export const postFile = async (req: string, data): Promise<any> => {
   });
 };
 
+export const signIn = async (credentials) => {
+  return await AuthClient.post(
+    '',
+    `username=${credentials.email}&password=${credentials.password}`
+  )
+    .then(handleApiSuccess)
+    .catch(handleApiError);
+};
+
 export async function handleApiSuccess(response) {
   const data = await response;
   if (response.status === 200) {
     return data;
   } else {
-    return Promise.reject(data);
+    // return Promise.reject(data);
+    handleApiError(data);
   }
 }
 export async function handleApiError(error) {
-  const message = error?.response?.data.detail
+  const message = (await error?.response?.data.detail)
     ? error?.response?.data.detail
     : 'There was an error, please try again later.';
   return { error: message };
