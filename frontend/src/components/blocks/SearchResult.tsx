@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { DownloadPDFIcon, ViewDocumentCoverPageIcon } from '../svg/Icons';
 import { truncateString } from '../../helpers';
@@ -16,10 +15,14 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
-        <h2 className="leading-none flex items-start">
+        <h2 className="leading-none flex items-center">
           <Link href={`/document/${document.document_id}`}>
             <a className="text-left text-blue-500 font-medium text-lg transition duration-300 hover:text-indigo-600 leading-tight">
               {truncateString(document.document_name, 80)}
+
+              <span className="text-xs text-indigo-500 font-normal">
+                &nbsp; (Click to see document overview)
+              </span>
             </a>
           </Link>
         </h2>
@@ -33,7 +36,7 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
         )} */}
       </div>
 
-      <div className="flex text-xs text-indigo-400 mt-3">
+      <div className="flex text-sm text-indigo-400 mt-3">
         <div
           className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`}
         />
@@ -49,24 +52,29 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
           />
         </div>
       </div>
+      {/* TODO: translate below text, how to handle plurals? */}
+      {document.document_passage_matches.length > 0 &&
+        document.document_content_type !== 'application/pdf' && (
+          <div className="my-2 font-medium">
+            <span className="text-indigo-500">Click here to see &nbsp;</span>
+            <button
+              className="font-medium text-base text-indigo-600 underline text-sm mt-3 transition duration-300 hover:text-blue-500"
+              onClick={onClick}
+            >
+              {document.document_passage_matches.length} match
+              {`${
+                document.document_passage_matches.length === 1 ? '' : 'es'
+              }`}{' '}
+              in document
+            </button>
+          </div>
+        )}
       <p className="text-indigo-400 mt-3">
         {truncateString(
           document.document_description.replace(/(<([^>]+)>)/gi, ''),
           250
         )}
       </p>
-      {/* TODO: translate below text, how to handle plurals? */}
-      {document.document_passage_matches.length > 0 &&
-        document.document_content_type === 'application/pdf' && (
-          <button
-            className="text-indigo-500 underline text-sm mt-3 transition duration-300 hover:text-indigo-600"
-            onClick={onClick}
-          >
-            {document.document_passage_matches.length} match
-            {`${document.document_passage_matches.length === 1 ? '' : 'es'}`} in
-            document
-          </button>
-        )}
     </div>
   );
 };
