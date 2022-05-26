@@ -75,7 +75,7 @@ const DocumentCoverPage = () => {
                   tooltip="The jurisdiction in which the document was published. For more information, see our Methodology page"
                 />
               </div>
-              <span className="ml-6">{`${day}/${month}/${year}`}</span>
+              <span className="ml-6">{`${day} ${month} ${year}`}</span>
               <div className="ml-1">
                 <Tooltip
                   id="juris-tt"

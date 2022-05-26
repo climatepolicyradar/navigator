@@ -3,6 +3,7 @@ import { useRef, useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import ViewSDKClient from '../api/pdf';
 import Loader from './Loader';
+import { padNumber } from '../utils/timedate';
 
 const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
   const containerRef = useRef();
@@ -62,9 +63,6 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
     if (passageIndex !== null) {
       annotationManager.selectAnnotation(annotations[passageIndex].id);
     }
-  };
-  const padNumber = (number) => {
-    return number >= 10 ? number : number.toString().padStart(2, '0');
   };
 
   const generateDate = () => {

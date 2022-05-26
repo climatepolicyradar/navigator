@@ -20,7 +20,7 @@ const Event = ({ event, last }: EventProps) => {
       <div className="flex flex-col items-center w-1/2">
         <div className="w-full bg-blue-200 rounded-2xl px-8 py-1 flex flex-col items-center text-indigo-600 mb-2">
           <div className="text-2xl font-medium">{year}</div>
-          <div>{`${month}/${day}`}</div>
+          <div>{`${day} ${month}`}</div>
         </div>
         {!last && <DownLongArrowIcon />}
       </div>
