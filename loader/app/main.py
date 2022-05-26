@@ -85,7 +85,7 @@ async def main():
         # TODO: how do we deal with the fact that we have massive PDFs with big loading times in the frontend?
         async with httpx.AsyncClient(
             transport=transport,
-            timeout=httpx.Timeout(10, read=30, pool=None),
+            timeout=httpx.Timeout(10, read=300, pool=None),
         ) as client:
             ctx = Context(
                 db=db,
