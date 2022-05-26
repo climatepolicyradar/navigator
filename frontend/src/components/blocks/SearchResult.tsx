@@ -50,7 +50,7 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
       </div>
       {/* TODO: translate below text, how to handle plurals? */}
       {document.document_passage_matches.length > 0 &&
-        document.document_content_type !== 'application/pdf' && (
+        document.document_content_type === 'application/pdf' && (
           <div className="my-2 font-medium">
             <span className="text-indigo-500">Click here to see &nbsp;</span>
             <button

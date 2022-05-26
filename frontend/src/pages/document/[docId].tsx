@@ -12,7 +12,7 @@ import useDocumentDetail from '../../hooks/useDocumentDetail';
 import RelatedDocument from '../../components/blocks/RelatedDocument';
 import Tooltip from '../../components/tooltip';
 import { convertDate } from '../../utils/timedate';
-import { DownloadPDFIcon } from '../../components/svg/Icons';
+import { ExternalLinkIcon } from '../../components/svg/Icons';
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -35,6 +35,31 @@ const DocumentCoverPage = () => {
     } else {
       setSummary(truncateString(text, collapsedLength));
     }
+  };
+
+  const renderSourceLink = () => {
+    let link: string;
+    if (page.content_type === 'application/pdf' && page.url.length) {
+      link = page.url;
+    } else if (page.source_url.length) {
+      link = page.source_url;
+    }
+
+    if (!link) return null;
+    return (
+      <p className="mt-4">
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className="text-blue-500 underline flex items-center font-medium hover:text-indigo-600 transition duration-300"
+        >
+          <span className="mr-1">Link to source document</span>
+
+          <ExternalLinkIcon height="16" width="16" />
+        </a>
+      </p>
+    );
   };
 
   useEffect(() => {
@@ -82,20 +107,6 @@ const DocumentCoverPage = () => {
                   tooltip="The year in which the document was first published"
                 />
               </div>
-              {/* Note: link to non-pdf document is page.source_url */}
-              {page.content_type === 'application/pdf' && (
-                <div className="ml-6">
-                  <a
-                    target="_blank"
-                    className="bg-blue-500 rounded-full py-2 px-4 text-white flex items-center transition duration-300 hover:bg-indigo-600"
-                    href={page.url}
-                  >
-                    <span className="sr-only">Download PDF</span>
-                    <DownloadPDFIcon height="24" width="24" />{' '}
-                    <span className="ml-1">Download</span>
-                  </a>
-                </div>
-              )}
             </div>
             <div className="md:flex">
               <section className="flex-1">
@@ -125,6 +136,8 @@ const DocumentCoverPage = () => {
                   <span className="font-medium">Source: </span>{' '}
                   {page.source.name}
                 </p>
+
+                {renderSourceLink()}
 
                 {page.related_documents.length ? (
                   <section>
