@@ -30,7 +30,7 @@ class Storage:
             max_allocated_storage=0,  # disable autoscaling
             engine="postgres",
             engine_version="12.10",
-            instance_class="db.t3.micro",
+            instance_class="db.t3.xlarge",
             name=db_name,
             password=db_password,
             skip_final_snapshot=True,
