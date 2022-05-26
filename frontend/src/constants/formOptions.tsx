@@ -67,6 +67,10 @@ export const affiliation_types = [
     label: 'Individual',
   },
   {
+    value: 'Climate Policy',
+    label: 'Climate Policy',
+  },
+  {
     value: 'Other',
     label: 'Other',
   },

@@ -34,6 +34,7 @@ const Login = () => {
   });
 
   const welcomeMessage = () => {
+    // set message based on how the user arrived to the page
     let message = t('Welcome back! Please enter your details.');
     if (router?.query?.activated) {
       message = t('Your account has been activated! please sign in below.');
@@ -54,9 +55,13 @@ const Login = () => {
     // checks if a user account is returned rather than an error
     if (status?.email) router.push('/');
   }, [status]);
+  useEffect(() => {
+    // redirect if already signed in
+    if (user?.email) router.push('/');
+  }, [user]);
   return (
     <>
-      {isSubmitting || isSubmitSuccessful ? (
+      {isSubmitting || (isSubmitSuccessful && status?.email) ? (
         <LoaderOverlay />
       ) : (
         <Layout

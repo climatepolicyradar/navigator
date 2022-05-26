@@ -1,6 +1,7 @@
 """Create CSV for the loader from an Excel file created from manual data entry."""
 
 import os
+from typing import Optional
 from pathlib import Path
 from html.parser import HTMLParser
 from io import StringIO
@@ -90,7 +91,10 @@ def drop_missing_rows_from_merged_df(df_merged: pd.DataFrame) -> pd.DataFrame:
     return df_merged.dropna(subset=cols_required_values)
 
 
-def transform_documents_value_in_single_actions_sheet(value: str) -> str:
+def transform_documents_value_in_single_actions_sheet(value: str) -> Optional[str]:
+    if str(value) == "nan":
+        return value
+
     val_split = value.split("|")
     if len(val_split) < 2:
         raise ValueError(f"Invalid 'documents' column value: {value}")
@@ -117,9 +121,7 @@ def get_single_doc_actions_xlsx(single_doc_actions_path: Path) -> pd.DataFrame:
     )
 
     df = pd.concat([df_single_doc_type, df_multi_doc_types], axis=0, ignore_index=True)
-    df = df.rename(
-        columns={"Type": "Category", "Document Types": "Document Type"}
-    ).dropna(subset=["Documents"])
+    df = df.rename(columns={"Type": "Category", "Document Types": "Document Type"})
     df["Documents"] = df["Documents"].apply(
         transform_documents_value_in_single_actions_sheet
     )
@@ -217,6 +219,8 @@ if __name__ == "__main__":
         columns={"policy_description": "Description"}
     )
 
+    docs_missing_titles_from_manual_entry = 0
+
     for person in person_names:
         print(f"Processing {person}")
 
@@ -227,11 +231,19 @@ if __name__ == "__main__":
             str(MANUALLY_CREATED_DATA_PATH), sheet_name=f"{person} actions"
         )
 
+        docs_missing_titles_from_manual_entry += df_documents[
+            df_documents["Title"].isna()
+        ].shape[0]
+
         data_list.append(
             process_data(df_documents, df_actions, df_cclw_v1_csv_with_single_url)
         )
 
     all_manual_data = pd.concat(data_list, axis=0, ignore_index=True)
+
+    print(
+        f"{docs_missing_titles_from_manual_entry} documents are missing titles from the data entry exercise. These have been dropped but should maybe be revisited in future."
+    )
 
     data_final = pd.concat(
         [all_manual_data, single_doc_actions_df], axis=0, ignore_index=True

@@ -14,6 +14,7 @@ from app.core.config import (
     OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD,
     OPENSEARCH_INDEX_NAME_BOOST,
     OPENSEARCH_INDEX_DESCRIPTION_BOOST,
+    OPENSEARCH_INDEX_EMBEDDED_TEXT_BOOST,
     OPENSEARCH_INDEX_NAME_KEY,
     OPENSEARCH_INDEX_DESCRIPTION_KEY,
     OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY,
@@ -29,6 +30,7 @@ from app.core.config import (
     OPENSEARCH_VERIFY_CERTS,
     OPENSEARCH_SSL_WARNINGS,
 )
+from app.core.util import content_type_from_path, s3_to_cdn_url
 from app.db.schemas.search import (
     FilterField,
     OpenSearchResponseDescriptionMatch,
@@ -92,6 +94,7 @@ class OpenSearchQueryConfig:
 
     name_boost: int = OPENSEARCH_INDEX_NAME_BOOST
     description_boost: int = OPENSEARCH_INDEX_DESCRIPTION_BOOST
+    embedded_text_boost: int = OPENSEARCH_INDEX_EMBEDDED_TEXT_BOOST
     lucene_threshold: float = _innerproduct_threshold_to_lucene_threshold(
         OPENSEARCH_INDEX_INNER_PRODUCT_THRESHOLD
     )  # TODO: tune me separately for descriptions?
@@ -229,7 +232,6 @@ def build_opensearch_request_body(
     opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
 ) -> Dict[str, Any]:
     """Build a complete OpenSearch request body."""
-
     search_config = opensearch_internal_config or OpenSearchQueryConfig(
         max_passages_per_doc=search_request.max_passages_per_doc,
     )
@@ -391,6 +393,7 @@ class QueryBuilder:
                         },
                     ],
                     "minimum_should_match": 1,
+                    "boost": self._search_config.embedded_text_boost,
                 }
             },
         ]
@@ -519,18 +522,20 @@ def process_opensearch_response_body(
 
 
 def create_search_response_document(
-    passage_match: OpenSearchResponseMatchBase,
+    opensearch_match: OpenSearchResponseMatchBase,
 ):
     return SearchResponseDocument(
-        document_name=passage_match.document_name,
-        document_description=passage_match.document_description,
-        document_country_code=passage_match.document_country_code,
-        document_source_name=passage_match.document_source_name,
-        document_date=passage_match.document_date,
-        document_id=passage_match.document_id,
-        document_country_english_shortname=passage_match.document_country_english_shortname,
-        document_type=passage_match.document_type,
-        document_url=passage_match.document_url,
+        document_name=opensearch_match.document_name,
+        document_description=opensearch_match.document_description,
+        document_country_code=opensearch_match.document_country_code,
+        document_source_name=opensearch_match.document_source_name,
+        document_date=opensearch_match.document_date,
+        document_id=opensearch_match.document_id,
+        document_country_english_shortname=opensearch_match.document_country_english_shortname,
+        document_type=opensearch_match.document_type,
+        document_source_url=opensearch_match.document_source_url,
+        document_url=s3_to_cdn_url(opensearch_match.document_url),
+        document_content_type=content_type_from_path(opensearch_match.document_url),
         document_title_match=False,
         document_description_match=False,
         document_passage_matches=[],

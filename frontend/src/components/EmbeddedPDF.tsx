@@ -19,20 +19,12 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
     downloadWithAnnotations: true,
     printWithAnnotations: true,
   };
-  // let doc;
-  // if (document === null) {
-  //   doc = dummyDocument2;
-  // } else {
-  //   //const { data: doc } = document;
-  //   doc = document;
-  // }
-  const doc = document;
 
   const previewPDF = () => {
     const viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
       const previewFilePromise = viewSDKClient.previewFile(
-        doc,
+        document,
         'pdf-div',
         viewerConfig
       );
@@ -44,17 +36,29 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
   const createAnnotationManager = (adobeViewer) => {
     adobeViewer.getAnnotationManager().then((annotationManager) => {
       annotationManager.setConfig(annotationManagerConfig);
-      addAnnotations(annotationManager);
+      annotationManager.registerEventListener(function (event) {
+        //console.log(event);
+        if (event.type === 'ANNOTATION_ADDED') {
+          //console.log('added');
+        }
+      });
+      if (document?.document_passage_matches?.length) {
+        addAnnotations(annotationManager);
+      }
     });
   };
   const addAnnotations = (annotationManager) => {
     let annotations = [];
-    doc.document_passage_matches.map((passage, index) => {
+    document.document_passage_matches.map((passage, index) => {
       const obj = generateAnnotationObject(passage, index);
       annotations.push(obj);
+      //console.log(index);
+      annotationManager.addAnnotations([obj]);
     });
-    annotationManager.addAnnotations(annotations);
+    // annotationManager.addAnnotations(annotations);
+    // console.log(document);
     // console.log(annotations);
+    // console.log(passageIndex);
     if (passageIndex !== null) {
       annotationManager.selectAnnotation(annotations[passageIndex].id);
     }
@@ -88,7 +92,7 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
       bodyValue: '',
       motivation: 'commenting',
       target: {
-        source: doc.document_fileid,
+        source: document.document_fileid,
         selector: {
           node: {
             index,
@@ -121,7 +125,7 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
   return (
     <>
       <Script src="https://documentcloud.adobe.com/view-sdk/main.js" />
-      {!doc ? (
+      {!document ? (
         <div className="w-full flex justify-center flex-1">
           <Loader />
         </div>

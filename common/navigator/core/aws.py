@@ -111,8 +111,8 @@ class S3Client:
                 )
             else:
                 self.client.upload_file(file_name, bucket, key)
-        except ClientError as e:
-            logger.error(e)
+        except ClientError:
+            logger.exception(f"Uploading {file_name} encountered an error")
             return False
 
         return S3Document(bucket, os.getenv("AWS_REGION"), key)

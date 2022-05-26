@@ -76,7 +76,9 @@ class SearchResponseDocument(BaseModel):
     document_country_english_shortname: str
     document_description: str
     document_type: str
+    document_source_url: str
     document_url: str
+    document_content_type: str
 
     document_title_match: bool
     document_description_match: bool
@@ -104,6 +106,7 @@ class OpenSearchResponseMatchBase(BaseModel):
     document_name_and_id: str
     document_country_english_shortname: str
     document_type: str
+    document_source_url: str
     document_url: str
 
 

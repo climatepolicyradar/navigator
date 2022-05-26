@@ -29,8 +29,10 @@ const DocumentMenu = ({
               }}
             />
           )}
-          {/* TODO: link below to actual doc id */}
-          <DropdownMenuItem href="/pdf/1299" title="View PDF in full window" />
+          <DropdownMenuItem
+            href={`/pdf/${document.document_id}`}
+            title="View PDF in full window"
+          />
           <DropdownMenuItem href={document.document_url} title="Download PDF" />
           <DropdownMenuItem
             href={`/document/${document.document_id}`}

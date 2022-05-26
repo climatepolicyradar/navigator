@@ -55,7 +55,7 @@ async def load(ctx: Context, policies: PolicyLookup):
 
     doc_counts = await asyncio.gather(
         *tasks,
-        return_exceptions=True,
+        # return_exceptions=True,
     )
 
     doc_count = sum(doc_counts)
@@ -70,218 +70,205 @@ def warmup_local_caches():
 
 
 async def save_action(ctx: Context, key: Key, policy_data: PolicyData) -> int:
-    try:
-        # look up geography from API
-        country_code = key.country_code
-        geography_id = get_geography_id(country_code)
-        if not geography_id:
+    # look up geography from API
+    country_code = key.country_code
+    geography_id = get_geography_id(country_code)
+    if not geography_id:
+        logger.warning(f"No geography found in lookup for country code {country_code}")
+        # continue
+        return 0
+
+    # this was the loader before the change to own-db:
+    # https://github.com/climatepolicyradar/navigator/blob/17491aceaf9a5a852e0a6d51a1e8f88b07675801/backend/app/api/api_v1/routers/actions.py
+
+    # If a policy has multiple docs,
+    # during doc looping, we set a main_doc if it hasn't been set,
+    # then use it for associating with subsequent docs.
+    main_doc = None
+    doc_count = 0
+    for doc in policy_data.docs:
+
+        document_date: datetime = doc.publication_date
+        if document_date is None:
+            logger.warning(f"Date is null for document {doc.doc_name}")
+
+        # look up document category from API
+        document_category = doc.document_category
+        category_id = get_category_id(document_category)
+        if not category_id:
             logger.warning(
-                f"No geography found in lookup for country code {country_code}"
+                f"No document category found in lookup for document category {document_category}"
             )
-            # continue
-            return 0
+            continue
 
-        # this was the loader before the change to own-db:
-        # https://github.com/climatepolicyradar/navigator/blob/17491aceaf9a5a852e0a6d51a1e8f88b07675801/backend/app/api/api_v1/routers/actions.py
+        # TODO name/geography_id/type_id/source_id is not unique, but the
+        # addition of url makes it unique. Fetch any existing docs by
+        # name/geography_id/type_id/source_id and then set up any associations
+        # in case we have a new doc.
+        # (This to-do does not apply for alpha, as we load data from scratch every time.)
 
-        # If a policy has multiple docs,
-        # during doc looping, we set a main_doc if it hasn't been set,
-        # then use it for associating with subsequent docs.
-        main_doc = None
-        doc_count = 0
-        for doc in policy_data.docs:
+        # look up language from API
+        # TODO multi-language support for docs imminent with CSV reformat
+        language_id = get_language_id_by_name(doc.doc_languages[0] or "English")
 
-            document_date: datetime = doc.publication_date
-            if document_date is None:
-                logger.warning(f"Date is null for document {doc.doc_name}")
-
-            # look up document category from API
-            document_category = doc.document_category
-            category_id = get_category_id(document_category)
-            if not category_id:
-                logger.warning(
-                    f"No document category found in lookup for document category {document_category}"
-                )
-                continue
-
-            # TODO name/geography_id/type_id/source_id is not unique, but the
-            # addition of url makes it unique. Fetch any existing docs by
-            # name/geography_id/type_id/source_id and then set up any associations
-            # in case we have a new doc.
-            # (This to-do does not apply for alpha, as we load data from scratch every time.)
-
-            # look up language from API
-            # TODO multi-language support for docs imminent with CSV reformat
-            language_id = get_language_id_by_name(doc.doc_languages[0] or "English")
-
-            # look up document type from API
-            document_type_id = get_type_id(doc.document_type)
-            if not document_type_id:
-                logger.warning(
-                    f"No document type found in lookup for policy type {doc.document_type} (document url: {doc.doc_url})"
-                )
-                continue
-
-            # Optimisation: As the get_document_validity_sync check can take long,
-            # check if the document already exists in the DB, and skip if it does
-            # (as per the unique constraint)
-            maybe_existing_doc = get_document_by_unique_constraint(
-                ctx.db,
-                doc.doc_name,
-                geography_id,
-                document_type_id,
-                document_source_id,
-                doc.doc_url,
+        # look up document type from API
+        document_type_id = get_type_id(doc.document_type)
+        if not document_type_id:
+            logger.warning(
+                f"No document type found in lookup for policy type {doc.document_type} (document url: {doc.doc_url})"
             )
-            if maybe_existing_doc:
-                logger.warning(
-                    f"Skipping existing doc, name={key.policy_name}, "
-                    f"geography_id={geography_id}, "
-                    f"type_id={document_type_id}, "
-                    f"source_id={document_source_id}"
-                    f"url={doc.doc_url}"
-                )
-                continue
+            continue
 
-            # check doc validity
-            is_valid = True
-
-            invalid_reason = await get_document_validity(ctx.client, doc.doc_url)
-
-            if invalid_reason:
-                is_valid = False
-                logger.warning(
-                    f"Invalid document, name={key.policy_name}, reason={invalid_reason} "
-                    f"url={doc.doc_url}"
-                )
-
-            # TODO for S3, see
-            # https://github.com/climatepolicyradar/navigator/blob/3ca2eda8de691288a66a1722908f32dd52c178f9/backend/app/api/api_v1/routers/actions.py#L81
-            document_db = Document(
-                name=doc.doc_name,
-                description=doc.doc_description,
-                source_url=doc.doc_url,
-                source_id=document_source_id,
-                # url=None,  # TODO: upload to S3
-                is_valid=is_valid,
-                invalid_reason=invalid_reason,
-                geography_id=geography_id,
-                type_id=document_type_id,
-                category_id=category_id,
-                publication_ts=document_date,
-            )
-            ctx.db.add(document_db)
-            ctx.db.flush()
-            ctx.db.refresh(document_db)
-
-            # Association
-            if len(policy_data.docs) > 1:
-                if not main_doc:
-                    main_doc = document_db
-                else:
-                    association = Association(
-                        document_id_from=document_db.id,
-                        document_id_to=main_doc.id,
-                        type="related",
-                        name="related",
-                    )
-                    ctx.db.add(association)
-
-            # Metadata - events
-            event_db = Event(
-                document_id=document_db.id,
-                name="Publication",
-                description="The publication date",
-                created_ts=doc.publication_date,
-            )
-            ctx.db.add(event_db)
-
-            add_events(ctx.db, document_db.id, doc.events)
-
-            # Metadata - all the rest
-            add_metadata(
-                ctx.db,
-                doc.sectors,
-                document_db.id,
-                document_source_id,
-                Sector,
-                DocumentSector,
-                "sector_id",
-            )
-            add_metadata(
-                ctx.db,
-                doc.instruments,
-                document_db.id,
-                document_source_id,
-                Instrument,
-                DocumentInstrument,
-                "instrument_id",
-            )
-            add_metadata(
-                ctx.db,
-                doc.frameworks,
-                document_db.id,
-                document_source_id,
-                Framework,
-                DocumentFramework,
-                "framework_id",
-            )
-            add_metadata(
-                ctx.db,
-                doc.responses,
-                document_db.id,
-                document_source_id,
-                Response,
-                DocumentResponse,
-                "response_id",
-            )
-            add_metadata(
-                ctx.db,
-                doc.hazards,
-                document_db.id,
-                document_source_id,
-                Hazard,
-                DocumentHazard,
-                "hazard_id",
-            )
-            add_metadata(
-                ctx.db,
-                doc.keywords,
-                document_db.id,
-                document_source_id,
-                Keyword,
-                DocumentKeyword,
-                "keyword_id",
-            )
-
-            # doc language
-            document_language_db = DocumentLanguage(
-                language_id=language_id,
-                document_id=document_db.id,
-            )
-            ctx.db.add(document_language_db)
-
-            # commit for each doc, not each policy
-            ctx.db.commit()
-            logger.info(
-                f"Saved document, name={key.policy_name}, "
+        # Optimisation: As the get_document_validity_sync check can take long,
+        # check if the document already exists in the DB, and skip if it does
+        # (as per the unique constraint)
+        maybe_existing_doc = get_document_by_unique_constraint(
+            ctx.db,
+            doc.doc_name,
+            geography_id,
+            document_type_id,
+            document_source_id,
+            doc.doc_url,
+        )
+        if maybe_existing_doc:
+            logger.warning(
+                f"Skipping existing doc, name={key.policy_name}, "
                 f"geography_id={geography_id}, "
                 f"type_id={document_type_id}, "
-                f"source_id={document_source_id}"
+                f"source_id={document_source_id}, "
                 f"url={doc.doc_url}"
             )
-            doc_count += 1
-        return doc_count
-    except Exception as e:
-        logger.error(
-            f"Error saving document, name={key.policy_name}, "
+            continue
+
+        # check doc validity
+        is_valid = True
+
+        invalid_reason = await get_document_validity(ctx.client, doc.doc_url)
+
+        if invalid_reason:
+            is_valid = False
+            logger.warning(
+                f"Invalid document, name={key.policy_name}, reason={invalid_reason} "
+                f"url={doc.doc_url}"
+            )
+
+        # TODO for S3, see
+        # https://github.com/climatepolicyradar/navigator/blob/3ca2eda8de691288a66a1722908f32dd52c178f9/backend/app/api/api_v1/routers/actions.py#L81
+        document_db = Document(
+            name=doc.doc_name,
+            description=doc.doc_description,
+            source_url=doc.doc_url,
+            source_id=document_source_id,
+            # url=None,  # TODO: upload to S3
+            is_valid=is_valid,
+            invalid_reason=invalid_reason,
+            geography_id=geography_id,
+            type_id=document_type_id,
+            category_id=category_id,
+            publication_ts=document_date,
+        )
+        ctx.db.add(document_db)
+        ctx.db.flush()
+        ctx.db.refresh(document_db)
+
+        # Association
+        if len(policy_data.docs) > 1:
+            if not main_doc:
+                main_doc = document_db
+            else:
+                association = Association(
+                    document_id_from=document_db.id,
+                    document_id_to=main_doc.id,
+                    type="related",
+                    name="related",
+                )
+                ctx.db.add(association)
+
+        # Metadata - events
+        event_db = Event(
+            document_id=document_db.id,
+            name="Publication",
+            description="The publication date",
+            created_ts=doc.publication_date,
+        )
+        ctx.db.add(event_db)
+
+        add_events(ctx.db, document_db.id, doc.events)
+
+        # Metadata - all the rest
+        add_metadata(
+            ctx.db,
+            doc.sectors,
+            document_db.id,
+            document_source_id,
+            Sector,
+            DocumentSector,
+            "sector_id",
+        )
+        add_metadata(
+            ctx.db,
+            doc.instruments,
+            document_db.id,
+            document_source_id,
+            Instrument,
+            DocumentInstrument,
+            "instrument_id",
+        )
+        add_metadata(
+            ctx.db,
+            doc.frameworks,
+            document_db.id,
+            document_source_id,
+            Framework,
+            DocumentFramework,
+            "framework_id",
+        )
+        add_metadata(
+            ctx.db,
+            doc.responses,
+            document_db.id,
+            document_source_id,
+            Response,
+            DocumentResponse,
+            "response_id",
+        )
+        add_metadata(
+            ctx.db,
+            doc.hazards,
+            document_db.id,
+            document_source_id,
+            Hazard,
+            DocumentHazard,
+            "hazard_id",
+        )
+        add_metadata(
+            ctx.db,
+            doc.keywords,
+            document_db.id,
+            document_source_id,
+            Keyword,
+            DocumentKeyword,
+            "keyword_id",
+        )
+
+        # doc language
+        document_language_db = DocumentLanguage(
+            language_id=language_id,
+            document_id=document_db.id,
+        )
+        ctx.db.add(document_language_db)
+
+        # commit for each doc, not each policy
+        ctx.db.commit()
+        logger.info(
+            f"Saved document, name={key.policy_name}, "
             f"geography_id={geography_id}, "
             f"type_id={document_type_id}, "
             f"source_id={document_source_id}"
-            f"url={doc.doc_url}",
-            exc_info=e,
+            f"url={doc.doc_url}"
         )
-        return 0
+        doc_count += 1
+    return doc_count
 
 
 def add_metadata(

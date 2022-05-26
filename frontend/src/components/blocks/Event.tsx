@@ -25,8 +25,8 @@ const Event = ({ event, last }) => {
         </div>
         {!last && <DownLongArrowIcon />}
       </div>
-      <div className="ml-6">
-        <div className="text-indigo-600 font-medium mt-4">{name}</div>
+      <div className="ml-4 shrink-0 w-1/2">
+        <div className="text-indigo-500">{name}</div>
         {/* <div className="text-sm">{description}</div> */}
       </div>
     </div>

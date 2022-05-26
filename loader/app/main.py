@@ -83,20 +83,23 @@ async def main():
     for db in get_db():
         # This timeout is large because there are some very large PDFs we need to upload
         # TODO: how do we deal with the fact that we have massive PDFs with big loading times in the frontend?
-        async with httpx.AsyncClient(transport=transport, timeout=120) as client:
+        async with httpx.AsyncClient(
+            transport=transport,
+            timeout=httpx.Timeout(10, read=300, pool=None),
+        ) as client:
             ctx = Context(
                 db=db,
                 client=client,
             )
             warmup_local_caches()
-            await load(ctx, policies)
+            # await load(ctx, policies)
 
             # once all data has been loaded into database, upload files to cloud
             await handle_all_documents(ctx)
 
             # This will normally be triggered separately, but we're
             # expediting the load for alpha.
-            post_all_to_backend_api(ctx)
+            # post_all_to_backend_api(ctx)
 
 
 if __name__ == "__main__":
