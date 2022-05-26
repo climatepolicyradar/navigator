@@ -64,7 +64,7 @@ const DocumentCoverPage = () => {
             </TextLink>
 
             <h1 className="mt-6 text-3xl font-medium">{page.name}</h1>
-            <div className="flex text-xs text-indigo-400 mt-3 items-center w-full">
+            <div className="flex text-sm text-indigo-400 mt-3 items-center w-full">
               <div
                 className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`}
               />
@@ -75,7 +75,7 @@ const DocumentCoverPage = () => {
                   tooltip="The jurisdiction in which the document was published. For more information, see our Methodology page"
                 />
               </div>
-              <span className="ml-6">{`${year}/${day}/${month}`}</span>
+              <span className="ml-6">{`${day}/${month}/${year}`}</span>
               <div className="ml-1">
                 <Tooltip
                   id="juris-tt"
@@ -121,6 +121,10 @@ const DocumentCoverPage = () => {
                     )}
                   </section>
                 )}
+                <p className="text-sm">
+                  <span className="font-medium">Source: </span>{' '}
+                  {page.source.name}
+                </p>
 
                 {page.related_documents.length ? (
                   <section>
@@ -141,7 +145,7 @@ const DocumentCoverPage = () => {
                   </section>
                 ) : null}
               </section>
-              <section className="md:border-l md:border-blue-100 md:pl-4 mt-6 md:w-2/5 lg:w-4/12 md:ml-12 flex-shrink-0">
+              <section className="md:border-l md:border-blue-100 md:pl-4 mt-6 md:w-2/5 lg:w-1/4 md:ml-12 flex-shrink-0">
                 <h3 className="text-xl text-indigo-400">
                   Further information about this document
                 </h3>

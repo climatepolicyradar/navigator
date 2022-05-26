@@ -21,7 +21,7 @@ const RelatedDocument = ({ document }: RelatedDocumentProps) => {
           </Link>
         </h2>
       </div>
-      <div className="flex text-xs text-indigo-400 mt-3">
+      <div className="flex text-sm text-indigo-400 mt-3">
         <div
           className={`rounded-sm border border-black flag-icon-background flag-icon-${document.country_code.toLowerCase()}`}
         />
