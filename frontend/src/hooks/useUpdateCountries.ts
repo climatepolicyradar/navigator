@@ -6,7 +6,6 @@ export default function useUpdateCountries() {
 
   return useMutation(
     (value?: any) => {
-      console.log(value);
       const { regionName, regions, countries } = value;
       const region = regions.find((item) => item.display_value === regionName);
       let newList = countries;
