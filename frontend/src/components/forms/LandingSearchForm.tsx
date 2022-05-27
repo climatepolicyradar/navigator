@@ -16,7 +16,7 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
   const inputRef = useRef(null);
 
   const typePlaceholder = () => {
-    const text = ['Search full text of 1032 laws and policies'];
+    const text = ['Search full text of 3000+ laws and policies'];
     StartTextAnimation(0, text, inputRef.current);
   };
   const clearSearch = (e) => {
@@ -64,28 +64,6 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
           <SearchIcon height="40" width="80" />
         </button>
       </div>
-      {/* <div className="relative shadow-md rounded-lg bg-white flex items-stretch">
-        <input
-          data-cy="search-input"
-          className="bg-transparent text-indigo-600 appearance-none py-2 pl-2 z-10 rounded-lg relative flex-grow mr-8 placeholder:text-indigo-400 border-transparent"
-          type="search"
-          placeholder={`${windowSize.width > 540 ? placeholder : ''}`}
-          value={term}
-          onChange={onChange}
-        />
-        <div className="rounded-lg absolute inset-0 shadow-innerThin z-0 pointer-events-none" />
-        {term.length > 0 && (
-          <div
-            data-cy="search-clear-button"
-            className="flex items-center mx-2 text-indigo-400 shrink-0 absolute top-0 right-0 mr-16 h-full md:mr-20 z-20 h-full items-center"
-          >
-            <Close onClick={clearSearch} size="16" />
-          </div>
-        )}
-        <div className="flex items-center justify-end">
-          <SearchButton onClick={(e) => handleSearchInput(e, term)} />
-        </div>
-      </div> */}
     </form>
   );
 };

@@ -17,7 +17,7 @@ const Methodology = () => {
             <div className="text-content px-4 container mb-12">
               <h1 className="my-8">Methodology</h1>
 
-              <h2>About this document </h2>
+              <h2>About this page </h2>
               <p>
                 Welcome to the methodology page for the{' '}
                 <a href="https://climatepolicyradar.org">

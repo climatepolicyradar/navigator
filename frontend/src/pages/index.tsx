@@ -14,9 +14,10 @@ import LandingPageLinks from '../components/blocks/LandingPageLinks';
 import { initialSearchCriteria } from '../constants/searchCriteria';
 import useNestedLookups from '../hooks/useNestedLookups';
 import useUpdateCountries from '../hooks/useUpdateCountries';
+import Tooltip from '../components/tooltip';
 
 const IndexPage = () => {
-  const { t, i18n, ready } = useTranslation('searchStart');
+  const { t, i18n, ready } = useTranslation(['searchStart', 'searchResults']);
   const { user } = useAuth();
   const router = useRouter();
   const { data: searchCriteria }: any = useSearchCriteria();
@@ -32,6 +33,8 @@ const IndexPage = () => {
     level1: regions,
     level2: countries,
   } = useNestedLookups('geographies', '', 2);
+
+  const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
 
   const handleSearchInput = (e, term) => {
     e.preventDefault();
@@ -64,9 +67,10 @@ const IndexPage = () => {
   useEffect(() => {
     clearAllFilters();
   }, []);
+
   return (
     <>
-      {!ready || !user || !searchCriteria ? (
+      {!ready || !searchCriteria ? (
         <LoaderOverlay />
       ) : (
         <Layout
@@ -88,6 +92,9 @@ const IndexPage = () => {
                   id="exact-match"
                   handleSearchChange={handleSearchChange}
                 />
+                <div className="ml-2 -mt-1 text-sm">
+                  <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
+                </div>
               </div>
               <div className="mt-12">
                 <LandingPageLinks handleLinkClick={handleLinkClick} />
