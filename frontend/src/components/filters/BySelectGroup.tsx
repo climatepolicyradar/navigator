@@ -1,7 +1,6 @@
-import { useEffect, useRef, useState } from 'react';
-import { sortData } from '../../utils/sorting';
+import { useEffect, useRef } from 'react';
 
-const BySelect = ({
+const BySelectGroup = ({
   onChange,
   list,
   title,
@@ -9,16 +8,12 @@ const BySelect = ({
   filterType,
   defaultValue,
 }) => {
-  const [sortedList, setSortedList] = useState(list);
   const selectRef = useRef(null);
   useEffect(() => {
     if (selectRef?.current) {
       selectRef.current.value = defaultValue;
     }
   }, [defaultValue, selectRef]);
-  useEffect(() => {
-    setSortedList(sortData(list, keyField));
-  }, [list]);
   return (
     <div>
       <div>{title}</div>
@@ -31,13 +26,21 @@ const BySelect = ({
         }}
       >
         <option value="">All</option>
-        {sortedList.map((item, index) => (
-          <option key={`${keyField}${index}`} value={item[keyField]}>
-            {item[keyField]}
-          </option>
+        {list.map((item) => (
+          <optgroup key={`${item[keyField]}`} label={item[keyField]}>
+            {item.children.map((item) => (
+              <option
+                key={`${item[keyField]}|${item.parent}`}
+                value={`${item[keyField]}|${item.parent}`}
+                disabled={item?.children !== undefined}
+              >
+                {item[keyField]}
+              </option>
+            ))}
+          </optgroup>
         ))}
       </select>
     </div>
   );
 };
-export default BySelect;
+export default BySelectGroup;

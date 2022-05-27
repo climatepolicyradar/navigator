@@ -60,6 +60,7 @@ const Search = () => {
   const router = useRouter();
   const slideoutRef = useRef(null);
 
+  // close slideout panel when clicking outside of it
   useOutsideAlerter(slideoutRef, (e) => {
     if (e.target.nodeName === 'BUTTON') {
       return;
@@ -249,7 +250,6 @@ const Search = () => {
 
   return (
     <>
-      {structureData(instruments)}
       {isFetchingSearchCriteria || !ready || !user ? (
         <LoaderOverlay />
       ) : (
@@ -315,9 +315,9 @@ const Search = () => {
                       handleClearSearch={handleClearSearch}
                       regions={regions}
                       filteredCountries={filteredCountries}
-                      sectors={sortData(sectors, 'name')}
+                      sectors={sectors}
                       documentTypes={documentTypes}
-                      instruments={instruments}
+                      instruments={structureData(instruments)}
                     />
                   )}
                 </div>
