@@ -250,7 +250,6 @@ const Search = () => {
 
   return (
     <>
-      {structureData(instruments)}
       {isFetchingSearchCriteria || !ready || !user ? (
         <LoaderOverlay />
       ) : (
@@ -316,7 +315,7 @@ const Search = () => {
                       handleClearSearch={handleClearSearch}
                       regions={regions}
                       filteredCountries={filteredCountries}
-                      sectors={sortData(sectors, 'name')}
+                      sectors={sectors}
                       documentTypes={documentTypes}
                       instruments={structureData(instruments)}
                     />
