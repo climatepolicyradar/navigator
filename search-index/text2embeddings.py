@@ -186,12 +186,13 @@ def get_text_from_document_dict(
 
 
 def get_text_from_json_files(
-    filepaths: List[Union[Path, CloudPath]]
+    filepaths: List[Union[Path, CloudPath]], md5_sums: List[str]
 ) -> List[Dict[str, str]]:
     """Extract text, text block IDs and document IDs from JSON files created by the PDF parsing pipeline.
 
     Args:
         filepaths (List[Union[Path, CloudPath]]): list of paths to JSON files outputted by the pdf2text CLI.
+        md5_sums (List[str]): list of md5 sums to include in returned object
 
     Returns:
         List[Dict[str, str]]: dicts are {"text": "", "text_block_id": "", "document_md5_hash": ""}.
@@ -202,11 +203,13 @@ def get_text_from_json_files(
         with open(filepath, "r") as f:
             document = json.load(f)
 
-        document_text_and_hashes = get_text_from_document_dict(document)
+        document_text_and_ids = get_text_from_document_dict(document)
 
-        for text_and_hash in document_text_and_hashes:
-            text_and_hash.update({"document_md5_hash": document["md5hash"]})
-            text_by_document.append(text_and_hash)
+        if document["md5hash"] in md5_sums:
+            for text_and_ids in document_text_and_ids:
+                text_and_ids.update({"document_md5_hash": document["md5hash"]})
+                text_by_document.append(text_and_ids)
+
     return text_by_document
 
 
@@ -290,7 +293,6 @@ def run_cli(
         batch_size (int): Batch size for encoding.
         limit (Optional[int]): Optionally limit the number of text samples to process. Useful for debugging.
     """
-    logger.info(f"Getting text from JSONs in {input_dir}")
 
     # Note, the s3 conditionals scattered throughout this function are not very pythonic.
     # It could be refactored with a better wrapper, but I've stuck with
@@ -309,17 +311,17 @@ def run_cli(
     curr_time = get_timestamp()
 
     # Get document metadata from app database
+    logger.info("Getting data from navigator tables")
     postgres_connector = PostgresConnector(os.environ["BACKEND_DATABASE_URL"])
     navigator_dataset = get_data_from_navigator_tables(postgres_connector)
 
+    logger.info(f"Getting text from JSONs in {input_dir}")
     # Encode text from pdf2text pipeline. This is the text from the subset of JSONs in the input directory
     # that represent documents which are in the app database.
     json_filepaths = list(input_dir.glob("*.json"))
-    text_and_hashes = [
-        i
-        for i in get_text_from_json_files(json_filepaths)
-        if i["document_md5_hash"] in navigator_dataset["md5_sum"].unique()
-    ]
+
+    md5_sums = navigator_dataset["md5_sum"].unique()
+    text_and_hashes = get_text_from_json_files(json_filepaths, md5_sums)
 
     logger.info(f"There are {len(text_and_hashes)} text blocks.")
     if limit:
