@@ -12,14 +12,14 @@ import useDocumentDetail from '../../hooks/useDocumentDetail';
 import RelatedDocument from '../../components/blocks/RelatedDocument';
 import Tooltip from '../../components/tooltip';
 import { convertDate } from '../../utils/timedate';
-import { DownloadPDFIcon } from '../../components/svg/Icons';
+import { ExternalLinkIcon } from '../../components/svg/Icons';
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
   const [summary, setSummary] = useState('');
   const { t, i18n, ready } = useTranslation('searchStart');
   const router = useRouter();
-  const collapsedLength = 700;
+  const collapsedLength = 1400;
 
   const documentQuery = useDocumentDetail(router.query.docId as string);
 
@@ -35,6 +35,31 @@ const DocumentCoverPage = () => {
     } else {
       setSummary(truncateString(text, collapsedLength));
     }
+  };
+
+  const renderSourceLink = () => {
+    let link: string;
+    if (page.content_type === 'application/pdf' && page.url.length) {
+      link = page.url;
+    } else if (page.source_url.length) {
+      link = page.source_url;
+    }
+
+    if (!link) return null;
+    return (
+      <p className="mt-4">
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className="text-blue-500 underline flex items-center font-medium hover:text-indigo-600 transition duration-300"
+        >
+          <span className="mr-1">Link to source document</span>
+
+          <ExternalLinkIcon height="16" width="16" />
+        </a>
+      </p>
+    );
   };
 
   useEffect(() => {
@@ -64,7 +89,7 @@ const DocumentCoverPage = () => {
             </TextLink>
 
             <h1 className="mt-6 text-3xl font-medium">{page.name}</h1>
-            <div className="flex text-xs text-indigo-400 mt-3 items-center w-full">
+            <div className="flex text-sm text-indigo-400 mt-3 items-center w-full">
               <div
                 className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`}
               />
@@ -75,27 +100,13 @@ const DocumentCoverPage = () => {
                   tooltip="The jurisdiction in which the document was published. For more information, see our Methodology page"
                 />
               </div>
-              <span className="ml-6">{`${year}/${day}/${month}`}</span>
+              <span className="ml-6">{`${day} ${month} ${year}`}</span>
               <div className="ml-1">
                 <Tooltip
                   id="juris-tt"
                   tooltip="The year in which the document was first published"
                 />
               </div>
-              {/* Note: link to non-pdf document is page.source_url */}
-              {page.content_type === 'application/pdf' && (
-                <div className="ml-6">
-                  <a
-                    target="_blank"
-                    className="bg-blue-500 rounded-full py-2 px-4 text-white flex items-center transition duration-300 hover:bg-indigo-600"
-                    href={page.url}
-                  >
-                    <span className="sr-only">Download PDF</span>
-                    <DownloadPDFIcon height="24" width="24" />{' '}
-                    <span className="ml-1">Download</span>
-                  </a>
-                </div>
-              )}
             </div>
             <div className="md:flex">
               <section className="flex-1">
@@ -121,6 +132,12 @@ const DocumentCoverPage = () => {
                     )}
                   </section>
                 )}
+                <p className="text-sm mt-4">
+                  <span className="font-medium">Source: </span>{' '}
+                  {page.source.name}
+                </p>
+
+                {renderSourceLink()}
 
                 {page.related_documents.length ? (
                   <section>
@@ -141,7 +158,7 @@ const DocumentCoverPage = () => {
                   </section>
                 ) : null}
               </section>
-              <section className="md:border-l md:border-blue-100 md:pl-4 mt-6 md:w-2/5 lg:w-4/12 md:ml-12 flex-shrink-0">
+              <section className="md:border-l md:border-blue-100 md:pl-4 mt-6 md:w-2/5 lg:w-1/4 md:ml-12 flex-shrink-0">
                 <h3 className="text-xl text-indigo-400">
                   Further information about this document
                 </h3>

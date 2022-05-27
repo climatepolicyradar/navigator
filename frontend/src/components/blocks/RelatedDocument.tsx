@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useRouter } from 'next/router';
 import { truncateString } from '../../helpers';
 import { convertDate } from '../../utils/timedate';
 
@@ -8,8 +7,7 @@ interface RelatedDocumentProps {
 }
 
 const RelatedDocument = ({ document }: RelatedDocumentProps) => {
-  const router = useRouter();
-  const [year, day, month] = convertDate(document?.publication_ts);
+  const [year] = convertDate(document?.publication_ts);
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
@@ -21,7 +19,7 @@ const RelatedDocument = ({ document }: RelatedDocumentProps) => {
           </Link>
         </h2>
       </div>
-      <div className="flex text-xs text-indigo-400 mt-3">
+      <div className="flex text-sm text-indigo-400 mt-3">
         <div
           className={`rounded-sm border border-black flag-icon-background flag-icon-${document.country_code.toLowerCase()}`}
         />

@@ -1,5 +1,4 @@
 import { useMutation, useQueryClient } from 'react-query';
-import useNestedLookups from './useNestedLookups';
 
 export default function useUpdateCountries() {
   const queryClient = useQueryClient();
