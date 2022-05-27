@@ -38,7 +38,6 @@ import SearchResultList from '../../components/blocks/SearchResultList';
 import { initialSearchCriteria } from '../../constants/searchCriteria';
 import useOutsideAlerter from '../../hooks/useOutsideAlerter';
 import useSortAndStructure from '../../hooks/useSortAndStructure';
-import { sortData } from '../../utils/sorting';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
