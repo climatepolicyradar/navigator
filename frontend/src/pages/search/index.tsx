@@ -37,6 +37,8 @@ import useFilteredCountries from '../../hooks/useFilteredCountries';
 import SearchResultList from '../../components/blocks/SearchResultList';
 import { initialSearchCriteria } from '../../constants/searchCriteria';
 import useOutsideAlerter from '../../hooks/useOutsideAlerter';
+import useSortAndStructure from '../../hooks/useSortAndStructure';
+import { sortData } from '../../utils/sorting';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -49,6 +51,7 @@ const Search = () => {
   const [noQuery, setNoQuery] = useState(false);
   const [categoryIndex, setCategoryIndex] = useState(0);
 
+  const structureData = useSortAndStructure();
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
@@ -246,6 +249,7 @@ const Search = () => {
 
   return (
     <>
+      {structureData(instruments)}
       {isFetchingSearchCriteria || !ready || !user ? (
         <LoaderOverlay />
       ) : (
@@ -311,7 +315,7 @@ const Search = () => {
                       handleClearSearch={handleClearSearch}
                       regions={regions}
                       filteredCountries={filteredCountries}
-                      sectors={sectors}
+                      sectors={sortData(sectors, 'name')}
                       documentTypes={documentTypes}
                       instruments={instruments}
                     />
