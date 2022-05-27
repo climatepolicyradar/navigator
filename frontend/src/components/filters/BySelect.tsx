@@ -6,6 +6,7 @@ const BySelect = ({
   list,
   title,
   keyField,
+  keyFieldDisplay = null,
   filterType,
   defaultValue,
 }) => {
@@ -33,7 +34,7 @@ const BySelect = ({
         <option value="">All</option>
         {sortedList.map((item, index) => (
           <option key={`${keyField}${index}`} value={item[keyField]}>
-            {item[keyField]}
+            {keyFieldDisplay ? item[keyFieldDisplay] : item[keyField]}
           </option>
         ))}
       </select>
