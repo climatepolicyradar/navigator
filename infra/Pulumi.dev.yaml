@@ -6,6 +6,8 @@ config:
     secure: AAABAIOgwzKhKiupZ2A3xljVNX7VZ2I/iBioWlqt66auYjiE3JkfsbMQzhOt6rp7L5RDwdwTLyGTUoRK
   infra:db_username: navigator_db_user
   infra:dev_domain: dev.app.climatepolicyradar.org
+  infra:dev_pdf_embed_key:
+    secure: AAABANNp3iik5ntI5SMh00A4v+mX/lDhGjwQ1hE3r6R0Db7WTnmetJUfzsLTuAPyGFDhBmYwsd509kMACVA5hw==
   infra:opensearch_password:
     secure: AAABALq5E+uTV97AuqlVSULUdMYsX7h66Ui0bGTURcgd79k44K78tmpI7Eo=
   infra:opensearch_url: https://search-navigator-alpha-g5fgeoght3wpmpk2jjxopbaaue.eu-west-2.es.amazonaws.com
