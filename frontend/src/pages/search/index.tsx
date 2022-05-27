@@ -227,6 +227,12 @@ const Search = () => {
   useEffect(() => {
     setCurrentCategoryIndex();
     setOffset(searchCriteria?.offset);
+    if (
+      searchCriteria?.keyword_filters?.categories &&
+      searchCriteria?.keyword_filters?.categories[0] === 'Litigation'
+    ) {
+      setPageCount(1);
+    }
     if (searchCriteria?.query_string.length) {
       resultsQuery.refetch();
       setNoQuery(false);
