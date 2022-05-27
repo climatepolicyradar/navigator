@@ -4,4 +4,7 @@ i18n: {
     defaultLocale: 'en',
   },
 pageExtensions: ['tsx', 'ts'],
+typescript: {
+    ignoreBuildErrors: true,
+}
 };

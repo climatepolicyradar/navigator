@@ -14,6 +14,7 @@ from app.core.config import (
     OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD,
     OPENSEARCH_INDEX_NAME_BOOST,
     OPENSEARCH_INDEX_DESCRIPTION_BOOST,
+    OPENSEARCH_INDEX_EMBEDDED_TEXT_BOOST,
     OPENSEARCH_INDEX_NAME_KEY,
     OPENSEARCH_INDEX_DESCRIPTION_KEY,
     OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY,
@@ -25,12 +26,13 @@ from app.core.config import (
     OPENSEARCH_USERNAME,
     OPENSEARCH_PASSWORD,
     OPENSEARCH_REQUEST_TIMEOUT,
-    OPENSEARCH_PREFERENCE,
     OPENSEARCH_USE_SSL,
     OPENSEARCH_VERIFY_CERTS,
     OPENSEARCH_SSL_WARNINGS,
 )
+from app.core.util import content_type_from_path, s3_to_cdn_url
 from app.db.schemas.search import (
+    FilterField,
     OpenSearchResponseDescriptionMatch,
     OpenSearchResponseNameMatch,
     OpenSearchResponseMatchBase,
@@ -47,9 +49,27 @@ _ENCODER = SentenceTransformer(
     model_name_or_path=OPENSEARCH_INDEX_ENCODER,
     cache_folder=os.environ.get("INDEX_ENCODER_CACHE_FOLDER", "/models"),
 )
+# Map a sort field type to the document key used by OpenSearch
 _SORT_FIELD_MAP: Mapping[SortField, str] = {
-    SortField.DATE: "action_date",
-    SortField.TITLE: "action_name",
+    SortField.DATE: "document_date",
+    SortField.TITLE: "document_name",
+}
+# TODO: Map a filter field type to the document key used by OpenSearch
+_FILTER_FIELD_MAP: Mapping[FilterField, str] = {
+    FilterField.SOURCE: "document_source_name",
+    FilterField.COUNTRY: "document_country_english_shortname",
+    FilterField.REGION: "document_region_english_shortname",
+    FilterField.SECTOR: "document_sector_name",
+    FilterField.TYPE: "document_type",
+    FilterField.CATEGORY: "document_category",
+    FilterField.KEYWORD: "document_keyword",
+    FilterField.HAZARD: "document_hazard_name",
+    FilterField.LANGUAGE: "document_language",
+    FilterField.FRAMEWORK: "document_framework_name",
+    # TODO: we need to fix the lookup API for instruments
+    FilterField.INSTRUMENT: "document_instrument_name",
+    # TODO: we still call this 'response' in the database. We might want to propagate the rename to 'topic' everywhere.
+    FilterField.TOPIC: "document_response_name",
 }
 
 
@@ -74,6 +94,7 @@ class OpenSearchQueryConfig:
 
     name_boost: int = OPENSEARCH_INDEX_NAME_BOOST
     description_boost: int = OPENSEARCH_INDEX_DESCRIPTION_BOOST
+    embedded_text_boost: int = OPENSEARCH_INDEX_EMBEDDED_TEXT_BOOST
     lucene_threshold: float = _innerproduct_threshold_to_lucene_threshold(
         OPENSEARCH_INDEX_INNER_PRODUCT_THRESHOLD
     )  # TODO: tune me separately for descriptions?
@@ -92,7 +113,6 @@ class OpenSearchConfig:
     password: str = OPENSEARCH_PASSWORD
     index_name: str = OPENSEARCH_INDEX
     request_timeout: int = OPENSEARCH_REQUEST_TIMEOUT
-    preference: str = OPENSEARCH_PREFERENCE
     use_ssl: bool = OPENSEARCH_USE_SSL
     verify_certs: bool = OPENSEARCH_VERIFY_CERTS
     ssl_show_warnings: bool = OPENSEARCH_SSL_WARNINGS
@@ -120,6 +140,7 @@ class OpenSearchConnection:
         self,
         search_request_body: SearchRequestBody,
         opensearch_internal_config: OpenSearchQueryConfig,
+        preference: Optional[str],
     ) -> SearchResponseBody:
         """Build & make an OpenSearch query based on the given request body."""
 
@@ -128,7 +149,7 @@ class OpenSearchConnection:
             opensearch_internal_config=opensearch_internal_config,
         )
 
-        opensearch_response_body = self.raw_query(opensearch_request_body)
+        opensearch_response_body = self.raw_query(opensearch_request_body, preference)
 
         return process_opensearch_response_body(
             opensearch_response_body,
@@ -136,7 +157,9 @@ class OpenSearchConnection:
             offset=search_request_body.offset,
         )
 
-    def raw_query(self, request_body: Dict[str, Any]) -> OpenSearchResponse:
+    def raw_query(
+        self, request_body: Dict[str, Any], preference: Optional[str]
+    ) -> OpenSearchResponse:
         """Query the configured OpenSearch instance with a JSON OpenSearch body."""
 
         if self._opensearch_connection is None:
@@ -157,7 +180,7 @@ class OpenSearchConnection:
             body=request_body,
             index=self._opensearch_config.index_name,
             request_timeout=self._opensearch_config.request_timeout,
-            preference=self._opensearch_config.preference,
+            preference=preference,
         )
         end = time.time()
 
@@ -174,7 +197,7 @@ class OpenSearchConnection:
         # else:
         #     passage_hit_qualifier = "unknown (unexpected)"
         #
-        # doc_hit_count = response['aggregations']['sample']['bucketcount']['count']
+        # doc_hit_count = response['aggregations']['no_unique_docs']['value']
         # f"returned {passage_hit_qualifier} {passage_hit_count} passage(s) in {doc_hit_count} document(s)"
 
         return OpenSearchResponse(
@@ -199,7 +222,7 @@ def _year_range_filter(
         policy_year_conditions["lte"] = f"31/12/{year_range[1]}"
 
     if policy_year_conditions:
-        return {"range": {"action_date": policy_year_conditions}}
+        return {"range": {"document_date": policy_year_conditions}}
 
     return None
 
@@ -209,7 +232,6 @@ def build_opensearch_request_body(
     opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
 ) -> Dict[str, Any]:
     """Build a complete OpenSearch request body."""
-
     search_config = opensearch_internal_config or OpenSearchQueryConfig(
         max_passages_per_doc=search_request.max_passages_per_doc,
     )
@@ -278,13 +300,9 @@ class QueryBuilder:
                                 },
                             },
                         },
-                        "bucketcount": {
-                            "stats_bucket": {
-                                "buckets_path": "top_docs._count",
-                            },
-                        },
                     },
                 },
+                "no_unique_docs": {"cardinality": {"field": "document_name_and_id"}},
             },
         }
 
@@ -375,6 +393,7 @@ class QueryBuilder:
                         },
                     ],
                     "minimum_should_match": 1,
+                    "boost": self._search_config.embedded_text_boost,
                 }
             },
         ]
@@ -411,11 +430,11 @@ class QueryBuilder:
             },
         ]
 
-    def with_keyword_filter(self, field: str, values: List[str]):
+    def with_keyword_filter(self, field: FilterField, values: List[str]):
         """Add a keyword filter to the configured query."""
 
         filters = self._request_body["query"]["bool"].get("filter") or []
-        filters.append({"terms": {field: values}})
+        filters.append({"terms": {_FILTER_FIELD_MAP[field]: values}})
         self._request_body["query"]["bool"]["filter"] = filters
 
     def with_year_range_filter(self, year_range: Tuple[Optional[int], Optional[int]]):
@@ -445,7 +464,7 @@ def process_opensearch_response_body(
 ) -> SearchResponseBody:
     opensearch_json_response = opensearch_response_body.raw_response
     search_response = SearchResponseBody(
-        hits=opensearch_json_response["aggregations"]["sample"]["bucketcount"]["count"],
+        hits=opensearch_json_response["aggregations"]["no_unique_docs"]["value"],
         query_time_ms=opensearch_response_body.request_time_ms,
         documents=[],
     )
@@ -503,17 +522,20 @@ def process_opensearch_response_body(
 
 
 def create_search_response_document(
-    passage_match: OpenSearchResponseMatchBase,
+    opensearch_match: OpenSearchResponseMatchBase,
 ):
     return SearchResponseDocument(
-        document_name=passage_match.action_name,
-        document_description=passage_match.action_description,
-        document_country_code=passage_match.action_country_code,
-        document_source_name=passage_match.action_source_name,
-        document_date=passage_match.action_date,
-        document_id=passage_match.document_id,
-        document_geography_english_shortname=passage_match.action_geography_english_shortname,
-        document_type_name=passage_match.action_type_name,
+        document_name=opensearch_match.document_name,
+        document_description=opensearch_match.document_description,
+        document_country_code=opensearch_match.document_country_code,
+        document_source_name=opensearch_match.document_source_name,
+        document_date=opensearch_match.document_date,
+        document_id=opensearch_match.document_id,
+        document_country_english_shortname=opensearch_match.document_country_english_shortname,
+        document_type=opensearch_match.document_type,
+        document_source_url=opensearch_match.document_source_url,
+        document_url=s3_to_cdn_url(opensearch_match.document_url),
+        document_content_type=content_type_from_path(opensearch_match.document_url),
         document_title_match=False,
         document_description_match=False,
         document_passage_matches=[],

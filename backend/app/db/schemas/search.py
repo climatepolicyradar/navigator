@@ -21,6 +21,23 @@ class SortField(str, Enum):
     TITLE = "title"
 
 
+class FilterField(str, Enum):
+    """Filter field for use building OpenSearch query body."""
+
+    SOURCE = "sources"
+    COUNTRY = "countries"
+    REGION = "regions"
+    INSTRUMENT = "instruments"
+    SECTOR = "sectors"
+    TYPE = "types"
+    CATEGORY = "categories"
+    TOPIC = "topics"
+    KEYWORD = "keywords"
+    HAZARD = "hazards"
+    LANGUAGE = "languages"
+    FRAMEWORK = "frameworks"
+
+
 class SearchRequestBody(BaseModel):
     """The request body expected by the search API endpoint."""
 
@@ -29,7 +46,7 @@ class SearchRequestBody(BaseModel):
     max_passages_per_doc: int = 10  # TODO: decide on default
 
     # TODO: Improve filters to allow generics & use filter types
-    keyword_filters: Optional[Dict[str, List[str]]] = None
+    keyword_filters: Optional[Dict[FilterField, List[str]]] = None
     year_range: Optional[Tuple[Optional[int], Optional[int]]] = None
 
     sort_field: Optional[SortField] = None
@@ -56,12 +73,12 @@ class SearchResponseDocument(BaseModel):
     document_source_name: str
     document_date: str
     document_id: int
-    document_geography_english_shortname: str
+    document_country_english_shortname: str
     document_description: str
-    document_type_name: str
-
-    # TODO: add PDF s3 location for serving
-    # document_location: str
+    document_type: str
+    document_source_url: str
+    document_url: str
+    document_content_type: str
 
     document_title_match: bool
     document_description_match: bool
@@ -81,28 +98,28 @@ class OpenSearchResponseMatchBase(BaseModel):
     """Describes matches returned by an OpenSearch query"""
 
     document_name: str
-    action_country_code: str
-    action_description: str
-    action_source_name: str
-    action_id: int
-    action_name: str
-    action_date: str
-    action_name_and_id: str
+    document_country_code: str
+    document_description: str
+    document_source_name: str
     document_id: int
-    action_geography_english_shortname: str
-    action_type_name: str
+    document_date: str
+    document_name_and_id: str
+    document_country_english_shortname: str
+    document_type: str
+    document_source_url: str
+    document_url: str
 
 
 class OpenSearchResponseNameMatch(OpenSearchResponseMatchBase):
     """Describes matches returned by OpenSearch on Document name."""
 
-    for_search_action_name: str
+    for_search_document_name: str
 
 
 class OpenSearchResponseDescriptionMatch(OpenSearchResponseMatchBase):
     """Describes matches returned by OpenSearch on Document description."""
 
-    for_search_action_description: str
+    for_search_document_description: str
 
 
 class OpenSearchResponsePassageMatch(OpenSearchResponseMatchBase):

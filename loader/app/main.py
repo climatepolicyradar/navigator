@@ -1,13 +1,17 @@
+import asyncio
 import logging.config
 import os
 from pathlib import Path
 
+import httpx
+
 from app.db.session import get_db
-from app.loader.extract.main import extract
-from app.loader.load.main import load  # noqa: F401
-from app.loader.transform.main import transform
+from app.loaders.loader_cclw_v2.extract.main import extract
+from app.loaders.loader_cclw_v2.load.main import load, warmup_local_caches
+from app.loaders.loader_cclw_v2.transform.main import transform
 from app.poster.main import post_all_to_backend_api
-from app.service.document_upload import upload_all_documents
+from app.service.context import Context
+from app.service.document_upload import handle_all_documents
 
 DEFAULT_LOGGING = {
     "version": 1,
@@ -40,6 +44,9 @@ logging.config.dictConfig(DEFAULT_LOGGING)
 
 logger = logging.getLogger(__file__)
 
+# transport retries are for connection errors, not 5XX
+transport = httpx.AsyncHTTPTransport(retries=3)
+
 
 def get_data_dir():
     data_dir = os.environ.get("DATA_DIR")
@@ -50,7 +57,7 @@ def get_data_dir():
     return data_dir
 
 
-def main():
+async def main():
     """ETL for policy data.
 
     Extact policy data from known CCLW data source (and later this will be event-driven)
@@ -61,17 +68,38 @@ def main():
     """
     data_dir = get_data_dir()
 
-    data = extract(data_dir)
+    # find the un-processed CSV in the provided data folder
+    csv_file = None
+    for root, dirs, files in os.walk(data_dir):
+        for file in files:
+            if file == "cclw_new_format_20220503.csv":
+                csv_file = os.path.join(root, file)
+                break
+    if not csv_file:
+        raise Exception(f"CSV not found at path {data_dir}")
+
+    data = extract(csv_file)
     policies = transform(data)  # noqa: F841
     for db in get_db():
-        load(db, policies)
+        # This timeout is large because there are some very large PDFs we need to upload
+        # TODO: how do we deal with the fact that we have massive PDFs with big loading times in the frontend?
+        async with httpx.AsyncClient(
+            transport=transport,
+            timeout=httpx.Timeout(300, pool=None),
+        ) as client:
+            ctx = Context(
+                db=db,
+                client=client,
+            )
+            warmup_local_caches()
+            # await load(ctx, policies)
 
-        # once all data has been loaded into database, upload files to cloud
-        upload_all_documents(db)
+            # once all data has been loaded into database, upload files to cloud
+            await handle_all_documents(ctx)
 
-        # This will normally be triggered separately, but we're
-        # expediting the load for alpha.
-        post_all_to_backend_api(db)
+            # This will normally be triggered separately, but we're
+            # expediting the load for alpha.
+            # post_all_to_backend_api(ctx)
 
 
 if __name__ == "__main__":
@@ -83,4 +111,4 @@ if __name__ == "__main__":
         load_dotenv("../../.env")
         load_dotenv("../../.env.local")
 
-    main()
+    asyncio.run(main())

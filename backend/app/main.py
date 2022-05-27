@@ -1,4 +1,5 @@
 import logging.config
+import os
 
 import uvicorn
 from fastapi import Depends, FastAPI
@@ -25,12 +26,20 @@ from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
 
-app = FastAPI(title=config.PROJECT_NAME, docs_url="/api/docs", openapi_url="/api")
+ENABLE_API_DOCS = os.getenv("ENABLE_API_DOCS", "False").lower() == "true"
+_docs_url = "/api/docs" if ENABLE_API_DOCS else None
+_openapi_url = "/api" if ENABLE_API_DOCS else None
+
+app = FastAPI(title=config.PROJECT_NAME, docs_url=_docs_url, openapi_url=_openapi_url)
 
 # Add CORS middleware to allow cross origin requests from any port
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=[
+        "http://localhost:3000",
+        "https://app.climatepolicyradar.org",
+        "https://dev.app.climatepolicyradar.org",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

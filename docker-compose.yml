@@ -46,7 +46,7 @@ services:
         condition: service_healthy
     healthcheck:
       test: curl -s -f backend:8888/health >/dev/null || exit 1
-      interval: 30s
+      interval: 5s
       timeout: 3s
       retries: 30
 
@@ -93,6 +93,8 @@ services:
       dockerfile: Dockerfile
       args:
         NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
+        NEXT_PUBLIC_LOGIN_API_URL: ${NEXT_PUBLIC_LOGIN_API_URL}
+        NEXT_PUBLIC_ADOBE_API_KEY: ${NEXT_PUBLIC_ADOBE_API_KEY}
     command: npm run dev
     ports:
       - 3000:3000

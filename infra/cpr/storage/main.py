@@ -30,7 +30,7 @@ class Storage:
             max_allocated_storage=0,  # disable autoscaling
             engine="postgres",
             engine_version="12.10",
-            instance_class="db.t3.micro",
+            instance_class="db.t3.xlarge",
             name=db_name,
             password=db_password,
             skip_final_snapshot=True,
@@ -43,4 +43,8 @@ class Storage:
 
         self.backend_database_connection_url = pulumi.Output.all(
             rds.address, db_password
-        ).apply(lambda out: f"postgresql://{db_username}:{out[1]}@{out[0]}/{db_name}")
+        ).apply(
+            lambda args: f"postgresql://{db_username}:{args[1]}@{args[0]}/{db_name}"
+        )
+
+        pulumi.export("rds.address", rds.address)

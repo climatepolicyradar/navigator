@@ -1,7 +1,7 @@
 import { useAuth } from '../../api/auth';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
-import Layout from '../../components/layouts/Admin';
+import Layout from '../../components/layouts/Main';
 import TextInput from '../../components/form-inputs/TextInput';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
@@ -37,7 +37,10 @@ const Account = () => {
   };
 
   return (
-    <Layout title={`Navigator | ${t('My account')}`} heading={t('My account')}>
+    <Layout
+      title={`Climate Policy Radar | ${t('My account')}`}
+      heading={t('My account')}
+    >
       <section>
         <div className="container py-4">
           <AccountNav />

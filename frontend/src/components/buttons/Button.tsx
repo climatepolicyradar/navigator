@@ -10,6 +10,7 @@ interface ButtonProps {
   extraClasses?: string;
   'data-cy'?: string;
   fullWidth?: boolean;
+  thin?: boolean;
 }
 
 const Button = ({
@@ -21,6 +22,7 @@ const Button = ({
   id,
   extraClasses = '',
   fullWidth = false,
+  thin = false,
   ...props
 }: ButtonProps) => {
   let colorClasses =
@@ -35,8 +37,9 @@ const Button = ({
         'bg-blue-500 border border-blue-500 text-white hover:bg-indigo-600 hover:border-indigo-600 hover:text-white';
       break;
     case 'clear':
-      colorClasses =
-        'clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white';
+      colorClasses = !disabled
+        ? 'clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white'
+        : '';
       break;
   }
 
@@ -47,9 +50,13 @@ const Button = ({
       type={type}
       disabled={disabled}
       data-cy={props['data-cy']}
-      className={`${colorClasses} button transition duration-300 px-4 py-3 rounded-3xl md:px-8 pointer-events-auto w-full ${extraClasses} ${
-        !fullWidth ? 'md:w-auto' : ''
-      }`}
+      className={`${colorClasses} ${
+        thin ? 'py-1' : 'py-3'
+      } button transition duration-300 px-4 rounded-3xl md:px-8 pointer-events-auto w-full ${
+        disabled
+          ? 'pointer-events-none bg-indigo-300 text-indigo-200 border-indigo-300 hover:bg-indigo-300 hover:text-indigo-200 hover:border-indigo-300'
+          : ''
+      } ${extraClasses} ${!fullWidth ? 'md:w-auto' : ''}`}
       {...props}
     >
       {children}

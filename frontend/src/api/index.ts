@@ -7,27 +7,26 @@ const apiClient = new ApiClient();
 interface AuthResponse {
   jwt: string;
 }
+interface ResetResponse {
+  value: boolean;
+}
 
 export interface User {
   id: number;
   email: string;
-  first_name?: string;
-  last_name?: string;
+  names: string;
+  job_role?: string;
+  location?: string;
+  affiliation_organisation?: string;
+  affiliation_type?: string[];
+  policy_type_of_interest?: string[];
+  geographies_of_interest?: string[];
+  data_focus_of_interest?: string[];
   is_active: boolean;
   is_superuser: boolean;
   error?: { error: string };
+  activated?: boolean;
 }
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
-
-export const signIn = async (credentials) => {
-  return await AuthClient.post(
-    'tokens',
-    `grant_type=&username=${credentials.email}&password=${credentials.password}&scope=&client_id=test&client_secret=super_secret`
-  )
-    .then(handleApiSuccess)
-    .catch(handleApiError);
-};
 
 // may not be using this so not rewriting it for now
 export const postFile = async (req: string, data): Promise<any> => {
@@ -46,52 +45,48 @@ export const postFile = async (req: string, data): Promise<any> => {
   });
 };
 
+export const signIn = async (credentials) => {
+  return await AuthClient.post(
+    '',
+    `username=${credentials.email}&password=${credentials.password}`
+  )
+    .then(handleApiSuccess)
+    .catch(handleApiError);
+};
+
 export async function handleApiSuccess(response) {
-  const data = await response.data;
-  if (response.statusText === 'OK') {
+  const data = await response;
+  if (response.status === 200) {
     return data;
   } else {
-    return Promise.reject(data);
+    // return Promise.reject(data);
+    handleApiError(data);
   }
 }
 export async function handleApiError(error) {
-  let status = { error: 'There was an error, please try again.' };
-  if (error.response.status === 401) {
-    status = { error: 'Invalid credentials' };
-  }
-  return status;
-}
-export async function handleApiResponse(response) {
-  const data = await response.data;
-  if (response.statusText === 'OK') {
-    return data;
-  } else {
-    return { error: true };
-  }
+  const message = (await error?.response?.data.detail)
+    ? error?.response?.data.detail
+    : 'There was an error, please try again later.';
+  return { error: message };
 }
 
-export function getUserProfile() {
-  return apiClient.get('/users/me', null);
+export async function getUserProfile() {
+  const user = await apiClient.get('/users/me', null);
+  return user;
 }
-
-// export async function loginWithEmailAndPassword(data): Promise<AuthResponse> {
-//   return window
-//     .fetch(`${API_URL}/auth/login`, {
-//       method: 'POST',
-//       body: JSON.stringify(data),
-//     })
-//     .then(handleApiResponse);
-// }
-
-// Not using this (yet), will need to rewrite
 
 export async function registerWithEmailAndPassword(
   data
 ): Promise<AuthResponse> {
-  return window
-    .fetch(`${API_URL}/auth/register`, {
-      method: 'POST',
-      body: JSON.stringify(data),
-    })
-    .then(handleApiResponse);
+  return await apiClient
+    .post(`/activations`, data)
+    .then(handleApiSuccess)
+    .catch(handleApiError);
+}
+
+export async function handleResetRequest(data: string): Promise<ResetResponse> {
+  return await apiClient
+    .post(`/password-reset/${data}`, null)
+    .then(handleApiSuccess)
+    .catch(handleApiError);
 }

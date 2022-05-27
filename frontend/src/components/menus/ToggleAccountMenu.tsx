@@ -1,7 +1,7 @@
 import { useState, useRef } from 'react';
 import AccountMenu from '../menus/AccountMenu';
 import useOutsideAlerter from '../../hooks/useOutsideAlerter';
-import { MenuIcon } from '../Icons';
+import { MenuIcon } from '../svg/Icons';
 
 const ToggleAccountMenu = ({ logout }) => {
   const [showMenu, setShowMenu] = useState(false);
@@ -12,11 +12,15 @@ const ToggleAccountMenu = ({ logout }) => {
     setShowMenu(!showMenu);
   };
   return (
-    <div ref={menuRef} className="ml-auto relative">
+    <div ref={menuRef} className="ml-auto relative z-20">
       <button data-cy="menu-icon" onClick={toggleMenu}>
         <MenuIcon />
       </button>
-      {showMenu && <AccountMenu setShowMenu={setShowMenu} logout={logout} />}
+      {showMenu && (
+        <div className="absolute right-0 z-50">
+          <AccountMenu setShowMenu={setShowMenu} logout={logout} />
+        </div>
+      )}
     </div>
   );
 };

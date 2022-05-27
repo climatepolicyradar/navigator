@@ -13,6 +13,9 @@ from app.db.models import (
     DocumentResponse,
     Hazard,
     DocumentHazard,
+    DocumentLanguage,
+    Keyword,
+    DocumentKeyword,
 )
 from app.service.api_client import post_document
 
@@ -72,14 +75,32 @@ def post_doc(db: Session, doc: Document) -> dict:
         )
         .all()
     )
+    keywords = (
+        db.query(Keyword)
+        .join(DocumentKeyword)
+        .filter(
+            (Keyword.id == DocumentKeyword.keyword_id)
+            & (DocumentKeyword.document_id == doc.id)
+        )
+        .all()
+    )
+    document_languages = (
+        db.query(DocumentLanguage).filter(DocumentLanguage.document_id == doc.id).all()
+    )
 
     payload = {
         "document": {
             "loaded_ts": doc.loaded_ts.isoformat(),
             "name": doc.name,
+            "description": doc.description,
             "source_url": doc.source_url,
-            "url": doc.url,
+            "url": doc.url or "",
+            "md5_sum": doc.md5_sum or "",
             "type_id": doc.type_id,  # this is from backend API lookup, so will exist remotely.
+            "source_id": doc.source_id,
+            "geography_id": doc.geography_id,  # this is from backend API lookup, so will exist remotely.
+            "category_id": doc.category_id,  # this is from backend API lookup, so will exist remotely.
+            "publication_ts": doc.publication_ts.isoformat(),
         },
         "source_id": doc.source_id,
         "events": [it.as_dict() for it in events],
@@ -88,7 +109,8 @@ def post_doc(db: Session, doc: Document) -> dict:
         "frameworks": [it.as_dict() for it in frameworks],
         "responses": [it.as_dict() for it in responses],
         "hazards": [it.as_dict() for it in hazards],
-        # "language_codes": [],  # TODO
+        "keywords": [it.as_dict() for it in keywords],
+        "language_ids": [it.language_id for it in document_languages],
     }
 
     response = post_document(payload)

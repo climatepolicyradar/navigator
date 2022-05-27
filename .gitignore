@@ -1,3 +1,6 @@
+# Database dump
+backend_db_dump.dump
+
 # Adobe PDF services keys
 pdfservices-credentials.json
 private.key
@@ -18,6 +21,9 @@ certificate_pub.crt
 # next.js
 /frontend/.next/
 /frontend/out/
+
+# https certificate for localhost (front end)
+/frontend/certificates
 
 #design files
 /psd/

@@ -11,6 +11,63 @@ from cpr.deployment_resources.main import DeploymentResources, default_tag
 from cpr.plumbing.main import Plumbing
 from cpr.storage.main import Storage
 
+# for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
+from cpr.util.bluegreen import (
+    get_app_domain_for_current_stack,
+    get_pdf_embed_key_for_current_stack,
+)
+
+DOCKER_COMPOSE_TEMPLATE = """version: '3.7'
+
+services:
+
+  nginx:
+    image: {nginx_image}
+    mem_limit: 128m
+    ports:
+      - 80:80
+    volumes:
+      - "${{EB_LOG_BASE_DIR}}/nginx:/var/log/nginx"
+    depends_on:
+      - backend
+      - frontend
+
+  backend:
+    image: {backend_image}
+    mem_limit: 4096m
+    command: python app/main.py
+    ports:
+      - 8888:8888
+    environment:
+      PYTHONPATH: .
+      PORT: 8888
+      OPENSEARCH_INDEX: navigator
+      DATABASE_URL: {database_url}
+      SECRET_KEY: {secret_key}
+      OPENSEARCH_USER: {opensearch_user}
+      OPENSEARCH_PASSWORD: {opensearch_password}
+      OPENSEARCH_URL: {opensearch_url}
+      PUBLIC_APP_URL: {public_app_url}
+      SENDGRID_API_KEY: {sendgrid_api_token}
+      SENDGRID_FROM_EMAIL: {sendgrid_from_email}
+      SENDGRID_ENABLED: "{sendgrid_enabled}"
+
+  frontend:
+    image: {frontend_image}
+    mem_limit: 256m
+    command: npm run start
+    environment:
+      PORT: 3000
+      # not sure if these 3 need to be here, as it's already baked into the image.
+      NEXT_PUBLIC_API_URL: {frontend_api_url}
+      NEXT_PUBLIC_LOGIN_API_URL: {frontend_api_url_login}
+      NEXT_PUBLIC_ADOBE_API_KEY: {frontend_pdf_embed_key}
+    ports:
+      - 3000:3000
+    volumes:
+      - "${{EB_LOG_BASE_DIR}}/frontend:/root/.npm/_logs"
+"""
+
 
 class Backend:
     """Deploys all resources necessary for backend API to function."""
@@ -21,6 +78,25 @@ class Backend:
         plumbing: Plumbing,
         storage: Storage,
     ):
+        # get all config
+        config = pulumi.Config()
+        backend_secret_key = config.require_secret("backend_secret_key")
+        opensearch_user = config.require("opensearch_user")
+        opensearch_password = config.require_secret("opensearch_password")
+        opensearch_url = config.require("opensearch_url")
+        pulumi.export("opensearch_url", opensearch_url)
+        sendgrid_api_token = config.require("sendgrid_api_token")
+        sendgrid_from_email = config.require("sendgrid_from_email")
+        sendgrid_enabled = config.require("sendgrid_enabled")
+        app_domain_for_current_stack = get_app_domain_for_current_stack()
+        pulumi.export("app_domain_for_current_stack", app_domain_for_current_stack)
+        public_app_url = f"https://{app_domain_for_current_stack}"
+        frontend_api_url = f"https://{app_domain_for_current_stack}/api/v1"
+        pulumi.export("frontend_api_url", frontend_api_url)
+        frontend_api_url_login = f"https://{app_domain_for_current_stack}/api/tokens"
+        pulumi.export("frontend_api_url_login", frontend_api_url_login)
+        frontend_pdf_embed_key = get_pdf_embed_key_for_current_stack()
+
         # context has to be one level below 'backend' as backend Dockerfile references '../common'
         docker_context = Path(os.getcwd()) / ".."
         docker_context = docker_context.resolve().as_posix()
@@ -49,7 +125,11 @@ class Backend:
             build=docker.DockerBuild(
                 context=docker_context,
                 dockerfile=frontend_dockerfile,
-                args={"NEXT_PUBLIC_API_URL": "https://api.climatepolicyradar.org/"},
+                args={
+                    "NEXT_PUBLIC_API_URL": frontend_api_url,
+                    "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
+                    "NEXT_PUBLIC_ADOBE_API_KEY": frontend_pdf_embed_key,
+                },
             ),
             image_name=deployment_resources.ecr_repo.repository_url,
             skip_push=False,
@@ -72,53 +152,48 @@ class Backend:
             registry=deployment_resources.docker_registry,
         )
 
-        config = pulumi.Config()
-        backend_secret_key = config.require_secret("backend_secret_key")
-
-        docker_compose_template = """version: '3.7'
-
-services:
-
-  nginx:
-    image: %s
-    mem_limit: 128m
-    ports:
-      - 80:80
-    volumes:
-      - "${EB_LOG_BASE_DIR}/nginx:/var/log/nginx"
-    depends_on:
-      - backend
-      - frontend
-
-  backend:
-    image: %s
-    mem_limit: 256m
-    command: python app/main.py
-    environment:
-      PYTHONPATH: .
-      DATABASE_URL: %s
-      SECRET_KEY: %s
-
-  frontend:
-    image: %s
-    mem_limit: 256m
-    command: npm run prod
-    volumes:
-      - "${EB_LOG_BASE_DIR}/frontend:/root/.npm/_logs"
-        """
-
-        def fill_template(arg):
-            return docker_compose_template % (arg[0], arg[1], arg[2], arg[3], arg[4])
+        def fill_template(arg_list):
+            template_args = dict(
+                zip(
+                    [
+                        "nginx_image",
+                        "backend_image",
+                        "frontend_image",
+                        "database_url",
+                        "secret_key",
+                        "opensearch_user",
+                        "opensearch_password",
+                        "opensearch_url",
+                        "sendgrid_api_token",
+                        "sendgrid_from_email",
+                        "sendgrid_enabled",
+                        "public_app_url",
+                        "frontend_api_url",
+                        "frontend_api_url_login",
+                        "frontend_pdf_embed_key",
+                    ],
+                    arg_list,
+                )
+            )
+            return DOCKER_COMPOSE_TEMPLATE.format(**template_args)
 
         docker_compose_file = pulumi.Output.all(
             nginx_image.image_name,
             self.backend_image.image_name,
+            frontend_image.image_name,
             storage.backend_database_connection_url,
             backend_secret_key,
-            frontend_image.image_name,
+            opensearch_user,
+            opensearch_password,
+            opensearch_url,
+            sendgrid_api_token,
+            sendgrid_from_email,
+            sendgrid_enabled,
+            public_app_url,
+            frontend_api_url,
+            frontend_api_url_login,
+            frontend_pdf_embed_key,
         ).apply(fill_template)
-
-        pulumi.export("docker_compose_file", docker_compose_file)
 
         def create_deploy_resource(manifest):
             # TODO delete this file if it exists
@@ -201,7 +276,7 @@ services:
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:ec2:instances",
                     name="InstanceTypes",
-                    value="t3.micro",  # https://aws.amazon.com/ec2/instance-types/
+                    value="t3.large",  # https://aws.amazon.com/ec2/instance-types/
                 ),
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:autoscaling:launchconfiguration",
@@ -229,9 +304,14 @@ services:
                     value="enhanced",
                 ),
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
-                    namespace="aws:elasticbeanstalk:application:environment",
-                    name="SECRET_KEY",
-                    value=backend_secret_key,
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeType",
+                    value="gp2",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeSize",
+                    value="16",  # default is 8GB, but we're making space for pytorch
                 ),
             ],
         )

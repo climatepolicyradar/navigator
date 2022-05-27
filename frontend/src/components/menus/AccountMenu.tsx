@@ -1,24 +1,20 @@
-import Link from 'next/link';
+import DropdownMenuItem from './DropdownMenuItem';
+import DropdownMenuWrapper from './DropdownMenuWrapper';
 
 const AccountMenu = ({ setShowMenu, logout }) => {
   return (
-    <div
-      data-cy="account-menu"
-      className="absolute rounded right-0 bg-white shadow-md py-2 w-48"
-    >
-      <Link href="/account">
-        <a
-          onClick={() => setShowMenu(false)}
-          className="px-6 pb-2 block border-b border-indigo-200"
-        >
-          Account
-        </a>
-      </Link>
-      <a onClick={logout} className="cursor-pointer px-6 mt-2 block">
-        {' '}
-        Log out
-      </a>
-    </div>
+    <DropdownMenuWrapper setShowMenu={setShowMenu}>
+      <DropdownMenuItem
+        href="https://climatepolicyradar.org"
+        title="About us"
+        target="_blank"
+        first={true}
+      />
+      <DropdownMenuItem href="/methodology" title="Methodology" />
+      <DropdownMenuItem href="/account" title="My account" />
+
+      <DropdownMenuItem onClick={logout} title="Sign out" />
+    </DropdownMenuWrapper>
   );
 };
 export default AccountMenu;

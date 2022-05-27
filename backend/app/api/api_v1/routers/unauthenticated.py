@@ -1,8 +1,9 @@
 import logging
+from typing import cast
 
 from fastapi import APIRouter, Depends, Request, HTTPException
 
-from app.core.email import send_email, EmailType
+from app.core.email import send_password_changed_email, send_password_reset_email
 from app.core.ratelimit import limiter
 from app.db.crud.user import (
     get_user,
@@ -32,9 +33,9 @@ async def set_password(
     """Activates a new user and sets a password."""
 
     reset_token = get_password_reset_token_by_token(db, payload.token)
-    user = get_user(db, reset_token.user_id)
+    user = get_user(db, cast(int, reset_token.user_id))
     activated_user = activate_user(db, user, reset_token, payload.password)
-    send_email(EmailType.password_changed, activated_user)
+    send_password_changed_email(activated_user)
     return activated_user
 
 
@@ -47,7 +48,7 @@ async def request_password_reset(
     email: str,
     db=Depends(get_db),
 ):
-    """Deletes a password, and kicks off password-reset flow.
+    """Kicks off password-reset flow.
 
     This is the unauthenticated flow, which swallows a lot of the underlying exceptions,
     so as not to leak data.
@@ -57,13 +58,16 @@ async def request_password_reset(
 
     try:
         user = get_user_by_email(db, email)
-        try:
-            _ = get_password_reset_token_by_user_id(db, user.id)
-            # if a token existed, hasn't expired, and hasn't been redeemed, then do nothing
-        except HTTPException:
-            # otherwise, create new token
-            password_reset_token = create_password_reset_token(db, user.id)
-            send_email(EmailType.password_reset_requested, user, password_reset_token)
+        password_reset_token = get_password_reset_token_by_user_id(
+            db,
+            cast(int, user.id),
+        )
+        if password_reset_token is None:
+            password_reset_token = create_password_reset_token(
+                db,
+                cast(int, user.id),
+            )
+        send_password_reset_email(user, password_reset_token)
     except HTTPException:
         # if the user for this email couldn't be found, don't 404
         pass

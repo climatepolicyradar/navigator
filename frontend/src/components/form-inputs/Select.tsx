@@ -1,6 +1,6 @@
 import React from 'react';
 import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
-import FormFieldError from '../text-blocks/Error';
+import FormFieldError from '../blocks/Error';
 
 interface SelectProps {
   id?: string;
@@ -41,11 +41,10 @@ const Select = ({
         selected
         multiple={multiple}
         data-cy={dataCy}
-        onChange={onChange}
         className={`border ${
           errors[name] ? 'border-red-500' : 'border-gray-300'
         }`}
-        {...register(name)}
+        {...register(name, { onChange: onChange })}
       >
         {children}
       </select>

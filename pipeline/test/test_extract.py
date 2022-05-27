@@ -13,8 +13,6 @@ from extract.document import Document, Page, TextBlock
 from extract.extract import DocumentEmbeddedTextExtractor, AdobeAPIExtractor
 from extract.utils import split_pdf
 
-from processor.postprocessor import HyphenationPostProcessor
-
 
 @pytest.fixture
 def test_pdf_path() -> Path:
@@ -51,7 +49,7 @@ def document():
         page_id=1,
     )
 
-    return Document([page], "test_document.pdf")
+    return Document([page], "test_document.pdf", "86a2bb05b4358f8ce654f4121d4f7874")
 
 
 def test_document_save_json(document, tmpdir):
@@ -101,6 +99,7 @@ def test_document_save_json(document, tmpdir):
             }
         ],
         "filename": "test_document.pdf",
+        "md5hash": "86a2bb05b4358f8ce654f4121d4f7874",
     }
 
 
@@ -151,7 +150,7 @@ def test_embedded_text_extractor(test_pdf_path, tmp_path):
     doc = text_extractor.extract(test_pdf_path, data_output_dir)
 
     # Check that the filename matches the filename of the pdf
-    assert doc.filename == test_pdf_path.name
+    assert doc.filename == test_pdf_path.name.strip(".pdf")
 
     # Check that 6 pages have been returned in the document
     assert len(doc.pages) == 6

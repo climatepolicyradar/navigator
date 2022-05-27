@@ -28,13 +28,13 @@ class ApiClient {
   get(url, params) {
     return this.axiosClient
       .get(`${this.baseUrl}${url}`, { params })
-      .then((res) => res.data)
+      .then((res) => res)
       .catch((err) => Promise.reject(err));
   }
-  post(url, values) {
+  post(url, values, config = {}) {
     return this.axiosClient
-      .post(`${this.baseUrl}${url}`, values)
-      .then((res) => res.data)
+      .post(`${this.baseUrl}${url}`, values, config)
+      .then((res) => res)
       .catch((err) => {
         console.log(err);
         return Promise.reject(err);
@@ -43,7 +43,7 @@ class ApiClient {
   put(url, values) {
     return this.axiosClient
       .put(`${this.baseUrl}${url}`, values)
-      .then((res) => res.data)
+      .then((res) => res)
       .catch((err) => {
         console.log(err);
         return Promise.reject(err);
@@ -52,7 +52,7 @@ class ApiClient {
 }
 
 const AuthClient = axios.create({
-  baseURL: 'http://localhost:8000/api/',
+  baseURL: process.env.NEXT_PUBLIC_LOGIN_API_URL,
   responseType: 'json',
   headers: {
     accept: 'application/json',

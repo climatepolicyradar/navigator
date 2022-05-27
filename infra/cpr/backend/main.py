@@ -97,6 +97,7 @@ class Backend:
         opensearch_user = config.require("opensearch_user")
         opensearch_password = config.require_secret("opensearch_password")
         opensearch_url = config.require("opensearch_url")
+        sendgrid_api_key = config.require("sendgrid_api_key")
 
         backend_eb_env = aws.elasticbeanstalk.Environment(
             "navigator-api-environment",
@@ -139,7 +140,7 @@ class Backend:
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:ec2:instances",
                     name="InstanceTypes",
-                    value="t3.medium",  # https://aws.amazon.com/ec2/instance-types/
+                    value="t3.large",  # https://aws.amazon.com/ec2/instance-types/
                 ),
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:autoscaling:launchconfiguration",
@@ -211,6 +212,11 @@ class Backend:
                     namespace="aws:elasticbeanstalk:application:environment",
                     name="OPENSEARCH_INDEX",
                     value="navigator",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:elasticbeanstalk:application:environment",
+                    name="SENDGRID_API_KEY",
+                    value=sendgrid_api_key,
                 ),
             ],
         )

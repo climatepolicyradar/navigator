@@ -1,21 +1,23 @@
 import React, { ReactNode } from 'react';
-import Link from 'next/link';
 import Head from 'next/head';
 import Header from '../headers/Main';
 import Banner from '../banner/Main';
+import Footer from '../footer/Footer';
 
 type Props = {
   children?: ReactNode;
   title?: string;
-  heading: string;
+  heading?: string;
+  screenHeight?: boolean;
 };
 
 const Layout = ({
   children,
   title = 'This is the default title',
   heading = '',
+  screenHeight = false,
 }: Props) => (
-  <div>
+  <div className="h-full flex flex-col">
     <Head>
       <title>{title}</title>
       <meta charSet="utf-8" />
@@ -25,13 +27,11 @@ const Layout = ({
       Skip to content
     </a>
     <Header />
-    <main>
-      <Banner heading={heading} />
+    <main className={`${screenHeight ? 'h-screen' : ''} flex flex-col flex-1`}>
+      <Banner />
       {children}
     </main>
-    <footer className="my-8">
-      <hr />
-    </footer>
+    <Footer />
   </div>
 );
 

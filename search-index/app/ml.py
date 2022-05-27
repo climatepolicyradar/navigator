@@ -59,7 +59,9 @@ class SBERTEncoder(SentenceEncoder):
         Returns:
             np.ndarray
         """
-        return self.encoder.encode(text_batch, batch_size=batch_size)
+        return self.encoder.encode(
+            text_batch, batch_size=batch_size, show_progress_bar=False
+        )
 
     @property
     def dimension(self) -> int:
