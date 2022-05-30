@@ -178,7 +178,9 @@ const Search = () => {
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
-  const handleDocumentClick = (id) => {
+  const handleDocumentClick = (e: any) => {
+    if (!e.target.dataset.docid) return;
+    const id = e.target.dataset.docid;
     updateDocument.mutate(id);
     setShowSlideout(!showSlideout);
     setShowPDF(false);
@@ -375,7 +377,7 @@ const Search = () => {
                   </div>
                 </div>
 
-                <div className="md:pl-8 relative">
+                <div className="md:pl-8 relative" onClick={handleDocumentClick}>
                   {resultsQuery.isFetching || !resultsQuery.isSuccess ? (
                     <div className="w-full flex justify-center h-96">
                       <Loader />
@@ -388,7 +390,6 @@ const Search = () => {
                     <SearchResultList
                       searchCriteria={searchCriteria}
                       documents={documents}
-                      handleDocumentClick={handleDocumentClick}
                     />
                   )}
                 </div>
