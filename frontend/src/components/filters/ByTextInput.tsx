@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import SuggestList from './SuggestList';
 import '../../pages/i18n';
 import { useTranslation } from 'react-i18next';
+import { sortData } from '../../utils/sorting';
 
 interface ByTextInputProps {
   title: string;
@@ -38,7 +39,7 @@ const ByTextInput = ({
         selectedList.indexOf(item[keyField]) === -1
       );
     });
-    setSuggestList(filteredList);
+    setSuggestList(sortData(filteredList, keyField));
   };
   useEffect(() => {
     suggest(input);

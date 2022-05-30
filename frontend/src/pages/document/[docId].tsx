@@ -13,12 +13,14 @@ import RelatedDocument from '../../components/blocks/RelatedDocument';
 import Tooltip from '../../components/tooltip';
 import { convertDate } from '../../utils/timedate';
 import { ExternalLinkIcon } from '../../components/svg/Icons';
+import useSortAndStructure from '../../hooks/useSortAndStructure';
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
   const [summary, setSummary] = useState('');
   const { t, i18n, ready } = useTranslation('searchStart');
   const router = useRouter();
+  const structureData = useSortAndStructure();
   const collapsedLength = 1400;
 
   const documentQuery = useDocumentDetail(router.query.docId as string);
@@ -211,7 +213,7 @@ const DocumentCoverPage = () => {
                     id="instruments-tt"
                     tooltip="The interventions or measures contained in the document, e.g. taxes or standards. For more information, see our Methodology page"
                     heading="Instruments"
-                    list={page.instruments}
+                    list={structureData(page.instruments)}
                   />
                 )}
                 {page.events.length > 0 && (
