@@ -37,6 +37,7 @@ import useFilteredCountries from '../../hooks/useFilteredCountries';
 import SearchResultList from '../../components/blocks/SearchResultList';
 import { initialSearchCriteria } from '../../constants/searchCriteria';
 import useOutsideAlerter from '../../hooks/useOutsideAlerter';
+import useSortAndStructure from '../../hooks/useSortAndStructure';
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -49,6 +50,7 @@ const Search = () => {
   const [noQuery, setNoQuery] = useState(false);
   const [categoryIndex, setCategoryIndex] = useState(0);
 
+  const structureData = useSortAndStructure();
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
@@ -57,6 +59,7 @@ const Search = () => {
   const router = useRouter();
   const slideoutRef = useRef(null);
 
+  // close slideout panel when clicking outside of it
   useOutsideAlerter(slideoutRef, (e) => {
     if (e.target.nodeName === 'BUTTON') {
       return;
@@ -223,6 +226,12 @@ const Search = () => {
   useEffect(() => {
     setCurrentCategoryIndex();
     setOffset(searchCriteria?.offset);
+    if (
+      searchCriteria?.keyword_filters?.categories &&
+      searchCriteria?.keyword_filters?.categories[0] === 'Litigation'
+    ) {
+      setPageCount(1);
+    }
     if (searchCriteria?.query_string.length) {
       resultsQuery.refetch();
       setNoQuery(false);
@@ -313,7 +322,7 @@ const Search = () => {
                       filteredCountries={filteredCountries}
                       sectors={sectors}
                       documentTypes={documentTypes}
-                      instruments={instruments}
+                      instruments={structureData(instruments)}
                     />
                   )}
                 </div>
