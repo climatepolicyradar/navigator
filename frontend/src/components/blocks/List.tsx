@@ -5,7 +5,7 @@ const List = ({ list }) => {
         <li key={`listitem${index}`}>
           {item.name}{' '}
           {item?.children && (
-            <ul className="ml-4">
+            <ul className="ml-4 list-disc list-outside mb-4">
               {item.children.map((child, index) => (
                 <li key={`listchilditem${index}`}>{child.name}</li>
               ))}{' '}

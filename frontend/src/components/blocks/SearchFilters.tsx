@@ -7,6 +7,7 @@ import Tooltip from '../tooltip';
 import MultiList from '../filters/MultiList';
 import ByRange from '../filters/ByRange';
 import { minYear } from '../../constants/timedate';
+import BySelectGroup from '../filters/BySelectGroup';
 
 const SearchFilters = ({
   handleFilterChange,
@@ -141,7 +142,7 @@ const SearchFilters = ({
           <div className="absolute top-0 right-0 z-20">
             <Tooltip id="instrument" tooltip={instrumentTooltip} />
           </div>
-          <BySelect
+          <BySelectGroup
             list={instruments}
             onChange={handleFilterChange}
             defaultValue={
