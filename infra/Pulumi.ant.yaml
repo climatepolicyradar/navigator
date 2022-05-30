@@ -9,7 +9,7 @@ config:
   infra:dev_pdf_embed_key:
     secure: AAABAHguBbfjL8Z+j/ptGWk4BjJ43+RAQeQZfWSh6l51uPov+prNuSkUpo2tqGJTDMwa6+PLGHpOYAWIbedHzQ==
   infra:opensearch_password:
-    secure: AAABACpmQSD5m7Nta16jIdVuBTtcE8IevzI44dXT3/W8hCSA6rEbz8nVv2/JtdYo4wrZYaWaQ3YNHcYVRmaIQTA80AryoI5BFY/ZByEZ
+    secure: AAABACOeZAXubeoFLu8Vo83fqorH9sjVyGoBhuZPGLEIpdmiEdFQv0WqjTE=
   infra:opensearch_url: https://search-opensearch-dev-temp-nzkttufrxxmadvl37l4teezwri.eu-west-2.es.amazonaws.com
   infra:opensearch_user: cpr-master
   infra:prod_domain: app.climatepolicyradar.org

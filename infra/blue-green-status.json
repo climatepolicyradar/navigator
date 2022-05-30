@@ -1,4 +1,4 @@
 {
-  "dev": "prod",
-  "ant": "dev"
+  "dev": "dev",
+  "ant": "prod"
 }
