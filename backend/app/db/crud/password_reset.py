@@ -49,8 +49,8 @@ def get_password_reset_token_by_user_id(
                 PasswordResetToken.expiry_ts
                 < (datetime.datetime.utcnow() + datetime.timedelta(minutes=10))
             )
-            | (PasswordResetToken.is_redeemed is True)
-            | (PasswordResetToken.is_cancelled is True)
+            | (PasswordResetToken.is_redeemed == True)  # noqa: E712
+            | (PasswordResetToken.is_cancelled == True)  # noqa: E712
         )
     )
     if old_password_reset_tokens:
