@@ -68,18 +68,22 @@ const Search = () => {
   });
 
   // lookups/filters
+  const documentTypesQuery: any = useLookups('document_types');
+  const { data: { data: documentTypes = {} } = {} } = documentTypesQuery;
+
+  const geosQuery: any = useNestedLookups('geographies', '', 2);
   const {
-    nestedLookupsQuery: geosQuery,
-    level1: regions,
-    level2: countries,
-  } = useNestedLookups('geographies', '', 2);
+    data: { data: { level1: regions = [], level2: countries = [] } = {} } = {},
+  } = geosQuery;
+
   const { data: filteredCountries } = useFilteredCountries(countries);
-  const { nestedLookupsQuery: sectorsQuery, level1: sectors } =
-    useNestedLookups('sectors', 'name');
-  const { lookupsQuery: documentTypesQuery, list: documentTypes } =
-    useLookups('document_types');
-  const { nestedLookupsQuery: instrumentsQuery, level1: instruments } =
-    useNestedLookups('instruments', 'name');
+
+  const sectorsQuery: any = useNestedLookups('sectors', 'name');
+  const { data: { data: { level1: sectors = [] } = {} } = {} } = sectorsQuery;
+
+  const instrumentsQuery: any = useNestedLookups('instruments', 'name');
+  const { data: { data: { level1: instruments = [] } = {} } = {} } =
+    instrumentsQuery;
 
   // search request
   const {
@@ -181,7 +185,10 @@ const Search = () => {
   const handleDocumentClick = (e: any) => {
     if (!e.target.dataset.docid) return;
     const id = e.target.dataset.docid;
-    updateDocument.mutate(id);
+    if (!showSlideout) {
+      // only mutate if panel is being opened
+      updateDocument.mutate(id);
+    }
     setShowSlideout(!showSlideout);
     setShowPDF(false);
   };
@@ -263,7 +270,7 @@ const Search = () => {
             show={showSlideout}
             setShowSlideout={setShowSlideout}
           >
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full relative">
               <DocumentSlideout
                 document={document.data}
                 setShowPDF={setShowPDF}
@@ -383,7 +390,7 @@ const Search = () => {
                       <Loader />
                     </div>
                   ) : noQuery ? (
-                    <p className="font-bold text-red-500">
+                    <p className="font-bold text-red-500 h-96">
                       Please enter some search terms.
                     </p>
                   ) : (
