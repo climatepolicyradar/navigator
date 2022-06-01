@@ -4,10 +4,9 @@ import { convertDate } from '../../utils/timedate';
 
 interface SearchResultProps {
   document: any;
-  onClick(): void;
 }
 
-const SearchResult = ({ document, onClick }: SearchResultProps) => {
+const SearchResult = ({ document }: SearchResultProps) => {
   const formatDate = () => {
     const eudate = document.document_date;
     const dateArr = eudate.split('/');
@@ -46,8 +45,8 @@ const SearchResult = ({ document, onClick }: SearchResultProps) => {
           <div className="my-2 font-medium">
             <span className="text-indigo-500">Click here to see &nbsp;</span>
             <button
+              data-docid={document.document_id}
               className="font-medium text-base text-indigo-600 underline text-sm mt-3 transition duration-300 hover:text-blue-500"
-              onClick={onClick}
             >
               {document.document_passage_matches.length} match
               {`${

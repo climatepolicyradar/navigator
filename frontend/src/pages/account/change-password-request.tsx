@@ -37,8 +37,9 @@ const Account = () => {
     reset();
   };
   const submitForm = async (data) => {
-    console.log(data);
-    const status = await resetRequest(encodeURIComponent(data.email));
+    // console.log(data);
+    const email = data.email.toLowerCase();
+    const status = await resetRequest(encodeURIComponent(email));
     setStatus(status);
   };
 

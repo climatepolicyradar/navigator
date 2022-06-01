@@ -53,7 +53,7 @@ const Account = () => {
     reset,
     getValues,
     setValue,
-    formState: { isSubmitting, errors, isSubmitSuccessful, isValid, isDirty },
+    formState: { isSubmitting, errors, isDirty },
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: initialValues,
@@ -73,7 +73,6 @@ const Account = () => {
     setGeos(arr);
   };
   const submitForm = (data) => {
-    console.log(data);
     updateAccount.mutate(data);
   };
 
@@ -130,6 +129,17 @@ const Account = () => {
             <>
               <AccountNav />
               <AdminSubhead heading={t('My details')} />
+
+              {updateAccount.error && (
+                <p className="font-bold text-red-500 mt-6 text-lg">
+                  There was an error, please try again later.
+                </p>
+              )}
+              {updateAccount.isSuccess && (
+                <p className="font-bold text-green-500 mt-6 text-lg">
+                  Account updated.
+                </p>
+              )}
               <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                 <div className="form-row__border md:flex">
                   <label className="flex-shrink-0 md:w-1/4">

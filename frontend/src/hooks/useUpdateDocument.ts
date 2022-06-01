@@ -8,7 +8,8 @@ export default function useUpdateDocument() {
     const {
       data: { documents },
     }: any = queryClient.getQueryData('searches');
-    const document = documents.find((item) => item.document_id === value);
+    const id = Number(value);
+    const document = documents.find((item) => item.document_id === id);
     // add fileid for Adobe PDF embed
     const newDocument = { ...document, document_fileid: uuidv4() };
     return queryClient.setQueryData('document', (old) => {

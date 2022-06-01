@@ -1,10 +1,6 @@
 import SearchResult from './SearchResult';
 
-const SearchResultList = ({
-  searchCriteria,
-  documents,
-  handleDocumentClick,
-}) => {
+const SearchResultList = ({ searchCriteria, documents }) => {
   if (
     searchCriteria?.keyword_filters?.categories &&
     searchCriteria?.keyword_filters?.categories[0] === 'Litigation'
@@ -52,10 +48,7 @@ const SearchResultList = ({
   }
   return documents?.map((doc: any, index: number) => (
     <div key={index} className="my-16 first:md:mt-4">
-      <SearchResult
-        document={doc}
-        onClick={() => handleDocumentClick(doc.document_id)}
-      />
+      <SearchResult document={doc} />
     </div>
   ));
 };

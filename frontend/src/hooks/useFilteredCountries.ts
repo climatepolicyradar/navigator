@@ -8,7 +8,7 @@ export default function useFilteredCountries(all) {
     () => {
       const existingCountries: any =
         queryClient.getQueryData('filteredCountries');
-      return existingCountries.length ? existingCountries : all;
+      return existingCountries?.length ? existingCountries : all;
     },
     {
       refetchOnWindowFocus: false,

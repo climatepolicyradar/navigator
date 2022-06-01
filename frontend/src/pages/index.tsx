@@ -28,11 +28,10 @@ const IndexPage = () => {
   (sets suggest list that appears when typing a jurisdiction)
   when returning to this page from a previous search
   */
+  const geosQuery: any = useNestedLookups('geographies', '', 2);
   const {
-    nestedLookupsQuery: geosQuery,
-    level1: regions,
-    level2: countries,
-  } = useNestedLookups('geographies', '', 2);
+    data: { data: { level1: regions = [], level2: countries = [] } = {} } = {},
+  } = geosQuery;
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
 
