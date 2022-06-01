@@ -11,6 +11,7 @@ import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from '../../components/form-inputs/TextInput';
 import Button from '../../components/buttons/Button';
 import { useAuth } from '../../api/auth';
+import Link from 'next/link';
 
 const ActivateAccount = () => {
   const [status, setStatus] = useState(null);
@@ -99,6 +100,14 @@ const ActivateAccount = () => {
                       {t('Activate')}
                     </Button>
                   </div>
+                  <p className="mt-8 text-white text-center">
+                    {t('Already have an account?')} &nbsp;
+                    <Link href="/auth/signin">
+                      <a className="text-blue-500 hover:text-white mt-4 transition duration-300">
+                        {t('Click here to sign in')}
+                      </a>
+                    </Link>
+                  </p>
                 </form>
               </AuthWrapper>
             </div>
