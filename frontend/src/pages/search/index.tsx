@@ -233,7 +233,6 @@ const Search = () => {
     }
   }, [hits]);
   useDidUpdateEffect(() => {
-    setCurrentCategoryIndex();
     setOffset(searchCriteria?.offset);
     if (searchCriteria?.query_string.length) {
       resultsQuery.refetch();
@@ -244,6 +243,7 @@ const Search = () => {
   }, [searchCriteria]);
 
   useEffect(() => {
+    setCurrentCategoryIndex();
     // get page number if returning from another page
     // gets page number based on the last offset set in the search criteria
     const currentPage = getCurrentPage();
