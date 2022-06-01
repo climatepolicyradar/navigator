@@ -13,6 +13,7 @@ export default function useFilteredCountries(all) {
     {
       refetchOnWindowFocus: false,
       enabled: all.length > 0,
+      cacheTime: Infinity,
     }
   );
 }

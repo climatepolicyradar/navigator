@@ -26,6 +26,7 @@ export default function useLookups(path: string, filterProp: string = '') {
       },
       refetchOnWindowFocus: false,
       refetchOnMount: false,
+      cacheTime: 1000 * 60 * 60 * 24,
     }
   );
 }
