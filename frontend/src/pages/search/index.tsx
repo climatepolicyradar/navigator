@@ -47,7 +47,7 @@ const Search = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [offset, setOffset] = useState(0);
-  const [noQuery, setNoQuery] = useState(false);
+  const [noQuery, setNoQuery] = useState(true);
   const [categoryIndex, setCategoryIndex] = useState(0);
 
   const structureData = useSortAndStructure();
@@ -232,7 +232,7 @@ const Search = () => {
       setPageCount(calculatePageCount(hits));
     }
   }, [hits]);
-  useEffect(() => {
+  useDidUpdateEffect(() => {
     setCurrentCategoryIndex();
     setOffset(searchCriteria?.offset);
     if (searchCriteria?.query_string.length) {
@@ -248,6 +248,11 @@ const Search = () => {
     // gets page number based on the last offset set in the search criteria
     const currentPage = getCurrentPage();
     setPageNumber(currentPage);
+
+    // check for search query on initial load
+    if (searchCriteria?.query_string.length) {
+      setNoQuery(false);
+    }
   }, []);
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
@@ -385,7 +390,7 @@ const Search = () => {
                 </div>
 
                 <div className="md:pl-8 relative" onClick={handleDocumentClick}>
-                  {resultsQuery.isFetching || !resultsQuery.isSuccess ? (
+                  {resultsQuery.isFetching ? (
                     <div className="w-full flex justify-center h-96">
                       <Loader />
                     </div>
