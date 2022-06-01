@@ -11,6 +11,7 @@ export default function useSearchCriteria() {
     },
     {
       refetchOnWindowFocus: false,
+      cacheTime: Infinity,
     }
   );
 }

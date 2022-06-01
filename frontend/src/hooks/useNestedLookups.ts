@@ -65,6 +65,7 @@ export default function useNestedLookups(path, filterProp = '', levels = 1) {
       },
       refetchOnWindowFocus: false,
       refetchOnMount: false,
+      cacheTime: 1000 * 60 * 60 * 24,
     }
   );
 }
