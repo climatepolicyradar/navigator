@@ -234,6 +234,7 @@ const Search = () => {
   }, [hits]);
   useDidUpdateEffect(() => {
     setOffset(searchCriteria?.offset);
+    setCurrentCategoryIndex();
     if (searchCriteria?.query_string.length) {
       resultsQuery.refetch();
       setNoQuery(false);
