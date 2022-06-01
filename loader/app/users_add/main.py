@@ -84,7 +84,8 @@ def validate_open_csv(csv: TextIO) -> DictReader:
             error += f" The following fields were not expected: {unexpected_fields}"
 
         logger.error(error)
-        sys.exit(10)
+        if missing_fields:
+            sys.exit(10)
 
     return csv_reader
 
@@ -95,6 +96,8 @@ def _log_response(response: requests.Response) -> None:
             f"There was an error during a request to {response.url}. "
             f"STATUS: {response.status_code}, BODY:{response.content}"
         )
+    elif response.status_code == 200:
+        logger.info(f"Successfully added {response.json()}")
 
     logger.debug(f"STATUS: {response.status_code}, BODY:{response.content}")
 
@@ -196,11 +199,22 @@ def main(users_csv_path):
     """
     with open(users_csv_path, "r") as users_csv:
         csv_reader = validate_open_csv(users_csv)
+        emails = []
         for row in csv_reader:
             try:
+                email = _make_str_from_maybe_list(row["email"])
+                if not email:
+                    logger.error(f"Row includes an empty email address: {row}")
+                    continue
+
+                name = _make_str_from_maybe_list(row["name"])
+                if not name:
+                    logger.error(f"Row includes an empty name: {row}")
+                    continue
+
                 payload = {
-                    "email": _make_str_from_maybe_list(row["email"]),
-                    "names": _make_str_from_maybe_list(row["name"]),
+                    "email": email.lower(),
+                    "names": name,
                     "job_role": None,
                     "location": None,
                     "affiliation_organisation": _make_str_from_maybe_list(
@@ -223,8 +237,14 @@ def main(users_csv_path):
                 }
                 add_user_response = post_user(payload=payload)
                 _log_response(response=add_user_response)
+
+                if add_user_response.status_code == 200:
+                    emails.append(email.lower())
             except RowParseException:
                 logger.error(f"Failed to parse row content, skipping entry for: {row}")
+
+        print(emails)
+        print(len(emails))
 
 
 if __name__ == "__main__":
