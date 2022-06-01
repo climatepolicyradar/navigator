@@ -52,7 +52,8 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
         }
       });
       if (document?.document_passage_matches?.length) {
-        addAnnotations(annotationManager);
+        // commented out line below until issues can be resolved
+        // addAnnotations(annotationManager);
       }
     });
   };

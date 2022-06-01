@@ -30,7 +30,8 @@ const ResetRequest = () => {
     resolver: yupResolver(schema),
   });
   const submitForm = async (data) => {
-    const status = await resetRequest(encodeURIComponent(data.email));
+    const email = data.email.toLowerCase();
+    const status = await resetRequest(encodeURIComponent(email));
     setStatus(status);
   };
   useEffect(() => {

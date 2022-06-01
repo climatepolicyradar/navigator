@@ -47,7 +47,7 @@ const Search = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [offset, setOffset] = useState(0);
-  const [noQuery, setNoQuery] = useState(false);
+  const [noQuery, setNoQuery] = useState(true);
   const [categoryIndex, setCategoryIndex] = useState(0);
 
   const structureData = useSortAndStructure();
@@ -68,18 +68,22 @@ const Search = () => {
   });
 
   // lookups/filters
+  const documentTypesQuery: any = useLookups('document_types');
+  const { data: { data: documentTypes = {} } = {} } = documentTypesQuery;
+
+  const geosQuery: any = useNestedLookups('geographies', '', 2);
   const {
-    nestedLookupsQuery: geosQuery,
-    level1: regions,
-    level2: countries,
-  } = useNestedLookups('geographies', '', 2);
+    data: { data: { level1: regions = [], level2: countries = [] } = {} } = {},
+  } = geosQuery;
+
   const { data: filteredCountries } = useFilteredCountries(countries);
-  const { nestedLookupsQuery: sectorsQuery, level1: sectors } =
-    useNestedLookups('sectors', 'name');
-  const { lookupsQuery: documentTypesQuery, list: documentTypes } =
-    useLookups('document_types');
-  const { nestedLookupsQuery: instrumentsQuery, level1: instruments } =
-    useNestedLookups('instruments', 'name');
+
+  const sectorsQuery: any = useNestedLookups('sectors', 'name');
+  const { data: { data: { level1: sectors = [] } = {} } = {} } = sectorsQuery;
+
+  const instrumentsQuery: any = useNestedLookups('instruments', 'name');
+  const { data: { data: { level1: instruments = [] } = {} } = {} } =
+    instrumentsQuery;
 
   // search request
   const {
@@ -178,8 +182,13 @@ const Search = () => {
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
-  const handleDocumentClick = (id) => {
-    updateDocument.mutate(id);
+  const handleDocumentClick = (e: any) => {
+    if (!e.target.dataset.docid) return;
+    const id = e.target.dataset.docid;
+    if (!showSlideout) {
+      // only mutate if panel is being opened
+      updateDocument.mutate(id);
+    }
     setShowSlideout(!showSlideout);
     setShowPDF(false);
   };
@@ -219,19 +228,13 @@ const Search = () => {
     window.scrollTo(0, 0);
   }, [offset]);
   useEffect(() => {
-    if (hits) {
+    if (hits !== undefined) {
       setPageCount(calculatePageCount(hits));
     }
   }, [hits]);
-  useEffect(() => {
+  useDidUpdateEffect(() => {
     setCurrentCategoryIndex();
     setOffset(searchCriteria?.offset);
-    if (
-      searchCriteria?.keyword_filters?.categories &&
-      searchCriteria?.keyword_filters?.categories[0] === 'Litigation'
-    ) {
-      setPageCount(1);
-    }
     if (searchCriteria?.query_string.length) {
       resultsQuery.refetch();
       setNoQuery(false);
@@ -245,6 +248,11 @@ const Search = () => {
     // gets page number based on the last offset set in the search criteria
     const currentPage = getCurrentPage();
     setPageNumber(currentPage);
+
+    // check for search query on initial load
+    if (searchCriteria?.query_string.length) {
+      setNoQuery(false);
+    }
   }, []);
 
   const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
@@ -267,7 +275,7 @@ const Search = () => {
             show={showSlideout}
             setShowSlideout={setShowSlideout}
           >
-            <div className="flex flex-col h-full">
+            <div className="flex flex-col h-full relative">
               <DocumentSlideout
                 document={document.data}
                 setShowPDF={setShowPDF}
@@ -381,20 +389,19 @@ const Search = () => {
                   </div>
                 </div>
 
-                <div className="md:pl-8 relative">
-                  {resultsQuery.isFetching || !resultsQuery.isSuccess ? (
+                <div className="md:pl-8 relative" onClick={handleDocumentClick}>
+                  {resultsQuery.isFetching ? (
                     <div className="w-full flex justify-center h-96">
                       <Loader />
                     </div>
                   ) : noQuery ? (
-                    <p className="font-bold text-red-500">
+                    <p className="font-bold text-red-500 h-96">
                       Please enter some search terms.
                     </p>
                   ) : (
                     <SearchResultList
                       searchCriteria={searchCriteria}
                       documents={documents}
-                      handleDocumentClick={handleDocumentClick}
                     />
                   )}
                 </div>

@@ -11,8 +11,7 @@ export default function useUpdateCountries() {
       if (region) {
         newList = countries.filter((item: any) => item.parent_id === region.id);
       }
-
-      return queryClient.setQueryData('filteredCountries', newList);
+      return queryClient.setQueryData('filteredCountries', (old) => newList);
     },
 
     {

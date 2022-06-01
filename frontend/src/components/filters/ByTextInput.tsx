@@ -10,7 +10,7 @@ interface ByTextInputProps {
   selectedList: string[];
   keyField: string;
   filterType: string;
-  handleFilterChange(filterType: string, value: string): void;
+  handleFilterChange(filterType: string, value: string, action: string): void;
 }
 
 const ByTextInput = ({
@@ -32,7 +32,7 @@ const ByTextInput = ({
       setSuggestList([]);
       return;
     }
-    const filteredList = list.filter((item) => {
+    const filteredList = list?.filter((item) => {
       /* Make sure item hasn't already been selected and limit list to 20 items */
       return (
         item[keyField].toLowerCase().indexOf(input.toLowerCase()) > -1 &&

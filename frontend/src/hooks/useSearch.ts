@@ -22,6 +22,10 @@ export default function useSearch(id, obj = initialSearchCriteria) {
     () => {
       return getResults();
     },
-    { refetchOnWindowFocus: false, refetchOnMount: false }
+    {
+      enabled: obj.query_string.length > 0,
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
   );
 }

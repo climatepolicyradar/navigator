@@ -4,19 +4,28 @@ import { removeDuplicates } from '../utils/removeDuplicates';
 
 export default function useLookups(path: string, filterProp: string = '') {
   const client = new ApiClient();
-  const lookupsQuery = useQuery(path, () => client.get(`/${path}`, null), {
-    refetchOnWindowFocus: false,
-    refetchOnMount: false,
-  });
-  const { data } = lookupsQuery;
 
-  let list = [];
-  if (data) {
-    list = data?.data;
+  const modifyData = (response) => {
+    let { data } = response;
+    let list = data;
+
     if (filterProp.length) {
-      list == removeDuplicates(list, filterProp);
+      list = removeDuplicates(list, filterProp);
     }
-  }
-
-  return { lookupsQuery, list };
+    return { ...response, data: list };
+  };
+  return useQuery(
+    path,
+    async () => {
+      const response = await client.get(`/${path}`, null);
+      return modifyData(response);
+    },
+    {
+      onSuccess: (data) => {
+        // console.log(data);
+      },
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+    }
+  );
 }

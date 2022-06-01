@@ -53,7 +53,6 @@ module.exports = {
     },
     extend: {
       spacing: {
-        115: '115%',
         150: '150%',
       },
       boxShadow: {
