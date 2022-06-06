@@ -318,3 +318,10 @@ ul li.selected {
     }
   }
 }
+.pdf-container {
+  height: 440px;
+  margin-bottom: 16px;
+  @screen md {
+    height: 700px;
+  }
+}

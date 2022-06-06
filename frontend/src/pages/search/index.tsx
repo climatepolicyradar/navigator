@@ -67,7 +67,7 @@ const Search = () => {
     setShowSlideout(false);
   });
 
-  // lookups/filters
+  // get lookups/filters
   const documentTypesQuery: any = useLookups('document_types');
   const { data: { data: documentTypes = {} } = {} } = documentTypesQuery;
 
@@ -85,20 +85,22 @@ const Search = () => {
   const { data: { data: { level1: instruments = [] } = {} } = {} } =
     instrumentsQuery;
 
-  // search request
+  // search criteria and filters
   const {
     isFetching: isFetchingSearchCriteria,
     isSuccess: isSearchCriteriaSuccess,
     data: searchCriteria,
   }: any = useSearchCriteria();
-  const resultsQuery: any = useSearch('searches', searchCriteria);
 
+  // search results
+  const resultsQuery: any = useSearch('searches', searchCriteria);
   const {
-    data: { data: { documents } = [] } = [],
+    data: { data: { documents = [] } = [] } = [],
     data: { data: { hits } = 0 } = 0,
     isSuccess,
   } = resultsQuery;
-  const document: any = useDocument();
+
+  const { data: document }: any = ({} = useDocument());
   const { t, i18n, ready } = useTranslation(['searchStart', 'searchResults']);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
@@ -120,6 +122,7 @@ const Search = () => {
   const handlePageChange = (page: number) => {
     setPageNumber(page);
     setOffset((page - 1) * PER_PAGE);
+    setShowSlideout(false);
   };
 
   const handleFilterChange = (
@@ -183,13 +186,17 @@ const Search = () => {
     setShowFilters(!showFilters);
   };
   const handleDocumentClick = (e: any) => {
-    if (!e.target.dataset.docid) return;
     const id = e.target.dataset.docid;
-    if (!showSlideout) {
-      // only mutate if panel is being opened
-      updateDocument.mutate(id);
+    if (!id) return;
+
+    // keep panel open if clicking a different document
+    if (document?.document_id != id) {
+      setShowSlideout(true);
+    } else {
+      setShowSlideout(!showSlideout);
     }
-    setShowSlideout(!showSlideout);
+    updateDocument.mutate(id);
+
     setShowPDF(false);
   };
   const getCurrentSortChoice = () => {
@@ -244,6 +251,7 @@ const Search = () => {
   }, [searchCriteria]);
 
   useEffect(() => {
+    // get selected category if one previously selected
     setCurrentCategoryIndex();
     // get page number if returning from another page
     // gets page number based on the last offset set in the search criteria
@@ -253,6 +261,10 @@ const Search = () => {
     // check for search query on initial load
     if (searchCriteria?.query_string.length) {
       setNoQuery(false);
+    }
+    // fetch search results if they are empty and search query exists
+    if (documents.length === 0 && searchCriteria?.query_string.length) {
+      resultsQuery.refetch();
     }
   }, []);
 
@@ -271,155 +283,160 @@ const Search = () => {
           title={`Climate Policy Radar | ${t('Law and Policy Search')}`}
           heading={t('Law and Policy Search')}
         >
-          <Slideout
-            ref={slideoutRef}
-            show={showSlideout}
-            setShowSlideout={setShowSlideout}
-          >
-            <div className="flex flex-col h-full relative">
-              <DocumentSlideout
-                document={document.data}
-                setShowPDF={setShowPDF}
-                showPDF={showPDF}
-                setPassageIndex={setPassageIndex}
-              />
-              {showPDF ? (
-                <div className="mt-4 px-6 flex-1">
-                  <EmbeddedPDF
-                    document={document.data}
-                    passageIndex={passageIndex}
+          <div onClick={handleDocumentClick}>
+            <Slideout
+              ref={slideoutRef}
+              show={showSlideout}
+              setShowSlideout={setShowSlideout}
+            >
+              <div className="flex flex-col h-full relative">
+                <DocumentSlideout
+                  document={document}
+                  setShowPDF={setShowPDF}
+                  showPDF={showPDF}
+                  setPassageIndex={setPassageIndex}
+                />
+                {showPDF ? (
+                  <div className="mt-4 px-6 flex-1">
+                    <EmbeddedPDF
+                      document={document}
+                      passageIndex={passageIndex}
+                      setShowPDF={setShowPDF}
+                    />
+                  </div>
+                ) : (
+                  <PassageMatches
+                    document={document}
+                    setPassageIndex={setPassageIndex}
                     setShowPDF={setShowPDF}
                   />
-                </div>
-              ) : (
-                <PassageMatches
-                  document={document}
-                  setPassageIndex={setPassageIndex}
-                  setShowPDF={setShowPDF}
-                />
-              )}
-            </div>
-          </Slideout>
-          <section>
-            <div className="px-4 md:flex container border-b border-blue-200">
-              <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
-                <div className="flex flex items-center justify-center w-full">
-                  <FilterToggle toggle={toggleFilters} />
-                </div>
-
-                <div
-                  className={`${
-                    showFilters ? '' : 'hidden'
-                  } relative md:block md:mt-8 mb-12 md:mb-0`}
-                >
-                  <div className="md:hidden absolute right-0 top-0">
-                    <Close onClick={() => setShowFilters(false)} size="16" />
-                  </div>
-                  {geosQuery.isFetching ||
-                  sectorsQuery.isFetching ||
-                  documentTypesQuery.isFetching ||
-                  instrumentsQuery.isFetching ? (
-                    <p>Loading filters...</p>
-                  ) : (
-                    <SearchFilters
-                      handleFilterChange={handleFilterChange}
-                      searchCriteria={searchCriteria}
-                      handleYearChange={handleYearChange}
-                      handleRegionChange={handleRegionChange}
-                      handleClearSearch={handleClearSearch}
-                      regions={regions}
-                      filteredCountries={filteredCountries}
-                      sectors={sectors}
-                      documentTypes={documentTypes}
-                      instruments={structureData(instruments)}
-                    />
-                  )}
-                </div>
+                )}
               </div>
-              <div className="md:w-3/4">
-                <div className="md:py-8 md:pl-8">
-                  <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
-                  <SearchForm
-                    placeholder={placeholder}
-                    handleSearchInput={handleSearchInput}
-                    input={searchCriteria.query_string}
-                  />
-                  <div className="flex justify-end mt-3">
-                    <ExactMatch
-                      checked={searchCriteria.exact_match}
-                      id="exact-match"
-                      handleSearchChange={handleSearchChange}
-                    />
-                    <div className="ml-1 -mt-1 text-sm">
-                      <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4 relative z-10">
-                  <TabbedNav
-                    activeIndex={categoryIndex}
-                    items={documentCategories}
-                    handleTabClick={handleDocumentCategoryClick}
-                  />
-                  <div className="mt-4 md:absolute right-0 top-0 md:-mt-2 flex z-10">
-                    <Button
-                      color="light-hover-dark"
-                      thin={true}
-                      disabled={true}
-                      extraClasses="text-sm"
-                    >
-                      <div className="flex justify-center py-1">
-                        <DownloadIcon />
-                        <span>Download</span>
-                      </div>
-                    </Button>
-                    <div className="ml-1 mt-1">
-                      <Tooltip id="download-tt" tooltip={downloadCSVTooltip} />
-                    </div>
-                  </div>
-                </div>
-                <div className="mt-4 mb-8 flex justify-end">
-                  <div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 flex items-center">
-                    <Sort
-                      defaultValue={getCurrentSortChoice()}
-                      updateSort={handleSortClick}
-                    />
-                    <div className="ml-1 -mt-1">
-                      <Tooltip id="sortby-tt" tooltip={sortByTooltip} />
-                    </div>
-                  </div>
-                </div>
-
-                <div className="md:pl-8 relative" onClick={handleDocumentClick}>
-                  {resultsQuery.isFetching ? (
-                    <div className="w-full flex justify-center h-96">
-                      <Loader />
-                    </div>
-                  ) : noQuery ? (
-                    <p className="font-bold text-red-500 h-96">
-                      Please enter some search terms.
-                    </p>
-                  ) : (
-                    <SearchResultList
-                      searchCriteria={searchCriteria}
-                      documents={documents}
-                    />
-                  )}
-                </div>
-              </div>
-            </div>
-          </section>
-          {pageCount > 1 && !noQuery && (
+            </Slideout>
             <section>
-              <div className="mb-12">
-                <Pagination
-                  pageNumber={pageNumber}
-                  pageCount={pageCount}
-                  onChange={handlePageChange}
-                />
+              <div className="px-4 md:flex container border-b border-blue-200">
+                <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
+                  <div className="flex flex items-center justify-center w-full">
+                    <FilterToggle toggle={toggleFilters} />
+                  </div>
+
+                  <div
+                    className={`${
+                      showFilters ? '' : 'hidden'
+                    } relative md:block md:mt-8 mb-12 md:mb-0`}
+                  >
+                    <div className="md:hidden absolute right-0 top-0">
+                      <Close onClick={() => setShowFilters(false)} size="16" />
+                    </div>
+                    {geosQuery.isFetching ||
+                    sectorsQuery.isFetching ||
+                    documentTypesQuery.isFetching ||
+                    instrumentsQuery.isFetching ? (
+                      <p>Loading filters...</p>
+                    ) : (
+                      <SearchFilters
+                        handleFilterChange={handleFilterChange}
+                        searchCriteria={searchCriteria}
+                        handleYearChange={handleYearChange}
+                        handleRegionChange={handleRegionChange}
+                        handleClearSearch={handleClearSearch}
+                        regions={regions}
+                        filteredCountries={filteredCountries}
+                        sectors={sectors}
+                        documentTypes={documentTypes}
+                        instruments={structureData(instruments)}
+                      />
+                    )}
+                  </div>
+                </div>
+                <div className="md:w-3/4">
+                  <div className="md:py-8 md:pl-8">
+                    <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
+                    <SearchForm
+                      placeholder={placeholder}
+                      handleSearchInput={handleSearchInput}
+                      input={searchCriteria.query_string}
+                    />
+                    <div className="flex justify-end mt-3">
+                      <ExactMatch
+                        checked={searchCriteria.exact_match}
+                        id="exact-match"
+                        handleSearchChange={handleSearchChange}
+                      />
+                      <div className="ml-1 -mt-1 text-sm">
+                        <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 relative z-10">
+                    <TabbedNav
+                      activeIndex={categoryIndex}
+                      items={documentCategories}
+                      handleTabClick={handleDocumentCategoryClick}
+                    />
+                    <div className="mt-4 md:absolute right-0 top-0 md:-mt-2 flex z-10">
+                      <Button
+                        color="light-hover-dark"
+                        thin={true}
+                        disabled={true}
+                        extraClasses="text-sm"
+                      >
+                        <div className="flex justify-center py-1">
+                          <DownloadIcon />
+                          <span>Download</span>
+                        </div>
+                      </Button>
+                      <div className="ml-1 mt-1">
+                        <Tooltip
+                          id="download-tt"
+                          tooltip={downloadCSVTooltip}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="mt-4 mb-8 flex justify-end">
+                    <div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 flex items-center">
+                      <Sort
+                        defaultValue={getCurrentSortChoice()}
+                        updateSort={handleSortClick}
+                      />
+                      <div className="ml-1 -mt-1">
+                        <Tooltip id="sortby-tt" tooltip={sortByTooltip} />
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="md:pl-8 relative">
+                    {resultsQuery.isFetching ? (
+                      <div className="w-full flex justify-center h-96">
+                        <Loader />
+                      </div>
+                    ) : noQuery ? (
+                      <p className="font-bold text-red-500 h-96">
+                        Please enter some search terms.
+                      </p>
+                    ) : (
+                      <SearchResultList
+                        searchCriteria={searchCriteria}
+                        documents={documents}
+                      />
+                    )}
+                  </div>
+                </div>
               </div>
             </section>
-          )}
+            {pageCount > 1 && !noQuery && (
+              <section>
+                <div className="mb-12">
+                  <Pagination
+                    pageNumber={pageNumber}
+                    pageCount={pageCount}
+                    onChange={handlePageChange}
+                  />
+                </div>
+              </section>
+            )}
+          </div>
         </Layout>
       )}
     </>
