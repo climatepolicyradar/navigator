@@ -67,7 +67,7 @@ const Search = () => {
     setShowSlideout(false);
   });
 
-  // lookups/filters
+  // get lookups/filters
   const documentTypesQuery: any = useLookups('document_types');
   const { data: { data: documentTypes = {} } = {} } = documentTypesQuery;
 
@@ -85,19 +85,21 @@ const Search = () => {
   const { data: { data: { level1: instruments = [] } = {} } = {} } =
     instrumentsQuery;
 
-  // search request
+  // search criteria and filters
   const {
     isFetching: isFetchingSearchCriteria,
     isSuccess: isSearchCriteriaSuccess,
     data: searchCriteria,
   }: any = useSearchCriteria();
-  const resultsQuery: any = useSearch('searches', searchCriteria);
 
+  // search results
+  const resultsQuery: any = useSearch('searches', searchCriteria);
   const {
-    data: { data: { documents } = [] } = [],
+    data: { data: { documents = [] } = [] } = [],
     data: { data: { hits } = 0 } = 0,
     isSuccess,
   } = resultsQuery;
+
   const document: any = useDocument();
   const { t, i18n, ready } = useTranslation(['searchStart', 'searchResults']);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
@@ -244,6 +246,7 @@ const Search = () => {
   }, [searchCriteria]);
 
   useEffect(() => {
+    // get selected category if one previously selected
     setCurrentCategoryIndex();
     // get page number if returning from another page
     // gets page number based on the last offset set in the search criteria
@@ -253,6 +256,10 @@ const Search = () => {
     // check for search query on initial load
     if (searchCriteria?.query_string.length) {
       setNoQuery(false);
+    }
+    // fetch search results if they are empty and search query exists
+    if (documents.length === 0 && searchCriteria?.query_string.length) {
+      resultsQuery.refetch();
     }
   }, []);
 

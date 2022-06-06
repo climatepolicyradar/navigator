@@ -12,6 +12,8 @@ import AlphaLogo from '../components/logo/AlphaLogo';
 import ExactMatch from '../components/filters/ExactMatch';
 import LandingPageLinks from '../components/blocks/LandingPageLinks';
 import { initialSearchCriteria } from '../constants/searchCriteria';
+import { emptySearchResults } from '../constants/search';
+import useUpdateSearch from '../hooks/useUpdateSearch';
 import useNestedLookups from '../hooks/useNestedLookups';
 import useUpdateCountries from '../hooks/useUpdateCountries';
 import Tooltip from '../components/tooltip';
@@ -23,6 +25,7 @@ const IndexPage = () => {
   const { data: searchCriteria }: any = useSearchCriteria();
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateCountries = useUpdateCountries();
+  const updateSearch = useUpdateSearch();
 
   /* need this lookup to be able to reset filtered countries
   (sets suggest list that appears when typing a jurisdiction)
@@ -63,8 +66,12 @@ const IndexPage = () => {
       countries,
     });
   };
+  const clearSearch = () => {
+    updateSearch.mutate({ data: emptySearchResults });
+  };
   useEffect(() => {
     clearAllFilters();
+    clearSearch();
   }, []);
 
   return (
