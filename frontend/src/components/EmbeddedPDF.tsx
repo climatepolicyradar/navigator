@@ -34,7 +34,7 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
         adobeViewer.getAPIs().then((apis) => {
           apis.getZoomAPIs().zoomIn();
           // Only jump to page if a passage is selected
-          if (!passageIndex) return;
+          if (passageIndex === null) return;
           setTimeout(() => {
             apis.gotoLocation(
               document.document_passage_matches[passageIndex].text_block_page
