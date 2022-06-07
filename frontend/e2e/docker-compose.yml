@@ -2,7 +2,10 @@ version: '3.7'
 services:
   cypress:
     # the Docker image to use from https://github.com/cypress-io/cypress-docker-images
-    build: .
+    build:
+      args:
+        LOGIN_NAME: ${LOGIN_NAME}
+        LOGIN_PW: ${LOGIN_PW}
     environment:
       # pass base url to test pointing at the web application
       - CYPRESS_baseUrl=http://localhost:3000

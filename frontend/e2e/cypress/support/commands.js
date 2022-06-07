@@ -30,14 +30,14 @@ import 'cypress-pseudo-localization';
 Cypress.Commands.add('login', () => {
   cy.request({
     method: 'POST',
-    url: 'http://localhost:8000/api/tokens',
+    url: 'https://app.climatepolicyradar.org/api/tokens',
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: {
       grant_type: '',
-      username: 'user@navigator.com',
-      password: 'password',
+      username: Cypress.env('LOGIN_NAME'),
+      password: Cypress.env('LOGIN_PW'),
       scope: '',
       client_id: '',
       client_secret: '',
