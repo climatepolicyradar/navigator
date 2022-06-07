@@ -16,6 +16,7 @@ module.exports = defineConfig({
       config.env = config.env || {};
       config.env.LOGIN_NAME = process.env.LOGIN_NAME;
       config.env.LOGIN_PW = process.env.LOGIN_PW;
+      config.env.API_HOST = process.env.API_HOST;
       return config;
     },
     specPattern: 'cypress/e2e/**/*.{js,jsx,ts,tsx}',

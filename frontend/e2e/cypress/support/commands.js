@@ -30,7 +30,7 @@ import 'cypress-pseudo-localization';
 Cypress.Commands.add('login', () => {
   cy.request({
     method: 'POST',
-    url: 'https://app.climatepolicyradar.org/api/tokens',
+    url: `${Cypress.env('API_HOST')}/api/tokens`,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },

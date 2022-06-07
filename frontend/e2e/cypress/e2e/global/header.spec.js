@@ -6,7 +6,7 @@ describe('Header', () => {
     cy.wait(100);
   });
   it('should go to home page', () => {
-    cy.visit('http://localhost:3000');
+    cy.visit('/');
   });
 
   it('Logo should be visible', () => {
