@@ -88,7 +88,8 @@ def validate_open_csv(csv: TextIO) -> DictReader:
         logger.error(error)
 
     # Unexpected fields will not be used, simply ignored
-    unexpected_fields = csv_fieldnames - EXPECTED_USER_CSV_FIELDS
+    all_supported_fields = REQUIRED_USER_CSV_FIELDS | EXPECTED_USER_CSV_FIELDS
+    unexpected_fields = csv_fieldnames - all_supported_fields
     if unexpected_fields:
         error = (
             "User CSV contains fields that will not be used during user creation."
@@ -105,8 +106,6 @@ def _log_response(response: requests.Response) -> None:
             f"There was an error during a request to {response.url}. "
             f"STATUS: {response.status_code}, BODY:{response.content}"
         )
-    elif response.status_code == 200:
-        logger.info(f"Successfully added {response.json()}")
 
     logger.debug(f"STATUS: {response.status_code}, BODY:{response.content}")
 
@@ -250,12 +249,16 @@ def main(users_csv_path):
                 _log_response(response=add_user_response)
 
                 if add_user_response.status_code == 200:
+                    logger.info(f"Successfully Added User: '{name}' 'email.lower()'")
                     emails.append(email.lower())
             except RowParseException:
                 logger.error(f"Failed to parse row content, skipping entry for: {row}")
 
-        print(emails)
-        print(len(emails))
+        if emails:
+            print(f"Successfully added {len(emails)} new users.")
+            print(f"The following email addresses were added: {emails}.")
+        else:
+            print("No new users were added.")
 
 
 if __name__ == "__main__":
