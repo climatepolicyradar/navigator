@@ -115,18 +115,18 @@ Cypress.Commands.add('is_in_viewport', (element) => {
 });
 
 Cypress.Commands.add('check_localisation', (page = '') => {
-  cy.visit(`http://localhost:3000/${page}`);
+  cy.visit(`/${page}`);
   cy.get('[data-cy="banner-title"] span')
     .invoke('text')
     .then((titleEnglish) => {
-      cy.visit(`http://localhost:3000/fr/${page}`);
+      cy.visit(`/fr/${page}`);
       cy.get('[data-cy="banner-title"] span')
         .invoke('text')
         .should((titleFrench) => {
           expect(titleFrench).not.to.eq(titleEnglish);
         });
     });
-  cy.visit(`http://localhost:3000/${page}`);
+  cy.visit(`/${page}`);
   cy.pseudoLocalize();
   cy.log('Pseudo localise');
   cy.stopPseudoLocalize;

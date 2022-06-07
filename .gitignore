@@ -16,6 +16,8 @@ certificate_pub.crt
 #front end testing
 /frontend/e2e/cypress/screenshots
 /frontend/e2e/cypress/videos
+/frontend/e2e/cypress/e2e/1-getting-started
+/frontend/e2e/cypress/e2e/2-advanced-examples
 /frontend/e2e/node_modules/
 
 # next.js
