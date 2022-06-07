@@ -43,12 +43,14 @@ DEFAULT_LOGGING = {
 logging.config.dictConfig(DEFAULT_LOGGING)
 logger = logging.getLogger(__file__)
 
-EXPECTED_USER_CSV_FIELDS = {
+REQUIRED_USER_CSV_FIELDS = {
     "name",
+    "email",
+}
+EXPECTED_USER_CSV_FIELDS = {
     "organisation",
     "affiliation_type",
     "other_affiliation",
-    "email",
     "policy_data_types",
     "geographical_scope",
     "data_focus",
@@ -60,32 +62,39 @@ EXPECTED_USER_CSV_FIELDS = {
     "user_agent",
     "referrer",
     "created_at",
+    "job_role",
+    "location",
 }
 
 
 def validate_open_csv(csv: TextIO) -> DictReader:
+    """Validate that the given CSV file is valid & return a CSVReader object."""
     csv_reader = DictReader(csv)
+    csv_fieldnames = set(csv_reader.fieldnames)
 
-    csv_fieldnames = set(csv_reader.fieldnames or [])
-    if not csv_fieldnames:
-        error = "Invalid User CSV; No headers found"
-        logger.error(error)
+    # If any required fields are missing (or fields not in CSV) exit immediately
+    if not csv_fieldnames.issuperset(REQUIRED_USER_CSV_FIELDS):
+        missing_fields = REQUIRED_USER_CSV_FIELDS - csv_fieldnames
+        logger.error(f"Required CSV Fields missing: '{missing_fields}'")
         sys.exit(10)
 
-    if csv_fieldnames != EXPECTED_USER_CSV_FIELDS:
-        error = "Invalid User CSV supplied."
-
-        missing_fields = EXPECTED_USER_CSV_FIELDS - csv_fieldnames
-        if missing_fields:
-            error += f" The following fields were missing: {missing_fields}."
-
-        unexpected_fields = csv_fieldnames - EXPECTED_USER_CSV_FIELDS
-        if unexpected_fields:
-            error += f" The following fields were not expected: {unexpected_fields}"
-
+    # Expected fields can be used to add extra user detail, but are not required
+    missing_fields = EXPECTED_USER_CSV_FIELDS - csv_fieldnames
+    if missing_fields:
+        error = (
+            "User CSV does not contain all possible user detail information."
+            f" The following fields were missing: {missing_fields}."
+        )
         logger.error(error)
-        if missing_fields:
-            sys.exit(10)
+
+    # Unexpected fields will not be used, simply ignored
+    unexpected_fields = csv_fieldnames - EXPECTED_USER_CSV_FIELDS
+    if unexpected_fields:
+        error = (
+            "User CSV contains fields that will not be used during user creation."
+            f" The following fields were not expected: {unexpected_fields}"
+        )
+        logger.error(error)
 
     return csv_reader
 
@@ -103,6 +112,7 @@ def _log_response(response: requests.Response) -> None:
 
 
 def get_admin_token() -> str:
+    """Go through the login flow & create access token for requests."""
     admin_user = os.getenv(ADMIN_EMAIL_ENV)
     admin_password = os.getenv(ADMIN_PASSWORD_ENV)
 
@@ -121,6 +131,7 @@ def get_admin_token() -> str:
 
 
 def get_admin_auth_headers():
+    """Create the required auth headers for requests."""
     if (admin_user_token := os.getenv(ADMIN_TOKEN_ENV)) is None:
         admin_user_token = get_admin_token()
         os.environ[ADMIN_TOKEN_ENV] = admin_user_token
@@ -215,22 +226,22 @@ def main(users_csv_path):
                 payload = {
                     "email": email.lower(),
                     "names": name,
-                    "job_role": None,
-                    "location": None,
+                    "job_role": row.get("job_role"),
+                    "location": row.get("location"),
                     "affiliation_organisation": _make_str_from_maybe_list(
-                        row["organisation"]
+                        row.get("organisation")
                     ),
                     "affiliation_type": _make_list_if_necessary(
-                        row["affiliation_type"]
+                        row.get("affiliation_type")
                     ),
                     "policy_type_of_interest": _make_list_if_necessary(
-                        row["policy_data_types"]
+                        row.get("policy_data_types")
                     ),
                     "geographies_of_interest": _make_list_if_necessary(
-                        row["geographical_scope"]
+                        row.get("geographical_scope")
                     ),
                     "data_focus_of_interest": _make_list_if_necessary(
-                        row["data_focus"]
+                        row.get("data_focus")
                     ),
                     "is_active": False,
                     "is_superuser": False,
