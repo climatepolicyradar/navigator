@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import Head from 'next/head';
 import { AppProps } from 'next/app';
 import '../styles/main.scss';
@@ -10,12 +11,12 @@ import { AuthProvider } from '../api/auth';
 const queryClient = new QueryClient();
 
 function MyApp({ Component, pageProps }: AppProps) {
-  // For later when using Cypress:
-  // useEffect(() => {
-  //   if (window?.Cypress) {
-  //     window.store = store;
-  //   }
-  // }, [store])
+  // For access inside Cypress:
+  useEffect(() => {
+    if (window?.Cypress) {
+      window.queryClient = queryClient;
+    }
+  }, []);
 
   return (
     <QueryClientProvider client={queryClient}>

@@ -44,6 +44,7 @@ Cypress.Commands.add('login', () => {
     },
   }).then((resp) => {
     window.localStorage.setItem('jwt', JSON.stringify(resp.body.access_token));
+    cy.visit('/');
   });
 });
 
