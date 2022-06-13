@@ -64,6 +64,9 @@ Cypress.Commands.add('checkAuthPagesLogo', () => {
       expect(href).to.equal('https://climatepolicyradar.org');
     });
 });
+Cypress.Commands.add('getAuthPageTitle', (text) => {
+  cy.get('h2').should('have.text', text);
+});
 
 Cypress.Commands.add('submit_pdf_file', () => {
   cy.intercept('POST', 'document', { fixture: 'document' }).as('postDocument');
