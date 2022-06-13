@@ -48,6 +48,23 @@ Cypress.Commands.add('login', () => {
   });
 });
 
+Cypress.Commands.add('clickTextLink', (text) => {
+  cy.contains('a', text)
+    .invoke('attr', 'href')
+    .then((href) => {
+      cy.contains('a', text).click();
+      cy.location('pathname').should('eq', href);
+    });
+});
+Cypress.Commands.add('checkAuthPagesLogo', () => {
+  cy.get('[data-cy="header-logo"]')
+    .parent()
+    .invoke('attr', 'href')
+    .then((href) => {
+      expect(href).to.equal('https://climatepolicyradar.org');
+    });
+});
+
 Cypress.Commands.add('submit_pdf_file', () => {
   cy.intercept('POST', 'document', { fixture: 'document' }).as('postDocument');
 

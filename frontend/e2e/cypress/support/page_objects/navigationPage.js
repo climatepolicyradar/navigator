@@ -27,7 +27,7 @@ const handleExternalLink = (title, url) => {
     });
 };
 
-const handleTextLink = (title) => {
+const handleFooterTextLink = (title) => {
   cy.contains(`${footerSelector} a`, title)
     .invoke('attr', 'href')
     .then((href) => {
@@ -61,19 +61,19 @@ export class NavigationPage {
     return this;
   }
   footerLinkMethodology() {
-    handleTextLink('Methodology');
+    handleFooterTextLink('Methodology');
     return this;
   }
   footerLinkTerms() {
-    handleTextLink('Terms & conditions');
+    handleFooterTextLink('Terms & conditions');
     return this;
   }
   footerLinkPrivacy() {
-    handleTextLink('Privacy policy');
+    handleFooterTextLink('Privacy policy');
     return this;
   }
   footerLinkCookies() {
-    handleTextLink('Cookies policy');
+    handleFooterTextLink('Cookies policy');
     return this;
   }
 }
