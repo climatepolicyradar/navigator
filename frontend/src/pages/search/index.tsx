@@ -314,16 +314,26 @@ const Search = () => {
               </div>
             </Slideout>
             <section>
+              <div className="px-4 container">
+                <div className="md:py-8 md:w-3/4 md:mx-auto">
+                  <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
+                  <SearchForm
+                    placeholder={placeholder}
+                    handleSearchInput={handleSearchInput}
+                    input={searchCriteria.query_string}
+                  />
+                </div>
+              </div>
               <div className="px-4 md:flex container border-b border-blue-200">
                 <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
-                  <div className="flex flex items-center justify-center w-full">
+                  <div className="hidden md:flex flex items-center justify-center w-full mt-4">
                     <FilterToggle toggle={toggleFilters} />
                   </div>
 
                   <div
                     className={`${
                       showFilters ? '' : 'hidden'
-                    } relative md:block md:mt-8 mb-12 md:mb-0`}
+                    } relative md:block mb-12 md:mb-0`}
                   >
                     <div className="md:hidden absolute right-0 top-0">
                       <Close onClick={() => setShowFilters(false)} size="16" />
@@ -340,6 +350,7 @@ const Search = () => {
                         handleYearChange={handleYearChange}
                         handleRegionChange={handleRegionChange}
                         handleClearSearch={handleClearSearch}
+                        handleSearchChange={handleSearchChange}
                         regions={regions}
                         filteredCountries={filteredCountries}
                         sectors={sectors}
@@ -350,7 +361,7 @@ const Search = () => {
                   </div>
                 </div>
                 <div className="md:w-3/4">
-                  <div className="md:py-8 md:pl-8">
+                  {/* <div className="md:py-8 md:pl-8">
                     <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
                     <SearchForm
                       placeholder={placeholder}
@@ -367,14 +378,21 @@ const Search = () => {
                         <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
                       </div>
                     </div>
-                  </div>
+                  </div> */}
                   <div className="mt-4 relative z-10">
                     <TabbedNav
                       activeIndex={categoryIndex}
                       items={documentCategories}
                       handleTabClick={handleDocumentCategoryClick}
                     />
-                    <div className="mt-4 md:absolute right-0 top-0 md:-mt-2 flex z-10">
+                    <div className="mt-4 md:absolute right-0 top-0 md:-mt-4 flex z-10 items-center">
+                      <Sort
+                        defaultValue={getCurrentSortChoice()}
+                        updateSort={handleSortClick}
+                      />
+                    </div>
+                    {/* Hide download button until this functionality is implemented in back end */}
+                    {/* <div className="mt-4 md:absolute right-0 top-0 md:-mt-2 flex z-10">
                       <Button
                         color="light-hover-dark"
                         thin={true}
@@ -392,27 +410,16 @@ const Search = () => {
                           tooltip={downloadCSVTooltip}
                         />
                       </div>
-                    </div>
-                  </div>
-                  <div className="mt-4 mb-8 flex justify-end">
-                    <div className="w-full md:w-1/2 lg:w-1/3 xl:w-1/4 flex items-center">
-                      <Sort
-                        defaultValue={getCurrentSortChoice()}
-                        updateSort={handleSortClick}
-                      />
-                      <div className="ml-1 -mt-1">
-                        <Tooltip id="sortby-tt" tooltip={sortByTooltip} />
-                      </div>
-                    </div>
+                    </div> */}
                   </div>
 
-                  <div className="md:pl-8 relative">
+                  <div className="md:pl-8 md:mt-12 relative">
                     {resultsQuery.isFetching ? (
                       <div className="w-full flex justify-center h-96">
                         <Loader />
                       </div>
                     ) : noQuery ? (
-                      <p className="font-bold text-red-500 h-96">
+                      <p className="mt-4 font-bold text-red-500 h-96">
                         Please enter some search terms.
                       </p>
                     ) : (
