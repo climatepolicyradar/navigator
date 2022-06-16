@@ -8,12 +8,15 @@ import MultiList from '../filters/MultiList';
 import ByRange from '../filters/ByRange';
 import { minYear } from '../../constants/timedate';
 import BySelectGroup from '../filters/BySelectGroup';
+import ExactMatch from '../filters/ExactMatch';
+import Link from 'next/link';
 
 interface SearchFiltersProps {
   handleFilterChange(type: string, value: string, action: string): void;
   handleYearChange(values: any): void;
   handleRegionChange(type: any, regionName: any): void;
   handleClearSearch(): void;
+  handleSearchChange(type: string, value: string): void;
   searchCriteria: any;
   regions: object[];
   filteredCountries: object[];
@@ -29,6 +32,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
     searchCriteria,
     handleRegionChange,
     handleClearSearch,
+    handleSearchChange,
     regions,
     filteredCountries,
     sectors,
@@ -82,11 +86,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
         </div>
 
         <div className="my-4 text-sm text-indigo-500">
-          <div className="relative">
-            <div className="absolute top-0 right-0 z-20">
-              <Tooltip id="region" tooltip={regionTooltip} />
-            </div>
-
+          <div>
+            <ExactMatch
+              checked={searchCriteria.exact_match}
+              id="exact-match"
+              handleSearchChange={handleSearchChange}
+            />
+          </div>
+          <div className="relative mt-6">
             <BySelect
               list={regions}
               defaultValue={
@@ -101,9 +108,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
             />
           </div>
           <div className="relative mt-6">
-            <div className="absolute top-0 right-0 z-20">
-              <Tooltip id="country" tooltip={countryTooltip} />
-            </div>
             <ByTextInput
               title={t('By country')}
               list={filteredCountries}
@@ -119,9 +123,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
             />
           </div>
           <div className="relative mt-6">
-            <div className="absolute top-0 right-0 z-20">
-              <Tooltip id="sector" tooltip={sectorTooltip} />
-            </div>
             <BySelect
               list={sectors}
               onChange={handleFilterChange}
@@ -135,7 +136,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
               filterType="sectors"
             />
           </div>
-          <div className="relative mt-6">
+          {/* Hide document type and instrument filters for now */}
+          {/* <div className="relative mt-6">
             <div className="absolute top-0 right-0 z-20">
               <Tooltip id="doctype" tooltip={doctypeTooltip} />
             </div>
@@ -151,8 +153,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
               keyField="name"
               filterType="types"
             />
-          </div>
-          <div className="relative mt-6">
+          </div> */}
+          {/* <div className="relative mt-6">
             <div className="absolute top-0 right-0 z-20">
               <Tooltip id="instrument" tooltip={instrumentTooltip} />
             </div>
@@ -168,17 +170,10 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
               keyField="name"
               filterType="instruments"
             />
-          </div>
+          </div> */}
 
           <div className="relative mt-8 mb-12">
             <div className="mx-2">
-              <div className="absolute top-0 right-0">
-                {/* TODO: translate below text */}
-                <Tooltip
-                  id="year-range"
-                  tooltip="The years in which documents were first published"
-                />
-              </div>
               <ByRange
                 title={t('By date range')}
                 type="year_range"
@@ -188,6 +183,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
                 max={currentYear}
               />
             </div>
+          </div>
+          <div className="mt-8 pt-8 border-t border-blue-200">
+            <p className="text-center">
+              For more info see
+              <br />
+              <Link href="/methodology">
+                <a className="underline text-blue-500">our methodology page</a>
+              </Link>
+            </p>
           </div>
         </div>
       </>

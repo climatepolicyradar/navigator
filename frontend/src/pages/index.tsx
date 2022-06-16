@@ -98,9 +98,9 @@ const IndexPage = () => {
                   id="exact-match"
                   handleSearchChange={handleSearchChange}
                 />
-                <div className="ml-2 -mt-1 text-sm">
+                {/* <div className="ml-2 -mt-1 text-sm">
                   <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
-                </div>
+                </div> */}
               </div>
               <div className="mt-12">
                 <LandingPageLinks handleLinkClick={handleLinkClick} />
