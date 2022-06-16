@@ -75,7 +75,8 @@ build: build_backend build_frontend build_loader build_search_index build_pipeli
 # testing
 # ----------------------------------
 test_frontend:
-	cd frontend/e2e && docker-compose up --exit-code-from cypress
+	# TODO: setup a proper test user for cypress
+	cd frontend/e2e && LOGIN_NAME=${SUPERUSER_EMAIL} LOGIN_PW=${SUPERUSER_PASSWORD} docker-compose up --exit-code-from cypress
 
 clear_test_search_index:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --insecure
