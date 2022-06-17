@@ -2,7 +2,8 @@ const { defineConfig } = require('cypress');
 
 // load the environment variables from the local .env file
 require('dotenv').config();
-console.log(process.env)
+// Just for debugging missing env vars
+// console.log(process.env)
 
 module.exports = defineConfig({
   viewportWidth: 1000,
@@ -14,7 +15,7 @@ module.exports = defineConfig({
     // You may want to clean this up later by importing these.
     setupNodeEvents(on, config) {
       require('./cypress/plugins/index.js')(on, config);
-      
+
       config.env = config.env || {};
       config.env.LOGIN_NAME = process.env.LOGIN_NAME;
       config.env.LOGIN_PW = process.env.LOGIN_PW;
