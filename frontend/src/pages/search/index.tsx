@@ -268,8 +268,6 @@ const Search = () => {
     }
   }, []);
 
-  const exactMatchTooltip = t('Tooltips.Exact match', { ns: 'searchResults' });
-  const sortByTooltip = t('Tooltips.Sort by', { ns: 'searchResults' });
   const downloadCSVTooltip = t('Tooltips.Download CSV', {
     ns: 'searchResults',
   });
@@ -361,24 +359,6 @@ const Search = () => {
                   </div>
                 </div>
                 <div className="md:w-3/4">
-                  {/* <div className="md:py-8 md:pl-8">
-                    <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
-                    <SearchForm
-                      placeholder={placeholder}
-                      handleSearchInput={handleSearchInput}
-                      input={searchCriteria.query_string}
-                    />
-                    <div className="flex justify-end mt-3">
-                      <ExactMatch
-                        checked={searchCriteria.exact_match}
-                        id="exact-match"
-                        handleSearchChange={handleSearchChange}
-                      />
-                      <div className="ml-1 -mt-1 text-sm">
-                        <Tooltip id="exact_match" tooltip={exactMatchTooltip} />
-                      </div>
-                    </div>
-                  </div> */}
                   <div className="mt-4 relative z-10">
                     <TabbedNav
                       activeIndex={categoryIndex}
@@ -413,13 +393,14 @@ const Search = () => {
                     </div> */}
                   </div>
 
-                  <div className="md:pl-8 md:mt-12 relative">
+                  <div className="search-results md:pl-8 md:mt-12 relative">
                     {resultsQuery.isFetching ? (
                       <div className="w-full flex justify-center h-96">
                         <Loader />
                       </div>
                     ) : noQuery ? (
                       <p className="mt-4 font-bold text-red-500 h-96">
+                        {/* TODO: make text translatable */}
                         Please enter some search terms.
                       </p>
                     ) : (

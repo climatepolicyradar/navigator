@@ -16,6 +16,7 @@ module.exports = {
       green: colors.green,
       semiTransWhite: 'rgba(255, 255, 255, 0.85)',
       lightgray: '#F9FAFB',
+      offwhite: '#EFF3FB',
       indigo: {
         100: '#f2f2f5',
         200: '#e4e6ea',
@@ -23,6 +24,7 @@ module.exports = {
         400: '#939bad',
         500: '#616c85',
         600: '#071e4a',
+        700: '#0A1C40',
       },
       sky: '#ebf2ff',
       blue: {
@@ -31,6 +33,11 @@ module.exports = {
         300: '#a4cdfb',
         400: '#7cb4fa',
         500: '#1f93ff',
+        600: '#006FD6',
+      },
+      bluegreen: {
+        100: '#127D9D',
+        200: '#285A76',
       },
       yellow: {
         100: '#fefaf1',
