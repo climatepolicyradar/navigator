@@ -189,7 +189,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
               For more info see
               <br />
               <Link href="/methodology">
-                <a className="underline text-blue-500">our methodology page</a>
+                <a className="underline text-blue-600">our methodology page</a>
               </Link>
             </p>
           </div>
