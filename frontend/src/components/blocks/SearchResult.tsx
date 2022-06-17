@@ -19,12 +19,8 @@ const SearchResult = ({ document }: SearchResultProps) => {
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-center">
           <Link href={`/document/${document.document_id}`}>
-            <a className="text-left text-blue-500 font-medium text-lg transition duration-300 hover:text-indigo-600 leading-tight">
+            <a className="text-left font-medium text-lg leading-tight">
               {truncateString(document.document_name, 80)}
-              <br />
-              <span className="text-xs text-indigo-500 font-normal">
-                (Click to see document overview)
-              </span>
             </a>
           </Link>
         </h2>
