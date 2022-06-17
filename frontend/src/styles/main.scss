@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tailwind specific styles for special radio and checkbox styles */
 @layer components {
   [type='checkbox']:checked {
     background-image: url("data:image/svg+xml,%3csvg viewBox='0 0 16 16' fill='%231f93ff' xmlns='http://www.w3.org/2000/svg'%3e%3cpath d='M12.207 4.793a1 1 0 010 1.414l-5 5a1 1 0 01-1.414 0l-2-2a1 1 0 011.414-1.414L6.5 9.086l4.293-4.293a1 1 0 011.414 0z'/%3e%3c/svg%3e");
@@ -143,7 +144,7 @@ select {
   width: 25%;
   height: 14em;
 }
-
+/* dark blue top banner */
 .banner {
   @include dark-gradient;
   &--full {
@@ -197,6 +198,8 @@ input[type='search']::-webkit-search-results-decoration {
   display: none;
 }
 
+/* Tabbed navigation */
+
 .subnav-active {
   position: relative;
   @apply z-20;
@@ -223,11 +226,12 @@ input[type='search']::-webkit-search-results-decoration {
   }
 }
 
+/* Tooltip button */
 .circle-sm {
   width: 20px;
   height: 20px;
 }
-
+/* Tooltips styles to override the default */
 .customTooltip {
   @apply bg-white text-indigo-600 border-indigo-200 #{!important};
   max-width: 300px !important;
@@ -267,6 +271,7 @@ input[type='search']::-webkit-search-results-decoration {
     }
   }
 }
+
 ul li.selected {
   @apply bg-blue-200;
 }
