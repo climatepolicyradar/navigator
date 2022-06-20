@@ -14,6 +14,38 @@ const SearchResult = ({ document }: SearchResultProps) => {
   };
   const [year, day, month] = convertDate(formatDate());
 
+  const showMatches = () => {
+    // if(document.document_content_type !== 'application/pdf') return null;
+    if (
+      document.document_passage_matches.length ||
+      document.document_title_match ||
+      document.document_description_match
+    ) {
+      return (
+        <div>
+          <span className="text-bold ml-6">Matches</span>
+          {document.document_title_match && <span>Title &nbsp; | &nbsp;</span>}
+          {document.document_description_match && (
+            <span>Summary &nbsp; | &nbsp;</span>
+          )}
+          {document.document_passage_matches.length > 0 && (
+            <span>Document</span>
+          )}
+          {document.document_content_type === 'application/pdf' &&
+            document.document_passage_matches.length > 0 && (
+              <button
+                data-docid={document.document_id}
+                className="py-1 px-4 bg-blue-600 text-white font-medium"
+              >
+                See {document.document_passage_matches.length} match
+                {document.document_passage_matches.length > 1 ? 'es' : ''}
+              </button>
+            )}
+        </div>
+      );
+    }
+  };
+
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
@@ -33,10 +65,12 @@ const SearchResult = ({ document }: SearchResultProps) => {
         <span className="ml-2">
           {document.document_country_english_shortname}
         </span>
-        <span className="ml-6">{`${day} ${month} ${year}`}</span>
+        <span className="ml-4">{year}</span>
+        {showMatches()}
       </div>
+
       {/* TODO: translate below text, how to handle plurals? */}
-      {document.document_passage_matches.length > 0 &&
+      {/* {document.document_passage_matches.length > 0 &&
         document.document_content_type === 'application/pdf' && (
           <div className="my-2 font-medium">
             <span className="text-indigo-500">Click here to see &nbsp;</span>
@@ -51,7 +85,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
               in document
             </button>
           </div>
-        )}
+        )} */}
       <p className="text-indigo-400 mt-3">
         {truncateString(
           document.document_description.replace(/(<([^>]+)>)/gi, ''),
