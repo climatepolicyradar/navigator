@@ -1,5 +1,4 @@
 import Link from 'next/link';
-import { useEffect } from 'react';
 
 const FooterLinks = ({ landing = false }) => {
   return (
