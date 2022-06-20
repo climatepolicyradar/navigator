@@ -16,8 +16,10 @@ const openMenu = () => {
 const navigateDropdownMenuItem = (el, title, pathname) => {
   openMenu();
   cy.contains(`${menuSelector} ${el}`, title).click();
-  cy.location('pathname').should('eq', pathname);
+  // timeout will not 'wait' but it should account for any lag
+  cy.location('pathname', { timeout: 10000 }).should('eq', pathname);
 };
+
 const handleExternalLink = (title, url) => {
   openMenu();
   cy.contains(`${menuSelector} a`, title)
