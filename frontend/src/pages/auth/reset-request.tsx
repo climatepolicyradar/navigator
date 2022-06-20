@@ -65,7 +65,11 @@ const ResetRequest = () => {
                       {status.error}
                     </p>
                   )}
-                  <form className="w-full" onSubmit={handleSubmit(submitForm)}>
+                  <form
+                    className="w-full"
+                    onSubmit={handleSubmit(submitForm)}
+                    noValidate
+                  >
                     <div className="form-row text-white">
                       <TextInput
                         label={t('Email')}

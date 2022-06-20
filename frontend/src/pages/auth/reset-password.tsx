@@ -62,7 +62,7 @@ const ResetPassword = () => {
                   <p className="text-red-500 font-bold mt-4">{status.error}</p>
                 )}
                 <form className="w-full" onSubmit={handleSubmit(submitForm)}>
-                  <div className="form-row text-white">
+                  <div className="form-row text-white" data-cy="password">
                     <TextInput
                       label={t('Password')}
                       name="password"
@@ -72,7 +72,10 @@ const ResetPassword = () => {
                       register={register}
                     />
                   </div>
-                  <div className="form-row text-white">
+                  <div
+                    className="form-row text-white"
+                    data-cy="confirm-password"
+                  >
                     <TextInput
                       label={t('Confirm password')}
                       name="confirm_password"

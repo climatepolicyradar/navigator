@@ -75,6 +75,7 @@ build: build_backend build_frontend build_loader build_search_index build_pipeli
 # testing
 # ----------------------------------
 test_frontend:
+	# TODO: setup a proper test user for cypress
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
 
 clear_test_search_index:

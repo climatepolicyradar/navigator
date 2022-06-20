@@ -29,6 +29,8 @@ jobs:
           ls -la
       - name: verify frontend is up
         run: curl http://localhost:3000
+      - name: Configure frontend test env
+        run: cp frontend/e2e/.env.example frontend/e2e/.env
       - name: Run frontend tests
         run: make test_frontend
   test_pipeline:
