@@ -43,7 +43,10 @@ const ActivateAccount = () => {
   const submitForm = async (data) => {
     const { password } = data;
     const token = router.query.token ? router.query.token : 'none';
-    const response = await activate({ password, token });
+    const response = await activate({
+      password,
+      token,
+    });
     setStatus(response);
   };
   useEffect(() => {
