@@ -15,7 +15,6 @@ const SearchResult = ({ document }: SearchResultProps) => {
   const [year, day, month] = convertDate(formatDate());
 
   const showMatches = () => {
-    // if(document.document_content_type !== 'application/pdf') return null;
     if (
       document.document_passage_matches.length ||
       document.document_title_match ||
