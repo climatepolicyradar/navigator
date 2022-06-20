@@ -15,7 +15,6 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../../api/auth';
 import SearchForm from '../../components/forms/SearchForm';
 import SearchFilters from '../../components/blocks/SearchFilters';
-import ExactMatch from '../../components/filters/ExactMatch';
 import TabbedNav from '../../components/nav/TabbedNav';
 import Loader from '../../components/Loader';
 import Sort from '../../components/filters/Sort';
@@ -365,7 +364,7 @@ const Search = () => {
                       items={documentCategories}
                       handleTabClick={handleDocumentCategoryClick}
                     />
-                    <div className="mt-4 md:absolute right-0 top-0 md:-mt-4 flex z-10 items-center">
+                    <div className="mt-4 md:absolute right-0 top-0 md:-mt-8 lg:-mt-4 flex z-10 items-center">
                       <Sort
                         defaultValue={getCurrentSortChoice()}
                         updateSort={handleSortClick}

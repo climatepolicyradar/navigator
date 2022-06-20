@@ -22,26 +22,33 @@ const SearchResult = ({ document }: SearchResultProps) => {
       document.document_description_match
     ) {
       return (
-        <div>
-          <span className="text-bold ml-6">Matches</span>
-          {document.document_title_match && <span>Title &nbsp; | &nbsp;</span>}
-          {document.document_description_match && (
-            <span>Summary &nbsp; | &nbsp;</span>
-          )}
-          {document.document_passage_matches.length > 0 && (
-            <span>Document</span>
-          )}
+        <>
+          <div className="w-full md:w-auto flex flex-wrap md:flex-nowrap mt-2 md:mt-0 ">
+            {/* TODO: translate below text, how to handle plurals? */}
+            <span className="font-medium md:ml-10 mr-2">Matches</span>
+            <div className="divide-x divide-current flex-grow-0">
+              {document.document_title_match && (
+                <span className="px-2">Title</span>
+              )}
+              {document.document_description_match && (
+                <span className="px-2">Summary</span>
+              )}
+              {document.document_passage_matches.length > 0 && (
+                <span className="px-2">Document</span>
+              )}
+            </div>
+          </div>
           {document.document_content_type === 'application/pdf' &&
             document.document_passage_matches.length > 0 && (
               <button
                 data-docid={document.document_id}
-                className="py-1 px-4 bg-blue-600 text-white font-medium"
+                className="md:ml-4 mt-2 md:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 hover:bg-indigo-600"
               >
                 See {document.document_passage_matches.length} match
                 {document.document_passage_matches.length > 1 ? 'es' : ''}
               </button>
             )}
-        </div>
+        </>
       );
     }
   };
@@ -58,7 +65,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
         </h2>
       </div>
 
-      <div className="flex text-sm text-indigo-400 mt-4">
+      <div className="flex flex-wrap md:flex-nowrap text-sm text-indigo-400 mt-4 items-center">
         <div
           className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`}
         />
@@ -69,23 +76,6 @@ const SearchResult = ({ document }: SearchResultProps) => {
         {showMatches()}
       </div>
 
-      {/* TODO: translate below text, how to handle plurals? */}
-      {/* {document.document_passage_matches.length > 0 &&
-        document.document_content_type === 'application/pdf' && (
-          <div className="my-2 font-medium">
-            <span className="text-indigo-500">Click here to see &nbsp;</span>
-            <button
-              data-docid={document.document_id}
-              className="font-medium text-base text-indigo-600 underline text-sm mt-3 transition duration-300 hover:text-blue-500"
-            >
-              {document.document_passage_matches.length} match
-              {`${
-                document.document_passage_matches.length === 1 ? '' : 'es'
-              }`}{' '}
-              in document
-            </button>
-          </div>
-        )} */}
       <p className="text-indigo-400 mt-3">
         {truncateString(
           document.document_description.replace(/(<([^>]+)>)/gi, ''),
