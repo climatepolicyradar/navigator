@@ -184,7 +184,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
               />
             </div>
           </div>
-          <div className="mt-8 pt-8 border-t border-blue-200">
+          <div className="my-8 pt-8 border-t border-blue-200">
             <p className="text-center">
               For more info see
               <br />
