@@ -4,18 +4,27 @@ from unittest.mock import patch
 import pytest
 
 from app.api.api_v1.routers.admin import ACCOUNT_ACTIVATION_EXPIRE_MINUTES
+from app.core.security import verify_password
 from app.db.models import User, PasswordResetToken
 
 
+@pytest.mark.parametrize(
+    "password", ["simple-password", "ManyClas5es$", "dodgy%23encode"]
+)
 @patch("app.api.api_v1.routers.unauthenticated.send_password_changed_email")
 def test_reset_password(
-    mock_send_email, client, test_inactive_user, test_db, test_password_reset_token
+    mock_send_email,
+    password,
+    client,
+    test_inactive_user,
+    test_db,
+    test_password_reset_token,
 ):
     response = client.post(
         "/api/v1/activations",
         json={
             "token": test_password_reset_token.token,
-            "password": "some-password",
+            "password": password,
         },
     )
     assert response.status_code == 200
@@ -28,7 +37,7 @@ def test_reset_password(
 
     db_user = test_db.query(User).filter(User.id == test_inactive_user.id).first()
     assert db_user.is_active
-    assert db_user.hashed_password is not None
+    assert verify_password(password, db_user.hashed_password)
 
     mock_send_email.assert_called_once_with(db_user)
 
