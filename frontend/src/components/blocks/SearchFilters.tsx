@@ -10,6 +10,7 @@ import { minYear } from '../../constants/timedate';
 import BySelectGroup from '../filters/BySelectGroup';
 import ExactMatch from '../filters/ExactMatch';
 import Link from 'next/link';
+import ByDateRange from '../filters/ByDateRange';
 
 interface SearchFiltersProps {
   handleFilterChange(type: string, value: string, action: string): void;
@@ -174,14 +175,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
 
           <div className="relative mt-8 mb-12">
             <div className="mx-2">
-              <ByRange
+              <ByDateRange title={t('By date range')} />
+              {/* <ByRange
                 title={t('By date range')}
                 type="year_range"
                 handleChange={handleYearChange}
                 defaultValues={searchCriteria.year_range}
                 min={minYear}
                 max={currentYear}
-              />
+              /> */}
             </div>
           </div>
           <div className="my-8 pt-8 border-t border-blue-200">
