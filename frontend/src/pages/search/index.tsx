@@ -358,13 +358,13 @@ const Search = () => {
                   </div>
                 </div>
                 <div className="md:w-3/4">
-                  <div className="mt-4 relative z-10">
+                  <div className="mt-4 relative">
                     <TabbedNav
                       activeIndex={categoryIndex}
                       items={documentCategories}
                       handleTabClick={handleDocumentCategoryClick}
                     />
-                    <div className="mt-4 md:absolute right-0 top-0 md:-mt-8 lg:-mt-4 flex z-10 items-center">
+                    <div className="mt-4 md:absolute right-0 top-0 md:-mt-8 lg:-mt-4 flex items-center">
                       <Sort
                         defaultValue={getCurrentSortChoice()}
                         updateSort={handleSortClick}
