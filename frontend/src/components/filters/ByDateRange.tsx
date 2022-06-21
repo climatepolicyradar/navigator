@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import DateRangeInput from './DateRangeInput';
 import DateRangeOption from './DateRangeOption';
 
 interface ByDateRangeProps {
@@ -5,8 +7,15 @@ interface ByDateRangeProps {
 }
 
 const ByDateRange = ({ title }: ByDateRangeProps) => {
+  const [showDateInput, setShowDateInput] = useState(false);
+  const toggleDateInput = () => {
+    setShowDateInput(!showDateInput);
+    console.log('hello?');
+  };
+  const clickOther = () => {};
   return (
     <div>
+      {console.log(showDateInput)}
       <div>{title}</div>
       {/* TODO: make labels translatable */}
       <div className="mt-4 grid lg:grid-cols-2 gap-2">
@@ -27,7 +36,17 @@ const ByDateRange = ({ title }: ByDateRangeProps) => {
           label="specify range"
           name="date_range"
           value="specify"
+          onChange={toggleDateInput}
         />
+      </div>
+      {showDateInput}
+      <div
+        className={`${
+          showDateInput ? 'block' : 'hidden'
+        } lg:grid lg:grid-cols-2 gap-2 mt-2`}
+      >
+        <DateRangeInput label="From" />
+        <DateRangeInput label="To" />
       </div>
     </div>
   );

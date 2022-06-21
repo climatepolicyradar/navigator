@@ -174,7 +174,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
           </div> */}
 
           <div className="relative mt-8 mb-12">
-            <div className="mx-2">
+            <div className="">
               <ByDateRange title={t('By date range')} />
               {/* <ByRange
                 title={t('By date range')}

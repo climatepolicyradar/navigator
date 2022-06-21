@@ -1,11 +1,19 @@
+import { ChangeEvent } from 'react';
 interface DateRangeOptionProps {
   id: string;
   label: string;
   name: string;
   value: string;
+  onChange?(e: ChangeEvent): void;
 }
 
-const DateRangeOption = ({ id, label, name, value }: DateRangeOptionProps) => {
+const DateRangeOption = ({
+  id,
+  label,
+  name,
+  value,
+  onChange = () => {},
+}: DateRangeOptionProps) => {
   return (
     <label
       className="checkbox-input flex items-center border border-indigo-200 p-2 rounded cursor-pointer"
@@ -18,7 +26,7 @@ const DateRangeOption = ({ id, label, name, value }: DateRangeOptionProps) => {
         name={name}
         value={value}
         // checked={false}
-        // onChange={handleClick}
+        onChange={onChange}
       />
       <span className="text-xs font-medium pl-2 leading-none">
         {/* TODO: make translatable */}
