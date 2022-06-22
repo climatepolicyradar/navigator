@@ -5,6 +5,7 @@ interface DateRangeOptionProps {
   name: string;
   value: string;
   onChange?(e: ChangeEvent): void;
+  checked?: boolean;
 }
 
 const DateRangeOption = ({
@@ -13,6 +14,7 @@ const DateRangeOption = ({
   name,
   value,
   onChange = () => {},
+  checked = false,
 }: DateRangeOptionProps) => {
   return (
     <label
@@ -25,7 +27,7 @@ const DateRangeOption = ({
         type="radio"
         name={name}
         value={value}
-        // checked={false}
+        checked={checked}
         onChange={onChange}
       />
       <span className="text-xs font-medium pl-2 leading-none">

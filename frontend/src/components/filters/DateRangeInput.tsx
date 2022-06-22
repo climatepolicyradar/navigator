@@ -1,37 +1,54 @@
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { DownArrowIcon } from '../svg/Icons';
+import { currentYear, minYear } from '../../constants/timedate';
+
 interface DateRangeInputProps {
   label: string;
+  value: string | number;
+  max: number;
+  min: number;
+  handleBlur(e): void;
 }
-const DateRangeInput = ({ label }: DateRangeInputProps) => {
+const DateRangeInput = ({
+  label,
+  value,
+  max,
+  min,
+  handleBlur,
+}: DateRangeInputProps) => {
   const [showYears, setShowYears] = useState(false);
-  const [value, setValue] = useState('');
+  const [inputValue, setInputValue] = useState(value);
+  const [years, setYears] = useState([]);
   const inputRef = useRef(null);
-  const years = [
-    2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021,
-    2022,
-  ];
+
   const toggleYears = () => {
     setShowYears(!showYears);
   };
   const selectInputValue = (e) => {
     const value = e.target.innerText;
-    setValue(value);
+
+    setInputValue(value);
     setShowYears(false);
+    handleBlur(e);
   };
-  const setInputValue = (e) => {
+  const updateInputValue = (e) => {
     const value = e.target.value;
-    setValue(value);
+    setInputValue(value);
     setShowYears(false);
   };
+  useEffect(() => {
+    setYears(Array.from({ length: max - min }, (_, i) => i + min));
+  }, [min, max]);
   return (
     <div>
       <label>{label}</label>
       <div className="relative">
         <input
           ref={inputRef}
-          value={value}
-          onChange={setInputValue}
+          name={label}
+          value={inputValue}
+          onChange={updateInputValue}
+          onBlur={handleBlur}
           type="text"
           className="border border-indigo-200 mt-2 small outline-none placeholder:text-indigo-300"
         />
@@ -52,6 +69,7 @@ const DateRangeInput = ({ label }: DateRangeInputProps) => {
                 <button
                   onClick={selectInputValue}
                   className="p-1 w-full hover:bg-lightgray"
+                  value={year}
                 >
                   {year}
                 </button>
