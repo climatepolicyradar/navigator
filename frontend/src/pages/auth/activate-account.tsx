@@ -1,23 +1,33 @@
 import '../i18n';
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { useRouter } from 'next/router';
 import { useTranslation } from 'react-i18next';
-import LoaderOverlay from '../../components/LoaderOverlay';
-import Layout from '../../components/layouts/Auth';
-import AuthWrapper from '../../components/auth/AuthWrapper';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import TextInput from '../../components/form-inputs/TextInput';
-import Button from '../../components/buttons/Button';
 import { useAuth } from '../../api/auth';
-import Link from 'next/link';
+import LoaderOverlay from '../../components/LoaderOverlay';
+import Layout from '../../components/layouts/Auth';
+import AuthWrapper from '../../components/auth/AuthWrapper';
+import PasswordInput from '../../components/form-inputs/PasswordInput';
+import Button from '../../components/buttons/Button';
 
 const ActivateAccount = () => {
   const [status, setStatus] = useState(null);
   const router = useRouter();
   const { t, i18n, ready } = useTranslation('auth');
   const { user, register: activate } = useAuth();
+
+  useEffect(() => {
+    if (status?.activated) router.push('/auth/signin?activated=true');
+  }, [status]);
+
+  useEffect(() => {
+    // redirect if already signed in
+    if (user?.email) router.push('/');
+  }, [user]);
+
   const schema = Yup.object({
     /* TODO: decide on password requirements */
     password: Yup.string()
@@ -28,31 +38,23 @@ const ActivateAccount = () => {
       t('Passwords must match')
     ),
   });
+
   const {
     register,
     handleSubmit,
-    getValues,
-    setValue,
-    formState: { isSubmitting, errors, isSubmitSuccessful, isValid },
-    reset,
-    watch,
+    formState: { isSubmitting, errors },
   } = useForm({
     resolver: yupResolver(schema),
     // defaultValues: initialValues,
   });
+
   const submitForm = async (data) => {
     const { password } = data;
     const token = router.query.token ? router.query.token : 'none';
     const response = await activate({ password, token });
     setStatus(response);
   };
-  useEffect(() => {
-    if (status?.activated) router.push('/auth/signin?activated=true');
-  }, [status]);
-  useEffect(() => {
-    // redirect if already signed in
-    if (user?.email) router.push('/');
-  }, [user]);
+ 
   return (
     <>
       {isSubmitting ? (
@@ -70,10 +72,9 @@ const ActivateAccount = () => {
                 )}
                 <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                   <div className="form-row text-white" data-cy="password">
-                    <TextInput
+                    <PasswordInput
                       label={t('Password')}
                       name="password"
-                      type="password"
                       errors={errors}
                       required
                       register={register}
@@ -83,10 +84,9 @@ const ActivateAccount = () => {
                     className="form-row text-white"
                     data-cy="confirm-password"
                   >
-                    <TextInput
+                    <PasswordInput
                       label={t('Confirm password')}
                       name="confirm_password"
-                      type="password"
                       errors={errors}
                       required
                       register={register}

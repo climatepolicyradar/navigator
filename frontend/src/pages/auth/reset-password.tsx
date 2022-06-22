@@ -1,15 +1,15 @@
-import { useEffect, useState } from 'react';
 import '../i18n';
+import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import LoaderOverlay from '../../components/LoaderOverlay';
-import Layout from '../../components/layouts/Auth';
-import AuthWrapper from '../../components/auth/AuthWrapper';
 import { useForm } from 'react-hook-form';
-import { useAuth } from '../../api/auth';
 import { useRouter } from 'next/router';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import TextInput from '../../components/form-inputs/TextInput';
+import { useAuth } from '../../api/auth';
+import LoaderOverlay from '../../components/LoaderOverlay';
+import Layout from '../../components/layouts/Auth';
+import AuthWrapper from '../../components/auth/AuthWrapper';
+import PasswordInput from '../../components/form-inputs/PasswordInput';
 import Button from '../../components/buttons/Button';
 
 const ResetPassword = () => {
@@ -17,6 +17,7 @@ const ResetPassword = () => {
   const { t, i18n, ready } = useTranslation('auth');
   const { user, register: reset } = useAuth();
   const router = useRouter();
+
   const schema = Yup.object({
     password: Yup.string()
       .required(t('Password is required'))
@@ -26,26 +27,26 @@ const ResetPassword = () => {
       t('Passwords must match')
     ),
   });
+
+  useEffect(() => {
+    if (status?.activated) router.push('/auth/signin?reset=true');
+  }, [status]);
+
   const {
     register,
     handleSubmit,
-    formState: { isSubmitting, errors, isSubmitSuccessful, isValid },
+    formState: { isSubmitting, errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
+
   const submitForm = async (data) => {
     const { password } = data;
     const token = router.query.token ? router.query.token : 'none';
     const response = await reset({ password, token });
     setStatus(response);
   };
-  useEffect(() => {
-    if (status?.activated) router.push('/auth/signin?reset=true');
-  }, [status]);
-  useEffect(() => {
-    // redirect if already signed in
-    // if (user?.email) router.push('/');
-  }, [user]);
+  
   return (
     <>
       {isSubmitting ? (
@@ -63,10 +64,9 @@ const ResetPassword = () => {
                 )}
                 <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                   <div className="form-row text-white" data-cy="password">
-                    <TextInput
+                    <PasswordInput
                       label={t('Password')}
                       name="password"
-                      type="password"
                       errors={errors}
                       required
                       register={register}
@@ -76,10 +76,9 @@ const ResetPassword = () => {
                     className="form-row text-white"
                     data-cy="confirm-password"
                   >
-                    <TextInput
+                    <PasswordInput
                       label={t('Confirm password')}
                       name="confirm_password"
-                      type="password"
                       errors={errors}
                       required
                       register={register}
