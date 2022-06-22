@@ -13,6 +13,11 @@ import AuthWrapper from '../../components/auth/AuthWrapper';
 import PasswordInput from '../../components/form-inputs/PasswordInput';
 import Button from '../../components/buttons/Button';
 
+type TFormInputs = {
+  password: string;
+  confirm_password: string;
+}
+
 const ActivateAccount = () => {
   const [status, setStatus] = useState(null);
   const router = useRouter();
@@ -43,12 +48,12 @@ const ActivateAccount = () => {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm({
+  } = useForm<TFormInputs>({
     resolver: yupResolver(schema),
     // defaultValues: initialValues,
   });
 
-  const submitForm = async (data) => {
+  const submitForm = async (data: TFormInputs) => {
     const { password } = data;
     const token = router.query.token ? router.query.token : 'none';
     const response = await activate({ password, token });
