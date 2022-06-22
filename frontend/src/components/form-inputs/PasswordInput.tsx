@@ -8,9 +8,7 @@ interface InputProps {
   required?: boolean;
   errors: FieldErrors;
   name: string;
-  type?: string;
   placeholder?: string;
-  accept?: string;
   className?: string;
   onChange?(event: any): any;
   register: any;
@@ -21,9 +19,7 @@ const PasswordInput = ({
   required = false,
   errors,
   name,
-  type = 'text',
   placeholder = '',
-  accept = '',
   className = '',
   onChange,
   register
@@ -44,9 +40,8 @@ const PasswordInput = ({
       </label>
       <div className="relative mt-1">
         <input
-          type={passwordReveal ? 'text' : type}
+          type={passwordReveal ? 'text' : 'password'}
           placeholder={placeholder}
-          accept={accept}
           className={`border ${
             errors[name] ? 'border-red-500' : 'border-gray-300'
           }`}

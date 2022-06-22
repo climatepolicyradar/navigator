@@ -101,7 +101,6 @@ const Login = () => {
                     <PasswordInput
                       label={t('Password')}
                       name="password"
-                      type="password"
                       errors={errors}
                       required
                       register={register}
