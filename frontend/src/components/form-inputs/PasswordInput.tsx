@@ -49,7 +49,9 @@ const PasswordInput = ({
           {...register(name)}
           />
           <div className={`absolute inset-y-0 right-5 flex items-center cursor-pointer 
-            ${passwordReveal ? 'text-blue-500' : 'text-black'}`} onClick={handleOnClick}>
+            ${passwordReveal ? 'text-blue-500' : 'text-black'}`} 
+            onClick={handleOnClick} 
+            title={`${passwordReveal ? 'Hide' : 'Show'} password`}>
             <EyeIcon height='24' width='24' />
           </div>
       </div>
