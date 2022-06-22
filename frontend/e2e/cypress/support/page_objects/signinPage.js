@@ -1,16 +1,21 @@
+import { getError } from "../../utils/getError";
+
+const emailInput = 'input[type="email"]';
+const passwordInput = 'input[type="password"]';
+
 export class SignInPage {
   signIn(email, password) {
-    cy.get('input[type="email"]').type(email);
-    cy.get('input[type="password"]').type(password);
+    cy.get(emailInput).type(email);
+    cy.get(passwordInput).type(password);
     cy.get('form').submit();
     return this;
   }
   enterEmail(email) {
-    cy.get('input[type="email"]').type(email);
+    cy.get(emailInput).type(email);
     return this;
   }
   enterPassword(password) {
-    cy.get('input[type="password"]').type(password);
+    cy.get(passwordInput).type(password);
     return this;
   }
   submitForm() {
@@ -18,10 +23,10 @@ export class SignInPage {
     return this;
   }
   getEmailError() {
-    return cy.get('input[type="email"]').next('.error');
+    return getError(emailInput);
   }
   getPasswordError() {
-    return cy.get('input[type="password"]').next('.error');
+    return getError(passwordInput);
   }
 }
 export const signInPage = new SignInPage();
