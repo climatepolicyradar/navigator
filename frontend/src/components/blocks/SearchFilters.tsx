@@ -175,7 +175,14 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
 
           <div className="relative mt-8 mb-12">
             <div className="">
-              <ByDateRange title={t('By date range')} />
+              <ByDateRange
+                title={t('By date range')}
+                type="year_range"
+                handleChange={handleYearChange}
+                defaultValues={searchCriteria.year_range}
+                min={minYear}
+                max={currentYear}
+              />
               {/* <ByRange
                 title={t('By date range')}
                 type="year_range"

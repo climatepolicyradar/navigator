@@ -1,19 +1,37 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { DownArrowIcon } from '../svg/Icons';
 interface DateRangeInputProps {
   label: string;
 }
 const DateRangeInput = ({ label }: DateRangeInputProps) => {
   const [showYears, setShowYears] = useState(false);
-  const years = [2020, 2021, 2022];
+  const [value, setValue] = useState('');
+  const inputRef = useRef(null);
+  const years = [
+    2010, 2011, 2012, 2013, 2014, 2015, 2016, 2017, 2018, 2019, 2020, 2021,
+    2022,
+  ];
   const toggleYears = () => {
     setShowYears(!showYears);
+  };
+  const selectInputValue = (e) => {
+    const value = e.target.innerText;
+    setValue(value);
+    setShowYears(false);
+  };
+  const setInputValue = (e) => {
+    const value = e.target.value;
+    setValue(value);
+    setShowYears(false);
   };
   return (
     <div>
       <label>{label}</label>
       <div className="relative">
         <input
+          ref={inputRef}
+          value={value}
+          onChange={setInputValue}
           type="text"
           className="border border-indigo-200 mt-2 small outline-none placeholder:text-indigo-300"
         />
@@ -23,23 +41,24 @@ const DateRangeInput = ({ label }: DateRangeInputProps) => {
         >
           <DownArrowIcon />
         </button>
-
-        <ul
+        <div
           className={`${
             showYears ? 'block' : 'hidden'
-          } absolute top-2 right-0 bg-white w-full border border-indigo-200 rounded`}
+          } absolute top-2 right-0 bg-white w-full border border-indigo-200 rounded h-48 overflow-auto z-10`}
         >
-          {years.map((year) => (
-            <li key={year}>
-              <button
-                onClick={toggleYears}
-                className="p-1 w-full hover:bg-lightgray"
-              >
-                {year}
-              </button>
-            </li>
-          ))}
-        </ul>
+          <ul>
+            {years.map((year) => (
+              <li key={year}>
+                <button
+                  onClick={selectInputValue}
+                  className="p-1 w-full hover:bg-lightgray"
+                >
+                  {year}
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </div>
   );

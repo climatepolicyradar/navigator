@@ -165,8 +165,8 @@ const Search = () => {
     handleSearchChange('sort_field', field);
     handleSearchChange('sort_order', order);
   };
-  const handleYearChange = (values) => {
-    const newVals = values.map((value) => value.toFixed(0));
+  const handleYearChange = (values: number[]) => {
+    const newVals = values.map((value: number) => value.toFixed(0));
     handleSearchChange('year_range', newVals);
   };
   const handleClearSearch = () => {
