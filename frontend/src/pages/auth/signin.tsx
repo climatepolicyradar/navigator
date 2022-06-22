@@ -2,15 +2,16 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
+import { useForm } from 'react-hook-form';
+import * as Yup from 'yup';
+import Link from 'next/link';
+import { yupResolver } from '@hookform/resolvers/yup';
 import LoaderOverlay from '../../components/LoaderOverlay';
 import Layout from '../../components/layouts/Auth';
 import AuthWrapper from '../../components/auth/AuthWrapper';
-import { useForm } from 'react-hook-form';
-import * as Yup from 'yup';
-import { yupResolver } from '@hookform/resolvers/yup';
 import TextInput from '../../components/form-inputs/TextInput';
+import PasswordInput from '../../components/form-inputs/PasswordInput';
 import Button from '../../components/buttons/Button';
-import Link from 'next/link';
 import { useAuth } from '../../api/auth';
 
 const Login = () => {
@@ -97,7 +98,7 @@ const Login = () => {
                     data-cy="signin-password"
                     className="form-row text-white"
                   >
-                    <TextInput
+                    <PasswordInput
                       label={t('Password')}
                       name="password"
                       type="password"
