@@ -46,7 +46,10 @@ const Login = () => {
   
   const submitForm = async (data) => {
     const email = data.email.toLowerCase();
-    const newData = { ...data, email: encodeURIComponent(email) };
+    const newData = {
+      password: encodeURIComponent(data.password),
+      email: encodeURIComponent(email),
+    };
     const status = await login(newData);
     setStatus(status);
   };
