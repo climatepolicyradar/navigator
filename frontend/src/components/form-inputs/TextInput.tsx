@@ -1,6 +1,6 @@
-import React from 'react';
-import { FieldErrors } from 'react-hook-form';
-import FormFieldError from '../blocks/Error';
+import React from "react";
+import { FieldErrors } from "react-hook-form";
+import FormFieldError from "../blocks/Error";
 
 interface InputProps {
   label?: string;
@@ -17,42 +17,34 @@ interface InputProps {
 }
 
 const TextInput = ({
-  label = '',
+  label = "",
   required = false,
   errors,
   name,
-  type = 'text',
-  placeholder = '',
-  accept = '',
-  className = '',
+  type = "text",
+  placeholder = "",
+  accept = "",
+  className = "",
   onChange,
   register,
-  icon
+  icon,
 }: InputProps): JSX.Element => {
   return (
     <div className={className}>
       <label className="">
         {label}
-        {required && label ? (
-          <strong className="text-red-500"> *</strong>
-        ) : null}
+        {required && label ? <strong className="text-red-500"> *</strong> : null}
       </label>
       <div className="relative mt-1">
         <input
           type={type}
           placeholder={placeholder}
           accept={accept}
-          className={`border ${
-            errors[name] ? 'border-red-500' : 'border-gray-300'
-          }`}
+          className={`border ${errors[name] ? "border-red-500" : "border-gray-300"}`}
           onChange={onChange}
           {...register(name)}
-          />
-          { icon && 
-             <div className="absolute inset-y-0 right-5 flex items-center">
-                {icon}
-              </div>
-          }
+        />
+        {icon && <div className="absolute inset-y-0 right-5 flex items-center">{icon}</div>}
       </div>
       {errors[name] && <FormFieldError message={errors[name].message} />}
     </div>
