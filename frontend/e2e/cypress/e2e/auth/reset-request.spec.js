@@ -1,8 +1,11 @@
 import { signInPage } from '../../support/page_objects/signinPage';
 
 describe('Validate reset request page fields', () => {
-  beforeEach('visit page', () => {
+  before('visit page', () => {
     cy.visit('/auth/reset-request');
+  });
+  beforeEach('clear fields', () => {
+    signInPage.clearEmail();
   });
   it('Logo should link to the CPR website', () => {
     cy.checkAuthPagesLogo();

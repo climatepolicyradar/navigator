@@ -1,8 +1,11 @@
 import { newPasswordPage } from '../../support/page_objects/newPasswordPage';
 
 describe('Validate reset password page fields', () => {
-  beforeEach('visit page', () => {
+  before('visit page', () => {
     cy.visit('/auth/reset-password');
+  });
+  beforeEach('visit page', () => {
+    newPasswordPage.clearForm();
   });
   it('Logo should link to the CPR website', () => {
     cy.checkAuthPagesLogo();

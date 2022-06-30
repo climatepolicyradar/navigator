@@ -4,6 +4,10 @@ const passwordInput = '[data-cy="password"] input';
 const confirmInput = '[data-cy="confirm-password"] input';
 
 export class NewPasswordPage {
+  clearForm() {
+    cy.get(passwordInput).clear();
+    cy.get(confirmInput).clear();
+  }
   enterPassword(password) {
     cy.get(passwordInput).type(password);
     return this;

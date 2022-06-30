@@ -4,6 +4,16 @@ const emailInput = 'input[type="email"]';
 const passwordInput = 'input[type="password"]';
 
 export class SignInPage {
+  clearForm() {
+    cy.get(emailInput).clear();
+    cy.get(passwordInput).clear();
+  }
+  clearEmail() {
+    cy.get(emailInput).clear();
+  }
+  clearPassword() {
+    cy.get(passwordInput).clear();
+  }
   signIn(email, password) {
     cy.get(emailInput).type(email);
     cy.get(passwordInput).type(password);
