@@ -1,0 +1,12 @@
+{
+  "editor.tabSize": 2,
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "workbench.iconTheme": "vscode-icons",
+  "prettier.printWidth": 180,
+  "editor.wordWrapColumn": 180,
+  "explorer.compactFolders": false,
+  "workbench.colorCustomizations": {
+    "titleBar.activeBackground": "#006FD6",
+    "titleBar.activeForeground": "#ffffff"
+  },
+}
