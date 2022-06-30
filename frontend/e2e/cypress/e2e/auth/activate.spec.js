@@ -1,8 +1,11 @@
 import { newPasswordPage } from '../../support/page_objects/newPasswordPage';
 
 describe('Validate activate account page fields', () => {
-  beforeEach('visit page', () => {
+  before('visit page', () => {
     cy.visit('/auth/activate-account');
+  });
+  beforeEach('clear fields', () => {
+    newPasswordPage.clearForm();
   });
   it('Logo should link to the CPR website', () => {
     cy.checkAuthPagesLogo();

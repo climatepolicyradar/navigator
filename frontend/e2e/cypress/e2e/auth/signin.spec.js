@@ -1,8 +1,11 @@
 import { signInPage } from '../../support/page_objects/signinPage';
 
 describe('Validate user sign in fields', () => {
-  beforeEach('visit page', () => {
+  before('visit page', () => {
     cy.visit('/auth/signin');
+  });
+  beforeEach('visit page', () => {
+    signInPage.clearForm();
   });
   it('Logo should link to the CPR website', () => {
     cy.checkAuthPagesLogo();
@@ -21,12 +24,20 @@ describe('Validate user sign in fields', () => {
   });
   it('should redirect to the password reset page', () => {
     cy.clickTextLink('Forgot password?');
+    cy.location('pathname', { timeout: 1000 }).should('eq', '/auth/reset-request');
+  });
+});
+
+describe('Validate request access link', () => {
+  before('visit page', () => {
+    cy.visit('/auth/signin');
   });
   it('should link to the request form on the website', () => {
+    cy.visit('/auth/signin');
     cy.contains('a', 'Request early access')
       .invoke('attr', 'href')
       .then((href) => {
         expect(href).to.equal('https://climatepolicyradar.org/request-access');
       });
   });
-});
+})

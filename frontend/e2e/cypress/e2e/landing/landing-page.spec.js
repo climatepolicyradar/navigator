@@ -1,10 +1,8 @@
 /// <reference types="cypress" />
 
 describe('Landing page', () => {
-  beforeEach(() => {
+  before(() => {
     cy.login();
-    cy.wait(100);
-    cy.visit('/');
   });
 
   it('should see placeholder text which should clear after clicking input', () => {
