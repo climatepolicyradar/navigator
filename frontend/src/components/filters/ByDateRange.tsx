@@ -49,15 +49,15 @@ const ByDateRange = ({ title, handleChange, defaultValues, min, max, clear }: By
     <div>
       <div>{title}</div>
       {/* TODO: make labels translatable */}
-      <div className="mt-4 grid lg:grid-cols-2 gap-2">
+      <div className="mt-2 grid lg:grid-cols-2 gap-2">
         <DateRangeOption id="last5" label="in last 5 years" name="date_range" value="5" onChange={selectRange} checked={isChecked(5)} />
         <DateRangeOption id="last10" label="in last 10 years" name="date_range" value="10" onChange={selectRange} checked={isChecked(10)} />
         <DateRangeOption id="specify" label="specify range" name="date_range" value="specify" onChange={setDateInputVisible} checked={isChecked()} />
       </div>
       {showDateInput && (
         <div className="block lg:grid lg:grid-cols-2 gap-2 mt-2">
-          <DateRangeInput label="From" value={startYear} min={min} max={endYear} handleBlur={inputCustomRange} />
-          <DateRangeInput label="To" value={endYear} min={startYear} max={max} handleBlur={inputCustomRange} />
+          <DateRangeInput label="Earliest year" name="From" value={startYear} min={min} max={endYear} handleBlur={inputCustomRange} />
+          <DateRangeInput label="Latest year" name="To" value={endYear} min={startYear} max={max} handleBlur={inputCustomRange} />
         </div>
       )}
     </div>
