@@ -6,7 +6,7 @@ interface DateRangeInputProps {
   value: string | number;
   max: number;
   min: number;
-  handleBlur(e: React.ChangeEvent<HTMLInputElement>): void;
+  handleBlur(updatedDate: number, name: string): void;
 }
 const DateRangeInput = ({ label, value, handleBlur, min, max }: DateRangeInputProps) => {
   const [inputValue, setInputValue] = useState(value);
@@ -16,14 +16,23 @@ const DateRangeInput = ({ label, value, handleBlur, min, max }: DateRangeInputPr
     setInputValue(e.target.value);
   };
 
-  const onBlurHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const onBlurHandler = () => {
+    handleDateUpdate(Number(inputValue), label);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === "Enter") {
+      handleDateUpdate(Number(inputValue), label);
+    }
+  };
+
+  const handleDateUpdate = (updatedDate: number, name: string) => {
     setError("");
-    const val = Number(e.target.value);
-    if (val > max || val < min) {
+    if (updatedDate > max || updatedDate < min) {
       setError("Please enter a valid date");
       return;
     }
-    handleBlur(e);
+    handleBlur(updatedDate, name);
   };
 
   return (
@@ -35,6 +44,7 @@ const DateRangeInput = ({ label, value, handleBlur, min, max }: DateRangeInputPr
           value={inputValue}
           onChange={updateInputValue}
           onBlur={onBlurHandler}
+          onKeyDown={handleKeyDown}
           type="text"
           className="border border-indigo-200 mt-2 small outline-none placeholder:text-indigo-300"
         />

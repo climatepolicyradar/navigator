@@ -37,12 +37,11 @@ const ByDateRange = ({ title, handleChange, defaultValues, min, max, clear }: By
     handleChange([calculatedStart, thisYear]);
   };
 
-  const inputCustomRange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const selectedDate = Number(e.target.value);
-    if (e.target.name === "From") {
-      handleChange([selectedDate, Number(endYear)]);
+  const inputCustomRange = (updatedDate: number, name: string) => {
+    if (name === "From") {
+      handleChange([updatedDate, Number(endYear)]);
     } else {
-      handleChange([Number(startYear), selectedDate]);
+      handleChange([Number(startYear), updatedDate]);
     }
   };
 
