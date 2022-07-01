@@ -1,4 +1,5 @@
-import { ChangeEvent } from 'react';
+import { ChangeEvent } from "react";
+
 interface DateRangeOptionProps {
   id: string;
   label: string;
@@ -8,21 +9,11 @@ interface DateRangeOptionProps {
   checked?: boolean;
 }
 
-const DateRangeOption = ({
-  id,
-  label,
-  name,
-  value,
-  onChange = () => {},
-  checked = false,
-}: DateRangeOptionProps) => {
+const DateRangeOption = ({ id, label, name, value, onChange, checked }: DateRangeOptionProps) => {
   return (
-    <label
-      className="checkbox-input flex items-center border border-indigo-200 p-2 rounded cursor-pointer"
-      htmlFor={id}
-    >
+    <label className="checkbox-input flex items-center border border-indigo-200 p-2 rounded cursor-pointer" htmlFor={id}>
       <input
-        className="text-white border-blue-500"
+        className="text-white border-blue-500 cursor-pointer"
         id={id}
         type="radio"
         name={name}

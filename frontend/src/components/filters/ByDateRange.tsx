@@ -1,7 +1,7 @@
-import { useState, useEffect } from 'react';
-import { currentYear, minYear } from '../../constants/timedate';
-import DateRangeInput from './DateRangeInput';
-import DateRangeOption from './DateRangeOption';
+import React, { useState } from "react";
+import { currentYear } from "../../constants/timedate";
+import DateRangeInput from "./DateRangeInput";
+import DateRangeOption from "./DateRangeOption";
 
 interface ByDateRangeProps {
   title: string;
@@ -12,106 +12,50 @@ interface ByDateRangeProps {
   max: number;
 }
 
-const ByDateRange = ({
-  title,
-  type,
-  handleChange,
-  defaultValues,
-  min,
-  max,
-}: ByDateRangeProps) => {
+const ByDateRange = ({ title, type, handleChange, defaultValues, min, max }: ByDateRangeProps) => {
   const [showDateInput, setShowDateInput] = useState(false);
-  const [selected, setSelected] = useState('');
   const [startYear, endYear] = defaultValues;
 
-  const setDefaultSelected = () => {
-    const current = currentYear();
-    const start = Number(startYear);
-    const end = Number(endYear);
-    if (start === end - 5 && end === current) {
-      setSelected('5');
-    } else if (start === end - 10 && end === current) {
-      setSelected('10');
-    } else if (start !== minYear && end !== current) {
-      setSelected('custom');
-    }
+  const isChecked = (range?: number): boolean => {
+    return range ? Number(endYear) === currentYear() && Number(startYear) === endYear - range : showDateInput;
   };
+
   const setDateInputVisible = () => {
     setShowDateInput(true);
-    setSelected('custom');
-    handleChange([minYear, currentYear()]);
+    handleChange([min, max]);
   };
-  const hideDateInput = () => {
+
+  const selectRange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setShowDateInput(false);
-  };
-  const selectRange = (e: any) => {
-    hideDateInput();
-    const type = (e.target as HTMLInputElement).value;
     const thisYear = currentYear();
-    const offset = Number(type);
-    handleChange([thisYear - offset, thisYear]);
+    const calculatedStart = thisYear - Number(e.target.value);
+    handleChange([calculatedStart, thisYear]);
   };
-  const inputCustomRange = (e) => {
-    if (e.target.name === 'From') {
-      handleChange([Number(e.target.value), Number(endYear)]);
+
+  const inputCustomRange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const selectedDate = Number(e.target.value);
+    if (e.target.name === "From") {
+      handleChange([selectedDate, Number(endYear)]);
     } else {
-      handleChange([Number(startYear), Number(e.target.value)]);
+      handleChange([Number(startYear), selectedDate]);
     }
   };
 
-  useEffect(() => {
-    setDefaultSelected();
-  }, [defaultValues]);
   return (
     <div>
       <div>{title}</div>
       {/* TODO: make labels translatable */}
       <div className="mt-4 grid lg:grid-cols-2 gap-2">
-        <DateRangeOption
-          id="last5"
-          label="in last 5 years"
-          name="date_range"
-          value="5"
-          onChange={selectRange}
-          checked={selected === '5'}
-        />
-        <DateRangeOption
-          id="last10"
-          label="in last 10 years"
-          name="date_range"
-          value="10"
-          onChange={selectRange}
-          checked={selected === '10'}
-        />
-        <DateRangeOption
-          id="specify"
-          label="specify range"
-          name="date_range"
-          value="specify"
-          onChange={setDateInputVisible}
-          checked={selected === 'custom'}
-        />
+        <DateRangeOption id="last5" label="in last 5 years" name="date_range" value="5" onChange={selectRange} checked={isChecked(5)} />
+        <DateRangeOption id="last10" label="in last 10 years" name="date_range" value="10" onChange={selectRange} checked={isChecked(10)} />
+        <DateRangeOption id="specify" label="specify range" name="date_range" value="specify" onChange={setDateInputVisible} checked={isChecked()} />
       </div>
-      <div
-        className={`${
-          showDateInput ? 'block lg:grid' : 'hidden'
-        } lg:grid-cols-2 gap-2 mt-2`}
-      >
-        <DateRangeInput
-          label="From"
-          value={Number(startYear)}
-          min={Number(minYear)}
-          max={Number(endYear)}
-          handleBlur={inputCustomRange}
-        />
-        <DateRangeInput
-          label="To"
-          value={Number(endYear)}
-          min={Number(startYear)}
-          max={currentYear()}
-          handleBlur={inputCustomRange}
-        />
-      </div>
+      {showDateInput && (
+        <div className="block lg:grid lg:grid-cols-2 gap-2 mt-2">
+          <DateRangeInput label="From" value={min} min={min} max={endYear} handleBlur={inputCustomRange} />
+          <DateRangeInput label="To" value={endYear} min={min} max={max} handleBlur={inputCustomRange} />
+        </div>
+      )}
     </div>
   );
 };
