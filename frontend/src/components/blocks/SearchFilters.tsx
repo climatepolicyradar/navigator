@@ -108,6 +108,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
                 defaultValues={searchCriteria.year_range}
                 min={minYear}
                 max={thisYear}
+                clear={showClear}
               />
             </div>
           </div>

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { currentYear } from "../../constants/timedate";
 import DateRangeInput from "./DateRangeInput";
 import DateRangeOption from "./DateRangeOption";
@@ -10,11 +10,16 @@ interface ByDateRangeProps {
   defaultValues: number[];
   min: number;
   max: number;
+  clear: boolean;
 }
 
-const ByDateRange = ({ title, handleChange, defaultValues, min, max }: ByDateRangeProps) => {
+const ByDateRange = ({ title, handleChange, defaultValues, min, max, clear }: ByDateRangeProps) => {
   const [showDateInput, setShowDateInput] = useState(false);
   const [startYear, endYear] = defaultValues;
+
+  useEffect(() => {
+    if (!clear) setShowDateInput(false);
+  }, [clear]);
 
   const isChecked = (range?: number): boolean => {
     return range ? Number(endYear) === currentYear() && Number(startYear) === endYear - range : showDateInput;
