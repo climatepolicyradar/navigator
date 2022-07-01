@@ -12,7 +12,7 @@ interface ByDateRangeProps {
   max: number;
 }
 
-const ByDateRange = ({ title, type, handleChange, defaultValues, min, max }: ByDateRangeProps) => {
+const ByDateRange = ({ title, handleChange, defaultValues, min, max }: ByDateRangeProps) => {
   const [showDateInput, setShowDateInput] = useState(false);
   const [startYear, endYear] = defaultValues;
 
@@ -22,7 +22,7 @@ const ByDateRange = ({ title, type, handleChange, defaultValues, min, max }: ByD
 
   const setDateInputVisible = () => {
     setShowDateInput(true);
-    handleChange([min, max]);
+    handleChange([startYear, endYear]);
   };
 
   const selectRange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -52,8 +52,8 @@ const ByDateRange = ({ title, type, handleChange, defaultValues, min, max }: ByD
       </div>
       {showDateInput && (
         <div className="block lg:grid lg:grid-cols-2 gap-2 mt-2">
-          <DateRangeInput label="From" value={min} min={min} max={endYear} handleBlur={inputCustomRange} />
-          <DateRangeInput label="To" value={endYear} min={min} max={max} handleBlur={inputCustomRange} />
+          <DateRangeInput label="From" value={startYear} min={min} max={endYear} handleBlur={inputCustomRange} />
+          <DateRangeInput label="To" value={endYear} min={startYear} max={max} handleBlur={inputCustomRange} />
         </div>
       )}
     </div>
