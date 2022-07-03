@@ -69,10 +69,8 @@ def test_edit_user(client, test_superuser, superuser_token_headers):
 # @patch("app.api.api_v1.routers.admin.send_email")
 def test_edit_other_user(
     client,
-    test_superuser,
     superuser_token_headers,
     test_user,
-    test_db,
 ):
     old_is_active = test_user.is_active
 
@@ -90,7 +88,7 @@ def test_edit_other_user(
     # mock_send_email.assert_called_with(EmailType.account_changed, test_user)
 
 
-def test_edit_user_not_found(client, test_db, superuser_token_headers):
+def test_edit_user_not_found(client, superuser_token_headers):
     new_user = {
         "email": "newemail@email.com",
         "is_active": False,

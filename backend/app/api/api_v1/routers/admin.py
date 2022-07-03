@@ -1,4 +1,4 @@
-import typing as t
+from typing import List, cast
 
 from fastapi import APIRouter, Depends, HTTPException, Request, Response, status
 from sqlalchemy.exc import IntegrityError
@@ -31,7 +31,7 @@ ACCOUNT_ACTIVATION_EXPIRE_MINUTES = 4 * 7 * 24 * 60  # 4 weeks
 
 @r.get(
     "/users",
-    response_model=t.List[User],
+    response_model=List[User],
     response_model_exclude_none=True,
 )
 # TODO paginate
@@ -83,7 +83,7 @@ async def user_create(
         )
 
     activation_token = create_password_reset_token(
-        db, t.cast(int, db_user.id), minutes=ACCOUNT_ACTIVATION_EXPIRE_MINUTES
+        db, cast(int, db_user.id), minutes=ACCOUNT_ACTIVATION_EXPIRE_MINUTES
     )
     send_new_account_email(db_user, activation_token)
 
