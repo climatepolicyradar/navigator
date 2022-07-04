@@ -8,6 +8,7 @@ from fastapi_health import health
 from fastapi_pagination import add_pagination
 from slowapi.errors import RateLimitExceeded
 from slowapi.extension import _rate_limit_exceeded_handler
+from sqladmin import Admin
 from starlette.requests import Request
 
 from app.api.api_v1.routers.admin import admin_users_router
@@ -17,11 +18,13 @@ from app.api.api_v1.routers.lookups import lookups_router
 from app.api.api_v1.routers.search import search_router
 from app.api.api_v1.routers.unauthenticated import unauthenticated_router
 from app.api.api_v1.routers.users import users_router
+from app.admin import UserAdmin
 from app.core import config
 from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
 from app.core.ratelimit import limiter
-from app.db.session import SessionLocal
+from app.db.session import SessionLocal, engine
+
 from navigator.core.log import get_logger
 
 logger = get_logger(__name__)
@@ -31,6 +34,8 @@ _docs_url = "/api/docs" if ENABLE_API_DOCS else None
 _openapi_url = "/api" if ENABLE_API_DOCS else None
 
 app = FastAPI(title=config.PROJECT_NAME, docs_url=_docs_url, openapi_url=_openapi_url)
+admin = Admin(app, engine)
+admin.register_model(UserAdmin)
 
 # Add CORS middleware to allow cross origin requests from any port
 app.add_middleware(

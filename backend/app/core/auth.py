@@ -94,6 +94,6 @@ def authenticate_user(db, email: str, password: str) -> Optional[User]:
         return None
     if not user:
         return None
-    if not security.verify_password(password, user.hashed_password):
+    if not security.verify_password(password, str(user.hashed_password)):
         return None
     return user

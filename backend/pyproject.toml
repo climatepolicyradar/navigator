@@ -29,6 +29,7 @@ uvicorn = {extras = ["standard"], version = "^0.17.6"}
 slowapi = "^0.1.5"
 boto = "^2.49.0"
 tenacity = "^8.0.1"
+sqladmin = "^0.1.11"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
