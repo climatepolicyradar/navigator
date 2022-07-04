@@ -70,7 +70,7 @@ EXPECTED_USER_CSV_FIELDS = {
 def validate_open_csv(csv: TextIO) -> DictReader:
     """Validate that the given CSV file is valid & return a CSVReader object."""
     csv_reader = DictReader(csv)
-    csv_fieldnames = set(csv_reader.fieldnames)
+    csv_fieldnames = set(csv_reader.fieldnames or [])
 
     # If any required fields are missing (or fields not in CSV) exit immediately
     if not csv_fieldnames.issuperset(REQUIRED_USER_CSV_FIELDS):
