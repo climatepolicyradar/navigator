@@ -71,6 +71,7 @@ _FILTER_FIELD_MAP: Mapping[FilterField, str] = {
     # TODO: we still call this 'response' in the database. We might want to propagate the rename to 'topic' everywhere.
     FilterField.TOPIC: "document_response_name",
 }
+_REQUIRED_FIELDS = ["document_name"]
 
 
 def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
@@ -241,6 +242,9 @@ def build_opensearch_request_body(
         builder.with_exact_query(search_request.query_string)
     else:
         builder.with_semantic_query(search_request.query_string)
+
+    if _REQUIRED_FIELDS:
+        builder.with_required_fields(_REQUIRED_FIELDS)
 
     if search_request.keyword_filters is not None:
         for keyword, values in search_request.keyword_filters.items():
@@ -455,6 +459,13 @@ class QueryBuilder:
             terms_field["order"] = {"_key": order.value}
         else:
             raise RuntimeError("Unknown sort ordering field: {field}")
+
+    def with_required_fields(self, required_fields: List[str] = ["document_name"]):
+        """Ensure that required fields are present in opensearch responses."""
+        must_clause = [
+            {"exists": {"field": field_name}} for field_name in required_fields
+        ]
+        self._request_body["query"]["bool"]["must"] = must_clause
 
 
 def process_opensearch_response_body(
