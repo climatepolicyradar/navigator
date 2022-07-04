@@ -20,6 +20,7 @@ const DateRangeOption = ({ id, label, name, value, onChange, checked }: DateRang
         value={value}
         checked={checked}
         onClick={onChange}
+        onChange={onChange}
       />
       <span className="pl-2 text-base">
         {/* TODO: make translatable */}
