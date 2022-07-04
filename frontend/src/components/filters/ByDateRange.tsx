@@ -112,7 +112,11 @@ const ByDateRange = ({ title, handleChange, defaultValues, min, max, clear }: By
               handleChange={setEndInput}
             />
           </div>
-          {error && <Error message={error} />}
+          {error && (
+            <div className="text-center">
+              <Error message={error} />
+            </div>
+          )}
         </>
       )}
     </div>
