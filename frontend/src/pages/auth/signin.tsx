@@ -43,7 +43,7 @@ const Login = () => {
     }
     return message;
   };
-  
+
   const submitForm = async (data) => {
     const email = data.email.toLowerCase();
     const newData = {
@@ -93,9 +93,9 @@ const Login = () => {
                   </div>
                   <p className="mt-8 text-white text-center">
                     {t("Don't have an account?")} &nbsp;
-                    <a href="https://climatepolicyradar.org/request-access" className="text-blue-500 hover:text-white mt-4 transition duration-300">
-                      {t("Request early access")}
-                    </a>
+                    <Link href="/auth/sign-up">
+                      <a className="text-blue-500 hover:text-white transition duration-300">{t("Request early access")}</a>
+                    </Link>
                   </p>
                 </form>
               </AuthWrapper>

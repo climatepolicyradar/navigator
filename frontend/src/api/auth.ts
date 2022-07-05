@@ -4,7 +4,7 @@ import {
   getUserProfile,
   registerWithEmailAndPassword,
   User,
-  handleResetRequest,
+  handleResetRequest
 } from '.';
 import { storage } from '../utils/storage';
 import Router from 'next/router';
@@ -12,6 +12,7 @@ import LoaderOverlay from '../components/LoaderOverlay';
 
 const unprotectedUrls = [
   '/auth/signin',
+  '/auth/sign-up',
   '/auth/activate-account',
   '/auth/reset-password',
   '/auth/reset-request',

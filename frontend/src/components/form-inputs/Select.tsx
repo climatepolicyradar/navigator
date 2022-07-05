@@ -31,7 +31,7 @@ const Select = ({
 }: SelectProps) => {
   return (
     <div className={`${classes}`}>
-      <label htmlFor={id} className="text-indigo-600">
+      <label htmlFor={id}>
         {label}
         {required && label ? (
           <strong className="text-red-500"> *</strong>
