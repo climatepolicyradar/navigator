@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from 'react-query';
+import { useMutation, useQueryClient } from "react-query";
 
 export default function useUpdateCountries() {
   const queryClient = useQueryClient();
@@ -11,7 +11,7 @@ export default function useUpdateCountries() {
       if (region) {
         newList = countries.filter((item: any) => item.parent_id === region.id);
       }
-      return queryClient.setQueryData('filteredCountries', (old) => newList);
+      return queryClient.setQueryData("filteredCountries", (old) => newList);
     },
 
     {

@@ -73,3 +73,11 @@ export interface SearchCriteria {
   limit: number; // default 10
   offset: number;
 }
+
+export type TSector = {
+  id: number;
+  parent_id: number | null;
+  name: string;
+  description: string;
+  source_id: number;
+}
