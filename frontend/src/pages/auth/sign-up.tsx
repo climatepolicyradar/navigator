@@ -59,7 +59,7 @@ const SignUp = () => {
     <Layout title={`Climate Policy Radar | ${t("Sign up for an account")}`}>
       <section className="absolute inset-0 z-10 flex items-center">
         <div className="container py-4">
-          <AuthWrapper heading={t("Request early access")} description={welcomeMessage}>
+          <AuthWrapper heading={t("Sign up for an account")} description={welcomeMessage}>
             {status?.error && <p className="text-red-500 font-bold mt-4">{status.error}</p>}
 
             <form className="w-full" onSubmit={handleSubmit(submitForm)} noValidate>
