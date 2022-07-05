@@ -1,7 +1,7 @@
 import time
 import os
 from dataclasses import dataclass
-from typing import Any, Dict, List, Mapping, Optional, Tuple
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from opensearchpy import OpenSearch
 from sentence_transformers import SentenceTransformer
@@ -460,7 +460,7 @@ class QueryBuilder:
         else:
             raise RuntimeError("Unknown sort ordering field: {field}")
 
-    def with_required_fields(self, required_fields: List[str] = ["document_name"]):
+    def with_required_fields(self, required_fields: Sequence[str]):
         """Ensure that required fields are present in opensearch responses."""
         must_clause = [
             {"exists": {"field": field_name}} for field_name in required_fields
