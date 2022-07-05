@@ -165,8 +165,8 @@ const Search = () => {
     handleSearchChange('sort_field', field);
     handleSearchChange('sort_order', order);
   };
-  const handleYearChange = (values) => {
-    const newVals = values.map((value) => value.toFixed(0));
+  const handleYearChange = (values: number[]) => {
+    const newVals = values.map((value: number) => Number(value).toFixed(0));
     handleSearchChange('year_range', newVals);
   };
   const handleClearSearch = () => {
@@ -322,7 +322,7 @@ const Search = () => {
                 </div>
               </div>
               <div className="px-4 md:flex container border-b border-blue-200">
-                <div className="md:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
+                <div className="md:w-1/4 lg:w-[30%] xl:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
                   <div className="flex md:hidden flex items-center justify-center w-full mt-4">
                     <FilterToggle toggle={toggleFilters} />
                   </div>
