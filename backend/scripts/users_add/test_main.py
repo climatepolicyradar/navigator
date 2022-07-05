@@ -3,20 +3,20 @@ from unittest.mock import patch, MagicMock
 
 from requests import Response
 
-from app.users_add.main import main
+from . import main
 
 TEST_USERS_CSV_1 = str(
     (Path(__file__).parent / "test_data" / "users_test_data.csv").absolute()
 )
 
 
-@patch("app.users_add.main.post_user")
-@patch("app.users_add.main.get_admin_token")
+@patch(main.__name__ + ".post_user")
+@patch(main.__name__ + ".get_admin_token")
 def test_post_users_to_backend_api(mock_get_admin_token, mock_post_user):
     mock_get_admin_token.return_value = "a-super-secret-token"
     mock_post_user.return_value = MagicMock(spec=Response, status_code=200)
 
-    main(TEST_USERS_CSV_1)
+    main.main(TEST_USERS_CSV_1)
 
     assert mock_get_admin_token.called_once()
     assert mock_post_user.call_count == 2
