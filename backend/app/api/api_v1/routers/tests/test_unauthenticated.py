@@ -3,6 +3,7 @@ from unittest.mock import patch
 
 import pytest
 
+from app.api.api_v1.routers.admin import ACCOUNT_ACTIVATION_EXPIRE_MINUTES
 from app.db.models import User, PasswordResetToken
 
 
@@ -224,3 +225,52 @@ def test_password_reset_rate_limit(
 
     # Just make sure we're not polluting the db with extra tokens
     assert len(test_db.query(PasswordResetToken).all()) == 1
+
+
+NEW_USER_1 = {
+    "email": "newemail1@email.com",
+    "names": "Joe Smith 1",
+    "password": "new_password1",
+}
+NEW_USER_2 = {
+    "email": "newemail2@email.com",
+    "is_active": True,
+    "is_superuser": True,
+    "names": "Joe Smith 2",
+    "password": "new_password2",
+}
+
+
+@pytest.mark.parametrize("new_user", [NEW_USER_1, NEW_USER_2])
+@patch("app.db.crud.password_reset.get_password_reset_token_expiry_ts")
+@patch("app.api.api_v1.routers.unauthenticated.send_new_account_email")
+def test_register_user(
+    mock_send_email,
+    mock_get_password_reset_token_expiry_ts,
+    new_user,
+    client,
+    test_db,
+    test_user,
+):
+    mock_get_password_reset_token_expiry_ts.return_value = datetime.datetime(2099, 1, 1)
+
+    response = client.post(
+        "/api/v1/registrations",
+        json=new_user,
+    )
+    assert response.status_code == 200
+    assert response.json() is True
+
+    prt: PasswordResetToken = test_db.query(PasswordResetToken).first()
+    assert prt.user_id == 2
+    assert prt.expiry_ts == datetime.datetime(2099, 1, 1)
+    assert not prt.is_redeemed
+    mock_get_password_reset_token_expiry_ts.assert_called_once_with(
+        minutes=ACCOUNT_ACTIVATION_EXPIRE_MINUTES
+    )
+
+    db_user = test_db.query(User).filter(User.id == 2).first()
+    # No matter what settings were requested, active/superuser should be ignored
+    assert not db_user.is_active
+    assert not db_user.is_superuser
+    mock_send_email.assert_called_once_with(db_user, prt)
