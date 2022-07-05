@@ -275,6 +275,9 @@ def test_register_user(
     test_db,
     test_user,
 ):
+    # reset the rate limiter so we do not see unexpected 429 responses
+    limiter.reset()
+
     mock_get_password_reset_token_expiry_ts.return_value = datetime.datetime(2099, 1, 1)
 
     response = client.post(
