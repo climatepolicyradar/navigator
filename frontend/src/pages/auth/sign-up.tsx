@@ -5,15 +5,15 @@ import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Link from "next/link";
-import { useAuth } from "../../api/auth";
-import { signUp, TSignUp } from "../../api";
-import LoaderOverlay from "../../components/LoaderOverlay";
-import Layout from "../../components/layouts/Auth";
-import AuthWrapper from "../../components/auth/AuthWrapper";
-import TextInput from "../../components/form-inputs/TextInput";
-import Select from "../../components/form-inputs/Select";
-import Button from "../../components/buttons/Button";
-import { affiliation_types } from "../../constants/formOptions";
+import { useAuth } from "@api/auth";
+import { signUp, TSignUp } from "@api/index";
+import LoaderOverlay from "@components/LoaderOverlay";
+import Layout from "@components/layouts/Auth";
+import AuthWrapper from "@components/auth/AuthWrapper";
+import TextInput from "@components/form-inputs/TextInput";
+import Select from "@components/form-inputs/Select";
+import Button from "@components/buttons/Button";
+import { affiliation_types } from "@constants/formOptions";
 
 const SignUp = () => {
   const router = useRouter();

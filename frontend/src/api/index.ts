@@ -10,6 +10,9 @@ interface AuthResponse {
 interface ResetResponse {
   value: boolean;
 }
+interface SignUpResponse {
+  value: boolean;
+}
 
 export interface User {
   id: number;
@@ -81,7 +84,7 @@ export async function handleResetRequest(data: string): Promise<ResetResponse> {
   return await apiClient.post(`/password-reset/${data}`, null).then(handleApiSuccess).catch(handleApiError);
 }
 
-export async function signUp(data: TSignUp): Promise<ResetResponse> {
+export async function signUp(data: TSignUp): Promise<SignUpResponse> {
   console.log(data);
   // Fix data for API
   const signUpData = {
