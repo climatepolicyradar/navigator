@@ -19,6 +19,16 @@ const Login = () => {
   const { user, login } = useAuth();
   const router = useRouter();
 
+  useEffect(() => {
+    // checks if a user account is returned rather than an error
+    if (status?.email) router.push("/");
+  }, [status]);
+
+  useEffect(() => {
+    // redirect if already signed in
+    if (user?.email) router.push("/");
+  }, [user]);
+
   const schema = Yup.object({
     email: Yup.string().email(t("Invalid email format")).required(t("Email is required")),
     password: Yup.string().required(t("Password is required")),
@@ -52,15 +62,6 @@ const Login = () => {
     const status = await login(newData);
     setStatus(status);
   };
-
-  useEffect(() => {
-    // checks if a user account is returned rather than an error
-    if (status?.email) router.push("/");
-  }, [status]);
-  useEffect(() => {
-    // redirect if already signed in
-    if (user?.email) router.push("/");
-  }, [user]);
 
   return (
     <>
