@@ -2,7 +2,7 @@ import { signInPage } from '../../support/page_objects/signinPage';
 
 describe('Validate user sign in fields', () => {
   before('visit page', () => {
-    cy.visit('/auth/signin');
+    cy.visit('/auth/sign-in');
   });
   beforeEach('visit page', () => {
     signInPage.clearForm();
@@ -30,10 +30,10 @@ describe('Validate user sign in fields', () => {
 
 describe('Validate request access link', () => {
   before('visit page', () => {
-    cy.visit('/auth/signin');
+    cy.visit('/auth/sign-in');
   });
   it('should link to the request form on the website', () => {
-    cy.visit('/auth/signin');
+    cy.visit('/auth/sign-in');
     cy.contains('a', 'Request early access')
       .invoke('attr', 'href')
       .then((href) => {

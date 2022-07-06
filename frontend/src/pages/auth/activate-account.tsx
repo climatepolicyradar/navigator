@@ -25,7 +25,7 @@ const ActivateAccount = () => {
   const { user, register: activate } = useAuth();
 
   useEffect(() => {
-    if (status?.activated) router.push("/auth/signin?activated=true");
+    if (status?.activated) router.push("/auth/sign-in?activated=true");
   }, [status]);
 
   useEffect(() => {
@@ -79,7 +79,7 @@ const ActivateAccount = () => {
                   </div>
                   <p className="mt-8 text-white text-center">
                     {t("Already have an account?")} &nbsp;
-                    <Link href="/auth/signin">
+                    <Link href="/auth/sign-in">
                       <a className="text-blue-500 hover:text-white mt-4 transition duration-300">{t("Click here to sign in")}</a>
                     </Link>
                   </p>

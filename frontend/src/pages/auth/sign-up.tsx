@@ -46,20 +46,17 @@ const SignUp = () => {
       names: data.names,
       affiliation_organisation: data.affiliation_organisation,
       affiliation_type: data.affiliation_type,
-      email: encodeURIComponent(data.email),
+      email: data.email,
     };
     const status = await signUp(newData);
     setStatus(status);
   };
 
-  const welcomeMessage =
-    "We have launched our law and policy search tool to a limited group of users. Please fill in your details to get access, and we will send over an activation link shortly.";
-
   return (
     <Layout title={`Climate Policy Radar | ${t("Sign up for an account")}`}>
       <section className="absolute inset-0 z-10 flex items-center">
         <div className="container py-4">
-          <AuthWrapper heading={t("Sign up for an account")} description={welcomeMessage}>
+          <AuthWrapper heading={t("Sign up for an account")} description={t("Sign up welcome")}>
             {status?.error && <p className="text-red-500 font-bold mt-4">{status.error}</p>}
 
             <form className="w-full" onSubmit={handleSubmit(submitForm)} noValidate>
@@ -97,7 +94,7 @@ const SignUp = () => {
               </div>
               <p className="mt-8 text-white text-center">
                 {t("Already have an account?")} &nbsp;
-                <Link href="/auth/signin">
+                <Link href="/auth/sign-in">
                   <a className="text-blue-500 hover:text-white transition duration-300">{t("Sign in")}</a>
                 </Link>
               </p>

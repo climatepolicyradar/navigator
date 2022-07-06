@@ -11,7 +11,7 @@ import { storage } from '../utils/storage';
 import LoaderOverlay from '@components/LoaderOverlay';
 
 const unprotectedUrls = [
-  '/auth/signin',
+  '/auth/sign-in',
   '/auth/sign-up',
   '/auth/activate-account',
   '/auth/reset-password',
@@ -43,7 +43,7 @@ async function loadUser() {
   }
 
   if (user === null && unprotectedUrls.indexOf(Router.router.pathname) === -1) {
-    Router.push('/auth/signin');
+    Router.push('/auth/sign-in');
   }
 
   return user;
@@ -63,7 +63,7 @@ async function registerFn(data) {
 
 async function logoutFn() {
   await storage.clearToken();
-  Router.push('/auth/signin');
+  Router.push('/auth/sign-in');
 }
 
 const loaderComponent = () => LoaderOverlay;

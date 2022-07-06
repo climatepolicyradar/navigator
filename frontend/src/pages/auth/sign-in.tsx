@@ -93,7 +93,7 @@ const Login = () => {
                   <p className="mt-8 text-white text-center">
                     {t("Don't have an account?")} &nbsp;
                     <Link href="/auth/sign-up">
-                      <a className="text-blue-500 hover:text-white transition duration-300">{t("Request early access")}</a>
+                      <a className="text-blue-500 hover:text-white transition duration-300">{t("Sign up")}</a>
                     </Link>
                   </p>
                 </form>

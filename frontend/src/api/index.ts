@@ -85,14 +85,12 @@ export async function handleResetRequest(data: string): Promise<ResetResponse> {
 }
 
 export async function signUp(data: TSignUp): Promise<SignUpResponse> {
-  console.log(data);
-  // Fix data for API
+  // Fix up the data for API
   const signUpData = {
     names: data.names,
     affiliation_organisation: data.affiliation_organisation,
     affiliation_type: [data.affiliation_type],
     email: data.email,
   };
-  console.log(signUpData);
   return await apiClient.post(`/registrations`, signUpData).then(handleApiSuccess).catch(handleApiError);
 }

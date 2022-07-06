@@ -29,7 +29,7 @@ const ResetPassword = () => {
   });
 
   useEffect(() => {
-    if (status?.activated) router.push("/auth/signin?reset=true");
+    if (status?.activated) router.push("/auth/sign-in?reset=true");
   }, [status]);
 
   const {

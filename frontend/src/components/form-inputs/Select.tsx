@@ -1,5 +1,5 @@
 import React from 'react';
-import { FieldErrors, UseFormRegisterReturn } from 'react-hook-form';
+import { FieldErrors } from 'react-hook-form';
 import FormFieldError from '../blocks/Error';
 
 interface SelectProps {
