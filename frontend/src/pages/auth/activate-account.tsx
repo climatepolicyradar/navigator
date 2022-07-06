@@ -1,4 +1,3 @@
-import "../i18n";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -6,12 +5,12 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useAuth } from "../../api/auth";
-import LoaderOverlay from "../../components/LoaderOverlay";
-import Layout from "../../components/layouts/Auth";
-import AuthWrapper from "../../components/auth/AuthWrapper";
-import PasswordInput from "../../components/form-inputs/PasswordInput";
-import Button from "../../components/buttons/Button";
+import { useAuth } from "@api/auth";
+import LoaderOverlay from "@components/LoaderOverlay";
+import Layout from "@components/layouts/Auth";
+import AuthWrapper from "@components/auth/AuthWrapper";
+import PasswordInput from "@components/form-inputs/PasswordInput";
+import Button from "@components/buttons/Button";
 
 type TFormInputs = {
   password: string;
@@ -25,7 +24,7 @@ const ActivateAccount = () => {
   const { user, register: activate } = useAuth();
 
   useEffect(() => {
-    if (status?.activated) router.push("/auth/signin?activated=true");
+    if (status?.activated) router.push("/auth/sign-in?activated=true");
   }, [status]);
 
   useEffect(() => {
@@ -60,7 +59,7 @@ const ActivateAccount = () => {
       {isSubmitting ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Climate Policy Radar | ${t("Activate your account")}`}>
+        <Layout title={t("Activate your account")}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper heading={t("Activate your account")} description={t("Specify your password")}>
@@ -79,7 +78,7 @@ const ActivateAccount = () => {
                   </div>
                   <p className="mt-8 text-white text-center">
                     {t("Already have an account?")} &nbsp;
-                    <Link href="/auth/signin">
+                    <Link href="/auth/sign-in">
                       <a className="text-blue-500 hover:text-white mt-4 transition duration-300">{t("Click here to sign in")}</a>
                     </Link>
                   </p>

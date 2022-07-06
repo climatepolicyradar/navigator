@@ -1,6 +1,6 @@
-import axios from 'axios';
-import { storage } from '../utils/storage';
-import { ApiClient, AuthClient } from './http-common';
+import axios from "axios";
+import { storage } from "../utils/storage";
+import { ApiClient, AuthClient } from "./http-common";
 
 const apiClient = new ApiClient();
 
@@ -8,6 +8,9 @@ interface AuthResponse {
   jwt: string;
 }
 interface ResetResponse {
+  value: boolean;
+}
+interface SignUpResponse {
   value: boolean;
 }
 
@@ -28,30 +31,30 @@ export interface User {
   activated?: boolean;
 }
 
+export type TSignUp = {
+  names: string;
+  affiliation_organisation: string;
+  affiliation_type: string;
+  email: string;
+};
+
 // may not be using this so not rewriting it for now
 export const postFile = async (req: string, data): Promise<any> => {
   return await axios({
-    method: 'POST',
+    method: "POST",
     url: `${process.env.NEXT_PUBLIC_API_URL}/${req}`,
     data,
     headers: {
       Authorization: `Bearer ${storage.getToken()}`,
-      'Content-Type': 'multipart/form-data',
+      "Content-Type": "multipart/form-data",
     },
   }).then((response) => {
-    return response.statusText == 'OK'
-      ? response.data
-      : Promise.reject(Error('Unsuccessful response'));
+    return response.statusText == "OK" ? response.data : Promise.reject(Error("Unsuccessful response"));
   });
 };
 
 export const signIn = async (credentials) => {
-  return await AuthClient.post(
-    '',
-    `username=${credentials.email}&password=${credentials.password}`
-  )
-    .then(handleApiSuccess)
-    .catch(handleApiError);
+  return await AuthClient.post("", `username=${credentials.email}&password=${credentials.password}`).then(handleApiSuccess).catch(handleApiError);
 };
 
 export async function handleApiSuccess(response) {
@@ -64,29 +67,30 @@ export async function handleApiSuccess(response) {
   }
 }
 export async function handleApiError(error) {
-  const message = (await error?.response?.data.detail)
-    ? error?.response?.data.detail
-    : 'There was an error, please try again later.';
+  const message = (await error?.response?.data.detail) ? error?.response?.data.detail : "There was an error, please try again later.";
   return { error: message };
 }
 
 export async function getUserProfile() {
-  const user = await apiClient.get('/users/me', null);
+  const user = await apiClient.get("/users/me", null);
   return user;
 }
 
-export async function registerWithEmailAndPassword(
-  data
-): Promise<AuthResponse> {
-  return await apiClient
-    .post(`/activations`, data)
-    .then(handleApiSuccess)
-    .catch(handleApiError);
+export async function registerWithEmailAndPassword(data): Promise<AuthResponse> {
+  return await apiClient.post(`/activations`, data).then(handleApiSuccess).catch(handleApiError);
 }
 
 export async function handleResetRequest(data: string): Promise<ResetResponse> {
-  return await apiClient
-    .post(`/password-reset/${data}`, null)
-    .then(handleApiSuccess)
-    .catch(handleApiError);
+  return await apiClient.post(`/password-reset/${data}`, null).then(handleApiSuccess).catch(handleApiError);
+}
+
+export async function signUp(data: TSignUp): Promise<SignUpResponse> {
+  // Fix up the data for API
+  const signUpData = {
+    names: data.names,
+    affiliation_organisation: data.affiliation_organisation,
+    affiliation_type: [data.affiliation_type],
+    email: data.email,
+  };
+  return await apiClient.post(`/registrations`, signUpData).then(handleApiSuccess).catch(handleApiError);
 }

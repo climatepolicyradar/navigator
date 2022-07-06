@@ -1,23 +1,31 @@
-import "../i18n";
 import { useState, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import LoaderOverlay from "../../components/LoaderOverlay";
-import Layout from "../../components/layouts/Auth";
-import AuthWrapper from "../../components/auth/AuthWrapper";
+import { useRouter } from "next/router";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import TextInput from "../../components/form-inputs/TextInput";
-import Button from "../../components/buttons/Button";
-import { useAuth, resetRequest } from "../../api/auth";
-import { useRouter } from "next/router";
+import { useAuth, resetRequest } from "@api/auth";
+import LoaderOverlay from "@components/LoaderOverlay";
+import Layout from "@components/layouts/Auth";
+import AuthWrapper from "@components/auth/AuthWrapper";
+import TextInput from "@components/form-inputs/TextInput";
+import Button from "@components/buttons/Button";
+
+type TFormInputs = {
+  email: string;
+};
 
 const ResetRequest = () => {
   const [status, setStatus] = useState(null);
   const { t } = useTranslation("auth");
   const router = useRouter();
   const { user } = useAuth();
-  
+
+  useEffect(() => {
+    // redirect if already signed in
+    if (user?.email) router.push("/");
+  }, [user]);
+
   const schema = Yup.object({
     email: Yup.string().email(t("Invalid email format")).required("Email is required"),
   });
@@ -26,27 +34,22 @@ const ResetRequest = () => {
     register,
     handleSubmit,
     formState: { isSubmitting, errors },
-  } = useForm({
+  } = useForm<TFormInputs>({
     resolver: yupResolver(schema),
   });
 
-  const submitForm = async (data) => {
+  const submitForm = async (data: TFormInputs) => {
     const email = data.email.toLowerCase();
     const status = await resetRequest(encodeURIComponent(email));
     setStatus(status);
   };
-
-  useEffect(() => {
-    // redirect if already signed in
-    if (user?.email) router.push("/");
-  }, [user]);
 
   return (
     <>
       {isSubmitting ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Climate Policy Radar | ${t("Reset your password")}`}>
+        <Layout title={t("Reset your password")}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               {status?.data === true ? (

@@ -1,12 +1,12 @@
 import React, { useState } from "react";
 import { FieldErrors } from "react-hook-form";
 import FormFieldError from "../blocks/Error";
-import { EyeIcon } from "../../components/svg/Icons";
+import { EyeIcon } from "@components/svg/Icons";
 
 interface InputProps {
   label?: string;
   required?: boolean;
-  errors: FieldErrors;
+  errors: {};
   name: string;
   placeholder?: string;
   className?: string;

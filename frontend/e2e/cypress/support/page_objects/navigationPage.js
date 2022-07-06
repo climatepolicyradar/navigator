@@ -59,7 +59,7 @@ export class NavigationPage {
     return this;
   }
   signOutPage() {
-    navigateDropdownMenuItem('button', 'Sign out', '/auth/signin');
+    navigateDropdownMenuItem('button', 'Sign out', '/auth/sign-in');
     return this;
   }
   footerLinkMethodology() {
