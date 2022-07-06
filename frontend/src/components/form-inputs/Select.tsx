@@ -41,7 +41,7 @@ const Select = ({
         selected
         multiple={multiple}
         data-cy={dataCy}
-        className={`border ${
+        className={`border mt-1 ${
           errors[name] ? 'border-red-500' : 'border-gray-300'
         }`}
         {...register(name, { onChange: onChange })}

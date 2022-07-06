@@ -52,10 +52,13 @@ const SignUp = () => {
     setStatus(status);
   };
 
-  const welcomeMessage =
-    isSubmitSuccessful && status?.data === true
+  const formSubmitted = isSubmitSuccessful && status?.data === true;
+
+  const welcomeMessage = formSubmitted
       ? t("Please check your email and click the enclosed link to complete the sign up.")
       : t("Please fill in your details to get access, and we will send over an activation link shortly.");
+
+  const heading = formSubmitted ? t("Sign up completed"): t("Sign up for an account");
 
   return (
     <>
@@ -65,7 +68,7 @@ const SignUp = () => {
         <Layout title={`Climate Policy Radar | ${t("Sign up for an account")}`}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
-              <AuthWrapper heading={t("Sign up for an account")} description={welcomeMessage}>
+              <AuthWrapper heading={heading} description={welcomeMessage}>
                 {status?.error && <p className="text-red-500 font-bold mt-4">{status.error}</p>}
 
                 {!isSubmitSuccessful && status?.data !== true && (
@@ -98,7 +101,7 @@ const SignUp = () => {
                       <TextInput label={t("Email")} name="email" type="email" errors={errors} required register={register} placeholder={t("Email address")} />
                     </div>
                     <div data-cy="signup-submit" className="form-row">
-                      <Button type="submit" color="light" disabled={isSubmitting} extraClasses="w-full" fullWidth>
+                      <Button type="submit" color="light" disabled={isSubmitting} extraClasses="w-full mt-8" fullWidth>
                         {t("Sign up")}
                       </Button>
                     </div>
