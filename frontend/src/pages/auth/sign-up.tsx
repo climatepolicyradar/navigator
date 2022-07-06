@@ -65,7 +65,7 @@ const SignUp = () => {
       {isSubmitting ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Climate Policy Radar | ${t("Sign up for an account")}`}>
+        <Layout title={t("Sign up for an account")}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper heading={heading} description={welcomeMessage}>

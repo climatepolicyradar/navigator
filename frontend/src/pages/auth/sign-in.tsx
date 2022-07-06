@@ -68,7 +68,7 @@ const Login = () => {
       {isSubmitting || (isSubmitSuccessful && status?.email) ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Climate Policy Radar | ${t("Sign in to your account")}`}>
+        <Layout title={t("Sign in to your account")}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper heading={t("Sign in to your account")} description={welcomeMessage()}>

@@ -1,4 +1,3 @@
-import "../i18n";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/router";
@@ -6,12 +5,12 @@ import { useTranslation } from "react-i18next";
 import { useForm } from "react-hook-form";
 import * as Yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
-import { useAuth } from "../../api/auth";
-import LoaderOverlay from "../../components/LoaderOverlay";
-import Layout from "../../components/layouts/Auth";
-import AuthWrapper from "../../components/auth/AuthWrapper";
-import PasswordInput from "../../components/form-inputs/PasswordInput";
-import Button from "../../components/buttons/Button";
+import { useAuth } from "@api/auth";
+import LoaderOverlay from "@components/LoaderOverlay";
+import Layout from "@components/layouts/Auth";
+import AuthWrapper from "@components/auth/AuthWrapper";
+import PasswordInput from "@components/form-inputs/PasswordInput";
+import Button from "@components/buttons/Button";
 
 type TFormInputs = {
   password: string;
@@ -60,7 +59,7 @@ const ActivateAccount = () => {
       {isSubmitting ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Climate Policy Radar | ${t("Activate your account")}`}>
+        <Layout title={t("Activate your account")}>
           <section className="absolute inset-0 z-10 flex items-center">
             <div className="container py-4">
               <AuthWrapper heading={t("Activate your account")} description={t("Specify your password")}>
