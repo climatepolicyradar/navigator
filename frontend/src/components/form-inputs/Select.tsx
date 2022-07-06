@@ -9,7 +9,7 @@ interface SelectProps {
   children: React.ReactNode;
   classes?: string;
   required?: boolean;
-  errors: FieldErrors;
+  errors: {};
   onChange?(event: any): any;
   register: any;
   "data-cy"?: string;

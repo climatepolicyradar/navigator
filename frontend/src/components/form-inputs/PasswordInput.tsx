@@ -6,7 +6,7 @@ import { EyeIcon } from "@components/svg/Icons";
 interface InputProps {
   label?: string;
   required?: boolean;
-  errors: FieldErrors;
+  errors: {};
   name: string;
   placeholder?: string;
   className?: string;
@@ -44,7 +44,7 @@ const PasswordInput = ({ label = "", required = false, errors, name, placeholder
           <EyeIcon height="24" width="24" />
         </div>
       </div>
-      {errors[name] && <FormFieldError message={errors[name]?.message} />}
+      {errors[name] && <FormFieldError message={errors[name].message} />}
     </div>
   );
 };

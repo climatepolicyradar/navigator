@@ -5,7 +5,7 @@ import FormFieldError from "../blocks/Error";
 interface InputProps {
   label?: string;
   required?: boolean;
-  errors: FieldErrors;
+  errors: {};
   name: string;
   type?: string;
   placeholder?: string;

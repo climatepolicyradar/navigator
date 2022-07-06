@@ -9,7 +9,7 @@ interface TextAreaProps {
   classes?: string;
   required?: boolean;
   placeholder?: string;
-  errors: FieldErrors;
+  errors: {};
   register: any;
 }
 
