@@ -44,7 +44,7 @@ const PasswordInput = ({ label = "", required = false, errors, name, placeholder
           <EyeIcon height="24" width="24" />
         </div>
       </div>
-      {errors[name] && <FormFieldError message={errors[name].message} />}
+      {errors[name] && <FormFieldError message={errors[name]?.message} />}
     </div>
   );
 };
