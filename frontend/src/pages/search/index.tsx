@@ -323,8 +323,8 @@ const Search = () => {
               </div>
               <div className="px-4 md:flex container border-b border-blue-200">
                 <div className="md:w-1/4 lg:w-[30%] xl:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
-                  <div className="flex md:hidden flex items-center justify-center w-full mt-4">
-                    <FilterToggle toggle={toggleFilters} />
+                  <div className="flex md:hidden items-center justify-center w-full mt-4">
+                    <FilterToggle toggle={toggleFilters} isOpen={showFilters} />
                   </div>
 
                   <div
