@@ -54,6 +54,7 @@ pulumi config get infra:db_password
 ## Deployment
 
 TODO: revisit instruction
+TODO: document AWS CLI requirements
 
 ### Deployment stacks
 
