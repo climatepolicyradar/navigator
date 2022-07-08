@@ -23,11 +23,24 @@ const DocumentCoverPage = () => {
   const structureData = useSortAndStructure();
 
   const documentQuery = useDocumentDetail(router.query.docId as string);
-
   const { isFetching } = documentQuery;
   const { data: { data: page } = {} } = documentQuery;
 
-  const [year, day, month] = convertDate(page?.publication_ts);
+  console.log(page);
+
+  const [year] = convertDate(page?.publication_ts);
+
+  useEffect(() => {
+    if (page?.description) {
+      toggleSummary();
+    }
+  }, [page, showFullSummary]);
+
+  useEffect(() => {
+    if (router?.query.docId) {
+      documentQuery.refetch();
+    }
+  }, [router.query]);
 
   const toggleSummary = () => {
     const text = page?.description;
@@ -47,6 +60,7 @@ const DocumentCoverPage = () => {
     }
 
     if (!link) return null;
+
     return (
       <p className="mt-4">
         <a
@@ -63,18 +77,6 @@ const DocumentCoverPage = () => {
     );
   };
 
-  useEffect(() => {
-    if (page?.description) {
-      toggleSummary();
-    }
-  }, [page, showFullSummary]);
-
-  useEffect(() => {
-    if (router?.query.docId) {
-      documentQuery.refetch();
-    }
-  }, [router.query]);
-
   return (
     <Layout title={`Climate Policy Radar | Document title`}>
       {isFetching || !page?.name ? (
@@ -82,25 +84,27 @@ const DocumentCoverPage = () => {
           <Loader />
         </div>
       ) : (
-        // TODO: translate all UI text
-        <section className="mt-4 mb-8">
-          <div className="container">
-            <TextLink href="/search">
-              <span>&laquo;</span> Back to search results
-            </TextLink>
-
-            <h1 className="mt-6 text-3xl font-medium">{page.name}</h1>
-            <div className="flex text-sm text-indigo-400 mt-3 items-center w-full">
-              <div className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
-              <span className="ml-2">{page.geography.display_value}</span>
-              <div className="ml-1">
-                <Tooltip id="date-tt" tooltip="The jurisdiction in which the document was published. For more information, see our Methodology page" />
-              </div>
-              <span className="ml-6">{`${day} ${month} ${year}`}</span>
-              <div className="ml-1">
-                <Tooltip id="juris-tt" tooltip="The year in which the document was first published" />
+        <section className="mb-8">
+          <div className="bg-offwhite border-solid border-blue-200 border-b">
+            <div className="container">
+              <div className="md:flex">
+                <div className="flex-1 my-6">
+                  <h1 className="text-3xl font-medium">{page.name}</h1>
+                  <div className="flex text-sm text-indigo-400 mt-3 items-center w-full">
+                    <div className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
+                    <span className="ml-2">
+                      {page.geography.display_value}, {year}
+                    </span>
+                    <span className="ml-8"></span>
+                  </div>
+                </div>
+                <div className="my-6 md:pl-4 md:w-2/5 lg:w-1/4 md:ml-12 flex-shrink-0">
+                  <TextLink href="/search">Back to search results</TextLink>
+                </div>
               </div>
             </div>
+          </div>
+          <div className="container">
             <div className="md:flex">
               <section className="flex-1">
                 <section className="mt-6 text-content">
@@ -142,25 +146,25 @@ const DocumentCoverPage = () => {
                 ) : null}
               </section>
               <section className="md:border-l md:border-blue-100 md:pl-4 mt-6 md:w-2/5 lg:w-1/4 md:ml-12 flex-shrink-0">
-                <h3 className="text-xl text-indigo-400">Further information about this document</h3>
-                <DocumentInfo
-                  id="category-tt"
-                  tooltip="Whether the document is enacted by an executive branch of government (for example, a ministry or the president) or by a legislative branch of government (for example, parliament or congress)"
-                  heading="Category"
-                  text={page.category.name}
-                />
-                <DocumentInfo id="type-tt" tooltip="What type of document it is - e.g. law, strategy, or decree" heading="Type" text={page.type.name} />
-                {/* Topics maps to responses */}
-                {page.topics.length > 0 && (
+                <h3 className="text-xl text-blue-700">About this document</h3>
+                <div className="grid grid-cols-2 gap-x-2">
                   <DocumentInfo
-                    id="topics-tt"
-                    tooltip="Broad areas of climate action contained in the document, e.g. mitigation or adaptation. For more information, see our Methodology page"
-                    heading="Topics"
-                    list={page.topics}
+                    id="category-tt"
+                    heading="Category"
+                    text={page.category.name}
                   />
-                )}
+                  <DocumentInfo id="type-tt" heading="Type" text={page.type.name} />
+                  {/* Topics maps to responses */}
+                  {page.topics.length > 0 && (
+                    <DocumentInfo
+                      id="topics-tt"
+                      heading="Topics"
+                      list={page.topics}
+                    />
+                  )}
+                  {page.languages.length > 0 && <DocumentInfo heading="Language" text={page.languages[0].name} />}
+                </div>
 
-                {page.languages.length > 0 && <DocumentInfo heading="Language" text={page.languages[0].name} />}
                 {page.keywords.length > 0 && (
                   <DocumentInfo id="keywords-tt" tooltip="Key terms relating to the content of the document" heading="Keywords" text={page.keywords[0].name} />
                 )}

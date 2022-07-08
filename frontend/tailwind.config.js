@@ -34,6 +34,7 @@ module.exports = {
         400: '#7cb4fa',
         500: '#1f93ff',
         600: '#006FD6',
+        700: '#0A1C40',
       },
       bluegreen: {
         100: '#127D9D',
@@ -52,7 +53,7 @@ module.exports = {
         300: '#c4b6f7',
         400: '#a993f5',
         500: '#8e73f1',
-      },
+      }
     },
     container: {
       center: true,

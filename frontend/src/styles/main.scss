@@ -72,9 +72,8 @@ html,
   height: 100%;
 }
 body {
-  @apply text-indigo-500;
-  @include light-gradient;
-  font-family: 'Neue Haas Grotesk Display';
+  @apply text-indigo-400;
+  font-family: Arial;
 }
 h1,
 h2,
