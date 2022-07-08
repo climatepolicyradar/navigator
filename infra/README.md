@@ -14,24 +14,11 @@ pulumi stack select dev
 
 And then `pulumi about` to verify.
 
-## Python Environment
+### Python Environment
 
-`venv` is created/used by Pulumi.
+A virtualenv `venv` is created/used by Pulumi.
 
-To install developer tooling (e.g. for IDE):
-
-```shell
-source venv/bin/activate
-pip install -r requirements-dev.txt
-```
-
-## Troubleshooting
-
-If, for any reason, you lose your `venv` folder, Pulumi will recreate it for you if you run any command.
-
-E.g. `pulumi about`.
-
-## Infrastructure code
+### Infrastructure code
 
 The code is broken up into these conceptual parts:
 
@@ -42,15 +29,7 @@ The code is broken up into these conceptual parts:
 - plumbing: all the invisible parts, like security groups, roles, VPCs, etc
 - tasks: lambda tasks that need to run on occasion, like database migrations
 
-## Visualise dependencies
-
-```shell
-pulumi stack graph --color always graph.dot
-# sudo apt install -y graphviz
-cat graph.dot|dot -Tpng > output.png
-```
-
-## Bastion server
+### Bastion server
 
 The bastion server's instance ID will be exported as `bastion.id` via Pulumi.
 
@@ -72,61 +51,98 @@ When prompted for the password, use the one from
 pulumi config get infra:db_password
 ```
 
-# Blue/green deployments
+## Deployment
 
-We have two stacks: `ant` and `dev`. These will assume the roles of "ant is blue" and "dev is green" or vice versa, depending on which env is currently being pointed to by CNAME (i.e. the ones that our users see). 
+TODO: revisit instruction
+TODO: document AWS CLI requirements
 
-To see our stacks:
+### Deployment stacks
 
-```
+We have two stacks: `ant` and `dev`, which due to a quirk of fate have the following mapping (these names will be updated in the future):
+
+- ant => dev.app.climatepolicyradar.org
+- dev => app.climatepolicyradar.org
+
+To see the available stacks:
+
+```shell
 pulumi stack ls
 ```
 
 To see the current stack your local environment is pointing at:
 
-``` 
+```shell
 pulumi stack | head -n1
 Current stack is ...:
 ```
 
 To point to another stack:
 
-``` 
+```shell
 pulumi stack select <stack name>
 ```
 
-## The deployment process
+### The deployment process
 
-Sprint N:
-CNAME is currently pointing to `dev`, so leave it alone.
-Devops run `pulumi stack select ant`
-Development and changes happen against `ant`.
-Developers and internal stakeholders do UAT against `ant` (possibly via staging.api.climatepolicyradar.org or some other private domain name).
-Everyone is happy with `ant`.
-Change CNAME so that it points api.climatepolicyradar.org to `ant` (more specifically, the elastic beanstalk instance in this stack)
-Check api.climatepolicyradar.org and if you're not happy, flip the CNAME back to `dev`.
-But if you're happy:
-Change CNAME so that it points staging.api.climatepolicyradar.org to `dev` (more specifically, the elastic beanstalk instance in this stack)
-Development can bow resume against `dev`.
+#### Deploy to dev.app.climatepolicyradar.org for UAT
 
-Sprint N+1:
-CNAME is currently pointing to `ant`, so leave it alone.
-Devops run `pulumi stack select dev`
-Development and changes happen against `dev`.
-Developers and internal stakeholders do UAT against `dev` (possibly via staging.api.climatepolicyradar.org or some other private domain name).
-Everyone is happy with `dev`.
-Change CNAME so that it points api.climatepolicyradar.org to `dev` (more specifically, the elastic beanstalk instance in this stack)
-Check api.climatepolicyradar.org and if you're not happy, flip the CNAME back to `ant`.
-But if you're happy:
-Change CNAME so that it points staging.api.climatepolicyradar.org to `ant` (more specifically, the elastic beanstalk instance in this stack)
-Development can bow resume against `ant`.
+Select the stack for the development environment
 
-## The deployment status
+```shell
+pulumi stack select ant
+```
 
-Which environment is currently "prod" and used by our users, and we're not allowed to make changes to? 
-Which environment is currently "dev", and we're allowed to make changes to it?
+Deploy the stack (make sure to inspect the console output to confirm that you are deploying to the expected environment).
 
-The file [blue-green-status.json](./blue-green-status.json) is the definitive source of truth to answer that question.
+```shell
+pulumi up
+```
 
-Whenever we decide to make the current "dev" environment "prod", we edit this file.
-The Pulumi scripts will then also look at this file to decide how to configure certain variables.
+(pulumi up will often fail after building the required docker images, when this happens simply run `pulumi up` again).
+
+Caches must now be invalidated in the CloudFront distribution for the dev environment, or older cached javascript may
+be served, rather than the updated code. The distribution can be located at "https://us-east-1.console.aws.amazon.com/cloudfront"
+
+Developers & stakeholders can now perform UAT against the deployed dev environment.
+
+#### Deploy to app.climatepolicyradar.org
+
+When the testing is complete & everyone is happy, a deploy can be main against the production environment:
+
+TODO: instructions for 2 main scenarios (those with/without downtime).
+
+```shell
+pulumi stack select dev
+pulumi up
+```
+
+### The deployment status
+
+TODO: revisit this file name & content
+
+The file [blue-green-status.json](./blue-green-status.json) contains a mapping from stack name to environment (currently "dev" or "prod").
+
+The Pulumi scripts look at this file to decide how to configure certain variables.
+
+## Troubleshooting
+
+### Installing developer dependencies to the virtualenv for debugging
+
+To install developer tooling (e.g. for IDE):
+
+```shell
+source venv/bin/activate
+pip install -r requirements-dev.txt
+```
+
+If, for any reason, you lose your `venv` folder, Pulumi will recreate it for you if you run any command.
+
+E.g. `pulumi about`.
+
+### Visualise dependencies
+
+```shell
+pulumi stack graph --color always graph.dot
+# sudo apt install -y graphviz
+cat graph.dot|dot -Tpng > output.png
+```
