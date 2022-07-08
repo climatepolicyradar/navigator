@@ -22,7 +22,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
     ) {
       return (
         <>
-          <div className="w-full lg:w-auto flex flex-wrap flex-nowrap mt-2 lg:mt-0 ">
+          <div className="w-full lg:w-auto flex flex-nowrap mt-2 lg:mt-0 ">
             {/* TODO: translate below text, how to handle plurals? */}
             <span className="font-medium lg:ml-10 mr-2">Matches</span>
             <div className="divide-x divide-current flex-grow-0">

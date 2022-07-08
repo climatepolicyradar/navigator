@@ -15,6 +15,10 @@ interface DoucmentInfoProps {
 }
 
 const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "" }: DoucmentInfoProps) => {
+  const renderList = (list: ListType[]) => {
+    return list.map((item, i) => [i > 0 && ", ", item.name]);
+  };
+
   return (
     <div className="mt-4">
       <h4 className="text-base text-indigo-400 font-semibold flex">
@@ -25,7 +29,8 @@ const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "" }: 
           </div>
         )}
       </h4>
-      {list.length ? <List list={list} /> : <p className="text-indigo-500">{text}</p>}
+      {/* {list.length ? <List list={list} /> : <p className="text-indigo-500">{text}</p>} */}
+      <p className="text-indigo-500">{list.length ? renderList(list) : text}</p>
     </div>
   );
 };

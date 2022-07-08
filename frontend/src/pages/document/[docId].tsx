@@ -63,15 +63,11 @@ const DocumentCoverPage = () => {
 
     return (
       <p className="mt-4">
-        <a
-          href={link}
-          target="_blank"
-          rel="noopener noreferrer nofollow"
-          className="text-blue-500 underline flex items-center font-medium hover:text-indigo-600 transition duration-300"
-        >
+        <a href={link} target="_blank" rel="noopener noreferrer nofollow" className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300">
           <span className="mr-1">Link to source document</span>
-
-          <ExternalLinkIcon height="16" width="16" />
+          <span className="inline-block">
+            <ExternalLinkIcon height="16" width="16" />
+          </span>
         </a>
       </p>
     );
@@ -148,30 +144,19 @@ const DocumentCoverPage = () => {
               <section className="md:border-l md:border-blue-100 md:pl-4 mt-6 md:w-2/5 lg:w-1/4 md:ml-12 flex-shrink-0">
                 <h3 className="text-xl text-blue-700">About this document</h3>
                 <div className="grid grid-cols-2 gap-x-2">
-                  <DocumentInfo
-                    id="category-tt"
-                    heading="Category"
-                    text={page.category.name}
-                  />
+                  <DocumentInfo id="category-tt" heading="Category" text={page.category.name} />
                   <DocumentInfo id="type-tt" heading="Type" text={page.type.name} />
                   {/* Topics maps to responses */}
-                  {page.topics.length > 0 && (
-                    <DocumentInfo
-                      id="topics-tt"
-                      heading="Topics"
-                      list={page.topics}
-                    />
-                  )}
+                  {page.topics.length > 0 && <DocumentInfo id="topics-tt" heading="Topics" list={page.topics} />}
                   {page.languages.length > 0 && <DocumentInfo heading="Language" text={page.languages[0].name} />}
                 </div>
 
                 {page.keywords.length > 0 && (
-                  <DocumentInfo id="keywords-tt" tooltip="Key terms relating to the content of the document" heading="Keywords" text={page.keywords[0].name} />
+                  <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />
                 )}
                 {page.sectors.length > 0 && (
                   <DocumentInfo
                     id="sectors-tt"
-                    tooltip="The broad areas of economic activity to which the content of the document relates, e.g. agriculture or transport. For more information, see our Methodology page"
                     heading="Sectors"
                     list={page.sectors}
                   />
@@ -179,7 +164,6 @@ const DocumentCoverPage = () => {
                 {page.instruments.length > 0 && (
                   <DocumentInfo
                     id="instruments-tt"
-                    tooltip="The interventions or measures contained in the document, e.g. taxes or standards. For more information, see our Methodology page"
                     heading="Instruments"
                     list={structureData(page.instruments)}
                   />
