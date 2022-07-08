@@ -98,15 +98,14 @@ class Backend:
         frontend_pdf_embed_key = get_pdf_embed_key_for_current_stack()
 
         # context has to be one level below 'backend' as backend Dockerfile references '../common'
-        docker_context = Path(os.getcwd()) / ".."
-        docker_context = docker_context.resolve().as_posix()
-        backend_dockerfile = Path(os.getcwd()) / ".." / "backend" / "Dockerfile"
-        backend_dockerfile = backend_dockerfile.resolve().as_posix()
-
-        self.backend_image = docker.Image(
+        backend_docker_context = (Path(os.getcwd()) / "..").resolve().as_posix()
+        backend_dockerfile = (
+            (Path(os.getcwd()) / ".." / "backend" / "Dockerfile").resolve().as_posix()
+        )
+        backend_image = docker.Image(
             "backend-docker-image",
             build=docker.DockerBuild(
-                context=docker_context, dockerfile=backend_dockerfile
+                context=backend_docker_context, dockerfile=backend_dockerfile
             ),
             # image_name=f"{backend_image_name}:{stack}",
             image_name=deployment_resources.ecr_repo.repository_url,
@@ -115,15 +114,16 @@ class Backend:
         )
 
         # frontend
-        docker_context = Path(os.getcwd()) / ".." / "frontend"
-        docker_context = docker_context.resolve().as_posix()
-        frontend_dockerfile = Path(os.getcwd()) / ".." / "frontend" / "Dockerfile"
-        frontend_dockerfile = frontend_dockerfile.resolve().as_posix()
-
+        frontend_docker_context = (
+            (Path(os.getcwd()) / ".." / "frontend").resolve().as_posix()
+        )
+        frontend_dockerfile = (
+            (Path(os.getcwd()) / ".." / "frontend" / "Dockerfile").resolve().as_posix()
+        )
         frontend_image = docker.Image(
             "frontend-docker-image",
             build=docker.DockerBuild(
-                context=docker_context,
+                context=frontend_docker_context,
                 dockerfile=frontend_dockerfile,
                 args={
                     "NEXT_PUBLIC_API_URL": frontend_api_url,
@@ -137,15 +137,14 @@ class Backend:
         )
 
         # nginx
-        docker_context = Path(os.getcwd()) / ".." / "nginx"
-        docker_context = docker_context.resolve().as_posix()
-        nginx_dockerfile = Path(os.getcwd()) / ".." / "nginx" / "Dockerfile"
-        nginx_dockerfile = nginx_dockerfile.resolve().as_posix()
-
+        nginx_docker_context = (Path(os.getcwd()) / ".." / "nginx").resolve().as_posix()
+        nginx_dockerfile = (
+            (Path(os.getcwd()) / ".." / "nginx" / "Dockerfile").resolve().as_posix()
+        )
         nginx_image = docker.Image(
             "nginx-docker-image",
             build=docker.DockerBuild(
-                context=docker_context, dockerfile=nginx_dockerfile
+                context=nginx_docker_context, dockerfile=nginx_dockerfile
             ),
             image_name=deployment_resources.ecr_repo.repository_url,
             skip_push=False,
@@ -179,7 +178,7 @@ class Backend:
 
         docker_compose_file = pulumi.Output.all(
             nginx_image.image_name,
-            self.backend_image.image_name,
+            backend_image.image_name,
             frontend_image.image_name,
             storage.backend_database_connection_url,
             backend_secret_key,
@@ -199,6 +198,10 @@ class Backend:
             # TODO delete this file if it exists
             with open("docker-compose.yml", "w") as json_file:
                 json_file.write(manifest)
+
+            # DEBUG: set file as read-only
+            compose_path = Path("docker-compose.yml")
+            compose_path.chmod(0o444)
 
             deploy_resource = aws.s3.BucketObject(
                 "backend-beanstalk-docker-manifest",
@@ -231,7 +234,6 @@ class Backend:
         solution_stack = aws.elasticbeanstalk.get_solution_stack_output(
             most_recent=True,
             name_regex=r"^64bit Amazon Linux 2 (.*) Docker(.*)$",
-            # name_regex=r"^64bit Amazon Linux(.*)Multi-container Docker(.*)$",
         )
         pulumi.export("solution_stack", solution_stack)
 
