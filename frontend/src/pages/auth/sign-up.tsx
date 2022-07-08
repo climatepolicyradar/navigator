@@ -58,7 +58,7 @@ const SignUp = () => {
       ? t("Please check your email and click the enclosed link to complete the sign up.")
       : t("Please fill in your details to get access, and we will send over an activation link shortly.");
 
-  const heading = formSubmitted ? t("Sign up completed"): t("Sign up for an account");
+  const heading = formSubmitted ? t("Sign up complete"): t("Sign up for an account");
 
   return (
     <>
