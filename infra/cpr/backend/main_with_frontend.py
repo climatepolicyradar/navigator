@@ -14,6 +14,7 @@ from cpr.storage.main import Storage
 # for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
 from cpr.util.bluegreen import (
     get_app_domain_for_current_stack,
+    get_bluegreen_status_for_current_stack,
     get_pdf_embed_key_for_current_stack,
 )
 
@@ -88,6 +89,7 @@ class Backend:
         sendgrid_api_token = config.require("sendgrid_api_token")
         sendgrid_from_email = config.require("sendgrid_from_email")
         sendgrid_enabled = config.require("sendgrid_enabled")
+        target_environment = get_bluegreen_status_for_current_stack()
         app_domain_for_current_stack = get_app_domain_for_current_stack()
         pulumi.export("app_domain_for_current_stack", app_domain_for_current_stack)
         public_app_url = f"https://{app_domain_for_current_stack}"
@@ -103,12 +105,11 @@ class Backend:
             (Path(os.getcwd()) / ".." / "backend" / "Dockerfile").resolve().as_posix()
         )
         backend_image = docker.Image(
-            "backend-docker-image",
+            f"{target_environment}-backend-docker-image",
             build=docker.DockerBuild(
                 context=backend_docker_context, dockerfile=backend_dockerfile
             ),
-            # image_name=f"{backend_image_name}:{stack}",
-            image_name=deployment_resources.ecr_repo.repository_url,
+            image_name=deployment_resources.navigator_backend_repo.repository_url,
             skip_push=False,
             registry=deployment_resources.docker_registry,
         )
@@ -121,7 +122,7 @@ class Backend:
             (Path(os.getcwd()) / ".." / "frontend" / "Dockerfile").resolve().as_posix()
         )
         frontend_image = docker.Image(
-            "frontend-docker-image",
+            f"{target_environment}-frontend-docker-image",
             build=docker.DockerBuild(
                 context=frontend_docker_context,
                 dockerfile=frontend_dockerfile,
@@ -131,7 +132,7 @@ class Backend:
                     "NEXT_PUBLIC_ADOBE_API_KEY": frontend_pdf_embed_key,
                 },
             ),
-            image_name=deployment_resources.ecr_repo.repository_url,
+            image_name=deployment_resources.navigator_frontend_repo.repository_url,
             skip_push=False,
             registry=deployment_resources.docker_registry,
         )
@@ -142,11 +143,11 @@ class Backend:
             (Path(os.getcwd()) / ".." / "nginx" / "Dockerfile").resolve().as_posix()
         )
         nginx_image = docker.Image(
-            "nginx-docker-image",
+            f"{target_environment}-nginx-docker-image",
             build=docker.DockerBuild(
                 context=nginx_docker_context, dockerfile=nginx_dockerfile
             ),
-            image_name=deployment_resources.ecr_repo.repository_url,
+            image_name=deployment_resources.navigator_nginx_repo.repository_url,
             skip_push=False,
             registry=deployment_resources.docker_registry,
         )
@@ -200,11 +201,11 @@ class Backend:
                 json_file.write(manifest)
 
             # DEBUG: set file as read-only
-            compose_path = Path("docker-compose.yml")
-            compose_path.chmod(0o444)
+            # compose_path = Path("docker-compose.yml")
+            # compose_path.chmod(0o444)
 
             deploy_resource = aws.s3.BucketObject(
-                "backend-beanstalk-docker-manifest",
+                f"{target_environment}-backend-beanstalk-docker-manifest",
                 bucket=deployment_resources.deploy_bucket,
                 key=datetime.datetime.today().strftime(
                     "%Y/%m/%d/%H:%M:%S/docker-compose.yml"
@@ -218,10 +219,10 @@ class Backend:
 
         # create Elastic Beanstalk app
         backend_eb_app = aws.elasticbeanstalk.Application(
-            "backend-beanstalk-application"
+            f"{target_environment}-backend-beanstalk-application"
         )
         backend_app_version = aws.elasticbeanstalk.ApplicationVersion(
-            "navigator-api-version",
+            f"{target_environment}-navigator-api-version",
             application=backend_eb_app,
             bucket=deployment_resources.deploy_bucket.id,
             key=deploy_resource.id,
@@ -238,7 +239,7 @@ class Backend:
         pulumi.export("solution_stack", solution_stack)
 
         backend_eb_env = aws.elasticbeanstalk.Environment(
-            "navigator-api-environment",
+            f"{target_environment}-navigator-api-environment",
             application=backend_eb_app.name,
             version=backend_app_version,
             solution_stack_name=solution_stack.name,
@@ -319,3 +320,7 @@ class Backend:
         )
 
         pulumi.export("backend_eb_env", backend_eb_env.endpoint_url)
+        pulumi.export("backend_eb_env_cname", backend_eb_env.cname)
+
+        # DEBUG
+        # pulumi.export("backend_eb_env_settings", backend_eb_env.all_settings)
