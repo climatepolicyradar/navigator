@@ -13,7 +13,7 @@ const DateRangeOption = ({ id, label, name, value, onChange, checked }: DateRang
   return (
     <label className="checkbox-input flex items-center border p-2 rounded-md cursor-pointer border-indigo-200 bg-white" htmlFor={id}>
       <input
-        className="text-white border-blue-500 cursor-pointer"
+        className="text-white border-indigo-400 cursor-pointer"
         id={id}
         type="radio"
         name={name}
