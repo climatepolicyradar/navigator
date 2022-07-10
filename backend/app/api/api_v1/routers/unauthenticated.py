@@ -1,7 +1,8 @@
 import logging
+import os
 from typing import cast
 
-from fastapi import APIRouter, Depends, HTTPException, Request
+from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.exc import IntegrityError
 
 from app.api.api_v1.routers.admin import ACCOUNT_ACTIVATION_EXPIRE_MINUTES
@@ -30,6 +31,11 @@ unauthenticated_router = r = APIRouter()
 logger = logging.getLogger(__file__)
 
 
+ENABLE_SELF_REGISTRATION = (
+    os.getenv("ENABLE_SELF_REGISTRATION", "False").lower() == "true"
+)
+
+
 @r.post("/registrations", response_model=bool, response_model_exclude_none=True)
 @limiter.limit("6/minute")
 async def user_create(
@@ -42,9 +48,17 @@ async def user_create(
 
     :param user: Details of the user to create
     :param db: Database connection to allow creation of user
-    :returns: Always returns True (do not signal failure/success based on
-        existing registered email to avoid leaking registered user details)
+    :returns: Always returns True if self-registration is enable (do not signal
+        failure/success based on existing registered email to avoid leaking
+        registered user details)
+    :raises: HTTP 405 if self-registration is disabled
     """
+    if not ENABLE_SELF_REGISTRATION:
+        raise HTTPException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            detail="User registration is disabled",
+        )
+
     try:
         db_user = create_user(db, user)
     except IntegrityError:

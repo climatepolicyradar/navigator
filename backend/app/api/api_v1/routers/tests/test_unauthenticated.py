@@ -267,6 +267,7 @@ NEW_USER_2 = {
 @pytest.mark.parametrize("new_user", [NEW_USER_1, NEW_USER_2])
 @patch("app.db.crud.password_reset.get_password_reset_token_expiry_ts")
 @patch("app.api.api_v1.routers.unauthenticated.send_new_account_email")
+@patch("app.api.api_v1.routers.unauthenticated.ENABLE_SELF_REGISTRATION", True)
 def test_register_user(
     mock_send_email,
     mock_get_password_reset_token_expiry_ts,
@@ -300,3 +301,22 @@ def test_register_user(
     assert not db_user.is_active
     assert not db_user.is_superuser
     mock_send_email.assert_called_once_with(db_user, prt)
+
+
+@pytest.mark.parametrize("new_user", [NEW_USER_1, NEW_USER_2])
+@patch("app.api.api_v1.routers.unauthenticated.ENABLE_SELF_REGISTRATION", False)
+def test_register_user_disabled(
+    new_user,
+    client,
+    test_db,
+    test_user,
+):
+    # reset the rate limiter so we do not see unexpected 429 responses
+    limiter.reset()
+
+    response = client.post(
+        "/api/v1/registrations",
+        json=new_user,
+    )
+    assert response.status_code == 405
+    assert response.json() == {"detail": "User registration is disabled"}

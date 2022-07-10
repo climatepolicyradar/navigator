@@ -11,7 +11,7 @@ from app.db.models import User
 from app.db.schemas.user import JWTUser
 
 
-credentials_exception = HTTPException(
+CREDENTIALS_EXCEPTION = HTTPException(
     status_code=status.HTTP_401_UNAUTHORIZED,
     detail="Could not validate credentials",
     headers={"WWW-Authenticate": "Bearer"},
@@ -26,13 +26,13 @@ async def _get_jwt_user(token: str = Depends(security.oauth2_scheme)) -> JWTUser
         )
         email: Optional[str] = payload.get("sub")
         if email is None:
-            raise credentials_exception
+            raise CREDENTIALS_EXCEPTION
         permissions: Optional[str] = payload.get("permissions")
         if permissions is None:
-            raise credentials_exception
+            raise CREDENTIALS_EXCEPTION
         is_active: Optional[bool] = payload.get("is_active")
         if is_active is None:
-            raise credentials_exception
+            raise CREDENTIALS_EXCEPTION
 
         jwt_user = JWTUser(
             email=email,
@@ -41,7 +41,7 @@ async def _get_jwt_user(token: str = Depends(security.oauth2_scheme)) -> JWTUser
         )
         return jwt_user
     except PyJWTError:
-        raise credentials_exception
+        raise CREDENTIALS_EXCEPTION
 
 
 async def get_current_active_user(
@@ -67,7 +67,7 @@ async def _get_current_db_user(
     """Heavier-weight user-retrieval that fetches the user from the DB after decoding the JWT."""
     user = get_user_by_email(db, jwt_user.email)
     if user is None:
-        raise credentials_exception
+        raise CREDENTIALS_EXCEPTION
     return user
 
 
@@ -94,6 +94,6 @@ def authenticate_user(db, email: str, password: str) -> Optional[User]:
         return None
     if not user:
         return None
-    if not security.verify_password(password, user.hashed_password):
+    if not security.verify_password(password, str(user.hashed_password)):
         return None
     return user
