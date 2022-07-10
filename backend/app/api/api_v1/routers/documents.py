@@ -18,6 +18,7 @@ from app.core.auth import (
     get_current_active_user,
     get_current_active_db_superuser,
 )
+from app.core.aws import get_s3_client
 from app.core.service.loader import persist_document_and_metadata
 from app.core.util import CONTENT_TYPE_MAP, content_type_from_path, s3_to_cdn_url
 from app.db.models import (
@@ -66,7 +67,6 @@ from app.db.schemas.metadata import (
     Topic as TopicSchema,
 )
 from app.db.session import get_db
-from navigator.core.aws import get_s3_client
 
 logger = logging.getLogger(__file__)
 

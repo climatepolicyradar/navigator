@@ -1,14 +1,18 @@
 """AWS Helper classes."""
-import boto3
+import logging
 import os
 import re
 import typing as t
+
+import boto3
 from botocore.exceptions import ClientError
 from botocore.response import StreamingBody
 
-from .log import get_logger
+logger = logging.getLogger(__name__)
 
-logger = get_logger(__name__)
+_AWS_REGION = os.getenv("AWS_REGION", "")
+if not _AWS_REGION:
+    raise RuntimeError("AWS_REGION environment variable must be set")
 
 
 class S3Document:
@@ -77,7 +81,7 @@ class S3Client:
             logger.error(e)
             return False
 
-        return S3Document(bucket, os.getenv("AWS_REGION"), key)
+        return S3Document(bucket, _AWS_REGION, key)
 
     def upload_file(
         self,
@@ -113,7 +117,7 @@ class S3Client:
             logger.exception(f"Uploading {file_name} encountered an error")
             return False
 
-        return S3Document(bucket, os.getenv("AWS_REGION"), key)
+        return S3Document(bucket, _AWS_REGION, key)
 
     def copy_document(
         self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
@@ -136,7 +140,7 @@ class S3Client:
 
         self.client.copy_object(CopySource=copy_source, Bucket=new_bucket, Key=new_key)
 
-        return S3Document(new_bucket, os.getenv("AWS_REGION"), new_key)
+        return S3Document(new_bucket, _AWS_REGION, new_key)
 
     def delete_document(self, s3_document: S3Document) -> None:
         """Delete a document.
@@ -164,13 +168,11 @@ class S3Client:
 
         self.delete_document(s3_document)
 
-        return S3Document(
-            new_bucket, os.getenv("AWS_REGION"), new_key or s3_document.key
-        )
+        return S3Document(new_bucket, _AWS_REGION, new_key or s3_document.key)
 
     def list_files(
         self, bucket: str, max_keys=1000
-    ) -> t.Union[t.Generator[S3Document, None, None], bool]:
+    ) -> t.Generator[S3Document, None, None]:
         """Yield the documents contained in a bucket on S3.
 
         Calls the s3 list_objects_v2 function to return all the keys in a given s3 bucket.
@@ -201,16 +203,15 @@ class S3Client:
                 response = self.client.list_objects_v2(**kwargs)
 
                 for s3_file in response.get("Contents", []):
-                    yield S3Document(bucket, os.getenv("AWS_REGION"), s3_file["Key"])
+                    yield S3Document(bucket, _AWS_REGION, s3_file["Key"])
 
                 # Find out whether request was truncated and get continuation token
                 is_truncated = response.get("IsTruncated", False)
                 next_continuation_token = response.get("NextContinuationToken", None)
 
-        except ClientError as e:
-            logger.error(e)
-
-            return False
+        except ClientError:
+            logger.exception("Request to list files in bucket '{bucket}' failed")
+            raise
 
     def download_file(self, s3_document: S3Document) -> StreamingBody:
         """Download a file from S3.
@@ -228,10 +229,9 @@ class S3Client:
 
             return response["Body"]
 
-        except ClientError as e:
-            logger.error(e)
-
-            return False
+        except ClientError:
+            logger.exception(f"Request for object {s3_document.key} failed")
+            raise
 
 
 def get_s3_client():
