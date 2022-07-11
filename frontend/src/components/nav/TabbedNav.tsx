@@ -1,27 +1,27 @@
-import { useState, useEffect } from 'react';
-import TabbedNavItem from './TabbedNavItem';
+import { useState, useEffect } from "react";
+import TabbedNavItem from "./TabbedNavItem";
 
 interface TabbedNavProps {
-  handleTabClick(e): void;
+  handleTabClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
   items: string[];
   activeIndex: number;
+  showBorder?: boolean;
 }
 
-const TabbedNav = ({
-  handleTabClick,
-  items,
-  activeIndex = 0,
-}: TabbedNavProps) => {
+const TabbedNav = ({ handleTabClick, items, activeIndex = 0, showBorder = true }: TabbedNavProps) => {
   const [activeTab, setActiveTab] = useState(activeIndex);
-  const onClick = (e, index) => {
-    setActiveTab(index);
-    handleTabClick(e);
-  };
+
   useEffect(() => {
     setActiveTab(activeIndex);
   }, [activeIndex]);
+
+  const onClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
+    setActiveTab(index);
+    handleTabClick(e);
+  };
+
   return (
-    <div className="grid grid-cols-2 md:grid-cols-none md:flex border-b border-blue-200 pb-2 md:pl-8">
+    <div className={`grid grid-cols-2 md:grid-cols-none md:flex pb-2 md:pl-8 ${showBorder && 'border-b border-blue-200'}`}>
       {items.map((item, index) => (
         <TabbedNavItem
           key={`tab${index}`}

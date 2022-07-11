@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { useRouter } from "next/router";
+import Image from "next/image";
 import useDocumentDetail from "@hooks/useDocumentDetail";
 import useSortAndStructure from "@hooks/useSortAndStructure";
 import Layout from "@components/layouts/Main";
@@ -9,7 +9,7 @@ import TextLink from "@components/nav/TextLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
 import Event from "@components/blocks/Event";
 import RelatedDocument from "@components/blocks/RelatedDocument";
-import Tooltip from "@components/tooltip";
+import TabbedNav from "@components/nav/TabbedNav";
 import { ExternalLinkIcon } from "@components/svg/Icons";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
@@ -18,7 +18,6 @@ import { truncateString } from "../../helpers";
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
   const [summary, setSummary] = useState("");
-  const { t } = useTranslation("document");
   const router = useRouter();
   const structureData = useSortAndStructure();
 
@@ -73,6 +72,8 @@ const DocumentCoverPage = () => {
     );
   };
 
+  const sourceLogo = page?.source?.name === "CCLW" ? "lse-logo.png" : null;
+
   return (
     <Layout title={`Climate Policy Radar | Document title`}>
       {isFetching || !page?.name ? (
@@ -84,20 +85,20 @@ const DocumentCoverPage = () => {
           <div className="bg-offwhite border-solid border-blue-200 border-b">
             <div className="container">
               <div className="md:flex">
-                <div className="flex-1 my-6">
+                <div className="flex-1 mt-6">
                   <h1 className="text-3xl font-medium">{page.name}</h1>
-                  <div className="flex text-sm text-indigo-400 mt-3 items-center w-full">
+                  <div className="flex text-sm text-indigo-400 mt-3 items-center w-full mb-6">
                     <div className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
                     <span className="ml-2">
                       {page.geography.display_value}, {year}
                     </span>
-                    <span className="ml-8"></span>
                   </div>
                 </div>
                 <div className="my-6 md:pl-4 md:w-2/5 lg:w-1/4 md:ml-12 flex-shrink-0">
                   <TextLink href="/search">Back to search results</TextLink>
                 </div>
               </div>
+              <TabbedNav activeIndex={0} items={["Overview", "Document"]} handleTabClick={() => false} showBorder={false} />
             </div>
           </div>
           <div className="container">
@@ -119,20 +120,18 @@ const DocumentCoverPage = () => {
                     )}
                   </section>
                 )}
-                <p className="text-sm mt-4">
-                  <span className="font-medium">Source: </span> {page.source.name}
-                </p>
 
-                {renderSourceLink()}
+                {page.events.length > 0 && (
+                  <div className="mt-8">
+                    {page.events.map((event, index) => (
+                      <Event event={event} key={`event${index}`} last={index === page.events.length - 1 ? true : false} />
+                    ))}
+                  </div>
+                )}
 
                 {page.related_documents.length ? (
                   <section>
-                    <h2 className="text-xl flex mt-8">
-                      Associated Documents
-                      <div className="ml-1 text-xs">
-                        <Tooltip id="docs-tt" tooltip="Other documents which are related to this document, e.g. translations, amendments, summaries, or annexes" />
-                      </div>
-                    </h2>
+                    <h2 className="text-xl flex mt-8">Associated Documents</h2>
                     {page.related_documents.map((doc) => (
                       <div key={doc.related_id} className="my-8">
                         <RelatedDocument document={doc} />
@@ -151,31 +150,21 @@ const DocumentCoverPage = () => {
                   {page.languages.length > 0 && <DocumentInfo heading="Language" text={page.languages[0].name} />}
                 </div>
 
-                {page.keywords.length > 0 && (
-                  <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />
-                )}
-                {page.sectors.length > 0 && (
-                  <DocumentInfo
-                    id="sectors-tt"
-                    heading="Sectors"
-                    list={page.sectors}
-                  />
-                )}
-                {page.instruments.length > 0 && (
-                  <DocumentInfo
-                    id="instruments-tt"
-                    heading="Instruments"
-                    list={structureData(page.instruments)}
-                  />
-                )}
-                {page.events.length > 0 && (
-                  <div className="mt-8">
-                    <h4 className="text-base text-indigo-600 font-medium mb-4">Events</h4>
-                    {page.events.map((event, index) => (
-                      <Event event={event} key={`event${index}`} last={index === page.events.length - 1 ? true : false} />
-                    ))}
+                {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
+                {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
+                {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} />}
+                <div className="mt-8 border-t border-blue-100">
+                  <h3 className="text-xl text-blue-700 mt-4">Source</h3>
+                  <div className="flex items-end mt-4">
+                    {sourceLogo && (
+                      <div className="relative flex-shrink max-w-[40px] mr-1">
+                        <img src={`/images/partners/${sourceLogo}`} alt={page.source.name}  />
+                      </div>
+                    )}
+                    <p className="text-sm">{page.source.name}</p>
                   </div>
-                )}
+                  {renderSourceLink()}
+                </div>
               </section>
             </div>
           </div>
