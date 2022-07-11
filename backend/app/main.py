@@ -1,6 +1,8 @@
+import logging
 import logging.config
 import os
 
+import json_logging
 import uvicorn
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
@@ -22,15 +24,47 @@ from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
 from app.core.ratelimit import limiter
 from app.db.session import SessionLocal
-from navigator.core.log import get_logger
 
-logger = get_logger(__name__)
+# Clear existing log handlers so we always log in structured JSON
+root_logger = logging.getLogger()
+if root_logger.handlers:
+    for handler in root_logger.handlers:
+        root_logger.removeHandler(handler)
+for _, logger in logging.root.manager.loggerDict.items():
+    if isinstance(logger, logging.Logger):
+        logger.propagate = True
+        if logger.handlers:
+            for handler in logger.handlers:
+                logger.removeHandler(handler)
+
+LOG_LEVEL = os.getenv("LOG_LEVEL", "INFO").upper()
+DEFAULT_LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,
+    "handlers": {
+        "console": {
+            "class": "logging.StreamHandler",
+            "stream": "ext://sys.stdout",  # Default is stderr
+        },
+    },
+    "loggers": {},
+    "root": {
+        "handlers": ["console"],
+        "level": LOG_LEVEL,
+    },
+}
+logger = logging.getLogger(__name__)
+logging.config.dictConfig(DEFAULT_LOGGING)
 
 ENABLE_API_DOCS = os.getenv("ENABLE_API_DOCS", "False").lower() == "true"
 _docs_url = "/api/docs" if ENABLE_API_DOCS else None
 _openapi_url = "/api" if ENABLE_API_DOCS else None
 
 app = FastAPI(title=config.PROJECT_NAME, docs_url=_docs_url, openapi_url=_openapi_url)
+json_logging.init_fastapi(enable_json=True)
+json_logging.init_request_instrument(app)
+json_logging.config_root_logger()
+
 
 # Add CORS middleware to allow cross origin requests from any port
 app.add_middleware(
@@ -93,53 +127,5 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
-def get_log_level() -> str:
-    from boto.utils import get_instance_metadata
-    import sys
-
-    # if this is being run by a test
-    if "pytest" in sys.modules:
-        return "INFO"
-
-    try:
-        m = get_instance_metadata(timeout=1, num_retries=1)
-        if m and len(m.keys()) > 0:
-            # not DEBUG level in the cloud
-            return "INFO"
-    except:  # noqa: E722
-        pass
-    return "DEBUG"
-
-
-DEFAULT_LOGGING = {
-    "version": 1,
-    "disable_existing_loggers": False,
-    "formatters": {
-        "standard": {"format": "%(asctime)s [%(levelname)s] %(name)s: %(message)s"},
-    },
-    "handlers": {
-        "default": {
-            "level": "DEBUG",
-            "formatter": "standard",
-            "class": "logging.StreamHandler",
-            "stream": "ext://sys.stdout",  # Default is stderr
-        },
-    },
-    "loggers": {
-        "": {  # root logger
-            "handlers": ["default"],
-            "level": get_log_level(),
-        },
-        "__main__": {  # if __name__ == '__main__'
-            "handlers": ["default"],
-            "level": "DEBUG",
-            "propagate": False,
-        },
-        # also "uvicorn", "uvicorn.error", "uvicorn.access" etc
-    },
-}
-
-logging.config.dictConfig(DEFAULT_LOGGING)
-
 if __name__ == "__main__":
-    uvicorn.run("main:app", host="0.0.0.0", reload=True, port=8888)
+    uvicorn.run(app, host="0.0.0.0", port=8888, log_config=DEFAULT_LOGGING)  # type: ignore
