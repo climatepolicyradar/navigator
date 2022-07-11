@@ -10,9 +10,7 @@ from botocore.response import StreamingBody
 
 logger = logging.getLogger(__name__)
 
-_AWS_REGION = os.getenv("AWS_REGION", "")
-if not _AWS_REGION:
-    raise RuntimeError("AWS_REGION environment variable must be set")
+_AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
 
 
 class S3Document:
