@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Image from "next/image";
 import useDocumentDetail from "@hooks/useDocumentDetail";
 import useSortAndStructure from "@hooks/useSortAndStructure";
 import Layout from "@components/layouts/Main";
@@ -14,6 +13,13 @@ import { ExternalLinkIcon } from "@components/svg/Icons";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
 import { truncateString } from "../../helpers";
+
+type TEvent = {
+  name: string;
+  created_ts: string;
+  date: string;
+  description: string;
+};
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -123,15 +129,22 @@ const DocumentCoverPage = () => {
 
                 {page.events.length > 0 && (
                   <div className="mt-8">
-                    {page.events.map((event, index) => (
+                    <div className="flex place-content-center bg-offwhite rounded border border-blue-200 drop-shadow-lg p-4">
+                      <div className="flex place-items-center overflow-x-auto p-4">
+                        {page.events.map((event: TEvent, index: number) => (
+                          <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
+                        ))}
+                      </div>
+                    </div>
+                    {/* {page.events.map((event, index) => (
                       <Event event={event} key={`event${index}`} last={index === page.events.length - 1 ? true : false} />
-                    ))}
+                    ))} */}
                   </div>
                 )}
 
                 {page.related_documents.length ? (
                   <section>
-                    <h2 className="text-xl flex mt-8">Associated Documents</h2>
+                    <h3 className="text-xl flex mt-8">Associated Documents</h3>
                     {page.related_documents.map((doc) => (
                       <div key={doc.related_id} className="my-8">
                         <RelatedDocument document={doc} />
@@ -158,7 +171,7 @@ const DocumentCoverPage = () => {
                   <div className="flex items-end mt-4">
                     {sourceLogo && (
                       <div className="relative flex-shrink max-w-[40px] mr-1">
-                        <img src={`/images/partners/${sourceLogo}`} alt={page.source.name}  />
+                        <img src={`/images/partners/${sourceLogo}`} alt={page.source.name} />
                       </div>
                     )}
                     <p className="text-sm">{page.source.name}</p>
