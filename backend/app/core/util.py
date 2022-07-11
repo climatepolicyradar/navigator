@@ -4,7 +4,7 @@ import re
 import string
 from pathlib import Path
 from typing import Union
-from urllib.parse import urlsplit
+from urllib.parse import quote_plus, urlsplit
 
 
 CDN_URL: str = os.getenv("CDN_URL", "https://cdn.climatepolicyradar.org")
@@ -15,40 +15,17 @@ CONTENT_TYPE_MAP = {
     ".htm": "text/html",
     ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
 }
-# Mappings sources from: https://github.com/GeorgePhillips/node-s3-url-encode/blob/master/index.js
-S3_URL_REQUIRED_ENCODINGS = {
-    "+": "%2B",
-    "!": "%21",
-    '"': "%22",
-    "#": "%23",
-    "$": "%24",
-    "&": "%26",
-    "'": "%27",
-    "(": "%28",
-    ")": "%29",
-    "*": "%2A",
-    ",": "%2C",
-    ":": "%3A",
-    ";": "%3B",
-    "=": "%3D",
-    "?": "%3F",
-    "@": "%40",
-}
-S3_REPLACE_REGEX = regex = re.compile(
-    "(%s)" % "|".join(map(re.escape, S3_URL_REQUIRED_ENCODINGS.keys()))
-)
 
 
-def _encode_characters(s3_url: str) -> str:
+def _encode_characters_in_path(s3_path: str) -> str:
     """
-    Encode special characters in S3 URL to fix broken CDN links.
+    Encode special characters in S3 URL path component to fix broken CDN links.
 
-    :param s3_url: The s3 URL in which to fix encodings
-    :returns: A URL containing encoded characters
+    :param s3_path: The s3 URL path component in which to fix encodings
+    :returns: A URL path component containing encoded characters
     """
-    for character, replacement in S3_URL_REQUIRED_ENCODINGS.items():
-        s3_url = s3_url.replace(character, replacement)
-    return s3_url
+    encoded_path = "/".join([quote_plus(c) for c in s3_path.split("/")])
+    return encoded_path
 
 
 def s3_to_cdn_url(s3_url: str) -> str:
@@ -62,7 +39,7 @@ def s3_to_cdn_url(s3_url: str) -> str:
     """
     converted_cdn_url = re.sub(r"https:\/\/.*\.s3\..*\.amazonaws.com", CDN_URL, s3_url)
     split_url = urlsplit(converted_cdn_url)
-    new_path = _encode_characters(split_url.path)
+    new_path = _encode_characters_in_path(split_url.path)
     # CDN URL should include only scheme, host & modified path
     return f"{split_url.scheme}://{split_url.hostname}{new_path}"
 

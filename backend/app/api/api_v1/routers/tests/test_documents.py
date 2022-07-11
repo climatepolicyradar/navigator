@@ -461,7 +461,7 @@ def test_document_detail(
     )
     assert (
         get_detail_json_2["url"]
-        == "https://cdn.climatepolicyradar.org/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector%2BStrategy 1487-1491 %282008/9-2013/4%29-1.html"
+        == "https://cdn.climatepolicyradar.org/AFG/2009-10-12/AFG-2009-10-12-Agriculture+Sector%2BStrategy+1487-1491+%282008/9-2013/4%29-1.html"
     )
     assert get_detail_json_2["source"] == {"name": "may it be with you"}
     assert get_detail_json_2["geography"] == {
