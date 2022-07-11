@@ -130,7 +130,7 @@ const DocumentCoverPage = () => {
                 {page.events.length > 0 && (
                   <div className="mt-8">
                     <div className="flex place-content-center bg-offwhite rounded border border-blue-200 drop-shadow-lg p-4">
-                      <div className="flex place-items-center overflow-x-auto p-4">
+                      <div className="flex place-items-center overflow-x-auto py-4">
                         {page.events.map((event: TEvent, index: number) => (
                           <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
                         ))}

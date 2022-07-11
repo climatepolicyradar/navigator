@@ -1,4 +1,3 @@
-import { DownLongArrowIcon } from "../svg/Icons";
 import { convertDate } from "@utils/timedate";
 
 interface Event {
@@ -19,33 +18,21 @@ const Event = ({ event, last, index }: EventProps) => {
 
   const even = (index + 1) % 2 === 0;
 
+  const timelineStyles = last ? "right-1/2 w-1/2" : even ? "w-full" : "left-1/2 w-1/2";
+
   return (
-    <div className="text-center w-[200px] shrink-0">
-      {!even && (
+    <div className="text-center w-[200px] shrink-0 relative h-[140px]">
+      <div className={`h-[2px] bg-blue-500 absolute top-1/2 translate-y-[-1px] z-0 ${timelineStyles}`} />
+      <div className={`absolute ${even ? "inset-x-0 top-0" : "inset-x-0 bottom-0"}`}>
+        <h3 className="text-xl">{name}</h3>
+        <p>{month + " " + year}</p>
+      </div>
+      <div className="flex place-content-center h-full relative z-10">
         <div className="circle-container">
           <div className={index === 0 || last ? "circle-large" : "circle-small"}></div>
         </div>
-      )}
-      <h3 className="text-xl">{name}</h3>
-      <p>{month + " " + year}</p>
-      {even && (
-        <div className="circle-container">
-          <div className={index === 0 || last ? "circle-large" : "circle-small"}></div>
-        </div>
-      )}
+      </div>
     </div>
-    // <div className="flex mt-1">
-    //   <div className="flex flex-col items-center w-1/2">
-    //     <div className="w-full bg-blue-200 rounded-2xl px-8 py-1 flex flex-col items-center text-indigo-600 mb-2">
-    //       <div className="text-2xl font-medium">{year}</div>
-    //       <div>{`${day} ${month}`}</div>
-    //     </div>
-    //     {!last && <DownLongArrowIcon />}
-    //   </div>
-    //   <div className="ml-4 shrink-0 w-1/2">
-    //     <div className="text-indigo-500">{name}</div>
-    //   </div>
-    // </div>
   );
 };
 export default Event;
