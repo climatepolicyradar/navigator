@@ -16,6 +16,7 @@ from cpr.util.bluegreen import (
     get_app_domain_for_current_stack,
     get_bluegreen_status_for_current_stack,
     get_pdf_embed_key_for_current_stack,
+    get_self_registration_enabled_for_current_stack,
 )
 
 DOCKER_COMPOSE_TEMPLATE = """version: '3.7'
@@ -52,6 +53,7 @@ services:
       SENDGRID_API_KEY: {sendgrid_api_token}
       SENDGRID_FROM_EMAIL: {sendgrid_from_email}
       SENDGRID_ENABLED: "{sendgrid_enabled}"
+      ENABLE_SELF_REGISTRATION: "{self_registration_enabled}"
 
   frontend:
     image: {frontend_image}
@@ -92,6 +94,8 @@ class Backend:
         target_environment = get_bluegreen_status_for_current_stack()
         app_domain_for_current_stack = get_app_domain_for_current_stack()
         pulumi.export("app_domain_for_current_stack", app_domain_for_current_stack)
+        self_registration_enabled = get_self_registration_enabled_for_current_stack()
+        pulumi.export("self_registration_enabled", self_registration_enabled)
         public_app_url = f"https://{app_domain_for_current_stack}"
         frontend_api_url = f"https://{app_domain_for_current_stack}/api/v1"
         pulumi.export("frontend_api_url", frontend_api_url)
@@ -171,6 +175,7 @@ class Backend:
                         "frontend_api_url",
                         "frontend_api_url_login",
                         "frontend_pdf_embed_key",
+                        "self_registration_enabled",
                     ],
                     arg_list,
                 )
@@ -193,6 +198,7 @@ class Backend:
             frontend_api_url,
             frontend_api_url_login,
             frontend_pdf_embed_key,
+            self_registration_enabled,
         ).apply(fill_template)
 
         def create_deploy_resource(manifest):
