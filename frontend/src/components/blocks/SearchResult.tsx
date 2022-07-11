@@ -69,9 +69,8 @@ const SearchResult = ({ document }: SearchResultProps) => {
           className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`}
         />
         <span className="ml-2">
-          {document.document_country_english_shortname}
+          {document.document_country_english_shortname}, {year}
         </span>
-        <span className="ml-4">{year}</span>
         {showMatches()}
       </div>
 
