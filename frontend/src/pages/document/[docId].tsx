@@ -90,7 +90,7 @@ const DocumentCoverPage = () => {
         <section className="mb-8">
           <div className="bg-offwhite border-solid border-blue-200 border-b">
             <div className="container">
-              <div className="md:flex">
+              <div className="flex flex-col md:flex-row">
                 <div className="flex-1 mt-6">
                   <h1 className="text-3xl font-medium">{page.name}</h1>
                   <div className="flex text-sm text-indigo-400 mt-3 items-center w-full mb-6">
@@ -136,9 +136,6 @@ const DocumentCoverPage = () => {
                         ))}
                       </div>
                     </div>
-                    {/* {page.events.map((event, index) => (
-                      <Event event={event} key={`event${index}`} last={index === page.events.length - 1 ? true : false} />
-                    ))} */}
                   </div>
                 )}
 
