@@ -22,7 +22,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
     ) {
       return (
         <>
-          <div className="w-full lg:w-auto flex flex-wrap flex-nowrap mt-2 lg:mt-0 ">
+          <div className="w-full lg:w-auto flex flex-nowrap mt-2 lg:mt-0 ">
             {/* TODO: translate below text, how to handle plurals? */}
             <span className="font-medium lg:ml-10 mr-2">Matches</span>
             <div className="divide-x divide-current flex-grow-0">
@@ -43,8 +43,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
                 data-docid={document.document_id}
                 className="lg:ml-4 mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 hover:bg-indigo-600"
               >
-                See {document.document_passage_matches.length} match
-                {document.document_passage_matches.length > 1 ? 'es' : ''}
+                {`See ${document.document_passage_matches.length} match${document.document_passage_matches.length > 1 ? 'es' : ''} in document`}
               </button>
             )}
         </>
