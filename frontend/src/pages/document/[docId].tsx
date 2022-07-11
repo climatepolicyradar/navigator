@@ -104,7 +104,7 @@ const DocumentCoverPage = () => {
                   <TextLink href="/search">Back to search results</TextLink>
                 </div>
               </div>
-              <TabbedNav activeIndex={0} items={["Overview", "Document"]} handleTabClick={() => false} showBorder={false} />
+              <TabbedNav activeIndex={0} items={["Overview"]} handleTabClick={() => false} showBorder={false} />
             </div>
           </div>
           <div className="container">
