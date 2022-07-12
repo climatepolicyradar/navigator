@@ -1,4 +1,4 @@
-FROM python:3.8
+FROM python:3.9
 
 RUN mkdir /app
 WORKDIR /app
@@ -12,9 +12,6 @@ RUN pip install "poetry==1.1.8"
 
 # Copy files to image
 COPY ./backend .
-# Copy common package to image
-RUN mkdir /common
-COPY ./common ../common
 
 # Install python dependencies using poetry
 RUN poetry config virtualenvs.create false
@@ -25,9 +22,4 @@ RUN mkdir /models
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/msmarco-distilbert-dot-v5', cache_folder='/models')"
 
 ENV PYTHONPATH=/app
-
-ARG PORT=8888
-ENV PORT $PORT
-EXPOSE $PORT
-
 CMD python app/main.py

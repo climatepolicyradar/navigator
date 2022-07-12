@@ -63,22 +63,17 @@ build_frontend:
 build_loader:
 	docker-compose build --no-cache loader
 
-build_pipeline:
-	docker build -f pipeline/Dockerfile -t navigator_pipeline .
-
-build_search_index:
-	docker-compose build search-index
-
-build: build_backend build_frontend build_loader build_search_index build_pipeline
+build: build_backend build_frontend build_loader
 
 # ----------------------------------
 # testing
 # ----------------------------------
 test_frontend:
+	# TODO: setup a proper test user for cypress
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
 
 clear_test_search_index:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --insecure
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --insecure
 
 test_backend_search: clear_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_analyzer.dump --type=analyzer
@@ -92,13 +87,7 @@ test_backend:
 test_loader:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader pytest
 
-test_pipeline:
-	docker run navigator_pipeline python -m pytest
-
-test_search_index:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm search-index pytest
-
-test: test_backend test_frontend test_loader test_pipeline test_search_index
+test: test_backend test_frontend test_loader
 
 # ----------------------------------
 # tasks

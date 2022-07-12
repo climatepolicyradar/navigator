@@ -1,11 +1,11 @@
-import { useAuth, resetRequest } from '../../api/auth';
 import '../i18n';
 import { useTranslation } from 'react-i18next';
-import Layout from '../../components/layouts/Main';
-import TextInput from '../../components/form-inputs/TextInput';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
+import { useAuth, resetRequest } from '../../api/auth';
+import Layout from '../../components/layouts/Main';
+import PasswordInput from '../../components/form-inputs/PasswordInput';
 import AccountNav from '../../components/nav/AccountNav';
 import AdminSubhead from '../../components/headers/AdminSubhead';
 import Button from '../../components/buttons/Button';
@@ -79,9 +79,8 @@ const Account = () => {
                 {t('New password')} <strong className="text-red-500"> *</strong>
               </label>
               <div className="flex-grow">
-                <TextInput
+                <PasswordInput
                   name="password"
-                  type="password"
                   errors={errors}
                   required
                   register={register}
@@ -97,9 +96,8 @@ const Account = () => {
                 <strong className="text-red-500"> *</strong>
               </label>
               <div className="flex-grow">
-                <TextInput
+                <PasswordInput
                   name="confirm_password"
-                  type="password"
                   errors={errors}
                   required
                   register={register}

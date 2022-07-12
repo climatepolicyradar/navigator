@@ -7,7 +7,7 @@ const SearchResultList = ({ searchCriteria, documents }) => {
   ) {
     return (
       // TODO: translate
-      <div className="h-96">
+      <div className="h-96 mt-4 md:mt-0">
         Climate litigation case documents are coming soon to Climate Policy
         Radar! In the meantime, head to{' '}
         <a
@@ -25,7 +25,7 @@ const SearchResultList = ({ searchCriteria, documents }) => {
     documents.length === 0
   ) {
     return (
-      <div className="h-96">
+      <div className="h-96 mt-4 md:mt-0">
         Your search returned no results from documents in the legislative
         category. Please try the executive category, or conduct a new search.
       </div>
@@ -37,14 +37,16 @@ const SearchResultList = ({ searchCriteria, documents }) => {
     documents.length === 0
   ) {
     return (
-      <div className="h-96">
+      <div className="h-96 mt-4 md:mt-0">
         Your search returned no results from documents in the executive
         category. Please try the legislative category, or conduct a new search.
       </div>
     );
   }
   if (documents.length === 0) {
-    return <div className="h-96">Your search returned no results.</div>;
+    return (
+      <div className="h-96 mt-4 md:mt-0">Your search returned no results.</div>
+    );
   }
   return documents?.map((doc: any, index: number) => (
     <div key={index} className="my-16 first:md:mt-4">

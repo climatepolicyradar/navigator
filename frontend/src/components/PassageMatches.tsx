@@ -1,17 +1,15 @@
 import Loader from './Loader';
 
 const PassageMatches = ({ document, setShowPDF, setPassageIndex }) => {
-  const { data: doc } = document;
-
   return (
     <>
-      {!doc ? (
+      {!document ? (
         <div className="w-full flex justify-center h-96">
           <Loader />
         </div>
       ) : (
         <div className="px-6">
-          {doc.document_passage_matches.map((item, index) => (
+          {document.document_passage_matches.map((item, index) => (
             <div
               key={item.text_block_id}
               className="py-4 cursor-pointer"

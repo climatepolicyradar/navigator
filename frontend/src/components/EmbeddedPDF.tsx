@@ -32,8 +32,10 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
       previewFilePromise.then((adobeViewer) => {
         createAnnotationManager(adobeViewer);
         adobeViewer.getAPIs().then((apis) => {
+          apis.getZoomAPIs().zoomIn();
+          // Only jump to page if a passage is selected
+          if (passageIndex === null) return;
           setTimeout(() => {
-            apis.getZoomAPIs().zoomIn();
             apis.gotoLocation(
               document.document_passage_matches[passageIndex].text_block_page
             );

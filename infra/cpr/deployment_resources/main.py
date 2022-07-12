@@ -5,6 +5,8 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_docker as docker
 
+from cpr.util.bluegreen import get_bluegreen_status_for_current_stack
+
 default_tag = {
     "CPR-Created-By": "pulumi",
     "CPR-Pulumi-Stack-Name": pulumi.get_stack(),
@@ -22,8 +24,26 @@ class DeploymentResources:
     deploy_bucket: aws.s3.Bucket
 
     def __init__(self):
-        self.ecr_repo = aws.ecr.Repository(
-            "cpr-container-registry",
+        target_environment = get_bluegreen_status_for_current_stack()
+
+        self.navigator_frontend_repo = aws.ecr.Repository(
+            f"navigator-frontend-{target_environment}",
+            # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
+            #     scan_on_push=True,
+            # ),
+            image_tag_mutability="MUTABLE",
+            tags=({"key": "created-by", "value": "pulumi"}),
+        )
+        self.navigator_backend_repo = aws.ecr.Repository(
+            f"navigator-backend-{target_environment}",
+            # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
+            #     scan_on_push=True,
+            # ),
+            image_tag_mutability="MUTABLE",
+            tags=({"key": "created-by", "value": "pulumi"}),
+        )
+        self.navigator_nginx_repo = aws.ecr.Repository(
+            f"navigator-nginx-{target_environment}",
             # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
             #     scan_on_push=True,
             # ),
@@ -31,10 +51,10 @@ class DeploymentResources:
             tags=({"key": "created-by", "value": "pulumi"}),
         )
 
-        # keep the last 3 images
-        app_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
-            "cpr-container-registry-lifecycle-policy",
-            repository=self.ecr_repo.name,
+        # keep the last 5 images
+        frontend_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
+            f"navigator-frontend-{target_environment}-repository-lifecycle-policy",
+            repository=self.navigator_frontend_repo.name,
             policy="""{
                 "rules": [
                     {
@@ -43,7 +63,47 @@ class DeploymentResources:
                         "selection": {
                             "tagStatus": "untagged",
                             "countType": "imageCountMoreThan",
-                            "countNumber": 3
+                            "countNumber": 5
+                        },
+                        "action": {
+                            "type": "expire"
+                        }
+                    }
+                ]
+            }""",
+        )
+        backend_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
+            f"navigator-backend-{target_environment}-repository-lifecycle-policy",
+            repository=self.navigator_backend_repo.name,
+            policy="""{
+                "rules": [
+                    {
+                        "rulePriority": 10,
+                        "description": "Remove untagged images",
+                        "selection": {
+                            "tagStatus": "untagged",
+                            "countType": "imageCountMoreThan",
+                            "countNumber": 5
+                        },
+                        "action": {
+                            "type": "expire"
+                        }
+                    }
+                ]
+            }""",
+        )
+        nginx_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
+            f"navigator-nginx-{target_environment}-repository-lifecycle-policy",
+            repository=self.navigator_nginx_repo.name,
+            policy="""{
+                "rules": [
+                    {
+                        "rulePriority": 10,
+                        "description": "Remove untagged images",
+                        "selection": {
+                            "tagStatus": "untagged",
+                            "countType": "imageCountMoreThan",
+                            "countNumber": 5
                         },
                         "action": {
                             "type": "expire"
@@ -61,9 +121,21 @@ class DeploymentResources:
                 raise Exception("Invalid credentials")
             return docker.ImageRegistry(creds.proxy_endpoint, parts[0], parts[1])
 
-        self.docker_registry = self.ecr_repo.registry_id.apply(get_registry_info)
+        self.docker_registry = self.navigator_frontend_repo.registry_id.apply(
+            get_registry_info
+        )
 
-        pulumi.export("ecr.repository_url", self.ecr_repo.repository_url)
+        pulumi.export(
+            "navigator_frontend.repository_url",
+            self.navigator_frontend_repo.repository_url,
+        )
+        pulumi.export(
+            "navigator_backend.repository_url",
+            self.navigator_backend_repo.repository_url,
+        )
+        pulumi.export(
+            "navigator_nginx.repository_url", self.navigator_nginx_repo.repository_url
+        )
 
         # a bucket which stores deployment resources, like Dockerrun.aws.json (for Elastic Beanstalk)
         self.deploy_bucket = aws.s3.Bucket(

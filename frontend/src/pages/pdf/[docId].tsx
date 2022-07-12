@@ -62,7 +62,7 @@ const PDFView = () => {
             </TextLink>
           </div>
           <section className="mt-4 flex-1">
-            <div className="h-full container">
+            <div className="container pdf-container">
               <EmbeddedPDF document={document} />
             </div>
           </section>

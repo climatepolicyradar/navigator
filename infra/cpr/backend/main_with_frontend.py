@@ -14,7 +14,9 @@ from cpr.storage.main import Storage
 # for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
 from cpr.util.bluegreen import (
     get_app_domain_for_current_stack,
+    get_bluegreen_status_for_current_stack,
     get_pdf_embed_key_for_current_stack,
+    get_self_registration_enabled_for_current_stack,
 )
 
 DOCKER_COMPOSE_TEMPLATE = """version: '3.7'
@@ -51,6 +53,7 @@ services:
       SENDGRID_API_KEY: {sendgrid_api_token}
       SENDGRID_FROM_EMAIL: {sendgrid_from_email}
       SENDGRID_ENABLED: "{sendgrid_enabled}"
+      ENABLE_SELF_REGISTRATION: "{self_registration_enabled}"
 
   frontend:
     image: {frontend_image}
@@ -88,8 +91,11 @@ class Backend:
         sendgrid_api_token = config.require("sendgrid_api_token")
         sendgrid_from_email = config.require("sendgrid_from_email")
         sendgrid_enabled = config.require("sendgrid_enabled")
+        target_environment = get_bluegreen_status_for_current_stack()
         app_domain_for_current_stack = get_app_domain_for_current_stack()
         pulumi.export("app_domain_for_current_stack", app_domain_for_current_stack)
+        self_registration_enabled = get_self_registration_enabled_for_current_stack()
+        pulumi.export("self_registration_enabled", self_registration_enabled)
         public_app_url = f"https://{app_domain_for_current_stack}"
         frontend_api_url = f"https://{app_domain_for_current_stack}/api/v1"
         pulumi.export("frontend_api_url", frontend_api_url)
@@ -98,32 +104,31 @@ class Backend:
         frontend_pdf_embed_key = get_pdf_embed_key_for_current_stack()
 
         # context has to be one level below 'backend' as backend Dockerfile references '../common'
-        docker_context = Path(os.getcwd()) / ".."
-        docker_context = docker_context.resolve().as_posix()
-        backend_dockerfile = Path(os.getcwd()) / ".." / "backend" / "Dockerfile"
-        backend_dockerfile = backend_dockerfile.resolve().as_posix()
-
-        self.backend_image = docker.Image(
-            "backend-docker-image",
+        backend_docker_context = (Path(os.getcwd()) / "..").resolve().as_posix()
+        backend_dockerfile = (
+            (Path(os.getcwd()) / ".." / "backend" / "Dockerfile").resolve().as_posix()
+        )
+        backend_image = docker.Image(
+            f"{target_environment}-backend-docker-image",
             build=docker.DockerBuild(
-                context=docker_context, dockerfile=backend_dockerfile
+                context=backend_docker_context, dockerfile=backend_dockerfile
             ),
-            # image_name=f"{backend_image_name}:{stack}",
-            image_name=deployment_resources.ecr_repo.repository_url,
+            image_name=deployment_resources.navigator_backend_repo.repository_url,
             skip_push=False,
             registry=deployment_resources.docker_registry,
         )
 
         # frontend
-        docker_context = Path(os.getcwd()) / ".." / "frontend"
-        docker_context = docker_context.resolve().as_posix()
-        frontend_dockerfile = Path(os.getcwd()) / ".." / "frontend" / "Dockerfile"
-        frontend_dockerfile = frontend_dockerfile.resolve().as_posix()
-
+        frontend_docker_context = (
+            (Path(os.getcwd()) / ".." / "frontend").resolve().as_posix()
+        )
+        frontend_dockerfile = (
+            (Path(os.getcwd()) / ".." / "frontend" / "Dockerfile").resolve().as_posix()
+        )
         frontend_image = docker.Image(
-            "frontend-docker-image",
+            f"{target_environment}-frontend-docker-image",
             build=docker.DockerBuild(
-                context=docker_context,
+                context=frontend_docker_context,
                 dockerfile=frontend_dockerfile,
                 args={
                     "NEXT_PUBLIC_API_URL": frontend_api_url,
@@ -131,23 +136,22 @@ class Backend:
                     "NEXT_PUBLIC_ADOBE_API_KEY": frontend_pdf_embed_key,
                 },
             ),
-            image_name=deployment_resources.ecr_repo.repository_url,
+            image_name=deployment_resources.navigator_frontend_repo.repository_url,
             skip_push=False,
             registry=deployment_resources.docker_registry,
         )
 
         # nginx
-        docker_context = Path(os.getcwd()) / ".." / "nginx"
-        docker_context = docker_context.resolve().as_posix()
-        nginx_dockerfile = Path(os.getcwd()) / ".." / "nginx" / "Dockerfile"
-        nginx_dockerfile = nginx_dockerfile.resolve().as_posix()
-
+        nginx_docker_context = (Path(os.getcwd()) / ".." / "nginx").resolve().as_posix()
+        nginx_dockerfile = (
+            (Path(os.getcwd()) / ".." / "nginx" / "Dockerfile").resolve().as_posix()
+        )
         nginx_image = docker.Image(
-            "nginx-docker-image",
+            f"{target_environment}-nginx-docker-image",
             build=docker.DockerBuild(
-                context=docker_context, dockerfile=nginx_dockerfile
+                context=nginx_docker_context, dockerfile=nginx_dockerfile
             ),
-            image_name=deployment_resources.ecr_repo.repository_url,
+            image_name=deployment_resources.navigator_nginx_repo.repository_url,
             skip_push=False,
             registry=deployment_resources.docker_registry,
         )
@@ -171,6 +175,7 @@ class Backend:
                         "frontend_api_url",
                         "frontend_api_url_login",
                         "frontend_pdf_embed_key",
+                        "self_registration_enabled",
                     ],
                     arg_list,
                 )
@@ -179,7 +184,7 @@ class Backend:
 
         docker_compose_file = pulumi.Output.all(
             nginx_image.image_name,
-            self.backend_image.image_name,
+            backend_image.image_name,
             frontend_image.image_name,
             storage.backend_database_connection_url,
             backend_secret_key,
@@ -193,6 +198,7 @@ class Backend:
             frontend_api_url,
             frontend_api_url_login,
             frontend_pdf_embed_key,
+            self_registration_enabled,
         ).apply(fill_template)
 
         def create_deploy_resource(manifest):
@@ -200,8 +206,12 @@ class Backend:
             with open("docker-compose.yml", "w") as json_file:
                 json_file.write(manifest)
 
+            # DEBUG: set file as read-only
+            # compose_path = Path("docker-compose.yml")
+            # compose_path.chmod(0o444)
+
             deploy_resource = aws.s3.BucketObject(
-                "backend-beanstalk-docker-manifest",
+                f"{target_environment}-backend-beanstalk-docker-manifest",
                 bucket=deployment_resources.deploy_bucket,
                 key=datetime.datetime.today().strftime(
                     "%Y/%m/%d/%H:%M:%S/docker-compose.yml"
@@ -215,10 +225,10 @@ class Backend:
 
         # create Elastic Beanstalk app
         backend_eb_app = aws.elasticbeanstalk.Application(
-            "backend-beanstalk-application"
+            f"{target_environment}-backend-beanstalk-application"
         )
         backend_app_version = aws.elasticbeanstalk.ApplicationVersion(
-            "navigator-api-version",
+            f"{target_environment}-navigator-api-version",
             application=backend_eb_app,
             bucket=deployment_resources.deploy_bucket.id,
             key=deploy_resource.id,
@@ -231,12 +241,11 @@ class Backend:
         solution_stack = aws.elasticbeanstalk.get_solution_stack_output(
             most_recent=True,
             name_regex=r"^64bit Amazon Linux 2 (.*) Docker(.*)$",
-            # name_regex=r"^64bit Amazon Linux(.*)Multi-container Docker(.*)$",
         )
         pulumi.export("solution_stack", solution_stack)
 
         backend_eb_env = aws.elasticbeanstalk.Environment(
-            "navigator-api-environment",
+            f"{target_environment}-navigator-api-environment",
             application=backend_eb_app.name,
             version=backend_app_version,
             solution_stack_name=solution_stack.name,
@@ -317,3 +326,7 @@ class Backend:
         )
 
         pulumi.export("backend_eb_env", backend_eb_env.endpoint_url)
+        pulumi.export("backend_eb_env_cname", backend_eb_env.cname)
+
+        # DEBUG
+        # pulumi.export("backend_eb_env_settings", backend_eb_env.all_settings)

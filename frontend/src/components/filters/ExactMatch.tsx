@@ -20,7 +20,8 @@ const ExactMatch = ({ id, handleSearchChange, checked, landing = false }) => {
             landing ? 'text-lg text-white' : 'text-sm'
           } pl-2 leading-none`}
         >
-          Exact matches only
+          {/* TODO: make translatable */}
+          Show only exact matches
         </span>
       </label>
     </div>

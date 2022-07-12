@@ -1,4 +1,4 @@
-import { DocumentsIcon } from './Icons';
+import { DocumentsIcon } from '../svg/Icons';
 
 interface DashboardPanelProps {
   icon: React.Component;

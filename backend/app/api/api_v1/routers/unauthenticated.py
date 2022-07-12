@@ -1,21 +1,29 @@
 import logging
+import os
 from typing import cast
 
-from fastapi import APIRouter, Depends, Request, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Request, status
+from sqlalchemy.exc import IntegrityError
 
-from app.core.email import send_password_changed_email, send_password_reset_email
-from app.core.ratelimit import limiter
-from app.db.crud.user import (
-    get_user,
-    activate_user,
-    get_user_by_email,
+from app.api.api_v1.routers.admin import ACCOUNT_ACTIVATION_EXPIRE_MINUTES
+from app.core.email import (
+    send_new_account_email,
+    send_password_changed_email,
+    send_password_reset_email,
 )
+from app.core.ratelimit import limiter
 from app.db.crud.password_reset import (
+    create_password_reset_token,
     get_password_reset_token_by_token,
     get_password_reset_token_by_user_id,
-    create_password_reset_token,
 )
-from app.db.schemas.user import User, ResetPassword
+from app.db.crud.user import (
+    activate_user,
+    create_user,
+    get_user,
+    get_user_by_email,
+)
+from app.db.schemas.user import ResetPassword, User, UserCreate
 from app.db.session import get_db
 
 unauthenticated_router = r = APIRouter()
@@ -23,10 +31,52 @@ unauthenticated_router = r = APIRouter()
 logger = logging.getLogger(__file__)
 
 
+ENABLE_SELF_REGISTRATION = (
+    os.getenv("ENABLE_SELF_REGISTRATION", "False").lower() == "true"
+)
+
+
+@r.post("/registrations", response_model=bool, response_model_exclude_none=True)
+@limiter.limit("6/minute")
+async def user_create(
+    request: Request,  # request unused, but required for rate limiting
+    user: UserCreate,
+    db=Depends(get_db),
+):
+    """
+    Registers a new user.
+
+    :param user: Details of the user to create
+    :param db: Database connection to allow creation of user
+    :returns: Always returns True if self-registration is enable (do not signal
+        failure/success based on existing registered email to avoid leaking
+        registered user details)
+    :raises: HTTP 405 if self-registration is disabled
+    """
+    if not ENABLE_SELF_REGISTRATION:
+        raise HTTPException(
+            status_code=status.HTTP_405_METHOD_NOT_ALLOWED,
+            detail="User registration is disabled",
+        )
+
+    try:
+        db_user = create_user(db, user)
+    except IntegrityError:
+        logger.error(f"Email already registered: {user.email}")
+        return True
+
+    activation_token = create_password_reset_token(
+        db, cast(int, db_user.id), minutes=ACCOUNT_ACTIVATION_EXPIRE_MINUTES
+    )
+    send_new_account_email(db_user, activation_token)
+
+    return True
+
+
 @r.post("/activations", response_model=User, response_model_exclude_none=True)
 @limiter.limit("6/minute")
 async def set_password(
-    request: Request,
+    request: Request,  # request unused, but required for rate limiting
     payload: ResetPassword,
     db=Depends(get_db),
 ):
@@ -44,11 +94,12 @@ async def set_password(
 )
 @limiter.limit("6/minute")
 async def request_password_reset(
-    request: Request,
+    request: Request,  # request unused, but required for rate limiting
     email: str,
     db=Depends(get_db),
 ):
-    """Kicks off password-reset flow.
+    """
+    Kicks off password-reset flow.
 
     This is the unauthenticated flow, which swallows a lot of the underlying exceptions,
     so as not to leak data.

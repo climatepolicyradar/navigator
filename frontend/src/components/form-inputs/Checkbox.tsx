@@ -7,7 +7,7 @@ interface CheckboxProps {
   label: string;
   required?: boolean;
   value: string;
-  errors: FieldErrors;
+  errors: {};
   onClick?(event: any): any;
   register: any;
   // checked: boolean;

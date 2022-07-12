@@ -30,21 +30,42 @@ import 'cypress-pseudo-localization';
 Cypress.Commands.add('login', () => {
   cy.request({
     method: 'POST',
-    url: 'http://localhost:8000/api/tokens',
+    url: `${Cypress.env('API_HOST')}/api/tokens`,
     headers: {
       'Content-Type': 'application/x-www-form-urlencoded',
     },
     body: {
       grant_type: '',
-      username: 'user@navigator.com',
-      password: 'password',
+      username: Cypress.env('LOGIN_NAME'),
+      password: Cypress.env('LOGIN_PW'),
       scope: '',
       client_id: '',
       client_secret: '',
     },
   }).then((resp) => {
     window.localStorage.setItem('jwt', JSON.stringify(resp.body.access_token));
+    cy.visit('/');
   });
+});
+
+Cypress.Commands.add('clickTextLink', (text) => {
+  cy.contains('a', text)
+    .invoke('attr', 'href')
+    .then((href) => {
+      cy.contains('a', text).click();
+      cy.location('pathname').should('eq', href);
+    });
+});
+Cypress.Commands.add('checkAuthPagesLogo', () => {
+  cy.get('[data-cy="header-logo"]')
+    .parent()
+    .invoke('attr', 'href')
+    .then((href) => {
+      expect(href).to.equal('https://climatepolicyradar.org');
+    });
+});
+Cypress.Commands.add('getAuthPageTitle', (text) => {
+  cy.get('h2').should('have.text', text);
 });
 
 Cypress.Commands.add('submit_pdf_file', () => {
@@ -115,18 +136,18 @@ Cypress.Commands.add('is_in_viewport', (element) => {
 });
 
 Cypress.Commands.add('check_localisation', (page = '') => {
-  cy.visit(`http://localhost:3000/${page}`);
+  cy.visit(`/${page}`);
   cy.get('[data-cy="banner-title"] span')
     .invoke('text')
     .then((titleEnglish) => {
-      cy.visit(`http://localhost:3000/fr/${page}`);
+      cy.visit(`/fr/${page}`);
       cy.get('[data-cy="banner-title"] span')
         .invoke('text')
         .should((titleFrench) => {
           expect(titleFrench).not.to.eq(titleEnglish);
         });
     });
-  cy.visit(`http://localhost:3000/${page}`);
+  cy.visit(`/${page}`);
   cy.pseudoLocalize();
   cy.log('Pseudo localise');
   cy.stopPseudoLocalize;
