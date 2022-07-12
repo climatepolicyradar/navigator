@@ -22,10 +22,4 @@ RUN mkdir /models
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/msmarco-distilbert-dot-v5', cache_folder='/models')"
 
 ENV PYTHONPATH=/app
-
-#ARG PORT=8888
-#ENV PORT $PORT
-#EXPOSE $PORT
-
 CMD python app/main.py
-# CMD [ "/usr/local/bin/uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "8888", --workers 4]
