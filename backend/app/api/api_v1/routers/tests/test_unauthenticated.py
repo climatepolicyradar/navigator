@@ -228,19 +228,14 @@ def test_password_reset_rate_limit(
 ):
     # reset the rate limiter so we do not see unexpected 429 responses
     limiter.reset()
-    # Make sure we rate limit requests
-    response = client.post(
-        f"/api/v1/password-reset/{test_user.email}",
-    )
-    assert response.status_code == 200
-    assert response.json()
 
-    # calling it more in quick succession limits the rate
-    for i in range(7):
+    # Make sure we rate limit requests
+    max_requests_per_minute = 6
+    for i in range(max_requests_per_minute + 2):
         response = client.post(
             f"/api/v1/password-reset/{test_user.email}",
         )
-        if i < 5:
+        if i < max_requests_per_minute:
             assert response.status_code == 200
             assert response.json()
         else:
