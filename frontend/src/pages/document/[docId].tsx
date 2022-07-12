@@ -31,8 +31,6 @@ const DocumentCoverPage = () => {
   const { isFetching } = documentQuery;
   const { data: { data: page } = {} } = documentQuery;
 
-  console.log(page);
-
   const [year] = convertDate(page?.publication_ts);
 
   useEffect(() => {
@@ -100,7 +98,7 @@ const DocumentCoverPage = () => {
                     </span>
                   </div>
                 </div>
-                <div className="my-6 md:pl-4 md:w-2/5 lg:w-1/4 md:ml-12 flex-shrink-0">
+                <div className="my-6 md:w-2/5 lg:w-1/4 md:pl-16 flex-shrink-0">
                   <TextLink href="/search">Back to search results</TextLink>
                 </div>
               </div>
@@ -109,7 +107,7 @@ const DocumentCoverPage = () => {
           </div>
           <div className="container">
             <div className="md:flex">
-              <section className="flex-1">
+              <section className="flex-1 md:w-0">
                 <section className="mt-6 text-content">
                   <div dangerouslySetInnerHTML={{ __html: summary }} />
                 </section>
@@ -150,30 +148,32 @@ const DocumentCoverPage = () => {
                   </section>
                 ) : null}
               </section>
-              <section className="md:border-l md:border-blue-100 md:pl-4 mt-6 md:w-2/5 lg:w-1/4 md:ml-12 flex-shrink-0">
-                <h3 className="text-xl text-blue-700">About this document</h3>
-                <div className="grid grid-cols-2 gap-x-2">
-                  <DocumentInfo id="category-tt" heading="Category" text={page.category.name} />
-                  <DocumentInfo id="type-tt" heading="Type" text={page.type.name} />
-                  {/* Topics maps to responses */}
-                  {page.topics.length > 0 && <DocumentInfo id="topics-tt" heading="Topics" list={page.topics} />}
-                  {page.languages.length > 0 && <DocumentInfo heading="Language" text={page.languages[0].name} />}
-                </div>
-
-                {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
-                {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
-                {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} />}
-                <div className="mt-8 border-t border-blue-100">
-                  <h3 className="text-xl text-blue-700 mt-4">Source</h3>
-                  <div className="flex items-end mt-4">
-                    {sourceLogo && (
-                      <div className="relative flex-shrink max-w-[40px] mr-1">
-                        <img src={`/images/partners/${sourceLogo}`} alt={page.source.name} />
-                      </div>
-                    )}
-                    <p className="text-sm">{page.source.name}</p>
+              <section className="mt-6 md:w-2/5 lg:w-1/4 md:pl-12 flex-shrink-0">
+                <div className="md:pl-4 md:border-l md:border-blue-100">
+                  <h3 className="text-xl text-blue-700">About this document</h3>
+                  <div className="grid grid-cols-2 gap-x-2">
+                    <DocumentInfo id="category-tt" heading="Category" text={page.category.name} />
+                    <DocumentInfo id="type-tt" heading="Type" text={page.type.name} />
+                    {/* Topics maps to responses */}
+                    {page.topics.length > 0 && <DocumentInfo id="topics-tt" heading="Topics" list={page.topics} />}
+                    {page.languages.length > 0 && <DocumentInfo heading="Language" text={page.languages[0].name} />}
                   </div>
-                  {renderSourceLink()}
+
+                  {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
+                  {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
+                  {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} />}
+                  <div className="mt-8 border-t border-blue-100">
+                    <h3 className="text-xl text-blue-700 mt-4">Source</h3>
+                    <div className="flex items-end mt-4">
+                      {sourceLogo && (
+                        <div className="relative flex-shrink max-w-[40px] mr-1">
+                          <img src={`/images/partners/${sourceLogo}`} alt={page.source.name} />
+                        </div>
+                      )}
+                      <p className="text-sm">{page.source.name}</p>
+                    </div>
+                    {renderSourceLink()}
+                  </div>
                 </div>
               </section>
             </div>
