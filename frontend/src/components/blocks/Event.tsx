@@ -18,12 +18,12 @@ const Event = ({ event, last, index }: EventProps) => {
 
   const even = (index + 1) % 2 === 0;
 
-  const timelineStyles = last ? "right-1/2 w-1/2" : even ? "w-full" : "left-1/2 w-1/2";
+  const timelineStyles = last ? "right-1/2 w-1/2" : index === 0 ? "left-1/2 w-1/2" : "w-full";
 
   return (
     <div className="text-center w-[200px] shrink-0 relative h-[140px]">
       <div className={`h-[2px] bg-blue-500 absolute top-1/2 translate-y-[-1px] z-0 ${timelineStyles}`} />
-      <div className={`absolute ${even ? "inset-x-0 top-0" : "inset-x-0 bottom-0"}`}>
+      <div className={`absolute ${even ? "inset-x-0 top-0" : "inset-x-0 bottom-0"} w-[200%] left-[-50%]`}>
         <h3 className="text-xl">{name}</h3>
         <p>{month + " " + year}</p>
       </div>

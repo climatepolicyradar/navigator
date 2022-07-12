@@ -86,8 +86,8 @@ const ByDateRange = ({ title, handleChange, defaultValues, min, max, clear }: By
       <div>{title}</div>
       {/* TODO: make labels translatable */}
       <div className="mt-2 grid lg:grid-cols-2 gap-2">
+        <DateRangeOption id="last1" label="in last year" name="date_range" value="1" onChange={selectRange} checked={isChecked(1)} />
         <DateRangeOption id="last5" label="in last 5 years" name="date_range" value="5" onChange={selectRange} checked={isChecked(5)} />
-        <DateRangeOption id="last10" label="in last 10 years" name="date_range" value="10" onChange={selectRange} checked={isChecked(10)} />
         <DateRangeOption id="specify" label="specify range" name="date_range" value="specify" onChange={setDateInputVisible} checked={isChecked()} />
       </div>
       {showDateInput && (
