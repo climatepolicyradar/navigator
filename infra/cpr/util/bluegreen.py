@@ -29,3 +29,14 @@ def get_pdf_embed_key_for_current_stack() -> str:
     key = config.require(f"{status}_pdf_embed_key")
     print(f"Pulumi is using PDF embed key for stack {pulumi.get_stack()}")
     return key
+
+
+def get_self_registration_enabled_for_current_stack() -> str:
+    status = get_bluegreen_status_for_current_stack()
+    config = pulumi.Config()
+    is_enabled = config.require(f"{status}_self_registration_enabled")
+    print(
+        f"Pulumi is setting self registration to {is_enabled} "
+        f"for stack {pulumi.get_stack()}"
+    )
+    return is_enabled

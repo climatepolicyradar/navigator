@@ -8,6 +8,7 @@ config:
   infra:dev_domain: dev.app.climatepolicyradar.org
   infra:dev_pdf_embed_key:
     secure: AAABANNp3iik5ntI5SMh00A4v+mX/lDhGjwQ1hE3r6R0Db7WTnmetJUfzsLTuAPyGFDhBmYwsd509kMACVA5hw==
+  infra:dev_self_registration_enabled: "False"
   infra:opensearch_password:
     secure: AAABALq5E+uTV97AuqlVSULUdMYsX7h66Ui0bGTURcgd79k44K78tmpI7Eo=
   infra:opensearch_url: https://search-navigator-alpha-g5fgeoght3wpmpk2jjxopbaaue.eu-west-2.es.amazonaws.com
@@ -15,6 +16,7 @@ config:
   infra:prod_domain: app.climatepolicyradar.org
   infra:prod_pdf_embed_key:
     secure: AAABAIQYSKk1nFvo9QZBVkiKnYOIQcueM9QarPpws/bO9wHyC/IqjhP0XN35Oh4SFt7sgBl0P/ZcMsk+PnvKrA==
+  infra:prod_self_registration_enabled: "True"
   infra:sendgrid_api_token:
     secure: AAABAM9Xv/4U8jQRGjZQNVWNJtAf8C71HMvJEYQNL28so773EqItQFVyjkwUs2FWgt/nExg7HRk3fbR2aW/lWV8ZX/7SLlZbIArMUZLLSuOe3SxExb6iD3a74WYhBck12RBcdfQ=
   infra:sendgrid_enabled: "True"

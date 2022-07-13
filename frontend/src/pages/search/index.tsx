@@ -1,40 +1,38 @@
 import { useEffect, useState, useRef } from "react";
 import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
-import { useDidUpdateEffect } from "../../hooks/useDidUpdateEffect";
-import Layout from "../../components/layouts/Main";
-import LoaderOverlay from "../../components/LoaderOverlay";
-import useSearch from "../../hooks/useSearch";
-import useSearchCriteria from "../../hooks/useSearchCriteria";
-import useDocument from "../../hooks/useDocument";
-import useUpdateDocument from "../../hooks/useUpdateDocument";
-import useUpdateSearchCriteria from "../../hooks/useUpdateSearchCriteria";
-import useUpdateSearchFilters from "../../hooks/useUpdateSearchFilters";
-import useUpdateCountries from "../../hooks/useUpdateCountries";
-import { useAuth } from "../../api/auth";
-import SearchForm from "../../components/forms/SearchForm";
-import SearchFilters from "../../components/blocks/SearchFilters";
-import TabbedNav from "../../components/nav/TabbedNav";
-import Loader from "../../components/Loader";
-import Sort from "../../components/filters/Sort";
-import { DownloadIcon } from "../../components/svg/Icons";
-import Button from "../../components/buttons/Button";
-import Close from "../../components/buttons/Close";
-import FilterToggle from "../../components/buttons/FilterToggle";
-import Slideout from "../../components/slideout";
-import PassageMatches from "../../components/PassageMatches";
-import EmbeddedPDF from "../../components/EmbeddedPDF";
-import DocumentSlideout from "../../components/headers/DocumentSlideout";
-import { calculatePageCount } from "../../utils/paging";
-import Pagination from "../../components/pagination";
-import { PER_PAGE } from "../../constants/paging";
-import useNestedLookups from "../../hooks/useNestedLookups";
-import useLookups from "../../hooks/useLookups";
-import useFilteredCountries from "../../hooks/useFilteredCountries";
-import SearchResultList from "../../components/blocks/SearchResultList";
-import { initialSearchCriteria } from "../../constants/searchCriteria";
-import useOutsideAlerter from "../../hooks/useOutsideAlerter";
-import useSortAndStructure from "../../hooks/useSortAndStructure";
+import { useAuth } from "@api/auth";
+import { useDidUpdateEffect } from "@hooks/useDidUpdateEffect";
+import useSearch from "@hooks/useSearch";
+import useSearchCriteria from "@hooks/useSearchCriteria";
+import useDocument from "@hooks/useDocument";
+import useUpdateDocument from "@hooks/useUpdateDocument";
+import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
+import useUpdateSearchFilters from "@hooks/useUpdateSearchFilters";
+import useUpdateCountries from "@hooks/useUpdateCountries";
+import useNestedLookups from "@hooks/useNestedLookups";
+import useLookups from "@hooks/useLookups";
+import useFilteredCountries from "@hooks/useFilteredCountries";
+import useOutsideAlerter from "@hooks/useOutsideAlerter";
+import useSortAndStructure from "@hooks/useSortAndStructure";
+import Layout from "@components/layouts/Main";
+import LoaderOverlay from "@components/LoaderOverlay";
+import SearchForm from "@components/forms/SearchForm";
+import SearchFilters from "@components/blocks/SearchFilters";
+import TabbedNav from "@components/nav/TabbedNav";
+import Loader from "@components/Loader";
+import Sort from "@components/filters/Sort";
+import Close from "@components/buttons/Close";
+import FilterToggle from "@components/buttons/FilterToggle";
+import Slideout from "@components/slideout";
+import PassageMatches from "@components/PassageMatches";
+import EmbeddedPDF from "@components/EmbeddedPDF";
+import DocumentSlideout from "@components/headers/DocumentSlideout";
+import Pagination from "@components/pagination";
+import SearchResultList from "@components/blocks/SearchResultList";
+import { initialSearchCriteria } from "@constants/searchCriteria";
+import { PER_PAGE } from "@constants/paging";
+import { calculatePageCount } from "@utils/paging";
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -53,7 +51,6 @@ const Search = () => {
   const updateDocument = useUpdateDocument();
   const updateCountries = useUpdateCountries();
   const { user } = useAuth();
-  const router = useRouter();
   const slideoutRef = useRef(null);
 
   // close slideout panel when clicking outside of it
@@ -248,10 +245,6 @@ const Search = () => {
     }
   }, []);
 
-  const downloadCSVTooltip = t("Tooltips.Download CSV", {
-    ns: "searchResults",
-  });
-
   return (
     <>
       {isFetchingSearchCriteria || !ready || !user ? (
@@ -282,7 +275,7 @@ const Search = () => {
               <div className="px-4 md:flex container border-b border-blue-200">
                 <div className="md:w-1/4 lg:w-[30%] xl:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
                   <div className="flex md:hidden items-center justify-center w-full mt-4">
-                    <FilterToggle toggle={toggleFilters} />
+                    <FilterToggle toggle={toggleFilters} isOpen={showFilters} />
                   </div>
 
                   <div className={`${showFilters ? "" : "hidden"} relative md:block mb-12 md:mb-0`}>
@@ -309,9 +302,11 @@ const Search = () => {
                   </div>
                 </div>
                 <div className="md:w-3/4">
-                  <div className="mt-4 relative">
-                    <TabbedNav activeIndex={categoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} />
-                    <div className="mt-4 md:absolute right-0 top-0 md:-mt-8 lg:-mt-4 flex items-center">
+                  <div className="mt-4 md:flex">
+                    <div className="flex-grow">
+                      <TabbedNav activeIndex={categoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} />
+                    </div>
+                    <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
                       <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} />
                     </div>
                     {/* Hide download button until this functionality is implemented in back end */}

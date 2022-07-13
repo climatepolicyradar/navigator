@@ -228,19 +228,14 @@ def test_password_reset_rate_limit(
 ):
     # reset the rate limiter so we do not see unexpected 429 responses
     limiter.reset()
-    # Make sure we rate limit requests
-    response = client.post(
-        f"/api/v1/password-reset/{test_user.email}",
-    )
-    assert response.status_code == 200
-    assert response.json()
 
-    # calling it more in quick succession limits the rate
-    for i in range(7):
+    # Make sure we rate limit requests
+    max_requests_per_minute = 6
+    for i in range(max_requests_per_minute + 2):
         response = client.post(
             f"/api/v1/password-reset/{test_user.email}",
         )
-        if i < 5:
+        if i < max_requests_per_minute:
             assert response.status_code == 200
             assert response.json()
         else:
@@ -267,6 +262,7 @@ NEW_USER_2 = {
 @pytest.mark.parametrize("new_user", [NEW_USER_1, NEW_USER_2])
 @patch("app.db.crud.password_reset.get_password_reset_token_expiry_ts")
 @patch("app.api.api_v1.routers.unauthenticated.send_new_account_email")
+@patch("app.api.api_v1.routers.unauthenticated.ENABLE_SELF_REGISTRATION", True)
 def test_register_user(
     mock_send_email,
     mock_get_password_reset_token_expiry_ts,
@@ -300,3 +296,22 @@ def test_register_user(
     assert not db_user.is_active
     assert not db_user.is_superuser
     mock_send_email.assert_called_once_with(db_user, prt)
+
+
+@pytest.mark.parametrize("new_user", [NEW_USER_1, NEW_USER_2])
+@patch("app.api.api_v1.routers.unauthenticated.ENABLE_SELF_REGISTRATION", False)
+def test_register_user_disabled(
+    new_user,
+    client,
+    test_db,
+    test_user,
+):
+    # reset the rate limiter so we do not see unexpected 429 responses
+    limiter.reset()
+
+    response = client.post(
+        "/api/v1/registrations",
+        json=new_user,
+    )
+    assert response.status_code == 405
+    assert response.json() == {"detail": "User registration is disabled"}

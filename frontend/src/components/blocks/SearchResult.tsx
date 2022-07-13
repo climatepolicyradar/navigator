@@ -29,8 +29,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
           </div>
           {document.document_content_type === "application/pdf" && document.document_passage_matches.length > 0 && (
             <button data-docid={document.document_id} className="lg:ml-4 mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 hover:bg-indigo-600">
-              See {document.document_passage_matches.length} match
-              {document.document_passage_matches.length > 1 ? "es" : ""}
+              {`See ${document.document_passage_matches.length} match${document.document_passage_matches.length > 1 ? "es" : ""} in document`}
             </button>
           )}
         </>

@@ -30,10 +30,14 @@ describe("Validate user sign in links", () => {
   });
   it("should redirect to the sign up page", () => {
     cy.clickTextLink("Sign up");
-    cy.location("pathname", { timeout: 1000 }).should("eq", "/auth/sign-up");
+    cy.location().should(url => {
+      expect(url.pathname).to.eq("/auth/sign-up");
+    });
   });
   it("should redirect to the password reset page", () => {
     cy.clickTextLink("Forgot password?");
-    cy.location("pathname", { timeout: 1000 }).should("eq", "/auth/reset-request");
+    cy.location().should(url => {
+      expect(url.pathname).to.eq("/auth/reset-request");
+    });
   });
 });
