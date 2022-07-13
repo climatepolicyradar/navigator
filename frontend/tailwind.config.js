@@ -15,6 +15,7 @@ module.exports = {
       red: colors.rose,
       green: colors.green,
       semiTransWhite: 'rgba(255, 255, 255, 0.85)',
+      overlayWhite: 'rgba(217, 217, 217, 0.25)',
       lightgray: '#F9FAFB',
       offwhite: '#EFF3FB',
       indigo: {
