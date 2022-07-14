@@ -29,7 +29,6 @@ const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "" }: 
           </div>
         )}
       </h4>
-      {/* {list.length ? <List list={list} /> : <p className="text-indigo-500">{text}</p>} */}
       <p className="text-indigo-500">{list.length ? renderList(list) : text}</p>
     </div>
   );
