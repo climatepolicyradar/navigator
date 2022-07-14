@@ -2,19 +2,11 @@ import Link from "next/link";
 import ToggleDocumentMenu from "../menus/ToggleDocumentMenu";
 import TextLink from "../nav/TextLink";
 
-import { convertDate } from "@utils/timedate";
-
 const DocumentSlideout = ({ document, showPDF, setShowPDF, setPassageIndex }) => {
 
   if (!document) return null;
 
-  const formatDate = () => {
-    const eudate = document?.document_date;
-    const dateArr = eudate.split("/");
-    return `${dateArr[1]}/${dateArr[0]}/${dateArr[2]}`;
-  };
-
-  const [year] = convertDate(formatDate());
+  const year = document?.document_date.split('/')[2] ?? '';
 
   return (
     <>
