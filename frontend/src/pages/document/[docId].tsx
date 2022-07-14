@@ -76,6 +76,7 @@ const DocumentCoverPage = () => {
     );
   };
 
+  // TODO: align with BE on an approach to sources and their logos
   const sourceLogo = page?.source?.name === "CCLW" ? "lse-logo.png" : null;
 
   return (
@@ -126,15 +127,18 @@ const DocumentCoverPage = () => {
                 )}
 
                 {page.events.length > 0 && (
-                  <div className="mt-8">
-                    <div className="flex place-content-center bg-offwhite rounded border border-blue-200 drop-shadow-lg p-4">
-                      <div className="flex place-items-center overflow-x-auto py-4">
-                        {page.events.map((event: TEvent, index: number) => (
-                          <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
-                        ))}
+                  <section>
+                    <h3 className="text-xl flex mt-8">Timeline</h3>
+                    <div className="mt-8">
+                      <div className="flex place-content-center bg-offwhite rounded border border-blue-200 drop-shadow-lg p-4">
+                        <div className="flex items-center overflow-x-auto px-[70px]">
+                          {page.events.map((event: TEvent, index: number) => (
+                            <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
+                          ))}
+                        </div>
                       </div>
                     </div>
-                  </div>
+                  </section>
                 )}
 
                 {page.related_documents.length ? (
