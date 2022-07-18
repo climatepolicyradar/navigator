@@ -33,12 +33,6 @@ const DocumentSlideout = ({ document, showPDF, setShowPDF, setPassageIndex }) =>
             </div>
             <ToggleDocumentMenu setShowPDF={setShowPDF} showPDF={showPDF} document={document} setPassageIndex={setPassageIndex} />
           </div>
-          {showPDF && (
-            // TODO: translate below text
-            <TextLink onClick={() => setShowPDF(false)}>
-              <span className="text-lg">&laquo;</span>Back to passage matches
-            </TextLink>
-          )}
         </>
       ) : null}
     </>

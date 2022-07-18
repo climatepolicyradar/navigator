@@ -1,19 +1,22 @@
-import Script from 'next/script';
-import { useRef, useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
-import ViewSDKClient from '../api/pdf';
-import Loader from './Loader';
-import { padNumber } from '../utils/timedate';
+import Script from "next/script";
+import { useRef, useMemo, useEffect } from "react";
+import { v4 as uuidv4 } from "uuid";
+import ViewSDKClient from "../api/pdf";
+import Loader from "./Loader";
+import { padNumber } from "../utils/timedate";
+import usePDFPreview from "@hooks/usePDFPreview";
 
-const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
+type TProps = {
+  document: any;
+  passageIndex?: number;
+};
+
+const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
   const containerRef = useRef();
-  const viewerConfig = {
-    showDownloadPDF: true,
-    showPrintPDF: true,
-    showLeftHandPanel: false,
-    enableAnnotationAPIs: true,
-    showAnnotationTools: true,
-  };
+  // Ensure the instance of the PDF client is not reset on render
+  const { createPDFClient, passageIndexChangeHandler } = useMemo(() => usePDFPreview(document), [document]);
+
+  // TODO: refactor and enable annotation highlighting
   const annotationManagerConfig = {
     showToolbar: false,
     showCommentsPanel: false,
@@ -21,35 +24,12 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
     printWithAnnotations: true,
   };
 
-  const previewPDF = () => {
-    const viewSDKClient = new ViewSDKClient();
-    viewSDKClient.ready().then(() => {
-      const previewFilePromise = viewSDKClient.previewFile(
-        document,
-        'pdf-div',
-        viewerConfig
-      );
-      previewFilePromise.then((adobeViewer) => {
-        createAnnotationManager(adobeViewer);
-        adobeViewer.getAPIs().then((apis) => {
-          apis.getZoomAPIs().zoomIn();
-          // Only jump to page if a passage is selected
-          if (passageIndex === null) return;
-          setTimeout(() => {
-            apis.gotoLocation(
-              document.document_passage_matches[passageIndex].text_block_page
-            );
-          }, 500);
-        });
-      });
-    });
-  };
   const createAnnotationManager = (adobeViewer) => {
     adobeViewer.getAnnotationManager().then((annotationManager) => {
       annotationManager.setConfig(annotationManagerConfig);
       annotationManager.registerEventListener(function (event) {
         //console.log(event);
-        if (event.type === 'ANNOTATION_ADDED') {
+        if (event.type === "ANNOTATION_ADDED") {
           //console.log('added');
         }
       });
@@ -92,14 +72,11 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
     const quadPoints = [...coords[0], ...coords[1], ...coords[3], ...coords[2]];
 
     return {
-      '@context': [
-        'https://www.w3.org/ns/anno.jsonld',
-        'https://comments.acrobat.com/ns/anno.jsonld',
-      ],
-      type: 'Annotation',
+      "@context": ["https://www.w3.org/ns/anno.jsonld", "https://comments.acrobat.com/ns/anno.jsonld"],
+      type: "Annotation",
       id: uuidv4(),
-      bodyValue: '',
-      motivation: 'commenting',
+      bodyValue: "",
+      motivation: "commenting",
       target: {
         source: document.document_fileid,
         selector: {
@@ -107,18 +84,18 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
             index,
           },
           opacity: 0.25,
-          subtype: 'highlight',
+          subtype: "highlight",
           boundingBox,
           quadPoints,
-          strokeColor: '#FFFF00',
+          strokeColor: "#FFFF00",
           strokeWidth: 1,
-          type: 'AdobeAnnoSelector',
-          styleClass: 'highlight',
+          type: "AdobeAnnoSelector",
+          styleClass: "highlight",
         },
       },
       creator: {
-        type: 'Person',
-        name: 'Climate Policy Radar',
+        type: "Person",
+        name: "Climate Policy Radar",
       },
       created: nowStr,
       modified: nowStr,
@@ -127,9 +104,13 @@ const EmbeddedPDF = ({ document, passageIndex = null, setShowPDF = null }) => {
 
   useEffect(() => {
     if (containerRef?.current) {
-      previewPDF();
+      createPDFClient(passageIndex);
     }
   }, [containerRef, document]);
+
+  useEffect(() => {
+    passageIndexChangeHandler(passageIndex);
+  }, [passageIndex]);
 
   return (
     <>

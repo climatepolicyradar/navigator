@@ -94,6 +94,11 @@ const Search = () => {
     setPageNumber(1);
   };
 
+  const resetSlideOut = (slideOut?: boolean) => {
+    setPassageIndex(null);
+    setShowSlideout(slideOut ?? !showSlideout);
+  }
+
   const handleRegionChange = (type, regionName) => {
     handleFilterChange(type, regionName);
     updateCountries.mutate({
@@ -170,9 +175,11 @@ const Search = () => {
 
     // keep panel open if clicking a different document
     if (document?.document_id != id) {
-      setShowSlideout(true);
+      // setShowSlideout(true);
+      resetSlideOut(true);
     } else {
-      setShowSlideout(!showSlideout);
+      // setShowSlideout(!showSlideout);
+      resetSlideOut();
     }
     updateDocument.mutate(id);
 
@@ -252,16 +259,24 @@ const Search = () => {
       ) : (
         <Layout title={`Climate Policy Radar | ${t("Law and Policy Search")}`} heading={t("Law and Policy Search")}>
           <div onClick={handleDocumentClick}>
-            <Slideout ref={slideoutRef} show={showSlideout} setShowSlideout={setShowSlideout}>
+            <Slideout ref={slideoutRef} show={showSlideout} setShowSlideout={resetSlideOut}>
               <div className="flex flex-col h-full relative">
                 <DocumentSlideout document={document} setShowPDF={setShowPDF} showPDF={showPDF} setPassageIndex={setPassageIndex} />
-                {showPDF ? (
+                {/* {showPDF ? (
                   <div className="mt-4 px-6 flex-1">
                     <EmbeddedPDF document={document} passageIndex={passageIndex} setShowPDF={setShowPDF} />
                   </div>
                 ) : (
                   <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
-                )}
+                )} */}
+                <div className="flex flex-1 h-0">
+                  <div className="w-1/3 overflow-y-scroll">
+                    <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
+                  </div>
+                  <div className="w-2/3 mt-4 px-6 flex-1">
+                    <EmbeddedPDF document={document} passageIndex={passageIndex} />
+                  </div>
+                </div>
               </div>
             </Slideout>
             {showSlideout && <div className="w-full h-full bg-overlayWhite fixed top-0 z-30" />}
