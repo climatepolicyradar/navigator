@@ -1,5 +1,4 @@
-import { DownLongArrowIcon } from '../svg/Icons';
-import { convertDate } from '../../utils/timedate';
+import { convertDate } from "@utils/timedate";
 
 interface Event {
   name: string;
@@ -10,23 +9,36 @@ interface Event {
 interface EventProps {
   event: Event;
   last: boolean;
+  index: number;
 }
-const Event = ({ event, last }: EventProps) => {
-  const { name, created_ts, description } = event;
-  const [year, day, month] = convertDate(created_ts);
+
+const Event = ({ event, last, index }: EventProps) => {
+  const { name, created_ts } = event;
+  const [year, _, month] = convertDate(created_ts);
+
+  const even = (index + 1) % 2 === 0;
+
+  const timelineStyles = last ? "right-1/2 w-1/2" : index === 0 ? "left-1/2 w-1/2" : "w-full";
+
+  const renderText = (name: string, date: string) => (
+    <div>
+      <div className="w-[280px]">
+        <h3 className="text-lg">{name}</h3>
+        <p>{date}</p>
+      </div>
+    </div>
+  );
 
   return (
-    <div className="flex mt-1">
-      <div className="flex flex-col items-center w-1/2">
-        <div className="w-full bg-blue-200 rounded-2xl px-8 py-1 flex flex-col items-center text-indigo-600 mb-2">
-          <div className="text-2xl font-medium">{year}</div>
-          <div>{`${day} ${month}`}</div>
+    <div className={`text-center w-[140px] relative flex-shrink-0`}>
+      <div className={`h-[2px] bg-blue-500 absolute top-1/2 translate-y-[-1px] z-0 ${timelineStyles}`} />
+      <div className="flex items-end justify-center h-[100px]">{!even && renderText(name, month + " " + year)}</div>
+      <div className="flex place-content-center h-full relative z-10">
+        <div className="circle-container">
+          <div className={index === 0 || last ? "circle-large" : "circle-small"}></div>
         </div>
-        {!last && <DownLongArrowIcon />}
       </div>
-      <div className="ml-4 shrink-0 w-1/2">
-        <div className="text-indigo-500">{name}</div>
-      </div>
+      <div className="flex items-start justify-center h-[100px]">{even && renderText(name, month + " " + year)}</div>
     </div>
   );
 };

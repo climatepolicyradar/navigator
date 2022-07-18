@@ -1,11 +1,10 @@
-import React, { ReactNode } from 'react';
-import Link from 'next/link';
-import Head from 'next/head';
-import Header from '../headers/LandingPage';
-import Banner from '../banner/FullHeight';
-import Summary from '../blocks/Summary';
-import Partners from '../blocks/Partners';
-import Footer from '../footer/Footer';
+import React, { ReactNode } from "react";
+import Head from "next/head";
+import Header from "../headers/LandingPage";
+import Banner from "../banner/FullHeight";
+import Summary from "../blocks/Summary";
+import Partners from "../blocks/Partners";
+import Footer from "../footer/Footer";
 
 type Props = {
   children?: ReactNode;
@@ -13,11 +12,7 @@ type Props = {
   heading: string;
 };
 
-const Layout = ({
-  children,
-  title = 'This is the default title',
-  heading = '',
-}: Props) => (
+const Layout = ({ children, title = "This is the default title" }: Props) => (
   <div>
     <Head>
       <title>{title}</title>

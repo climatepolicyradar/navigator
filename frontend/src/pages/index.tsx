@@ -83,7 +83,7 @@ const IndexPage = () => {
           title={`Climate Policy Radar | ${t('Law and Policy Search')}`}
           heading={t('Law and Policy Search')}
         >
-          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center">
+          <div className="absolute inset-0 z-10 flex flex-col items-center justify-center min-h-[800px]">
             <AlphaLogo />
             <div className="container mt-24 md:mt-48 max-w-screen-lg mx-auto">
               <LandingSearchForm

@@ -23,7 +23,7 @@ const Slideout = forwardRef(
           <Close size="16" onClick={() => setShowSlideout(false)} />
         </div>
 
-        <div className="h-full overflow-y-auto scrollbar scrollbar-thumb-indigo-300 scrollbar-thin scrollbar-track-white scrollbar-thumb-rounded-full mr-2">
+        <div className="h-full overflow-y-auto scrollbar-thumb-indigo-300 scrollbar-thin scrollbar-track-white scrollbar-thumb-rounded-full mr-2">
           {children}
         </div>
       </div>
