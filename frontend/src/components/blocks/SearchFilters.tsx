@@ -9,7 +9,7 @@ import ExactMatch from "../filters/ExactMatch";
 import ByDateRange from "../filters/ByDateRange";
 
 interface SearchFiltersProps {
-  handleFilterChange(type: string, value: string, action: string): void;
+  handleFilterChange(type: string, value: string, action?: string): void;
   handleYearChange(values: number[]): void;
   handleRegionChange(type: any, regionName: any): void;
   handleClearSearch(): void;
@@ -38,7 +38,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
     const { t } = useTranslation("searchResults");
 
     const {
-      keyword_filters: { countries: countryFilters = [] },
+      keyword_filters: { countries: countryFilters = [], sectors: sectorFilters = [] },
     } = searchCriteria;
 
     const thisYear = currentYear();
@@ -52,6 +52,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
         setShowClear(false);
       }
     }, [searchCriteria]);
+
+    console.log(searchCriteria);
 
     return (
       <>
@@ -93,11 +95,13 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
             <BySelect
               list={sectors}
               onChange={handleFilterChange}
-              defaultValue={searchCriteria.keyword_filters?.sectors ? searchCriteria.keyword_filters.sectors[0] : ""}
               title={t("By sector")}
               keyField="name"
               filterType="sectors"
+              defaultValue=""
+              defaultText={sectorFilters.length ? "Add sectors" : "All"}
             />
+            <MultiList list={sectorFilters} removeFilter={handleFilterChange} type="sectors" />
           </div>
           <div className="relative mt-8 mb-12">
             <div className="">
