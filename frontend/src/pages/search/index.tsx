@@ -90,15 +90,15 @@ const Search = () => {
   const documentCategories = ["All", "Executive", "Legislative", "Litigation"];
 
   const resetPaging = () => {
-    setShowPDF(false);
     setOffset(0);
     setPageNumber(1);
   };
 
   const resetSlideOut = (slideOut?: boolean) => {
+    setShowPDF(false);
     setPassageIndex(null);
     setShowSlideout(slideOut ?? !showSlideout);
-  }
+  };
 
   const handleRegionChange = (type, regionName) => {
     handleFilterChange(type, regionName);
@@ -253,8 +253,6 @@ const Search = () => {
     }
   }, []);
 
-  console.log(showPDF);
-
   return (
     <>
       {isFetchingSearchCriteria || !ready || !user ? (
@@ -272,11 +270,11 @@ const Search = () => {
                 ) : (
                   <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
                 )} */}
-                <div className="flex flex-1 h-0">
-                  <div className="w-1/3 overflow-y-scroll">
+                <div className="flex flex-col md:flex-row flex-1 h-0">
+                  <div className={`${showPDF ? "hidden" : "block"} md:block md:w-1/3 overflow-y-scroll`}>
                     <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
                   </div>
-                  <div className="w-2/3 mt-4 px-6 flex-1">
+                  <div className={`${showPDF ? "block" : "hidden"} md:block md:w-2/3 mt-4 px-6 flex-1`}>
                     <EmbeddedPDF document={document} passageIndex={passageIndex} />
                   </div>
                 </div>

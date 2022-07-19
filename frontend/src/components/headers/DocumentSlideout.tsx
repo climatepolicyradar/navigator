@@ -34,7 +34,7 @@ const DocumentSlideout = ({ document, showPDF, setShowPDF }) => {
           </div>
           {showPDF && (
             // TODO: translate below text
-            <div className="md-hidden">
+            <div className="md:hidden">
               <TextLink onClick={() => setShowPDF(false)}>
                 <span className="text-lg">&laquo;</span>Back to passage matches
               </TextLink>
