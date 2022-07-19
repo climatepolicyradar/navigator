@@ -1,10 +1,9 @@
-import Script from "next/script";
 import { useRef, useMemo, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
-import ViewSDKClient from "../api/pdf";
-import Loader from "./Loader";
-import { padNumber } from "../utils/timedate";
+import Script from "next/script";
+import { padNumber } from "@utils/timedate";
 import usePDFPreview from "@hooks/usePDFPreview";
+import Loader from "./Loader";
 
 type TProps = {
   document: any;

@@ -90,6 +90,7 @@ const Search = () => {
   const documentCategories = ["All", "Executive", "Legislative", "Litigation"];
 
   const resetPaging = () => {
+    setShowPDF(false);
     setOffset(0);
     setPageNumber(1);
   };
@@ -183,7 +184,7 @@ const Search = () => {
     }
     updateDocument.mutate(id);
 
-    setShowPDF(false);
+    // setShowPDF(false);
   };
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
@@ -252,6 +253,8 @@ const Search = () => {
     }
   }, []);
 
+  console.log(showPDF);
+
   return (
     <>
       {isFetchingSearchCriteria || !ready || !user ? (
@@ -261,7 +264,7 @@ const Search = () => {
           <div onClick={handleDocumentClick}>
             <Slideout ref={slideoutRef} show={showSlideout} setShowSlideout={resetSlideOut}>
               <div className="flex flex-col h-full relative">
-                <DocumentSlideout document={document} setShowPDF={setShowPDF} showPDF={showPDF} setPassageIndex={setPassageIndex} />
+                <DocumentSlideout document={document} showPDF={showPDF} setShowPDF={setShowPDF} />
                 {/* {showPDF ? (
                   <div className="mt-4 px-6 flex-1">
                     <EmbeddedPDF document={document} passageIndex={passageIndex} setShowPDF={setShowPDF} />
