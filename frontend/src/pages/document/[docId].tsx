@@ -165,7 +165,7 @@ const DocumentCoverPage = () => {
 
                   {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
                   {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
-                  {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} />}
+                  {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} bulleted={true} />}
                   <div className="mt-8 border-t border-blue-100">
                     <h3 className="text-xl text-blue-700 mt-4">Source</h3>
                     <div className="flex items-end mt-4">
