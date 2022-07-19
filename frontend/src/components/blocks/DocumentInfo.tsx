@@ -1,23 +1,26 @@
 import Tooltip from "../tooltip";
 import List from "./List";
 
-interface ListType {
+type TListType = {
   name: string;
-  children?: string[];
-}
+  children?: TListChild[];
+};
 
-interface DoucmentInfoProps {
+type TListChild = {
+  parent: string;
+  name: string;
+};
+
+type TDoucmentInfoProps = {
   heading: string;
   text?: string;
-  list?: ListType[];
+  list?: TListType[];
   id?: string;
   tooltip?: string;
-}
+  bulleted?: boolean;
+};
 
-const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "" }: DoucmentInfoProps) => {
-  const renderList = (list: ListType[]) => {
-    return list.map((item, i) => [i > 0 && ", ", item.name]);
-  };
+const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "", bulleted = false }: TDoucmentInfoProps) => {
 
   return (
     <div className="mt-4">
@@ -29,7 +32,7 @@ const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "" }: 
           </div>
         )}
       </h4>
-      <p className="text-indigo-500">{list.length ? renderList(list) : text}</p>
+      {list.length ? <List list={list} bulleted={bulleted} /> : <p className="text-indigo-500">{text}</p>}
     </div>
   );
 };
