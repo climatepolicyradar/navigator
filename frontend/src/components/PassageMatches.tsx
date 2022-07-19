@@ -1,4 +1,4 @@
-import Loader from './Loader';
+import Loader from "./Loader";
 
 const PassageMatches = ({ document, setShowPDF, setPassageIndex }) => {
   return (
@@ -18,10 +18,13 @@ const PassageMatches = ({ document, setShowPDF, setPassageIndex }) => {
                 setPassageIndex(index);
               }}
             >
-              <span className="text-xs text-blue-500">
-                {/* TODO: translation */}
-                On page {item.text_block_page}
-              </span>
+              <div className="text-s text-blue-500 ">
+                <span className="font-bold">
+                  {/* TODO: translation */}
+                  Page {item.text_block_page} | &nbsp;
+                </span>
+                <span>go to page &gt;</span>
+              </div>
               <p className="mt-2 text-indigo-400">...{item.text}...</p>
             </div>
           ))}

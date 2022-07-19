@@ -164,6 +164,7 @@ const Search = () => {
     setShowFilters(!showFilters);
   };
   const handleDocumentClick = (e: any) => {
+    // Check if we are clicking on the document matches button
     const id = e.target.dataset.docid;
     if (!id) return;
 
@@ -263,6 +264,7 @@ const Search = () => {
                 )}
               </div>
             </Slideout>
+            {showSlideout && <div className="w-full h-full bg-overlayWhite fixed top-0 z-30" />}
             <section>
               <div className="px-4 container">
                 <div className="md:py-8 md:w-3/4 md:mx-auto">

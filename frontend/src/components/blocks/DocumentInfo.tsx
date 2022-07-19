@@ -1,28 +1,30 @@
-import Tooltip from '../tooltip';
-import List from './List';
-interface ListType {
-  name: string;
+import Tooltip from "../tooltip";
+import List from "./List";
 
-  children?: string[];
-}
-interface DoucmentInfoProps {
+type TListType = {
+  name: string;
+  children?: TListChild[];
+};
+
+type TListChild = {
+  parent: string;
+  name: string;
+};
+
+type TDoucmentInfoProps = {
   heading: string;
   text?: string;
-  list?: ListType[];
+  list?: TListType[];
   id?: string;
   tooltip?: string;
-}
+  bulleted?: boolean;
+};
 
-const DocumentInfo = ({
-  heading,
-  text = '',
-  list = [],
-  id = '',
-  tooltip = '',
-}: DoucmentInfoProps) => {
+const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "", bulleted = false }: TDoucmentInfoProps) => {
+
   return (
-    <div className="mt-6">
-      <h4 className="text-base text-indigo-600 font-medium flex">
+    <div className="mt-4">
+      <h4 className="text-base text-indigo-400 font-semibold flex">
         {heading}
         {tooltip.length > 0 && (
           <div className="ml-1 font-normal">
@@ -30,12 +32,9 @@ const DocumentInfo = ({
           </div>
         )}
       </h4>
-      {list.length ? (
-        <List list={list} />
-      ) : (
-        <p className="text-indigo-500">{text}</p>
-      )}
+      {list.length ? <List list={list} bulleted={bulleted} /> : <p className="text-indigo-500">{text}</p>}
     </div>
   );
 };
+
 export default DocumentInfo;

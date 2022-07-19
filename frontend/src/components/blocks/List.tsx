@@ -1,16 +1,18 @@
-const List = ({ list }) => {
+const List = ({ list, bulleted = false }) => {
+  const renderChildren = (list: any) => {
+    return <>: {list.map((item, i) => [i > 0 && ", ", item.name])}</>;
+  };
+
   return (
-    <ul className="text-indigo-500">
+    <ul className={`text-indigo-500 ${bulleted && "ml-4 list-disc list-outside mb-4"}`}>
       {list.map((item, index) => (
-        <li key={`listitem${index}`}>
-          {item.name}{' '}
-          {item?.children && (
-            <ul className="ml-4 list-disc list-outside mb-4">
-              {item.children.map((child, index) => (
-                <li key={`listchilditem${index}`}>{child.name}</li>
-              ))}{' '}
-            </ul>
-          )}
+        <li key={`listitem${index}`} className={!bulleted && "inline"}>
+          {
+            <>
+              {index > 0 && !bulleted && ", "} {item.name}
+            </>
+          }
+          {item?.children && renderChildren(item.children)}
         </li>
       ))}
     </ul>
