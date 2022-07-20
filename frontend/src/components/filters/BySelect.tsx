@@ -32,7 +32,6 @@ const BySelect = ({ onChange, list, title, keyField, keyFieldDisplay = null, fil
       <select
         ref={selectRef}
         className="border border-indigo-200 mt-2 small"
-        defaultValue={defaultValue}
         onChange={(e) => {
           onChange(filterType, e.currentTarget.value);
         }}
