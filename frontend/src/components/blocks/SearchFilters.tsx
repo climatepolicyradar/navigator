@@ -53,8 +53,6 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
       }
     }, [searchCriteria]);
 
-    console.log(searchCriteria);
-
     return (
       <>
         <div className="flex md:justify-between items-center mt-2 md:mt-0">
@@ -99,7 +97,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
               keyField="name"
               filterType="sectors"
               defaultValue=""
-              defaultText={sectorFilters.length ? "Add sectors" : "All"}
+              defaultText={sectorFilters.length ? "Add more sectors" : "All"}
             />
             <MultiList list={sectorFilters} removeFilter={handleFilterChange} type="sectors" />
           </div>
