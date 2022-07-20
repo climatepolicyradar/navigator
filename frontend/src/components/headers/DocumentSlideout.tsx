@@ -2,11 +2,10 @@ import Link from "next/link";
 import ToggleDocumentMenu from "../menus/ToggleDocumentMenu";
 import TextLink from "../nav/TextLink";
 
-const DocumentSlideout = ({ document, showPDF, setShowPDF, setPassageIndex }) => {
-
+const DocumentSlideout = ({ document, showPDF, setShowPDF }) => {
   if (!document) return null;
 
-  const year = document?.document_date.split('/')[2] ?? '';
+  const year = document?.document_date.split("/")[2] ?? "";
 
   return (
     <>
@@ -31,13 +30,15 @@ const DocumentSlideout = ({ document, showPDF, setShowPDF, setPassageIndex }) =>
                 Document {`match${document.document_passage_matches.length === 1 ? "" : "es"}`} ({document.document_passage_matches.length})
               </h3>
             </div>
-            <ToggleDocumentMenu setShowPDF={setShowPDF} showPDF={showPDF} document={document} setPassageIndex={setPassageIndex} />
+            <ToggleDocumentMenu document={document} />
           </div>
           {showPDF && (
             // TODO: translate below text
-            <TextLink onClick={() => setShowPDF(false)}>
-              <span className="text-lg">&laquo;</span>Back to passage matches
-            </TextLink>
+            <div className="md:hidden">
+              <TextLink onClick={() => setShowPDF(false)}>
+                <span className="text-lg">&laquo;</span>Back to passage matches
+              </TextLink>
+            </div>
           )}
         </>
       ) : null}
