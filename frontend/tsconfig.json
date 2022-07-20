@@ -22,6 +22,7 @@
       "@helpers/*": ["helpers/*"],
       "@hooks/*": ["hooks/*"],
       "@interfaces/*": ["interfaces/*"],
+      "@types": ["types/index"],
       "@pages/*": ["pages/*"],
       "@utils/*": ["utils/*"],
     }
