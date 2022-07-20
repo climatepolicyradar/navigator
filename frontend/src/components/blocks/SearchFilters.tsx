@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { currentYear, minYear } from "../../constants/timedate";
 import ByTextInput from "../filters/ByTextInput";
 import BySelect from "../filters/BySelect";
 import MultiList from "../filters/MultiList";
 import ExactMatch from "../filters/ExactMatch";
 import ByDateRange from "../filters/ByDateRange";
+import { currentYear, minYear } from "@constants/timedate";
+import { TSector } from "@types";
 
 interface SearchFiltersProps {
   handleFilterChange(type: string, value: string, action?: string): void;
@@ -17,7 +18,7 @@ interface SearchFiltersProps {
   searchCriteria: any;
   regions: object[];
   filteredCountries: object[];
-  sectors: any[];
+  sectors: TSector[];
   documentTypes: object[];
   instruments: object[];
 }
