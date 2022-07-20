@@ -17,7 +17,7 @@ interface SearchFiltersProps {
   searchCriteria: any;
   regions: object[];
   filteredCountries: object[];
-  sectors: object[];
+  sectors: any[];
   documentTypes: object[];
   instruments: object[];
 }
@@ -91,7 +91,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
           </div>
           <div className="relative mt-6">
             <BySelect
-              list={sectors}
+              list={sectors.filter(sector => !sectorFilters.includes(sector.name))}
               onChange={handleFilterChange}
               title={t("By sector")}
               keyField="name"
