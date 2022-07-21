@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@api/auth";
 import { useDidUpdateEffect } from "@hooks/useDidUpdateEffect";
