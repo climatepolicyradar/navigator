@@ -9,16 +9,13 @@ from app.core.search import _FILTER_FIELD_MAP
 
 
 @pytest.mark.search
-@pytest.mark.xfail(
-    reason="TODO: sample data needs to be bigger to get enough results per page for the len(page_documents) equality checks to pass"
-)
 def test_simple_pagination(test_opensearch, monkeypatch, client, user_token_headers):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     page1_response = client.post(
         "/api/v1/searches",
         json={
-            "query_string": "disaster",
+            "query_string": "climate",
             "exact_match": False,
             "limit": 2,
             "offset": 0,
@@ -34,7 +31,7 @@ def test_simple_pagination(test_opensearch, monkeypatch, client, user_token_head
     page2_response = client.post(
         "/api/v1/searches",
         json={
-            "query_string": "disaster",
+            "query_string": "climate",
             "exact_match": False,
             "limit": 2,
             "offset": 2,
@@ -64,7 +61,7 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client, user_token_hea
     page1_response = client.post(
         "/api/v1/searches",
         json={
-            "query_string": "disaster",
+            "query_string": "climate",
             "exact_match": False,
             "limit": 2,
             "offset": 0,
@@ -80,7 +77,7 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client, user_token_hea
     page2_response = client.post(
         "/api/v1/searches",
         json={
-            "query_string": "disaster",
+            "query_string": "climate",
             "exact_match": False,
             "limit": 2,
             "offset": 1,
@@ -132,7 +129,7 @@ def test_keyword_filters(
     response = client.post(
         "/api/v1/searches",
         json={
-            "query_string": "disaster",
+            "query_string": "climate",
             "exact_match": False,
             "keyword_filters": {"countries": ["Kenya"]},
         },
@@ -298,7 +295,7 @@ def test_result_order_date(
     response = client.post(
         "/api/v1/searches",
         json={
-            "query_string": "disaster",
+            "query_string": "climate",
             "exact_match": False,
             "sort_field": "date",
             "sort_order": order.value,
@@ -332,7 +329,7 @@ def test_result_order_title(
     response = client.post(
         "/api/v1/searches",
         json={
-            "query_string": "disaster",
+            "query_string": "climate",
             "exact_match": False,
             "sort_field": "title",
             "sort_order": order.value,
@@ -389,17 +386,17 @@ def test_case_insensitivity(test_opensearch, monkeypatch, client, user_token_hea
 
     response1 = client.post(
         "/api/v1/searches",
-        json={"query_string": "disaster", "exact_match": False},
+        json={"query_string": "climate", "exact_match": False},
         headers=user_token_headers,
     )
     response2 = client.post(
         "/api/v1/searches",
-        json={"query_string": "DiSastEr", "exact_match": False},
+        json={"query_string": "ClImAtE", "exact_match": False},
         headers=user_token_headers,
     )
     response3 = client.post(
         "/api/v1/searches",
-        json={"query_string": "DISASTER", "exact_match": False},
+        json={"query_string": "CLIMATE", "exact_match": False},
         headers=user_token_headers,
     )
 
@@ -421,17 +418,17 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client, user_token_he
 
     response1 = client.post(
         "/api/v1/searches",
-        json={"query_string": "disaster.", "exact_match": False},
+        json={"query_string": "climate.", "exact_match": False},
         headers=user_token_headers,
     )
     response2 = client.post(
         "/api/v1/searches",
-        json={"query_string": "disaster, ", "exact_match": False},
+        json={"query_string": "climate, ", "exact_match": False},
         headers=user_token_headers,
     )
     response3 = client.post(
         "/api/v1/searches",
-        json={"query_string": ";disaster", "exact_match": False},
+        json={"query_string": ";climate", "exact_match": False},
         headers=user_token_headers,
     )
 
@@ -453,17 +450,17 @@ def test_accents_ignored(test_opensearch, monkeypatch, client, user_token_header
 
     response1 = client.post(
         "/api/v1/searches",
-        json={"query_string": "disàster", "exact_match": False},
+        json={"query_string": "climàte", "exact_match": False},
         headers=user_token_headers,
     )
     response2 = client.post(
         "/api/v1/searches",
-        json={"query_string": "disastër", "exact_match": False},
+        json={"query_string": "climatë", "exact_match": False},
         headers=user_token_headers,
     )
     response3 = client.post(
         "/api/v1/searches",
-        json={"query_string": "disàstér", "exact_match": False},
+        json={"query_string": "climàtë", "exact_match": False},
         headers=user_token_headers,
     )
 
