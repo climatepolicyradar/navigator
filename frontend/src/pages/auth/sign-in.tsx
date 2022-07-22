@@ -69,38 +69,36 @@ const Login = () => {
         <LoaderOverlay />
       ) : (
         <Layout title={t("Sign in to your account")}>
-          <section className="absolute inset-0 z-10 flex items-center">
-            <div className="container py-4">
-              <AuthWrapper heading={t("Sign in to your account")} description={welcomeMessage()}>
-                {status?.error && <p className="text-red-500 font-bold mt-4">{status.error}</p>}
+          <div className="container py-4">
+            <AuthWrapper heading={t("Sign in to your account")} description={welcomeMessage()}>
+              {status?.error && <p className="text-red-500 font-bold mt-4">{status.error}</p>}
 
-                <form className="w-full" onSubmit={handleSubmit(submitForm)} noValidate>
-                  <div data-cy="signin-email" className="form-row text-white">
-                    <TextInput label={t("Email")} name="email" type="email" errors={errors} required register={register} />
-                  </div>
-                  <div data-cy="signin-password" className="form-row text-white">
-                    <PasswordInput label={t("Password")} name="password" errors={errors} required register={register} />
-                    <div className="mt-6">
-                      <Link href="/auth/reset-request">
-                        <a className="text-blue-500 hover:text-white transition duration-300">{t("Forgot password?")}</a>
-                      </Link>
-                    </div>
-                  </div>
-                  <div data-cy="signin-submit" className="form-row">
-                    <Button type="submit" color="light" disabled={isSubmitting} extraClasses="w-full" fullWidth>
-                      {t("Sign in")}
-                    </Button>
-                  </div>
-                  <p className="mt-8 text-white text-center">
-                    {t("Don't have an account?")} &nbsp;
-                    <Link href="/auth/sign-up">
-                      <a className="text-blue-500 hover:text-white transition duration-300">{t("Sign up")}</a>
+              <form className="w-full" onSubmit={handleSubmit(submitForm)} noValidate>
+                <div data-cy="signin-email" className="form-row text-white">
+                  <TextInput label={t("Email")} name="email" type="email" errors={errors} required register={register} />
+                </div>
+                <div data-cy="signin-password" className="form-row text-white">
+                  <PasswordInput label={t("Password")} name="password" errors={errors} required register={register} />
+                  <div className="mt-6">
+                    <Link href="/auth/reset-request">
+                      <a className="text-blue-500 hover:text-white transition duration-300">{t("Forgot password?")}</a>
                     </Link>
-                  </p>
-                </form>
-              </AuthWrapper>
-            </div>
-          </section>
+                  </div>
+                </div>
+                <div data-cy="signin-submit" className="form-row">
+                  <Button type="submit" color="light" disabled={isSubmitting} extraClasses="w-full" fullWidth>
+                    {t("Sign in")}
+                  </Button>
+                </div>
+                <p className="mt-8 text-white text-center">
+                  {t("Don't have an account?")} &nbsp;
+                  <Link href="/auth/sign-up">
+                    <a className="text-blue-500 hover:text-white transition duration-300">{t("Sign up")}</a>
+                  </Link>
+                </p>
+              </form>
+            </AuthWrapper>
+          </div>
         </Layout>
       )}
     </>
