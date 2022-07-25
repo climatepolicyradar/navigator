@@ -49,28 +49,26 @@ const ResetRequest = () => {
       {isSubmitting ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={t("Reset your password")}>
-          <section className="absolute inset-0 z-10 flex items-center">
-            <div className="container py-4">
-              {status?.data === true ? (
-                <AuthWrapper heading={t("Reset request sent")} description={t("Please check your email and click the enclosed link to reset your password.")} />
-              ) : (
-                <AuthWrapper heading={t("Reset your password")} description={t("Enter your email you signed up with.<br>We will send you a link.")}>
-                  {status?.error && <p className="text-red-500 font-bold mt-4">{status.error}</p>}
-                  <form className="w-full" onSubmit={handleSubmit(submitForm)} noValidate>
-                    <div className="form-row text-white">
-                      <TextInput label={t("Email")} name="email" type="email" errors={errors} required register={register} placeholder="Enter your email" />
-                    </div>
-                    <div className="mt-8">
-                      <Button type="submit" color="light" disabled={isSubmitting} extraClasses="w-full" fullWidth>
-                        {t("Reset password")}
-                      </Button>
-                    </div>
-                  </form>
-                </AuthWrapper>
-              )}
-            </div>
-          </section>
+        <Layout title={t("Reset your password")} height={600}>
+          <div className="container py-4">
+            {status?.data === true ? (
+              <AuthWrapper heading={t("Reset request sent")} description={t("Please check your email and click the enclosed link to reset your password.")} />
+            ) : (
+              <AuthWrapper heading={t("Reset your password")} description={t("Enter your email you signed up with.<br>We will send you a link.")}>
+                {status?.error && <p className="text-red-500 font-bold mt-4">{status.error}</p>}
+                <form className="w-full" onSubmit={handleSubmit(submitForm)} noValidate>
+                  <div className="form-row text-white">
+                    <TextInput label={t("Email")} name="email" type="email" errors={errors} required register={register} placeholder="Enter your email" />
+                  </div>
+                  <div className="mt-8">
+                    <Button type="submit" color="light" disabled={isSubmitting} extraClasses="w-full" fullWidth>
+                      {t("Reset password")}
+                    </Button>
+                  </div>
+                </form>
+              </AuthWrapper>
+            )}
+          </div>
         </Layout>
       )}
     </>
