@@ -1,6 +1,8 @@
 import { FC } from "React";
-import { TCountry, TTarget } from "@types";
+import { TCountry, TTarget, TEvent } from "@types";
 import Layout from "@components/layouts/Main";
+import Event from "@components/blocks/Event";
+import { Timeline } from "@components/blocks/Timeline";
 import Tooltip from "@components/tooltip";
 import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
 
@@ -59,13 +61,13 @@ const CountryHeader = ({ country }: TCountryHeader) => {
 
   return (
     <div className="bg-offwhite border-solid border-blue-200 border-b py-6">
-      <div className="container">
-        <div className="md:max-w-lg">
+      <div className="container flex items-end justify-between overflow-hidden">
+        <div className="md:max-w-lg flex-shrink-0">
           <h1>{short_name}</h1>
           <div className="grid grid-cols-2 gap-2 items-center">
             <div className="font-semibold text-blue-700 text-xl">{continent}</div>
             <div className="font-semibold text-blue-700 text-xl">
-              {legal_structure} ({legal_bodies})
+              {legal_structure} <span className="font-light text-lg">({legal_bodies})</span>
             </div>
             <div>
               <div className="text-blue-700 text-lg">Political groups</div>
@@ -84,6 +86,9 @@ const CountryHeader = ({ country }: TCountryHeader) => {
             </div>
           </div>
         </div>
+        <div className="hidden place-items-center md:flex overflow-hidden">
+          <img src={`/images/countries/${country.short_name}.png`} alt={country.name} />
+        </div>
       </div>
     </div>
   );
@@ -101,6 +106,14 @@ const CountryPage = () => {
             <KeyDetail detail="Policies" amount={country.policies} icon={<PolicyIcon />} />
             <KeyDetail detail="Cases" amount={country.cases} icon={<CaseIcon />} />
           </div>
+          <section className="mt-8">
+            <h3 className="mb-4">Events</h3>
+            <Timeline>
+              {country.events.map((event: TEvent, index: number) => (
+                <Event event={event} key={`event-${index}`} index={index} last={index === country.events.length - 1 ? true : false} />
+              ))}
+            </Timeline>
+          </section>
           <div className="mt-8">
             <h3 className="flex mb-4">
               <span className="mr-2">
@@ -119,7 +132,7 @@ const CountryPage = () => {
 export default CountryPage;
 
 const COUNTRY: TCountry = {
-  name: "United States of American",
+  name: "United States of America",
   short_name: "USA",
   continent: "North America",
   legal_structure: "Federal",
@@ -131,7 +144,30 @@ const COUNTRY: TCountry = {
   laws: 12,
   policies: 4,
   cases: 11,
-  events: [],
+  events: [
+    {
+      name: "Test event 1",
+      created_ts: "2016-01-28T00:00:00+00:00",
+      description: "Description test",
+      category: "Policies",
+    },
+    {
+      name: "Publication",
+      description: "The publication date",
+      created_ts: "2016-01-12T00:00:00+00:00",
+    },
+    {
+      name: "Law passed",
+      description: "Imported by CPR loader",
+      created_ts: "2016-12-01T00:00:00+00:00",
+    },
+    {
+      name: "Target: Net zero by 2050",
+      description: "Imported by CPR loader",
+      created_ts: "2017-06-08T00:00:00+00:00",
+      category: "Targets",
+    },
+  ],
   targets: [
     {
       target: "80% GHG emission reduction by 2050 compared with a baseline",
