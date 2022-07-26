@@ -6,6 +6,7 @@ import Layout from "@components/layouts/Main";
 import Loader from "@components/Loader";
 import TextLink from "@components/nav/TextLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
+import { Timeline } from "@components/blocks/Timeline";
 import Event from "@components/blocks/Event";
 import RelatedDocument from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
@@ -124,15 +125,11 @@ const DocumentCoverPage = () => {
                 {page.events.length > 0 && (
                   <section>
                     <h3 className="mt-8">Timeline</h3>
-                    <div className="mt-8">
-                      <div className="flex place-content-center bg-offwhite rounded border border-blue-200 drop-shadow-lg p-4">
-                        <div className="flex items-center overflow-x-auto px-[70px]">
-                          {page.events.map((event: TEvent, index: number) => (
-                            <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                    <Timeline>
+                      {page.events.map((event: TEvent, index: number) => (
+                        <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
+                      ))}
+                    </Timeline>
                   </section>
                 )}
 
@@ -140,7 +137,7 @@ const DocumentCoverPage = () => {
                   <section>
                     <h3 className="mt-8">Associated Documents</h3>
                     {page.related_documents.map((doc) => (
-                      <div key={doc.related_id} className="my-8">
+                      <div key={doc.related_id} className="my-4">
                         <RelatedDocument document={doc} />
                       </div>
                     ))}
