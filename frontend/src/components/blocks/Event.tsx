@@ -1,13 +1,8 @@
+import { TEvent } from "@types";
 import { convertDate } from "@utils/timedate";
 
-interface Event {
-  name: string;
-  created_ts: string;
-  date: string;
-  description: string;
-}
 interface EventProps {
-  event: Event;
+  event: TEvent;
   last: boolean;
   index: number;
 }
@@ -18,7 +13,7 @@ const Event = ({ event, last, index }: EventProps) => {
 
   const even = (index + 1) % 2 === 0;
 
-  const timelineStyles = last ? "right-1/2 w-1/2" : index === 0 ? "left-1/2 w-1/2" : "w-full";
+  const timelineStyles = last && index == 0 ? "" : last ? "right-1/2 w-1/2" : index === 0 ? "left-1/2 w-1/2" : "w-full";
 
   const renderText = (name: string, date: string) => (
     <div>

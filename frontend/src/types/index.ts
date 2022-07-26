@@ -30,9 +30,9 @@ export type TTarget = {
   target_year: string;
 };
 
-type TEvent = {
+export type TEvent = {
   name: string;
   created_ts: string;
-  date: string;
   description: string;
+  category?: "Laws" | "Policies" | "Cases" | "Targets";
 };
