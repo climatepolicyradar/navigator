@@ -356,3 +356,9 @@ ul li.selected {
     width: 20px;
   }
 }
+
+@layer utilities {
+  h1.smaller {
+    font-size: 38px;
+  }
+}

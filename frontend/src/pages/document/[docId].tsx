@@ -14,12 +14,7 @@ import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
 import { truncateString } from "../../helpers";
 
-type TEvent = {
-  name: string;
-  created_ts: string;
-  date: string;
-  description: string;
-};
+import { TEvent } from "@types";
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -91,7 +86,7 @@ const DocumentCoverPage = () => {
             <div className="container">
               <div className="flex flex-col md:flex-row">
                 <div className="flex-1 mt-6">
-                  <h1 className="text-3xl font-medium">{page.name}</h1>
+                  <h1 className="text-3xl lg:smaller">{page.name}</h1>
                   <div className="flex text-sm text-indigo-400 mt-3 items-center w-full mb-6">
                     <div className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
                     <span className="ml-2">
@@ -128,7 +123,7 @@ const DocumentCoverPage = () => {
 
                 {page.events.length > 0 && (
                   <section>
-                    <h3 className="text-xl flex mt-8">Timeline</h3>
+                    <h3 className="mt-8">Timeline</h3>
                     <div className="mt-8">
                       <div className="flex place-content-center bg-offwhite rounded border border-blue-200 drop-shadow-lg p-4">
                         <div className="flex items-center overflow-x-auto px-[70px]">
@@ -143,7 +138,7 @@ const DocumentCoverPage = () => {
 
                 {page.related_documents.length ? (
                   <section>
-                    <h3 className="text-xl flex mt-8">Associated Documents</h3>
+                    <h3 className="mt-8">Associated Documents</h3>
                     {page.related_documents.map((doc) => (
                       <div key={doc.related_id} className="my-8">
                         <RelatedDocument document={doc} />
@@ -154,7 +149,7 @@ const DocumentCoverPage = () => {
               </section>
               <section className="mt-6 md:w-2/5 lg:w-1/4 md:pl-12 flex-shrink-0">
                 <div className="md:pl-4 md:border-l md:border-blue-100">
-                  <h3 className="text-xl text-blue-700">About this document</h3>
+                  <h3 className="text-blue-700">About this document</h3>
                   <div className="grid grid-cols-2 gap-x-2">
                     <DocumentInfo id="category-tt" heading="Category" text={page.category.name} />
                     <DocumentInfo id="type-tt" heading="Type" text={page.type.name} />
@@ -167,7 +162,7 @@ const DocumentCoverPage = () => {
                   {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
                   {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} bulleted={true} />}
                   <div className="mt-8 border-t border-blue-100">
-                    <h3 className="text-xl text-blue-700 mt-4">Source</h3>
+                    <h3 className="text-blue-700 mt-4">Source</h3>
                     <div className="flex items-end mt-4">
                       {sourceLogo && (
                         <div className="relative flex-shrink max-w-[40px] mr-1">
