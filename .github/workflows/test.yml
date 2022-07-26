@@ -33,28 +33,6 @@ jobs:
         run: cp frontend/e2e/.env.example frontend/e2e/.env
       - name: Run frontend tests
         run: make test_frontend
-  test_pipeline:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Configure docker-compose stack with .env.example
-        run: cp .env.example .env
-      - name: Build pipeline
-        env:
-          SSH_AUTH_SOCK: /tmp/ssh_agent.sock
-        run: make build_pipeline
-      - name: Test pipeline
-        run: make test_pipeline
-  test_search_index:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build docker-compose stack using .env.example
-        run: cp .env.example .env
-      - name: Build search_index
-        run: make build_search_index
-      - name: Test search_index
-        run: make test_search_index
   test_loader:
     runs-on: ubuntu-latest
     steps:
