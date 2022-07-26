@@ -75,7 +75,7 @@ const CountryHeader = ({ country }: TCountryHeader) => {
             <div>
               <div className="text-blue-700 text-lg">Global Climate Risk Index</div>
               <div className="font-semibold text-blue-700 text-xl flex">
-                <div className="mr-1">{gcri}</div> <Tooltip id="country-gcri" tooltip="Global Climate Risk Index" />
+                <div className="mr-1">{gcri}</div> <Tooltip id="country-gcri" tooltip="Global Climate Risk Index" icon="i" />
               </div>
             </div>
             <div>
