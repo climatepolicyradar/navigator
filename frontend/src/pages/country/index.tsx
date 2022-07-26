@@ -38,7 +38,7 @@ const Targets = ({ targets }: TTargets) => {
   return (
     <ul className="ml-4 list-disc list-outside">
       {targets.map((target) => (
-        <li className="mb-4">
+        <li className="mb-4" key={target.target}>
           <span className="text-blue-700">{target.target}</span>
           <span className="block">
             <span className="font-semibold mr-1">{target.group}: ???</span>
