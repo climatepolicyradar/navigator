@@ -123,8 +123,8 @@ const DocumentCoverPage = () => {
                 )}
 
                 {page.events.length > 0 && (
-                  <section>
-                    <h3 className="mt-8">Timeline</h3>
+                  <section className="mt-12">
+                    <h3>Timeline</h3>
                     <Timeline>
                       {page.events.map((event: TEvent, index: number) => (
                         <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
@@ -134,8 +134,8 @@ const DocumentCoverPage = () => {
                 )}
 
                 {page.related_documents.length ? (
-                  <section>
-                    <h3 className="mt-8">Associated Documents</h3>
+                  <section className="mt-12">
+                    <h3>Associated Documents</h3>
                     {page.related_documents.map((doc) => (
                       <div key={doc.related_id} className="my-4">
                         <RelatedDocument document={doc} />

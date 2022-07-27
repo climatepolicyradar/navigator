@@ -43,7 +43,7 @@ const CountryPage = () => {
             <KeyDetail detail="Policies" amount={country.policies} icon={<PolicyIcon />} />
             <KeyDetail detail="Cases" amount={country.cases} icon={<CaseIcon />} />
           </div>
-          <section className="mt-8">
+          <section className="mt-12">
             <h3 className="mb-4">Events</h3>
             <Timeline>
               {country.events.map((event: TEvent, index: number) => (
@@ -52,18 +52,20 @@ const CountryPage = () => {
             </Timeline>
           </section>
           {country.targets.length && (
-            <div className="mt-8">
-              <h3 className="flex mb-4">
-                <span className="mr-2">
-                  <TargetIcon />
-                </span>
-                Targets ({country.targets.length})
-              </h3>
-              <Targets targets={country.targets} />
-            </div>
+            <section className="mt-12">
+              <div>
+                <h3 className="flex mb-4">
+                  <span className="mr-2">
+                    <TargetIcon />
+                  </span>
+                  Targets ({country.targets.length})
+                </h3>
+                <Targets targets={country.targets} />
+              </div>
+            </section>
           )}
-          <section>
-            <h3 className="mt-8">Documents</h3>
+          <section className="mt-12">
+            <h3>Documents</h3>
             {country.documents.map((doc) => (
               <div key={doc.related_id} className="my-4">
                 <RelatedDocument document={doc} />
@@ -140,11 +142,12 @@ const COUNTRY: TCountry = {
     {
       country_code: "JPN",
       country_name: "Japan",
-      description: "This Act obliges electric utilities to purchase electricity generated from renewable energy sources (solar PV, wind power, hydraulic power, geothermal and biomass) based on a fixed-period contract with a fixed price. Costs incurred by the utility in purchasing renewable energy sourced electricity shall be transferred to all electricity customers, who pay the 'surcharge for renewable energy' in general proportional to electricity usage. Utility companies users that had been severely affected by the 2011 tsunami and earthquakes are exempted.  A committee to calculate purchasing price is established under this law, which consists of 5 members with expertise in electricity business and economy, appointed by the Minister of Economy, Trade and Industry upon approval of both chambers of the Parliament.The Act was amended on June 12, 2020, by the Act on Partial Amendment of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems. This document establishes 1) a Feed-in-Premium (FIP) scheme in addition to the existing FIT scheme 2) a system in which part of the expenditures for fortifying electricity grids necessary for expanding the introduction of renewable energy into businesses, e.g., regional interconnection lines, which regional electricity transmission/distribution businesses bear under the current Act, is to be supported based on the surcharge system across Japan, 3) obligations on renewable energy generators to establish an external reserve fund for the expenditures for discarding their facilities for generating renewable energy as a measure for addressing concerns over inappropriate discarding of PV facilities, 4) the obligation to maintain funds for decommissioning purposes, and 5) a modification of the FIT scheme.",
+      description:
+        "This Act obliges electric utilities to purchase electricity generated from renewable energy sources (solar PV, wind power, hydraulic power, geothermal and biomass) based on a fixed-period contract with a fixed price. Costs incurred by the utility in purchasing renewable energy sourced electricity shall be transferred to all electricity customers, who pay the 'surcharge for renewable energy' in general proportional to electricity usage. Utility companies users that had been severely affected by the 2011 tsunami and earthquakes are exempted.  A committee to calculate purchasing price is established under this law, which consists of 5 members with expertise in electricity business and economy, appointed by the Minister of Economy, Trade and Industry upon approval of both chambers of the Parliament.The Act was amended on June 12, 2020, by the Act on Partial Amendment of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems. This document establishes 1) a Feed-in-Premium (FIP) scheme in addition to the existing FIT scheme 2) a system in which part of the expenditures for fortifying electricity grids necessary for expanding the introduction of renewable energy into businesses, e.g., regional interconnection lines, which regional electricity transmission/distribution businesses bear under the current Act, is to be supported based on the surcharge system across Japan, 3) obligations on renewable energy generators to establish an external reserve fund for the expenditures for discarding their facilities for generating renewable energy as a measure for addressing concerns over inappropriate discarding of PV facilities, 4) the obligation to maintain funds for decommissioning purposes, and 5) a modification of the FIT scheme.",
       name: "Cabinet Decision on the Bill for the Act of Partial Revision of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems",
       publication_ts: "2020-01-01T00:00:00",
       related_id: 12379,
-      category: "Laws"
-    }
+      category: "Laws",
+    },
   ],
 };
