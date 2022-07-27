@@ -1,4 +1,3 @@
-import { FC } from "React";
 import { TCountry, TTarget, TEvent } from "@types";
 import Layout from "@components/layouts/Main";
 import { SingleCol } from "@components/SingleCol";
@@ -31,6 +30,7 @@ const Targets = ({ targets }: TTargets) => {
 };
 
 const CountryPage = () => {
+  // TODO: replace with API lookup
   const country = COUNTRY;
   return (
     <Layout title={`Climate Policy Radar | ${country.name}`}>
@@ -50,15 +50,17 @@ const CountryPage = () => {
               ))}
             </Timeline>
           </section>
-          <div className="mt-8">
-            <h3 className="flex mb-4">
-              <span className="mr-2">
-                <TargetIcon />
-              </span>
-              Targets ({country.targets.length})
-            </h3>
-            <Targets targets={country.targets} />
-          </div>
+          {country.targets.length && (
+            <div className="mt-8">
+              <h3 className="flex mb-4">
+                <span className="mr-2">
+                  <TargetIcon />
+                </span>
+                Targets ({country.targets.length})
+              </h3>
+              <Targets targets={country.targets} />
+            </div>
+          )}
         </SingleCol>
       </section>
     </Layout>
@@ -82,20 +84,22 @@ const COUNTRY: TCountry = {
   cases: 11,
   events: [
     {
-      name: "Test event 1",
+      name: "Policy event happened",
       created_ts: "2016-01-28T00:00:00+00:00",
       description: "Description test",
       category: "Policies",
     },
     {
-      name: "Publication",
+      name: "Case made",
       description: "The publication date",
       created_ts: "2016-01-12T00:00:00+00:00",
+      category: "Cases"
     },
     {
       name: "Law passed",
       description: "Imported by CPR loader",
       created_ts: "2016-12-01T00:00:00+00:00",
+      category: "Laws"
     },
     {
       name: "Target: Net zero by 2050",
@@ -103,6 +107,11 @@ const COUNTRY: TCountry = {
       created_ts: "2017-06-08T00:00:00+00:00",
       category: "Targets",
     },
+    {
+      name: "End of timeline - no category provided",
+      description: "Imported by CPR loader",
+      created_ts: "2017-10-08T00:00:00+00:00",
+    }
   ],
   targets: [
     {
