@@ -8,7 +8,7 @@ import TextLink from "@components/nav/TextLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
 import { Timeline } from "@components/blocks/Timeline";
 import Event from "@components/blocks/Event";
-import RelatedDocument from "@components/blocks/RelatedDocument";
+import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
 import { ExternalLinkIcon } from "@components/svg/Icons";
 import { convertDate } from "@utils/timedate";

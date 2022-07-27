@@ -5,6 +5,7 @@ import Event from "@components/blocks/Event";
 import { Timeline } from "@components/blocks/Timeline";
 import { CountryHeader } from "@components/blocks/CountryHeader";
 import { KeyDetail } from "@components/KeyDetail";
+import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
 
 type TTargets = {
@@ -16,7 +17,7 @@ const Targets = ({ targets }: TTargets) => {
     <ul className="ml-4 list-disc list-outside">
       {targets.map((target) => (
         <li className="mb-4" key={target.target}>
-          <span className="text-blue-700">{target.target}</span>
+          <span className="text-blue-700 text-lg">{target.target}</span>
           <span className="block">
             <span className="font-semibold mr-1">{target.group}: ???</span>
             <span>
@@ -61,6 +62,14 @@ const CountryPage = () => {
               <Targets targets={country.targets} />
             </div>
           )}
+          <section>
+            <h3 className="mt-8">Documents</h3>
+            {country.documents.map((doc) => (
+              <div key={doc.related_id} className="my-4">
+                <RelatedDocument document={doc} />
+              </div>
+            ))}
+          </section>
         </SingleCol>
       </section>
     </Layout>
@@ -93,13 +102,13 @@ const COUNTRY: TCountry = {
       name: "Case made",
       description: "The publication date",
       created_ts: "2016-01-12T00:00:00+00:00",
-      category: "Cases"
+      category: "Cases",
     },
     {
       name: "Law passed",
       description: "Imported by CPR loader",
       created_ts: "2016-12-01T00:00:00+00:00",
-      category: "Laws"
+      category: "Laws",
     },
     {
       name: "Target: Net zero by 2050",
@@ -111,7 +120,7 @@ const COUNTRY: TCountry = {
       name: "End of timeline - no category provided",
       description: "Imported by CPR loader",
       created_ts: "2017-10-08T00:00:00+00:00",
-    }
+    },
   ],
   targets: [
     {
@@ -126,5 +135,16 @@ const COUNTRY: TCountry = {
       base_year: "2020",
       target_year: "2025",
     },
+  ],
+  documents: [
+    {
+      country_code: "JPN",
+      country_name: "Japan",
+      description: "This Act obliges electric utilities to purchase electricity generated from renewable energy sources (solar PV, wind power, hydraulic power, geothermal and biomass) based on a fixed-period contract with a fixed price. Costs incurred by the utility in purchasing renewable energy sourced electricity shall be transferred to all electricity customers, who pay the 'surcharge for renewable energy' in general proportional to electricity usage. Utility companies users that had been severely affected by the 2011 tsunami and earthquakes are exempted.  A committee to calculate purchasing price is established under this law, which consists of 5 members with expertise in electricity business and economy, appointed by the Minister of Economy, Trade and Industry upon approval of both chambers of the Parliament.The Act was amended on June 12, 2020, by the Act on Partial Amendment of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems. This document establishes 1) a Feed-in-Premium (FIP) scheme in addition to the existing FIT scheme 2) a system in which part of the expenditures for fortifying electricity grids necessary for expanding the introduction of renewable energy into businesses, e.g., regional interconnection lines, which regional electricity transmission/distribution businesses bear under the current Act, is to be supported based on the surcharge system across Japan, 3) obligations on renewable energy generators to establish an external reserve fund for the expenditures for discarding their facilities for generating renewable energy as a measure for addressing concerns over inappropriate discarding of PV facilities, 4) the obligation to maintain funds for decommissioning purposes, and 5) a modification of the FIT scheme.",
+      name: "Cabinet Decision on the Bill for the Act of Partial Revision of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems",
+      publication_ts: "2020-01-01T00:00:00",
+      related_id: 12379,
+      category: "Laws"
+    }
   ],
 };

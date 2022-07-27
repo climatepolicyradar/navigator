@@ -21,6 +21,7 @@ export type TCountry = {
   cases: number;
   events: TEvent[];
   targets: TTarget[];
+  documents: TAssociatedDocument[];
 };
 
 export type TTarget = {
@@ -30,11 +31,21 @@ export type TTarget = {
   target_year: string;
 };
 
-export type TEventCategory = "Laws" | "Policies" | "Cases" | "Targets";
+export type TCategory = "Laws" | "Policies" | "Cases" | "Targets";
 
 export type TEvent = {
   name: string;
   created_ts: string;
   description: string;
-  category?: TEventCategory;
+  category?: TCategory;
 };
+
+export type TAssociatedDocument = {
+  country_code: string;
+  country_name: string;
+  description: string;
+  name: string;
+  publication_ts: string;
+  related_id: number;
+  category?: TCategory;
+}

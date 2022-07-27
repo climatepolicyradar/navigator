@@ -1,6 +1,6 @@
-import { TEvent, TEventCategory } from "@types";
-import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
+import { TEvent } from "@types";
 import { convertDate } from "@utils/timedate";
+import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
 
 interface EventProps {
   event: TEvent;
@@ -25,32 +25,13 @@ const Event = ({ event, last, index }: EventProps) => {
     </div>
   );
 
-  const renderIcon = (category: TEventCategory) => {
-    let icon: JSX.Element;
-    switch (category) {
-      case "Cases":
-        icon = <CaseIcon height="22" width="22" />;
-        break;
-      case "Laws":
-        icon = <LawIcon height="22" width="22" />;
-        break;
-      case "Policies":
-        icon = <PolicyIcon height="22" width="22" />;
-        break;
-      case "Targets":
-        icon = <TargetIcon height="22" width="22" />;
-        break;
-    }
-    return icon;
-  };
-
   return (
     <div className={`text-center w-[140px] relative flex-shrink-0`}>
       <div className={`h-[2px] bg-blue-600 absolute top-1/2 translate-y-[-1px] z-0 ${timelineStyles}`} />
       <div className="flex items-end justify-center h-[100px]">{!even && renderText(name, month + " " + year)}</div>
       <div className="flex place-content-center h-full relative z-10">
         <div className="circle-container">
-          {category ? <div className="circle-icon">{renderIcon(category)}</div> : <div className={index === 0 || last ? "circle-full" : "circle-empty"}></div>}
+          {category ? <div className="circle-icon">{getCategoryIcon(category, "22")}</div> : <div className={index === 0 || last ? "circle-full" : "circle-empty"}></div>}
         </div>
       </div>
       <div className="flex items-start justify-center h-[100px]">{even && renderText(name, month + " " + year)}</div>
