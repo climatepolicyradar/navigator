@@ -1,15 +1,12 @@
 import { FC } from "React";
 import { TCountry, TTarget, TEvent } from "@types";
 import Layout from "@components/layouts/Main";
+import { SingleCol } from "@components/SingleCol";
 import Event from "@components/blocks/Event";
 import { Timeline } from "@components/blocks/Timeline";
 import { CountryHeader } from "@components/blocks/CountryHeader";
 import { KeyDetail } from "@components/KeyDetail";
 import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
-
-const SingleColumn: FC = ({ children }) => {
-  return <div className="mt-8 mx-auto max-w-screen-lg">{children}</div>;
-};
 
 type TTargets = {
   targets: TTarget[];
@@ -39,7 +36,7 @@ const CountryPage = () => {
     <Layout title={`Climate Policy Radar | ${country.name}`}>
       <section className="mb-8">
         <CountryHeader country={country} />
-        <SingleColumn>
+        <SingleCol>
           <div className="grid grid-cols-2 md:grid-cols-3 gap-px rounded">
             <KeyDetail detail="Laws" amount={country.laws} icon={<LawIcon />} />
             <KeyDetail detail="Policies" amount={country.policies} icon={<PolicyIcon />} />
@@ -62,7 +59,7 @@ const CountryPage = () => {
             </h3>
             <Targets targets={country.targets} />
           </div>
-        </SingleColumn>
+        </SingleCol>
       </section>
     </Layout>
   );
