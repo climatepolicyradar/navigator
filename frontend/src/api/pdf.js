@@ -29,6 +29,7 @@ class ViewSDKClient {
   }
 
   previewFile(doc, divId, viewerConfig) {
+    if(!doc) return;
     const config = {
       /* Pass your registered client id */
       clientId: process.env.NEXT_PUBLIC_ADOBE_API_KEY,

@@ -1,22 +1,16 @@
-import React, { ReactNode } from 'react';
-import Head from 'next/head';
-import Header from '../headers/Main';
-import Banner from '../banner/Main';
-import Footer from '../footer/Footer';
+import React, { FC } from "react";
+import Head from "next/head";
+import Header from "../headers/Main";
+import Banner from "../banner/Main";
+import Footer from "../footer/Footer";
 
-type Props = {
-  children?: ReactNode;
+type TProps = {
   title?: string;
   heading?: string;
   screenHeight?: boolean;
 };
 
-const Layout = ({
-  children,
-  title = 'This is the default title',
-  heading = '',
-  screenHeight = false,
-}: Props) => (
+const Layout: FC<TProps> = ({ children, title = "", screenHeight = false }) => (
   <div className="h-full flex flex-col">
     <Head>
       <title>{title}</title>
@@ -27,7 +21,7 @@ const Layout = ({
       Skip to content
     </a>
     <Header />
-    <main className={`${screenHeight ? 'h-screen' : ''} flex flex-col flex-1`}>
+    <main className={`${screenHeight ? "h-screen" : ""} flex flex-col flex-1`}>
       <Banner />
       {children}
     </main>

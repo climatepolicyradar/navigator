@@ -12,7 +12,7 @@ const Methodology = () => {
       {!user ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Climate Policy Radar | ${t('Cookie policy')}`}>
+        <Layout title={`Climate Policy Radar | ${t('Methodology')}`}>
           <section>
             <div className="text-content px-4 container mb-12">
               <h1 className="my-8">Methodology</h1>

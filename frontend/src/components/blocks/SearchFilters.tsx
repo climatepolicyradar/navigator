@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
-import { currentYear, minYear } from "../../constants/timedate";
 import ByTextInput from "../filters/ByTextInput";
 import BySelect from "../filters/BySelect";
 import MultiList from "../filters/MultiList";
 import ExactMatch from "../filters/ExactMatch";
 import ByDateRange from "../filters/ByDateRange";
+import { currentYear, minYear } from "@constants/timedate";
+import { TSector } from "@types";
 
 interface SearchFiltersProps {
-  handleFilterChange(type: string, value: string, action: string): void;
+  handleFilterChange(type: string, value: string, action?: string): void;
   handleYearChange(values: number[]): void;
   handleRegionChange(type: any, regionName: any): void;
   handleClearSearch(): void;
@@ -17,7 +18,7 @@ interface SearchFiltersProps {
   searchCriteria: any;
   regions: object[];
   filteredCountries: object[];
-  sectors: object[];
+  sectors: TSector[];
   documentTypes: object[];
   instruments: object[];
 }
@@ -38,7 +39,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
     const { t } = useTranslation("searchResults");
 
     const {
-      keyword_filters: { countries: countryFilters = [] },
+      keyword_filters: { countries: countryFilters = [], sectors: sectorFilters = [] },
     } = searchCriteria;
 
     const thisYear = currentYear();
@@ -91,13 +92,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = React.memo(
           </div>
           <div className="relative mt-6">
             <BySelect
-              list={sectors}
+              list={sectors.filter(sector => !sectorFilters.includes(sector.name))}
               onChange={handleFilterChange}
-              defaultValue={searchCriteria.keyword_filters?.sectors ? searchCriteria.keyword_filters.sectors[0] : ""}
               title={t("By sector")}
               keyField="name"
               filterType="sectors"
+              defaultValue=""
+              defaultText={sectorFilters.length ? "Add more sectors" : "All"}
             />
+            <MultiList list={sectorFilters} removeFilter={handleFilterChange} type="sectors" />
           </div>
           <div className="relative mt-8 mb-12">
             <div className="">

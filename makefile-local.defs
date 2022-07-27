@@ -19,6 +19,12 @@ ifneq (,$(wildcard ./.env))
 	exit 1
 endif
 
+opensearch_test_data:
+	rm -r ./search-index/test/data/test_opensearch_*.dump*
+	elasticdump --input=http://admin:admin@localhost:9200 --output=./search-index/test/data/test_opensearch_data.dump.gz --type=data --fsCompress --input-index=navigator
+	elasticdump --input=http://admin:admin@localhost:9200 --output=./search-index/test/data/test_opensearch_mapping.dump --type=mapping --input-index=navigator
+	elasticdump --input=http://admin:admin@localhost:9200 --output=./search-index/test/data/test_opensearch_analyzer.dump --type=analyzer --input-index=navigator
+
 dev_install: check_dev_environment
 	# Sets up a local dev environment
 

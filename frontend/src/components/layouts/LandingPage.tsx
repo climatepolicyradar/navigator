@@ -6,13 +6,12 @@ import Summary from "../blocks/Summary";
 import Partners from "../blocks/Partners";
 import Footer from "../footer/Footer";
 
-type Props = {
+type TProps = {
   children?: ReactNode;
   title?: string;
-  heading: string;
 };
 
-const Layout = ({ children, title = "This is the default title" }: Props) => (
+const Layout = ({ children, title = "" }: TProps) => (
   <div>
     <Head>
       <title>{title}</title>

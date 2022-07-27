@@ -10,7 +10,7 @@ interface ByTextInputProps {
   selectedList: string[];
   keyField: string;
   filterType: string;
-  handleFilterChange(filterType: string, value: string, action: string): void;
+  handleFilterChange(filterType: string, value: string, action?: string): void;
 }
 
 const ByTextInput = ({

@@ -1,5 +1,4 @@
 import { useEffect, useState, useRef } from "react";
-import { useRouter } from "next/router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "@api/auth";
 import { useDidUpdateEffect } from "@hooks/useDidUpdateEffect";
@@ -94,6 +93,12 @@ const Search = () => {
     setPageNumber(1);
   };
 
+  const resetSlideOut = (slideOut?: boolean) => {
+    setShowPDF(false);
+    setPassageIndex(null);
+    setShowSlideout(slideOut ?? !showSlideout);
+  };
+
   const handleRegionChange = (type, regionName) => {
     handleFilterChange(type, regionName);
     updateCountries.mutate({
@@ -170,13 +175,15 @@ const Search = () => {
 
     // keep panel open if clicking a different document
     if (document?.document_id != id) {
-      setShowSlideout(true);
+      // setShowSlideout(true);
+      resetSlideOut(true);
     } else {
-      setShowSlideout(!showSlideout);
+      // setShowSlideout(!showSlideout);
+      resetSlideOut();
     }
     updateDocument.mutate(id);
 
-    setShowPDF(false);
+    // setShowPDF(false);
   };
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
@@ -252,16 +259,24 @@ const Search = () => {
       ) : (
         <Layout title={`Climate Policy Radar | ${t("Law and Policy Search")}`} heading={t("Law and Policy Search")}>
           <div onClick={handleDocumentClick}>
-            <Slideout ref={slideoutRef} show={showSlideout} setShowSlideout={setShowSlideout}>
+            <Slideout ref={slideoutRef} show={showSlideout} setShowSlideout={resetSlideOut}>
               <div className="flex flex-col h-full relative">
-                <DocumentSlideout document={document} setShowPDF={setShowPDF} showPDF={showPDF} setPassageIndex={setPassageIndex} />
-                {showPDF ? (
+                <DocumentSlideout document={document} showPDF={showPDF} setShowPDF={setShowPDF} />
+                {/* {showPDF ? (
                   <div className="mt-4 px-6 flex-1">
                     <EmbeddedPDF document={document} passageIndex={passageIndex} setShowPDF={setShowPDF} />
                   </div>
                 ) : (
                   <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
-                )}
+                )} */}
+                <div className="flex flex-col md:flex-row flex-1 h-0">
+                  <div className={`${showPDF ? "hidden" : "block"} md:block md:w-1/3 overflow-y-scroll`}>
+                    <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
+                  </div>
+                  <div className={`${showPDF ? "block" : "hidden"} md:block md:w-2/3 mt-4 px-6 flex-1`}>
+                    <EmbeddedPDF document={document} passageIndex={passageIndex} />
+                  </div>
+                </div>
               </div>
             </Slideout>
             {showSlideout && <div className="w-full h-full bg-overlayWhite fixed top-0 z-30" />}
