@@ -1,4 +1,5 @@
-import { TEvent } from "@types";
+import { TEvent, TEventCategory } from "@types";
+import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
 import { convertDate } from "@utils/timedate";
 
 interface EventProps {
@@ -8,7 +9,7 @@ interface EventProps {
 }
 
 const Event = ({ event, last, index }: EventProps) => {
-  const { name, created_ts } = event;
+  const { name, created_ts, category } = event;
   const [year, _, month] = convertDate(created_ts);
 
   const even = (index + 1) % 2 === 0;
@@ -24,13 +25,32 @@ const Event = ({ event, last, index }: EventProps) => {
     </div>
   );
 
+  const renderIcon = (category: TEventCategory) => {
+    let icon: JSX.Element;
+    switch (category) {
+      case "Cases":
+        icon = <CaseIcon height="22" width="22" />;
+        break;
+      case "Laws":
+        icon = <LawIcon height="22" width="22" />;
+        break;
+      case "Policies":
+        icon = <PolicyIcon height="22" width="22" />;
+        break;
+      case "Targets":
+        icon = <TargetIcon height="22" width="22" />;
+        break;
+    }
+    return icon;
+  };
+
   return (
     <div className={`text-center w-[140px] relative flex-shrink-0`}>
-      <div className={`h-[2px] bg-blue-500 absolute top-1/2 translate-y-[-1px] z-0 ${timelineStyles}`} />
+      <div className={`h-[2px] bg-blue-600 absolute top-1/2 translate-y-[-1px] z-0 ${timelineStyles}`} />
       <div className="flex items-end justify-center h-[100px]">{!even && renderText(name, month + " " + year)}</div>
       <div className="flex place-content-center h-full relative z-10">
         <div className="circle-container">
-          <div className={index === 0 || last ? "circle-large" : "circle-small"}></div>
+          {category ? <div className="circle-icon">{renderIcon(category)}</div> : <div className={index === 0 || last ? "circle-full" : "circle-empty"}></div>}
         </div>
       </div>
       <div className="flex items-start justify-center h-[100px]">{even && renderText(name, month + " " + year)}</div>
