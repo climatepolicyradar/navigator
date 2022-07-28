@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { TCountry, TTarget, TEvent } from "@types";
 import Layout from "@components/layouts/Main";
 import { SingleCol } from "@components/SingleCol";
@@ -6,7 +7,10 @@ import { Timeline } from "@components/blocks/Timeline";
 import { CountryHeader } from "@components/blocks/CountryHeader";
 import { KeyDetail } from "@components/KeyDetail";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
+import TabbedNav from "@components/nav/TabbedNav";
+import Sort from "@components/filters/Sort";
 import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
+import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
 
 type TTargets = {
   targets: TTarget[];
@@ -31,8 +35,19 @@ const Targets = ({ targets }: TTargets) => {
 };
 
 const CountryPage = () => {
+  const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
+  const documentCategories = DOCUMENT_CATEGORIES;
+
+  const handleDocumentCategoryClick = (e: any) => {
+    return false;
+  }
+  const handleSortClick = (e: any) => {
+    return false;
+  }
+
   // TODO: replace with API lookup
   const country = COUNTRY;
+
   return (
     <Layout title={`Climate Policy Radar | ${country.name}`}>
       <section className="mb-8">
@@ -66,8 +81,16 @@ const CountryPage = () => {
           )}
           <section className="mt-12">
             <h3>Documents</h3>
+            <div className="mt-4 md:flex">
+              <div className="flex-grow">
+                <TabbedNav activeIndex={selectedCategoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} indent={false} />
+              </div>
+              <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
+                <Sort defaultValue="" updateSort={handleSortClick} />
+              </div>
+            </div>
             {country.documents.map((doc) => (
-              <div key={doc.related_id} className="my-4">
+              <div key={doc.related_id} className="mt-4 mb-10">
                 <RelatedDocument document={doc} />
               </div>
             ))}
@@ -98,25 +121,25 @@ const COUNTRY: TCountry = {
       name: "Policy event happened",
       created_ts: "2016-01-28T00:00:00+00:00",
       description: "Description test",
-      category: "Policies",
+      category: "Policy",
     },
     {
       name: "Case made",
       description: "The publication date",
       created_ts: "2016-01-12T00:00:00+00:00",
-      category: "Cases",
+      category: "Case",
     },
     {
       name: "Law passed",
       description: "Imported by CPR loader",
       created_ts: "2016-12-01T00:00:00+00:00",
-      category: "Laws",
+      category: "Law",
     },
     {
       name: "Target: Net zero by 2050",
       description: "Imported by CPR loader",
       created_ts: "2017-06-08T00:00:00+00:00",
-      category: "Targets",
+      category: "Target",
     },
     {
       name: "End of timeline - no category provided",
@@ -147,7 +170,27 @@ const COUNTRY: TCountry = {
       name: "Cabinet Decision on the Bill for the Act of Partial Revision of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems",
       publication_ts: "2020-01-01T00:00:00",
       related_id: 12379,
-      category: "Laws",
+      category: "Law",
+    },
+    {
+      country_code: "GBR",
+      country_name: "United Kingdom",
+      description:
+        "This Act obliges electric utilities to purchase electricity generated from renewable energy sources (solar PV, wind power, hydraulic power, geothermal and biomass) based on a fixed-period contract with a fixed price. Costs incurred by the utility in purchasing renewable energy sourced electricity shall be transferred to all electricity customers, who pay the 'surcharge for renewable energy' in general proportional to electricity usage. Utility companies users that had been severely affected by the 2011 tsunami and earthquakes are exempted.  A committee to calculate purchasing price is established under this law, which consists of 5 members with expertise in electricity business and economy, appointed by the Minister of Economy, Trade and Industry upon approval of both chambers of the Parliament.The Act was amended on June 12, 2020, by the Act on Partial Amendment of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems. This document establishes 1) a Feed-in-Premium (FIP) scheme in addition to the existing FIT scheme 2) a system in which part of the expenditures for fortifying electricity grids necessary for expanding the introduction of renewable energy into businesses, e.g., regional interconnection lines, which regional electricity transmission/distribution businesses bear under the current Act, is to be supported based on the surcharge system across Japan, 3) obligations on renewable energy generators to establish an external reserve fund for the expenditures for discarding their facilities for generating renewable energy as a measure for addressing concerns over inappropriate discarding of PV facilities, 4) the obligation to maintain funds for decommissioning purposes, and 5) a modification of the FIT scheme.",
+      name: "Cabinet Decision on the Bill for the Act of Partial Revision of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems",
+      publication_ts: "2020-01-01T00:00:00",
+      related_id: 12380,
+      category: "Policy",
+    },
+    {
+      country_code: "DEU",
+      country_name: "Germany",
+      description:
+        "This Act obliges electric utilities to purchase electricity generated from renewable energy sources (solar PV, wind power, hydraulic power, geothermal and biomass) based on a fixed-period contract with a fixed price. Costs incurred by the utility in purchasing renewable energy sourced electricity shall be transferred to all electricity customers, who pay the 'surcharge for renewable energy' in general proportional to electricity usage. Utility companies users that had been severely affected by the 2011 tsunami and earthquakes are exempted.  A committee to calculate purchasing price is established under this law, which consists of 5 members with expertise in electricity business and economy, appointed by the Minister of Economy, Trade and Industry upon approval of both chambers of the Parliament.The Act was amended on June 12, 2020, by the Act on Partial Amendment of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems. This document establishes 1) a Feed-in-Premium (FIP) scheme in addition to the existing FIT scheme 2) a system in which part of the expenditures for fortifying electricity grids necessary for expanding the introduction of renewable energy into businesses, e.g., regional interconnection lines, which regional electricity transmission/distribution businesses bear under the current Act, is to be supported based on the surcharge system across Japan, 3) obligations on renewable energy generators to establish an external reserve fund for the expenditures for discarding their facilities for generating renewable energy as a measure for addressing concerns over inappropriate discarding of PV facilities, 4) the obligation to maintain funds for decommissioning purposes, and 5) a modification of the FIT scheme.",
+      name: "Cabinet Decision on the Bill for the Act of Partial Revision of the Electricity Business Act and Other Acts for Establishing Resilient and Sustainable Electricity Supply Systems",
+      publication_ts: "2020-01-01T00:00:00",
+      related_id: 12381,
+      category: "Case",
     },
   ],
 };
