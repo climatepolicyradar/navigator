@@ -1,7 +1,8 @@
+import { TDocument } from "@types";
 import Loader from "./Loader";
 
 type TProps = {
-  document: any;
+  document: TDocument;
   setShowPDF: (show: boolean) => void;
   setPassageIndex: (index: number) => void;
 };
@@ -15,7 +16,7 @@ const PassageMatches = ({ document, setShowPDF, setPassageIndex }: TProps) => {
         </div>
       ) : (
         <div className="px-6">
-          {document.document_passage_matches.map((item: any, index: number) => (
+          {document.document_passage_matches.map((item, index: number) => (
             <div
               key={item.text_block_id}
               className="py-4 cursor-pointer"
