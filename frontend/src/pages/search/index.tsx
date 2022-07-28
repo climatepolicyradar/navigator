@@ -83,7 +83,7 @@ const Search = () => {
   const { data: { data: { documents = [] } = [] } = [], data: { data: { hits } = 0 } = 0, isSuccess } = resultsQuery;
 
   const { data: document }: any = ({} = useDocument());
-  const { t, i18n, ready } = useTranslation(["searchStart", "searchResults"]);
+  const { t, ready } = useTranslation(["searchStart", "searchResults"]);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
   const documentCategories = ["All", "Executive", "Legislative", "Litigation"];
@@ -261,14 +261,7 @@ const Search = () => {
           <div onClick={handleDocumentClick}>
             <Slideout ref={slideoutRef} show={showSlideout} setShowSlideout={resetSlideOut}>
               <div className="flex flex-col h-full relative">
-                <DocumentSlideout document={document} showPDF={showPDF} setShowPDF={setShowPDF} />
-                {/* {showPDF ? (
-                  <div className="mt-4 px-6 flex-1">
-                    <EmbeddedPDF document={document} passageIndex={passageIndex} setShowPDF={setShowPDF} />
-                  </div>
-                ) : (
-                  <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
-                )} */}
+                <DocumentSlideout document={document} searchTerm={searchCriteria.query_string} showPDF={showPDF} setShowPDF={setShowPDF} />
                 <div className="flex flex-col md:flex-row flex-1 h-0">
                   <div className={`${showPDF ? "hidden" : "block"} md:block md:w-1/3 overflow-y-scroll`}>
                     <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
