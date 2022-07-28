@@ -32,6 +32,7 @@ import SearchResultList from "@components/blocks/SearchResultList";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { PER_PAGE } from "@constants/paging";
 import { calculatePageCount } from "@utils/paging";
+import { TDocument } from "@types";
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -82,7 +83,7 @@ const Search = () => {
   const resultsQuery: any = useSearch("searches", searchCriteria);
   const { data: { data: { documents = [] } = [] } = [], data: { data: { hits } = 0 } = 0, isSuccess } = resultsQuery;
 
-  const { data: document }: any = ({} = useDocument());
+  const { data: document }: { data: TDocument } = ({} = useDocument());
   const { t, ready } = useTranslation(["searchStart", "searchResults"]);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 

@@ -1,12 +1,13 @@
 import Link from "next/link";
+import { TDocument } from "@types";
 import ToggleDocumentMenu from "../menus/ToggleDocumentMenu";
 import TextLink from "../nav/TextLink";
 
 type TProps = {
-  document: any;
+  document: TDocument;
   searchTerm: string;
   showPDF: boolean;
-  setShowPDF: (show: boolean) => void;
+  setShowPDF: (show?: boolean) => void;
 };
 
 const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps) => {
