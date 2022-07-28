@@ -29,9 +29,10 @@ import EmbeddedPDF from "@components/EmbeddedPDF";
 import DocumentSlideout from "@components/headers/DocumentSlideout";
 import Pagination from "@components/pagination";
 import SearchResultList from "@components/blocks/SearchResultList";
+import { calculatePageCount } from "@utils/paging";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { PER_PAGE } from "@constants/paging";
-import { calculatePageCount } from "@utils/paging";
+import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -86,7 +87,7 @@ const Search = () => {
   const { t, i18n, ready } = useTranslation(["searchStart", "searchResults"]);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
-  const documentCategories = ["All", "Executive", "Legislative", "Litigation"];
+  const documentCategories = DOCUMENT_CATEGORIES;
 
   const resetPaging = () => {
     setOffset(0);
@@ -324,26 +325,6 @@ const Search = () => {
                     <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
                       <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} />
                     </div>
-                    {/* Hide download button until this functionality is implemented in back end */}
-                    {/* <div className="mt-4 md:absolute right-0 top-0 md:-mt-2 flex z-10">
-                      <Button
-                        color="light-hover-dark"
-                        thin={true}
-                        disabled={true}
-                        extraClasses="text-sm"
-                      >
-                        <div className="flex justify-center py-1">
-                          <DownloadIcon />
-                          <span>Download</span>
-                        </div>
-                      </Button>
-                      <div className="ml-1 mt-1">
-                        <Tooltip
-                          id="download-tt"
-                          tooltip={downloadCSVTooltip}
-                        />
-                      </div>
-                    </div> */}
                   </div>
 
                   <div className="search-results md:pl-8 md:mt-12 relative">

@@ -31,13 +31,17 @@ export type TTarget = {
   target_year: string;
 };
 
-export type TCategory = "Laws" | "Policies" | "Cases" | "Targets";
+
+export type TCategory = "Law" | "Policy" | "Case";
+export type TDisplayCategory = "All" | "Legislative" | "Executive" | "Litigation";
+
+export type TEventCategory = TCategory | & "Target";
 
 export type TEvent = {
   name: string;
   created_ts: string;
   description: string;
-  category?: TCategory;
+  category?: TEventCategory;
 };
 
 export type TAssociatedDocument = {
