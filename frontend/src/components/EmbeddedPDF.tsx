@@ -1,12 +1,13 @@
 import { useRef, useMemo, useEffect } from "react";
 import { v4 as uuidv4 } from "uuid";
 import Script from "next/script";
+import { TDocument } from "@types";
 import { padNumber } from "@utils/timedate";
 import usePDFPreview from "@hooks/usePDFPreview";
 import Loader from "./Loader";
 
 type TProps = {
-  document: any;
+  document: TDocument;
   passageIndex?: number;
 };
 
@@ -77,7 +78,7 @@ const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
       bodyValue: "",
       motivation: "commenting",
       target: {
-        source: document.document_fileid,
+        // source: document.document_fileid,
         selector: {
           node: {
             index,

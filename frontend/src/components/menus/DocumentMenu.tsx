@@ -1,7 +1,13 @@
+import { TDocument } from "@types";
 import DropdownMenuItem from "./DropdownMenuItem";
 import DropdownMenuWrapper from "./DropdownMenuWrapper";
 
-const DocumentMenu = ({ document, setShowMenu }) => {
+type TProps = {
+  document: TDocument;
+  setShowMenu: (show?: boolean) => void;
+};
+
+const DocumentMenu = ({ document, setShowMenu }: TProps) => {
   return (
     <>
       {/* TODO: translate titles */}

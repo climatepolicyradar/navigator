@@ -1,8 +1,16 @@
 import Link from "next/link";
+import { TDocument } from "@types";
 import ToggleDocumentMenu from "../menus/ToggleDocumentMenu";
 import TextLink from "../nav/TextLink";
 
-const DocumentSlideout = ({ document, showPDF, setShowPDF }) => {
+type TProps = {
+  document: TDocument;
+  searchTerm: string;
+  showPDF: boolean;
+  setShowPDF: (show?: boolean) => void;
+};
+
+const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps) => {
   if (!document) return null;
 
   const year = document?.document_date.split("/")[2] ?? "";
@@ -27,7 +35,7 @@ const DocumentSlideout = ({ document, showPDF, setShowPDF }) => {
 
               {/* TODO: translate below text, how to handle plurals? */}
               <h3 className="text-indigo-500 text-xl">
-                Document {`match${document.document_passage_matches.length === 1 ? "" : "es"}`} ({document.document_passage_matches.length})
+                Document {`match${document.document_passage_matches.length === 1 ? "" : "es"}`} ({document.document_passage_matches.length}) for "{searchTerm}"
               </h3>
             </div>
             <ToggleDocumentMenu document={document} />

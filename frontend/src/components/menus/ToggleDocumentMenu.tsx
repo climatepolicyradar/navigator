@@ -1,9 +1,14 @@
 import { useState, useRef } from "react";
-import useOutsideAlerter from "../../hooks/useOutsideAlerter";
+import { TDocument } from "@types";
+import useOutsideAlerter from "@hooks/useOutsideAlerter";
 import Kebab from "../buttons/Kebab";
 import DocumentMenu from "./DocumentMenu";
 
-const ToggleDocumentMenu = ({ document }) => {
+type TProps = {
+  document: TDocument;
+};
+
+const ToggleDocumentMenu = ({ document }: TProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   useOutsideAlerter(menuRef, () => setShowMenu(false));
