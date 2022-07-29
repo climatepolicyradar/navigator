@@ -3,7 +3,7 @@ import Loader from "./Loader";
 
 type TProps = {
   document: TDocument;
-  setShowPDF: (show: boolean) => void;
+  setShowPDF: (show?: boolean) => void;
   setPassageIndex: (index: number) => void;
 };
 
