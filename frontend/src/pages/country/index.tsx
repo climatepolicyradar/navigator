@@ -79,7 +79,7 @@ const CountryPage = () => {
                   <span className="mr-2">
                     <TargetIcon />
                   </span>
-                  Targets ({targets.length})
+                  Targets ({country.targets.length})
                 </h3>
                 <Targets targets={targets} />
               </div>
