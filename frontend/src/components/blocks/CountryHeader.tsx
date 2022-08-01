@@ -13,7 +13,7 @@ export const CountryHeader = ({ country }: TProps) => {
       <div className="container flex items-end justify-between overflow-hidden">
         <div className="md:max-w-lg flex-shrink-0">
           <h1>{short_name}</h1>
-          <div className="grid grid-cols-2 gap-2 items-center">
+          <div className="grid grid-cols-2 gap-4 items-center">
             <div className="font-semibold text-blue-700 text-xl">{continent}</div>
             <div className="font-semibold text-blue-700 text-xl">
               {legal_structure} <span className="font-light text-lg">({legal_bodies})</span>

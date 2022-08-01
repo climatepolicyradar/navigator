@@ -6,6 +6,8 @@ import Event from "@components/blocks/Event";
 import { Timeline } from "@components/blocks/Timeline";
 import { CountryHeader } from "@components/blocks/CountryHeader";
 import { KeyDetail } from "@components/KeyDetail";
+import { Divider } from "@components/dividers/Divider";
+import Button from "@components/buttons/Button";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
 import Sort from "@components/filters/Sort";
@@ -40,10 +42,10 @@ const CountryPage = () => {
 
   const handleDocumentCategoryClick = (e: any) => {
     return false;
-  }
+  };
   const handleSortClick = (e: any) => {
     return false;
-  }
+  };
 
   // TODO: replace with API lookup
   const country = COUNTRY;
@@ -79,6 +81,9 @@ const CountryPage = () => {
               </div>
             </section>
           )}
+          <div className="mt-12">
+            <Divider><Button color="secondary" wider>See more</Button></Divider>
+          </div>
           <section className="mt-12">
             <h3>Documents</h3>
             <div className="mt-4 md:flex">
@@ -117,6 +122,16 @@ const COUNTRY: TCountry = {
   policies: 4,
   cases: 11,
   events: [
+    {
+      name: "Start of timeline",
+      created_ts: "2015-01-01T00:00:00+00:00",
+      description: "Description test",
+    },
+    {
+      name: "Normal event with no category",
+      description: "The publication date",
+      created_ts: "2016-01-12T00:00:00+00:00",
+    },
     {
       name: "Policy event happened",
       created_ts: "2016-01-28T00:00:00+00:00",

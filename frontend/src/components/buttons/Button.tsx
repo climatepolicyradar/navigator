@@ -5,12 +5,13 @@ interface ButtonProps {
   type?: "button" | "submit" | "reset";
   disabled?: boolean;
   onClick?(event: React.FormEvent<HTMLButtonElement>): void;
-  color?: "dark" | "light" | "clear" | "light-hover-dark";
+  color?: "dark" | "light" | "clear" | "light-hover-dark" | "secondary";
   id?: string;
   extraClasses?: string;
   "data-cy"?: string;
   fullWidth?: boolean;
   thin?: boolean;
+  wider?: boolean;
 }
 
 const Button = ({
@@ -23,12 +24,16 @@ const Button = ({
   extraClasses = "",
   fullWidth = false,
   thin = false,
+  wider = false,
   ...props
 }: ButtonProps) => {
   let colorClasses = "bg-indigo-600 text-white border border-indigo-600 hover:bg-white hover:border-white hover:text-indigo-600";
   switch (color) {
     case "light":
       colorClasses = "bg-blue-500 border border-blue-500 text-white hover:bg-white hover:border-white hover:text-indigo-600";
+      break;
+    case "secondary":
+      colorClasses = "bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white";
       break;
     case "light-hover-dark":
       colorClasses = "bg-blue-500 border border-blue-500 text-white hover:bg-indigo-600 hover:border-indigo-600 hover:text-white";
@@ -47,7 +52,7 @@ const Button = ({
       type={type}
       disabled={disabled}
       data-cy={props["data-cy"]}
-      className={`${colorClasses} ${thin ? "py-1" : "py-3"} button transition duration-300 px-4 rounded-3xl md:px-8 pointer-events-auto w-full ${
+      className={`${colorClasses} ${thin ? "py-1" : "py-3"} ${wider ? "md:px-12" : "md:px-8"} button transition duration-300 px-4 rounded-xl pointer-events-auto w-full ${
         disabled ? "pointer-events-none bg-indigo-300 text-indigo-200 border-indigo-300 hover:bg-indigo-300 hover:text-indigo-200 hover:border-indigo-300" : ""
       } ${extraClasses} ${!fullWidth ? "md:w-auto" : ""}`}
       {...props}
