@@ -7,6 +7,7 @@ import { Timeline } from "@components/blocks/Timeline";
 import { CountryHeader } from "@components/blocks/CountryHeader";
 import { KeyDetail } from "@components/KeyDetail";
 import { Divider } from "@components/dividers/Divider";
+import { RightArrowIcon } from "@components/svg/Icons";
 import Button from "@components/buttons/Button";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
@@ -37,8 +38,12 @@ const Targets = ({ targets }: TTargets) => {
 };
 
 const CountryPage = () => {
+  // TODO: replace with API lookup
+  const country = COUNTRY;
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
+  const [showAllTargets, setShowAllTargets] = useState(false);
   const documentCategories = DOCUMENT_CATEGORIES;
+  const TARGETS_SHOW = 2;
 
   const handleDocumentCategoryClick = (e: any) => {
     return false;
@@ -47,8 +52,7 @@ const CountryPage = () => {
     return false;
   };
 
-  // TODO: replace with API lookup
-  const country = COUNTRY;
+  const targets = showAllTargets ? country.targets : country.targets.slice(0, TARGETS_SHOW);
 
   return (
     <Layout title={`Climate Policy Radar | ${country.name}`}>
@@ -68,22 +72,28 @@ const CountryPage = () => {
               ))}
             </Timeline>
           </section>
-          {country.targets.length && (
+          {country.targets && (
             <section className="mt-12">
               <div>
                 <h3 className="flex mb-4">
                   <span className="mr-2">
                     <TargetIcon />
                   </span>
-                  Targets ({country.targets.length})
+                  Targets ({targets.length})
                 </h3>
-                <Targets targets={country.targets} />
+                <Targets targets={targets} />
               </div>
             </section>
           )}
-          <div className="mt-12">
-            <Divider><Button color="secondary" wider>See more</Button></Divider>
-          </div>
+          {!showAllTargets && country.targets.length > TARGETS_SHOW && (
+            <div className="mt-12">
+              <Divider>
+                <Button color="secondary" wider onClick={() => setShowAllTargets(true)}>
+                  See more
+                </Button>
+              </Divider>
+            </div>
+          )}
           <section className="mt-12">
             <h3>Documents</h3>
             <div className="mt-4 md:flex">
@@ -100,6 +110,16 @@ const CountryPage = () => {
               </div>
             ))}
           </section>
+          <div className="mt-12">
+            <Divider>
+              <Button color="secondary" extraClasses="flex items-center">
+                See more
+                <span className="ml-8">
+                  <RightArrowIcon height="20" width="20" />
+                </span>
+              </Button>
+            </Divider>
+          </div>
         </SingleCol>
       </section>
     </Layout>
@@ -171,6 +191,42 @@ const COUNTRY: TCountry = {
     },
     {
       target: "Another target",
+      group: "Group label",
+      base_year: "2020",
+      target_year: "2025",
+    },
+    {
+      target: "80% GHG emission reduction by 2050 compared with a baseline2",
+      group: "Group label",
+      base_year: "2008",
+      target_year: "2030",
+    },
+    {
+      target: "Another target2",
+      group: "Group label",
+      base_year: "2020",
+      target_year: "2025",
+    },
+    {
+      target: "80% GHG emission reduction by 2050 compared with a baseline3",
+      group: "Group label",
+      base_year: "2008",
+      target_year: "2030",
+    },
+    {
+      target: "Another target3",
+      group: "Group label",
+      base_year: "2020",
+      target_year: "2025",
+    },
+    {
+      target: "80% GHG emission reduction by 2050 compared with a baseline4",
+      group: "Group label",
+      base_year: "2008",
+      target_year: "2030",
+    },
+    {
+      target: "Another target4",
       group: "Group label",
       base_year: "2020",
       target_year: "2025",
