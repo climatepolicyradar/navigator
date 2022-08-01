@@ -178,3 +178,6 @@ dmypy.json
 
 # Mac OS files
 .DS_Store
+
+# If you are developing locally you might have this:
+models
