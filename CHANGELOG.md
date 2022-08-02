@@ -1,5 +1,11 @@
 # Releases
 
+## Future
+
+* Squash migrations to remove data migrations (to be done with separate SQL scripts)
+    Process to deploy should be to remove the single row in `alembic_version`.
+    After the migrations are run this should become `0001`
+
 ## v0.9.6-alpha
 
 * Enable self-registration

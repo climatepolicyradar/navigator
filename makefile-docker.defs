@@ -27,16 +27,10 @@ up:
 # ----------------------------------
 
 migrations_docker_backend:
-	# Run database migrations when using docker for development
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic upgrade head
 	# Create initial data in database
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 app/initial_data.py
 
-migrations_docker_loader:
-	# Run database migrations when using docker for development
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic upgrade head
-
-migrations: migrations_docker_backend migrations_docker_loader
+migrations: migrations_docker_backend 
 
 %:
 	@:
