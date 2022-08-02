@@ -3,7 +3,6 @@ import logging
 from fastapi import (
     HTTPException,
 )
-from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
@@ -28,6 +27,49 @@ from app.db.models import (
 from app.db.schemas.document import DocumentCreateWithMetadata
 
 logger = logging.getLogger(__file__)
+
+
+class UnknownMetadataError(Exception):
+    """Base class for metadata lookup errors."""
+
+    pass
+
+
+class UnknownSectorError(UnknownMetadataError):
+    """Error raised when a sector cannot be found in the database."""
+
+    def __init__(self, sector: str) -> None:
+        super().__init__(f"The sector '{sector}' could not be found in the database")
+
+
+class UnknownInstrumentError(UnknownMetadataError):
+    """Error raised when an instrument cannot be found in the database."""
+
+    def __init__(self, instrument: str) -> None:
+        super().__init__(
+            f"The instrument '{instrument}' could not be found in the database"
+        )
+
+
+class UnknownHazardError(UnknownMetadataError):
+    """Error raised when a hazard cannot be found in the database."""
+
+    def __init__(self, hazard: str) -> None:
+        super().__init__(f"The hazard '{hazard}' could not be found in the database")
+
+
+class UnknownResponseError(UnknownMetadataError):
+    """Error raised when a response cannot be found in the database."""
+
+    def __init__(self, response: str) -> None:
+        super().__init__(f"The  '{response}' could not be found in the database")
+
+
+class UnknownKeywordError(UnknownMetadataError):
+    """Error raised when a keyword cannot be found in the database."""
+
+    def __init__(self, keyword: str) -> None:
+        super().__init__(f"The  '{keyword}' could not be found in the database")
 
 
 def persist_document_and_metadata(
@@ -57,11 +99,11 @@ def write_metadata(
 ):
     # doc language
     for language_id in document_with_metadata.language_ids:
-        db_doc_lang = DocumentLanguage(
+        doc_language = DocumentLanguage(
             language_id=language_id,
             document_id=db_document.id,
         )
-        db.add(db_doc_lang)
+        db.add(doc_language)
 
     # events
     for event in document_with_metadata.events:
@@ -73,147 +115,104 @@ def write_metadata(
         )
         db.add(db_event)
 
-    # sectors
-    for meta in document_with_metadata.sectors:
-        insert_stmt = insert(Sector).values(
-            # parent_id=TODO,
-            name=meta.name,
-            description=meta.description,
-            source_id=db_document.source_id,
-        )
-        do_nothing_stmt = insert_stmt.on_conflict_do_nothing()
-        return_value = db.execute(do_nothing_stmt)
-        if return_value and return_value.inserted_primary_key:
-            meta_id = return_value.inserted_primary_key[0]
-        else:
-            # This is guaranteed to exist
-            existing_sector = (
-                db.query(Sector)
-                .filter(Sector.name == meta.name)
-                .filter(Sector.source_id == db_document.source_id)
-            ).first()
-            meta_id = existing_sector.id  # type: ignore
+    # TODO: are source IDs really necessary on metadata? Perhaps we really do
+    #       want to keep metadata limited to values from the same source as the
+    #       document, but we should validate this assumption.
 
-        db_bridge = DocumentSector(
-            sector_id=meta_id,
+    # sectors
+    for sector in document_with_metadata.sectors:
+        # A sector should already exist, so fail if we cannot find it
+        existing_sector = (
+            db.query(Sector)
+            .filter(Sector.name == sector.name)
+            .filter(Sector.source_id == db_document.source_id)
+        ).first()
+        if existing_sector is None:
+            raise UnknownSectorError(sector.name)
+
+        sector_id = existing_sector.id  # type: ignore
+        doc_sector = DocumentSector(
+            sector_id=sector_id,
             document_id=db_document.id,
         )
-        db.add(db_bridge)
+        db.add(doc_sector)
 
     # instruments
-    for meta in document_with_metadata.instruments:
-        insert_stmt = insert(Instrument).values(
-            # parent_id=TODO,
-            name=meta.name,
-            description=meta.description,
-            source_id=db_document.source_id,
-        )
-        do_nothing_stmt = insert_stmt.on_conflict_do_nothing()
-        return_value = db.execute(do_nothing_stmt)
-        if return_value and return_value.inserted_primary_key:
-            meta_id = return_value.inserted_primary_key[0]
-        else:
-            # This is guaranteed to exist
-            existing_instrument = (
-                db.query(Instrument)
-                .filter(Instrument.name == meta.name)
-                .filter(Instrument.source_id == db_document.source_id)
-            ).first()
-            meta_id = existing_instrument.id  # type: ignore
+    for instrument in document_with_metadata.instruments:
+        # An instrument should already exist, so fail if we cannot find it
+        existing_instrument = (
+            db.query(Instrument)
+            .filter(Instrument.name == instrument.name)
+            .filter(Instrument.source_id == db_document.source_id)
+        ).first()
+        if existing_instrument is None:
+            raise UnknownInstrumentError(instrument.name)
 
-        db_bridge = DocumentInstrument(
-            instrument_id=meta_id,
+        instrument_id = existing_instrument.id  # type: ignore
+        doc_instrument = DocumentInstrument(
+            instrument_id=instrument_id,
             document_id=db_document.id,
         )
-        db.add(db_bridge)
+        db.add(doc_instrument)
 
     # hazards
-    for meta in document_with_metadata.hazards:
-        insert_stmt = insert(Hazard).values(
-            name=meta.name,
-            description=meta.description,
-        )
-        do_nothing_stmt = insert_stmt.on_conflict_do_nothing()
-        return_value = db.execute(do_nothing_stmt)
-        if return_value and return_value.inserted_primary_key:
-            meta_id = return_value.inserted_primary_key[0]
-        else:
-            # This is guaranteed to exist
-            existing_hazard = (
-                db.query(Hazard).filter(Hazard.name == meta.name)
-            ).first()
-            meta_id = existing_hazard.id  # type: ignore
+    for hazard in document_with_metadata.hazards:
+        # A hazard should already exist, so fail if we cannot find it
+        existing_hazard = (db.query(Hazard).filter(Hazard.name == hazard.name)).first()
+        if existing_hazard is None:
+            raise UnknownHazardError(hazard.name)
 
-        db_bridge = DocumentHazard(
-            hazard_id=meta_id,
+        hazard_id = existing_hazard.id  # type: ignore
+        doc_hazard = DocumentHazard(
+            hazard_id=hazard_id,
             document_id=db_document.id,
         )
-        db.add(db_bridge)
+        db.add(doc_hazard)
 
     # responses
-    for meta in document_with_metadata.responses:
-        insert_stmt = insert(Response).values(
-            name=meta.name,
-            description=meta.description,
-        )
-        do_nothing_stmt = insert_stmt.on_conflict_do_nothing()
-        return_value = db.execute(do_nothing_stmt)
-        if return_value and return_value.inserted_primary_key:
-            meta_id = return_value.inserted_primary_key[0]
-        else:
-            # This is guaranteed to exist
-            existing_sector = (
-                db.query(Response).filter(Response.name == meta.name)
-            ).first()
-            meta_id = existing_sector.id  # type: ignore
+    for response in document_with_metadata.responses:
+        # A response should already exist, so fail if we cannot find it
+        existing_response = (
+            db.query(Response).filter(Response.name == response.name)
+        ).first()
+        if existing_response is None:
+            raise UnknownResponseError(response.name)
 
-        db_bridge = DocumentResponse(
-            response_id=meta_id,
+        response_id = existing_response.id  # type: ignore
+        doc_response = DocumentResponse(
+            response_id=response_id,
             document_id=db_document.id,
         )
-        db.add(db_bridge)
+        db.add(doc_response)
 
     # frameworks
-    for meta in document_with_metadata.frameworks:
-        insert_stmt = insert(Framework).values(
-            name=meta.name,
-            description=meta.description,
-        )
-        do_nothing_stmt = insert_stmt.on_conflict_do_nothing()
-        return_value = db.execute(do_nothing_stmt)
-        if return_value and return_value.inserted_primary_key:
-            meta_id = return_value.inserted_primary_key[0]
-        else:
-            # This is guaranteed to exist
-            existing_framework = (
-                db.query(Framework).filter(Framework.name == meta.name)
-            ).first()
-            meta_id = existing_framework.id  # type: ignore
+    for framework in document_with_metadata.frameworks:
+        # A framework should already exist, so fail if we cannot find it
+        existing_framework = (
+            db.query(Framework).filter(Framework.name == framework.name)
+        ).first()
+        if existing_framework is None:
+            raise UnknownResponseError(framework.name)
 
-        db_bridge = DocumentFramework(
-            framework_id=meta_id,
+        framework_id = existing_framework.id  # type: ignore
+        doc_framework = DocumentFramework(
+            framework_id=framework_id,
             document_id=db_document.id,
         )
-        db.add(db_bridge)
+        db.add(doc_framework)
 
-    for meta in document_with_metadata.keywords:
-        insert_stmt = insert(Keyword).values(
-            name=meta.name,
-            description=meta.description,
-        )
-        do_nothing_stmt = insert_stmt.on_conflict_do_nothing()
-        return_value = db.execute(do_nothing_stmt)
-        if return_value and return_value.inserted_primary_key:
-            meta_id = return_value.inserted_primary_key[0]
-        else:
-            # This is guaranteed to exist
-            existing_keyword = (
-                db.query(Keyword).filter(Keyword.name == meta.name)
-            ).first()
-            meta_id = existing_keyword.id  # type: ignore
+    # keywords
+    for keyword in document_with_metadata.keywords:
+        # A keyword should already exist, so fail if we cannot find it
+        existing_keyword = (
+            db.query(Keyword).filter(Keyword.name == keyword.name)
+        ).first()
+        if existing_keyword is None:
+            raise UnknownKeywordError(keyword.name)
 
-        db_bridge = DocumentKeyword(
-            keyword_id=meta_id,
+        keyword_id = existing_keyword.id  # type: ignore
+        doc_keyword = DocumentKeyword(
+            keyword_id=keyword_id,
             document_id=db_document.id,
         )
-        db.add(db_bridge)
+        db.add(doc_keyword)
