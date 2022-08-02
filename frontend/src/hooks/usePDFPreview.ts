@@ -1,7 +1,8 @@
 import ViewSDKClient from "@api/pdf";
+import { TDocument } from "@types";
 import { PDF_SCROLL_DELAY } from "@constants/document";
 
-export default function usePDFPreview(document: any) {
+export default function usePDFPreview(document: TDocument) {
   const viewerConfig = {
     showDownloadPDF: true,
     showPrintPDF: true,
