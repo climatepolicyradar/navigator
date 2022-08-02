@@ -1,6 +1,7 @@
 import logging
 import os
 from datetime import datetime
+from http.client import INTERNAL_SERVER_ERROR, UNPROCESSABLE_ENTITY
 from pathlib import Path
 from typing import cast
 
@@ -19,7 +20,7 @@ from app.core.auth import (
     get_current_active_db_superuser,
 )
 from app.core.aws import get_s3_client
-from app.core.service.loader import persist_document_and_metadata
+from app.core.service.loader import UnknownMetadataError, persist_document_and_metadata
 from app.core.util import CONTENT_TYPE_MAP, content_type_from_path, s3_to_cdn_url
 from app.db.models import (
     Association,
@@ -68,12 +69,12 @@ from app.db.schemas.metadata import (
 )
 from app.db.session import get_db
 
-logger = logging.getLogger(__file__)
+_LOGGER = logging.getLogger(__file__)
 
-documents_router = r = APIRouter()
+documents_router = APIRouter()
 
 
-@r.get(
+@documents_router.get(
     "/documents/{document_id}",
     response_model=DocumentDetailResponse,
     response_model_exclude_none=True,
@@ -276,7 +277,7 @@ async def get_document_detail(
     )
 
 
-@r.post("/documents", response_model=DocumentInDB)
+@documents_router.post("/documents", response_model=DocumentInDB)
 async def post_document(
     request: Request,
     document_with_metadata: DocumentCreateWithMetadata,
@@ -285,14 +286,20 @@ async def post_document(
 ):
     """Create a document, with associated metadata."""
 
-    db_document = persist_document_and_metadata(
-        db, document_with_metadata, current_user.id
-    )
+    try:
+        db_document = persist_document_and_metadata(
+            db, document_with_metadata, current_user.id
+        )
+    except UnknownMetadataError as e:
+        _LOGGER.exception(f"Could not create document for {document_with_metadata}")
+        raise HTTPException(
+            UNPROCESSABLE_ENTITY, f"Creating the requested document failed: {str(e)}"
+        )
 
     return DocumentInDB.from_orm(db_document)
 
 
-@r.post(
+@documents_router.post(
     "/document",
 )
 def document_upload(
@@ -303,7 +310,7 @@ def document_upload(
 ):
     """Upload a document to the queue bucket."""
     bucket = os.environ.get("DOCUMENT_BUCKET", "cpr-document-queue")
-    logger.info(f"Attempting to upload {file.filename} to {bucket}")
+    _LOGGER.info(f"Attempting to upload {file.filename} to {bucket}")
 
     file_path = Path(file.filename)
 
@@ -320,24 +327,24 @@ def document_upload(
         )
     except Exception:
         raise HTTPException(
-            500,
+            INTERNAL_SERVER_ERROR,
             "Internal Server Error: upload error.",
         )
 
     # If the above function returns False, then the upload has failed.
     if not s3_document:
         raise HTTPException(
-            500,
+            INTERNAL_SERVER_ERROR,
             "Internal Server Error: upload failed.",
         )
 
-    logger.info(f"Document uploaded to cloud at {s3_document.url}")
+    _LOGGER.info(f"Document uploaded to cloud at {s3_document.url}")
     return {
         "url": s3_document.url,
     }
 
 
-@r.post("/associations", response_model=DocumentAssociationInDB)
+@documents_router.post("/associations", response_model=DocumentAssociationInDB)
 async def post_association(
     request: Request,
     document_association: DocumentAssociation,
