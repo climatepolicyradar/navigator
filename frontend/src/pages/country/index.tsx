@@ -1,4 +1,5 @@
 import { useState } from "react";
+import Link from "next/link";
 import { TCountry, TTarget, TEvent } from "@types";
 import Layout from "@components/layouts/Main";
 import { SingleCol } from "@components/SingleCol";
@@ -112,12 +113,14 @@ const CountryPage = () => {
           </section>
           <div className="mt-12">
             <Divider>
-              <Button color="secondary" extraClasses="flex items-center">
-                See more
-                <span className="ml-8">
-                  <RightArrowIcon height="20" width="20" />
-                </span>
-              </Button>
+              <Link href="/search">
+                <Button color="secondary" extraClasses="flex items-center">
+                  See more
+                  <span className="ml-8">
+                    <RightArrowIcon height="20" width="20" />
+                  </span>
+                </Button>
+              </Link>
             </Divider>
           </div>
         </SingleCol>
