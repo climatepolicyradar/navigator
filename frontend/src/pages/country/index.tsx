@@ -101,7 +101,7 @@ const CountryPage = () => {
                 <TabbedNav activeIndex={selectedCategoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} indent={false} />
               </div>
               <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
-                <Sort defaultValue="" updateSort={handleSortClick} />
+                <Sort defaultValue="date:desc" updateSort={handleSortClick} browse />
               </div>
             </div>
             {country.documents.map((doc) => (
