@@ -17,7 +17,7 @@ from app.db.models import (
     Category,
     Keyword,
 )
-from app.db.schemas.document import DocumentAssociation
+from app.dto.document import DocumentAssociation
 
 
 def test_document_upload(

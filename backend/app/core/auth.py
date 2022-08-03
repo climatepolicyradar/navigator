@@ -8,7 +8,7 @@ from app.core import security
 from app.db import session
 from app.db.crud.user import get_user_by_email
 from app.db.models import User
-from app.db.schemas.user import JWTUser
+from app.dto.user import JWTUser
 
 
 CREDENTIALS_EXCEPTION = HTTPException(

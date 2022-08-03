@@ -44,7 +44,7 @@ from app.db.models import (
     Sector,
     Source,
 )
-from app.db.schemas.document import (
+from app.dto.document import (
     DocumentCreateWithMetadata,
     DocumentInDB,
     DocumentDetailResponse,
@@ -52,7 +52,7 @@ from app.db.schemas.document import (
     DocumentAssociationInDB,
     DocumentAssociation,
 )
-from app.db.schemas.metadata import (
+from app.dto.metadata import (
     Category as CategorySchema,
     DocumentType as DocumentTypeSchema,
     Event as EventSchema,

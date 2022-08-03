@@ -1,8 +1,8 @@
 import datetime
 import typing as t
 
-from app.db.schemas import _ValidatedDateComponents
-from app.db.schemas.document import Document, DocumentCreate
+from app.dto import _ValidatedDateComponents
+from app.dto.document import Document, DocumentCreate
 from pydantic import BaseModel, Field
 
 

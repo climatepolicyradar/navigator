@@ -19,7 +19,7 @@ from app.db.crud.password_reset import (
     create_password_reset_token,
     invalidate_existing_password_reset_tokens,
 )
-from app.db.schemas.user import User, UserCreateAdmin
+from app.dto.user import User, UserCreateAdmin
 from app.db.session import get_db
 from app.core.ratelimit import limiter
 

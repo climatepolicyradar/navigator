@@ -6,7 +6,7 @@ from app.core.auth import get_current_active_db_user
 from app.db.crud.user import (
     edit_user,
 )
-from app.db.schemas.user import User, UserCreate
+from app.dto.user import User, UserCreate
 from app.db.session import get_db
 
 users_router = r = APIRouter()

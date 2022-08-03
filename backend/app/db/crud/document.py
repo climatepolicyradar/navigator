@@ -3,7 +3,7 @@ from sqlalchemy import and_, exists
 from sqlalchemy.orm import Session
 
 from app.db.models import Document
-from app.db.schemas.document import DocumentCreate
+from app.dto.document import DocumentCreate
 
 
 def create_document(

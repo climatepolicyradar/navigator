@@ -23,7 +23,7 @@ from app.db.crud.user import (
     get_user,
     get_user_by_email,
 )
-from app.db.schemas.user import ResetPassword, User, UserCreate
+from app.dto.user import ResetPassword, User, UserCreate
 from app.db.session import get_db
 
 unauthenticated_router = r = APIRouter()

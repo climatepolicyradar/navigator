@@ -3,8 +3,8 @@ from typing import List, Optional
 
 from pydantic import BaseModel
 
-from app.db.schemas import _ValidatedDateComponents
-from app.db.schemas.metadata import (
+from app.dto import _ValidatedDateComponents
+from app.dto.metadata import (
     Category,
     DocumentType,
     Event,
