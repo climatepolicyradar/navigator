@@ -8,10 +8,23 @@ from app.core.security import get_password_hash
 from app.db.models import User
 from app.db.session import SessionLocal
 
+from .data_migrations import (
+    populate_document_type,
+    populate_geography,
+    populate_language,
+    populate_source
+)
 
-def create_user(email, password):
-    db = SessionLocal()
+def run_data_migrations(db):
+    """Populate lookup tables with standard values"""
+    populate_source(db)
+    populate_language(db)
+    populate_geography(db)
+    populate_document_type(db)
+    # TODO - framework, keyword, instrument, hazard
 
+
+def create_user(db, email, password):
     db_user = User(
         email=email,
         hashed_password=get_password_hash(password),
@@ -23,21 +36,21 @@ def create_user(email, password):
     db.refresh(db_user)
 
 
-def create_superuser() -> None:
+def create_superuser(db) -> None:
     superuser_email = os.getenv("SUPERUSER_EMAIL")
     try:
-        create_user(superuser_email, os.getenv("SUPERUSER_PASSWORD"))
+        create_user(db, superuser_email, os.getenv("SUPERUSER_PASSWORD"))
     except IntegrityError:
         print(
             f"Skipping - super user already exists with email/username {superuser_email}"
         )
 
 
-def create_loader_machine_user() -> None:
+def create_loader_machine_user(db) -> None:
     machineuser_email = os.getenv("MACHINE_USER_LOADER_EMAIL")
     try:
 
-        create_user(
+        create_user(db,
             machineuser_email,
             os.getenv("MACHINE_USER_LOADER_PASSWORD"),
         )
@@ -49,6 +62,9 @@ def create_loader_machine_user() -> None:
 
 if __name__ == "__main__":
     print("Creating initial data...")
-    create_superuser()
-    create_loader_machine_user()
+    db = SessionLocal()
+
+    create_superuser(db)
+    create_loader_machine_user(db)
+    run_data_migrations(db)
     print("Done creating initial data")
