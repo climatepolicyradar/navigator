@@ -12,9 +12,6 @@ _incomparable_lines = {
 }
 
 logger = logging.getLogger(__name__)
-# the folder where the calling test resides is deeply nested,
-# so set the CWD to where alembic.ini can be found.
-cwd = pathlib.Path(__file__).resolve().parents[3]
 
 
 class PytestHelpers:  # noqa: D101
@@ -32,12 +29,15 @@ class PytestHelpers:  # noqa: D101
             f"DATABASE_URL={self.engine.url} "
             f"alembic upgrade {migration_id}"
         )
-        out = check_output(cmd, shell=True, stderr=STDOUT, cwd=cwd).decode("utf-8")
         print(
             f"""--- Alembic upgrade ---
-        |CWD: {cwd}
+        |CWD: {os.getcwd()}
         |CMD: {cmd}
-        |STDOUT:
+        """
+        )
+        out = check_output(cmd, shell=True, stderr=STDOUT).decode("utf-8")
+        print(
+            f"""|STDOUT:
         |{out}
         """.replace(
                 "        |", ""
