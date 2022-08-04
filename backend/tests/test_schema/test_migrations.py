@@ -1,4 +1,4 @@
-from app.tests.test_schema.helpers import PytestHelpers
+from tests.test_schema.helpers import PytestHelpers
 
 
 def test_upgrading_to_head_creates_same_schema_as_model(engine):
