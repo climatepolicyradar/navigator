@@ -3,7 +3,7 @@ from unittest.mock import patch, MagicMock
 
 from requests import Response
 
-from . import main
+from scripts.users_add import main
 
 TEST_USERS_CSV_1 = str(
     (Path(__file__).parent / "test_data" / "users_test_data.csv").absolute()

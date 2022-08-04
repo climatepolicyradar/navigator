@@ -3,7 +3,7 @@ import os
 
 import pytest
 from app.db.session import Base
-from app.tests.test_schema.helpers import clean_tables
+from tests.test_schema.helpers import clean_tables
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy_utils import create_database, database_exists, drop_database
