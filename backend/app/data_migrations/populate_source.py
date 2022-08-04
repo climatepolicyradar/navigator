@@ -1,5 +1,6 @@
 from app.db.models import Source
 
 def populate_source(db):
-    # Insert standard sources into source table
+    """ Add the single CCLW source.
+    """
     db.add(Source(name="CCLW"))

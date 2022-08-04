@@ -19,8 +19,8 @@ def run_data_migrations(db):
     """Populate lookup tables with standard values"""
     populate_source(db)
     populate_language(db)
-    populate_geography(db)
     populate_document_type(db)
+    populate_geography(db)
     # TODO - framework, keyword, instrument, hazard
 
 
