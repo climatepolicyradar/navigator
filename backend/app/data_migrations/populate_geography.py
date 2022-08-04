@@ -1,8 +1,12 @@
 import csv
+from pprint import pprint
 from app.db.models import Geography
 
 def populate_geography(db):
-    # Bulk insert geography values into geography lookup table
+    """ Populates the geography table with data in the CSV, 
+    due to the nature of how things are added this function will generate its own
+    db session and 
+    """
 
     geographies = []
     # Get iso-3166 country codes. This file contains the standard iso-3166 codes + additional country codes for
@@ -12,37 +16,29 @@ def populate_geography(db):
         csvFile = csv.DictReader(file)
         geographies = [ l for l in csvFile ]
 
-    # Insert language codes into db table
-    for record in geographies:
-        print(record)
-        # print(dir(record))
-        # first instead the parent geo
-        # op.execute(
-            # insert(geography_tbl)
-            # .values(
-                # display_value=record["World Bank Region"],
-                # value=record["World Bank Region"],
-                # type="World Bank Region",
-            # )
-            # .on_conflict_do_nothing()
-        # )
+    # Insert language codes into db table [=210]
+    for row in geographies:
 
-        # get the parent's id
-        # parent_id = (
-            # geography_tbl.select()
-            # .with_only_columns(geography_tbl.columns["id"])
-            # .where(
-                # geography_tbl.columns["value"] == record["World Bank Region"]
-            # )
-            # .scalar_subquery()
-        # )
+        args = {
+            "display_value": row["World Bank Region"],
+            "value": row["World Bank Region"],
+            "type": "World Bank Region",
+        }
 
-        # now insert the child
-        # op.execute(
-            # geography_tbl.insert().values(
-                # display_value=record["Name"],
-                # value=record["Iso"],
-                # type="ISO-3166",
-                # parent_id=parent_id,
-            # )
-        # )
+        # Query for the parent already existing
+        geo_parent = db.query(Geography).filter_by(**args).first()
+
+        if not geo_parent:
+            # Create the parent
+            geo_parent = Geography(**args)
+            db.add(geo_parent)
+            db.flush()
+
+        # Add the ISO-3166 Geography details
+        geo = Geography(
+            display_value=row["Name"],
+            value=row["Iso"],
+            type="ISO-3166",
+            parent_id=geo_parent.id,
+        )
+        db.add(geo)
