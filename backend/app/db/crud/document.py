@@ -1,13 +1,12 @@
 from fastapi import HTTPException
 from sqlalchemy import and_, exists
-from sqlalchemy.orm import Session
 
 from app.db.models import Document
 from app.db.schemas.document import DocumentCreate
 
 
 def create_document(
-    db: Session,
+    db,
     document: DocumentCreate,
     creator_id: int,
 ) -> Document:
@@ -27,16 +26,14 @@ def create_document(
     )
 
     db.add(db_document)
-    # TODO don't call commit here. Perhaps in a middleware somewhere before the response is returned
-    # Removing commit here will ensure: roll back the doc if there's a subsequent error persisting metadata.
-    db.commit()
+    db.flush()
     db.refresh(db_document)
 
     return db_document
 
 
 def is_document_exists(
-    db: Session,
+    db,
     document: DocumentCreate,
 ) -> bool:
     # Returns a doc by its unique constraint.
@@ -53,7 +50,7 @@ def is_document_exists(
     ).scalar()
 
 
-def get_document(db: Session, document_id: int) -> Document:
+def get_document(db, document_id: int) -> Document:
     document = db.query(Document).filter(Document.id == document_id).first()
     if not document:
         raise HTTPException(
