@@ -62,7 +62,18 @@ class UnknownResponseError(UnknownMetadataError):
     """Error raised when a response cannot be found in the database."""
 
     def __init__(self, response: str) -> None:
-        super().__init__(f"The  '{response}' could not be found in the database")
+        super().__init__(
+            f"The response '{response}' could not be found in the database"
+        )
+
+
+class UnknownFrameworkError(UnknownMetadataError):
+    """Error raised when a framework cannot be found in the database."""
+
+    def __init__(self, framework: str) -> None:
+        super().__init__(
+            f"The framework '{framework}' could not be found in the database"
+        )
 
 
 class UnknownKeywordError(UnknownMetadataError):
@@ -78,9 +89,12 @@ def persist_document_and_metadata(
     creator_id: int,
 ):
     try:
-        db_document = create_document(db, document_with_metadata.document, creator_id)
-        write_metadata(db, db_document, document_with_metadata)
-        db.commit()
+        # Create a savepoint & start a transaction if necessary
+        with db.begin_nested():
+            db_document = create_document(
+                db, document_with_metadata.document, creator_id
+            )
+            write_metadata(db, db_document, document_with_metadata)
 
         return db_document
     except Exception as e:
@@ -93,7 +107,7 @@ def persist_document_and_metadata(
 
 
 def write_metadata(
-    db: Session,
+    db,
     db_document: Document,
     document_with_metadata: DocumentCreateWithMetadata,
 ):
@@ -192,7 +206,7 @@ def write_metadata(
             db.query(Framework).filter(Framework.name == framework.name)
         ).first()
         if existing_framework is None:
-            raise UnknownResponseError(framework.name)
+            raise UnknownFrameworkError(framework.name)
 
         framework_id = existing_framework.id  # type: ignore
         doc_framework = DocumentFramework(
