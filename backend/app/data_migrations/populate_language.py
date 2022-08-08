@@ -20,7 +20,7 @@ def populate_language(db):
     """
     # Codes are obtained from: https://iso639-3.sil.org/sites/iso639-3/files/downloads/iso-639-3.tab
     # Get iso-630-3 codes from extracted file
-    with open('alembic/versions/lookups/language-iso-639-3.txt', mode='r') as file:
+    with open('app/data_migrations/data/language-iso-639-3.txt', mode='r') as file:
         # reading the CSV file
         csvFile = csv.DictReader(file, dialect=iso_csv)
 

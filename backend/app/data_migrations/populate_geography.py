@@ -10,7 +10,7 @@ def populate_geography(db):
 
     # Get iso-3166 country codes. This file contains the standard iso-3166 codes + additional country codes for
     # regions that are missing - e.g. sub-saharan africa
-    with open('alembic/versions/lookups/geography-iso-3166.csv', mode ='r') as file:
+    with open('app/data_migrations/data/geography-iso-3166.csv', mode ='r') as file:
         # reading the CSV file
         csvFile = csv.DictReader(file)
 
