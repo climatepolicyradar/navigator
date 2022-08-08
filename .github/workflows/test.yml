@@ -33,6 +33,9 @@ jobs:
         run: cp frontend/e2e/.env.example frontend/e2e/.env
       - name: Run frontend tests
         run: make test_frontend
+      - name: Log Dump
+        run: docker-compose logs
+                
   test_loader:
     runs-on: ubuntu-latest
     steps:
@@ -43,3 +46,5 @@ jobs:
         run: make build_loader
       - name: Test
         run: make test_loader
+      - name: Log Dump
+        run: docker-compose logs
