@@ -27,3 +27,4 @@ These lookups are source-specific:
 from .document import *
 from .user import *
 from .source import *
+from .geography import *

@@ -26,8 +26,8 @@ def upgrade():
                     sa.Column('federal', sa.Boolean(), nullable=False),
                     sa.Column('federal_details', sa.Text(), nullable=False),
                     sa.Column('political_groups', sa.Text(), nullable=False),
-                    sa.Column('global_emissions_percent', sa.Float(), nullable=False),
-                    sa.Column('climate_risk_index', sa.Float(), nullable=False),
+                    sa.Column('global_emissions_percent', sa.Float(), nullable=True),
+                    sa.Column('climate_risk_index', sa.Float(), nullable=True),
                     sa.Column('worldbank_income_group', sa.Text(), nullable=False),
                     sa.Column('visibility_status', sa.Text(), nullable=False),
                     sa.ForeignKeyConstraint(['geography_id'], ['geography.id'], name=op.f(

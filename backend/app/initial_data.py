@@ -12,8 +12,10 @@ from app.data_migrations import (
     populate_document_type,
     populate_geography,
     populate_language,
-    populate_source
+    populate_source,
+    populate_geo_statistics
 )
+
 
 def run_data_migrations(db):
     """Populate lookup tables with standard values"""
@@ -21,6 +23,10 @@ def run_data_migrations(db):
     populate_language(db)
     populate_document_type(db)
     populate_geography(db)
+
+    db.commit() # Geography data is used to geo-stats so commit here
+    
+    populate_geo_statistics(db)
     # TODO - framework, keyword, instrument, hazard
 
 
@@ -49,21 +55,24 @@ def create_loader_machine_user(db) -> None:
     try:
 
         create_user(db,
-            machineuser_email,
-            os.getenv("MACHINE_USER_LOADER_PASSWORD"),
-        )
+                    machineuser_email,
+                    os.getenv("MACHINE_USER_LOADER_PASSWORD"),
+                    )
     except IntegrityError:
         print(
             f"Skipping - loader machine user already exists with email/username {machineuser_email}"
         )
 
 
-if __name__ == "__main__":
-    print("Creating initial data...")
-    db = SessionLocal()
-
+def populate_initial_data(db):
     create_superuser(db)
     create_loader_machine_user(db)
     run_data_migrations(db)
+
+
+if __name__ == "__main__":
+    print("Creating initial data...")
+    db = SessionLocal()
+    populate_initial_data(db)
     db.commit()
     print("Done creating initial data")
