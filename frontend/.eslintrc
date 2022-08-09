@@ -1,0 +1,11 @@
+{
+  "extends": ["next", "airbnb", "airbnb/hooks", "airbnb-typescript"],
+  "plugins": ["prettier"],
+  "rules": {
+    "prettier/prettier": ["error"]
+  },
+  "ignorePatterns": ["tailwind.config.js", "postcss.config.js"],
+  "parserOptions": {
+    "project": "./tsconfig.json"
+  }
+}
