@@ -12,8 +12,9 @@ from app.data_migrations import (
     populate_document_type,
     populate_geography,
     populate_language,
-    populate_source
+    populate_source,
 )
+
 
 def run_data_migrations(db):
     """Populate lookup tables with standard values"""
@@ -25,13 +26,15 @@ def run_data_migrations(db):
 
 
 def create_user(db, email, password):
-    db_user = User(
-        email=email,
-        hashed_password=get_password_hash(password),
-        is_active=True,
-        is_superuser=True,
-    )
-    db.add(db_user)
+    with db.begin_nested():
+        db_user = User(
+            email=email,
+            hashed_password=get_password_hash(password),
+            is_active=True,
+            is_superuser=True,
+        )
+        db.add(db_user)
+        db.flush()
 
 
 def create_superuser(db) -> None:
@@ -48,7 +51,8 @@ def create_loader_machine_user(db) -> None:
     machineuser_email = os.getenv("MACHINE_USER_LOADER_EMAIL")
     try:
 
-        create_user(db,
+        create_user(
+            db,
             machineuser_email,
             os.getenv("MACHINE_USER_LOADER_PASSWORD"),
         )
@@ -62,8 +66,12 @@ if __name__ == "__main__":
     print("Creating initial data...")
     db = SessionLocal()
 
+    print("Creating superuser...")
     create_superuser(db)
+    print("Creating loader machine user...")
     create_loader_machine_user(db)
+
+    print("Running data migrations...")
     run_data_migrations(db)
     db.commit()
     print("Done creating initial data")

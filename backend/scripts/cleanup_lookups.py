@@ -28,32 +28,34 @@ def cleanup_keyword_duplicates(db: SessionLocal) -> None:  # type: ignore
     for document_keyword in db.query(DocumentKeyword).all():
         if int(document_keyword.keyword_id) not in desired_keyword_ids:
             # Get the name of the linked keyword & update to the desired value
-            existing_keyword = (
-                db.query(Keyword).filter(id=document_keyword.keyword_id).first()
-            )
+            existing_keyword = db.query(Keyword).get(document_keyword.keyword_id)
             required_id = clean_keyword_lookup_table[existing_keyword.name]
             document_keyword.keyword_id = required_id
 
+    db.flush()
+
     for keyword in db.query(Keyword).all():
         if keyword.id not in desired_keyword_ids:
-            keyword.delete()
+            db.delete(keyword)
 
 
 def cleanup_instrument_duplicates(db: SessionLocal) -> None:  # type: ignore
     clean_instrument_lookup_table = get_model_values(db, Instrument)
     desired_instrument_ids = list(clean_instrument_lookup_table.values())
-    for row in db.query(DocumentInstrument).all():
-        if int(row.instrument_id) not in desired_instrument_ids:
+    for document_instrument in db.query(DocumentInstrument).all():
+        if int(document_instrument.instrument_id) not in desired_instrument_ids:
             # Get the name of the linked instrument & update to the desired value
-            existing_instrument = (
-                db.query(Instrument).filter(id=row.instrument_id).first()
+            existing_instrument = db.query(Instrument).get(
+                document_instrument.instrument_id
             )
             required_id = clean_instrument_lookup_table[existing_instrument.name]
-            row.keyword_id = required_id
+            document_instrument.instrument_id = required_id
 
-    for instrument in db.query(Keyword).all():
+    db.flush()
+
+    for instrument in db.query(Instrument).all():
         if instrument.id not in desired_instrument_ids:
-            instrument.delete()
+            db.delete(instrument)
 
 
 if __name__ == "__main__":
@@ -62,8 +64,10 @@ if __name__ == "__main__":
 
     print("Cleaning Keywords...")
     cleanup_keyword_duplicates(db)
+    db.commit()
+
     print("Cleaning Instruments...")
     cleanup_instrument_duplicates(db)
-
     db.commit()
+
     print("Done cleaning duplicated lookups in database")
