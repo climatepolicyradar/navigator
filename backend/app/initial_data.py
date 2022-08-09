@@ -31,13 +31,15 @@ def run_data_migrations(db):
 
 
 def create_user(db, email, password):
-    db_user = User(
-        email=email,
-        hashed_password=get_password_hash(password),
-        is_active=True,
-        is_superuser=True,
-    )
-    db.add(db_user)
+    with db.begin_nested():
+        db_user = User(
+            email=email,
+            hashed_password=get_password_hash(password),
+            is_active=True,
+            is_superuser=True,
+        )
+        db.add(db_user)
+        db.flush()
 
 
 def create_superuser(db) -> None:
@@ -66,8 +68,13 @@ def create_loader_machine_user(db) -> None:
 
 
 def populate_initial_data(db):
+    print("Creating superuser...")
     create_superuser(db)
+
+    print("Creating loader machine user...")
     create_loader_machine_user(db)
+
+    print("Running data migrations...")
     run_data_migrations(db)
 
 
