@@ -6,12 +6,12 @@ from app.db.session import SessionLocal
 
 def to_float(value: str) -> Union[float, None]:
     first_str = value.split(" ")[0]
-    if first_str == "-":
-        return None
-    elif first_str == "":
-        return None
-    else:
-        return float(first_str)
+    retval = None
+    try:
+        retval = float(first_str)
+    except ValueError:
+        print(f"Unparsable for float: {first_str}")
+    return retval
 
 
 def populate_geo_statistics(db: SessionLocal) -> None:
