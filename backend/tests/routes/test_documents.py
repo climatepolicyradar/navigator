@@ -68,6 +68,25 @@ def test_post_documents(client, superuser_token_headers, test_db):
     test_db.add(DocumentType(name="just my type", description="sigh"))
     test_db.add(Language(language_code="afr"))
     test_db.add(Category(name="a category", description="a category description"))
+    test_db.add(Hazard(name="some hazard", description="Imported by CPR loader"))
+    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
+    test_db.add(Framework(name="some framework", description="Imported by CPR loader"))
+    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
+    test_db.commit()
+
+    test_db.add(
+        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
+    )
+    test_db.add(
+        Instrument(
+            name="some instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.add(
+        Instrument(
+            name="another instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
     test_db.commit()
 
     payload = {
@@ -136,15 +155,98 @@ def test_post_documents(client, superuser_token_headers, test_db):
     event = test_db.query(Event).first()
     assert event.name == "Publication"
     assert event.created_ts == datetime(2008, 12, 25, 0, 0, tzinfo=timezone.utc)
-    assert test_db.query(Sector).first().name == "Energy"
-    assert test_db.query(Response).first().name == "Mitigation"
-    assert test_db.query(Hazard).first().name == "some hazard"
-    assert test_db.query(Framework).first().name == "some framework"
-    assert test_db.query(Keyword).first().name == "some keyword"
-    instruments = test_db.query(Instrument).all()
-    assert instruments[0].name == "some instrument"
-    assert instruments[1].name == "another instrument"
     assert test_db.query(DocumentLanguage).first().document_id == 1
+
+
+def test_post_documents_fail(client, superuser_token_headers, test_db):
+    """Document creation should fail unless all referenced metadata already exists."""
+
+    # ensure meta
+    test_db.add(Source(name="may it be with you"))
+    test_db.add(Geography(display_value="not my favourite subject"))
+    test_db.add(DocumentType(name="just my type", description="sigh"))
+    test_db.add(Language(language_code="afr"))
+    test_db.add(Category(name="a category", description="a category description"))
+    test_db.add(Hazard(name="some other hazard", description="Imported by CPR loader"))
+    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
+    test_db.add(
+        Framework(name="some other framework", description="Imported by CPR loader")
+    )
+    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
+    test_db.commit()
+
+    test_db.add(
+        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
+    )
+    test_db.add(
+        Instrument(
+            name="some instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.add(
+        Instrument(
+            name="another instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.commit()
+
+    payload = {
+        "document": {
+            "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
+            "publication_ts": "2000-01-01T00:00:00.000000+00:00",
+            "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+            "description": "the document description",
+            "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
+            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
+            "md5_sum": "the md5 sum",
+            "type_id": 1,
+            "geography_id": 1,
+            "source_id": 1,
+            "category_id": 1,
+        },
+        "language_ids": [1],
+        "source_id": 1,
+        "events": [
+            {
+                "name": "Publication",
+                "description": "The publication date",
+                "created_ts": "2008-12-25T00:00:00+00:00",
+            }
+        ],
+        "sectors": [
+            {
+                "name": "Energy",
+                "description": "Imported by CPR loader",
+                "source_id": 1,
+            }
+        ],
+        "instruments": [
+            {
+                "name": "some instrument",
+                "description": "Imported by CPR loader",
+                "source_id": 1,
+            },
+            {
+                "name": "another instrument",
+                "description": "Imported by CPR loader",
+                "source_id": 1,
+            },
+        ],
+        "frameworks": [
+            {"name": "some framework", "description": "Imported by CPR loader"}
+        ],
+        "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
+        "hazards": [{"name": "some hazard", "description": "Imported by CPR loader"}],
+        "keywords": [{"name": "some keyword", "description": "Imported by CPR loader"}],
+    }
+
+    response = client.post(
+        "/api/v1/documents", headers=superuser_token_headers, json=payload
+    )
+
+    assert response.status_code == 422
+    assert len(list(test_db.query(Document).all())) == 0
+    assert test_db.query(Event).first() is None
 
 
 def test_document_detail(
@@ -168,6 +270,57 @@ def test_document_detail(
     test_db.add(DocumentType(name="just my type", description="sigh"))
     test_db.add(Language(language_code="afr", name="AFRAFR"))
     test_db.add(Category(name="a category", description="a category description"))
+    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
+    test_db.add(
+        Keyword(name="some other keyword", description="Imported by CPR loader")
+    )
+    test_db.add(Hazard(name="some hazard", description="Imported by CPR loader"))
+    test_db.add(
+        Hazard(name="some other hazard 1", description="Imported by CPR loader")
+    )
+    test_db.add(
+        Hazard(name="some other hazard 2", description="Imported by CPR loader")
+    )
+    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
+    test_db.add(Framework(name="some framework", description="Imported by CPR loader"))
+    test_db.add(
+        Framework(name="some other framework 1", description="Imported by CPR loader")
+    )
+    test_db.add(
+        Framework(name="some other framework 2", description="Imported by CPR loader")
+    )
+    test_db.commit()
+
+    test_db.add(
+        Instrument(
+            name="some instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.add(
+        Instrument(
+            name="some other instrument",
+            description="Imported by CPR loader",
+            source_id=1,
+        )
+    )
+    test_db.add(
+        Instrument(
+            name="another instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.add(
+        Instrument(
+            name="another other instrument",
+            description="Imported by CPR loader",
+            source_id=1,
+        )
+    )
+    test_db.add(
+        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
+    )
+    test_db.add(
+        Sector(name="Agriculture", description="Imported by CPR loader", source_id=1)
+    )
     test_db.commit()
 
     document1_payload = {
@@ -287,8 +440,8 @@ def test_document_detail(
         "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
         "hazards": [
             {"name": "some hazard", "description": "Imported by CPR loader"},
-            {"name": "some other hazard1", "description": "Imported by CPR loader"},
-            {"name": "some other hazard2", "description": "Imported by CPR loader"},
+            {"name": "some other hazard 1", "description": "Imported by CPR loader"},
+            {"name": "some other hazard 2", "description": "Imported by CPR loader"},
         ],
         "keywords": [
             {"name": "some keyword", "description": "Imported by CPR loader"},
