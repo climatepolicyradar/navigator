@@ -34,6 +34,7 @@ jobs:
       - name: Run frontend tests
         run: make test_frontend
       - name: Log Dump
+        if: always()
         run: docker-compose logs
                 
   test_loader:
@@ -47,4 +48,5 @@ jobs:
       - name: Test
         run: make test_loader
       - name: Log Dump
+        if: always()
         run: docker-compose logs
