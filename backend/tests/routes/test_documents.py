@@ -159,6 +159,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
 
 
 def test_post_documents_fail(client, superuser_token_headers, test_db):
+    """Document creation should fail unless all referenced metadata already exists."""
 
     # ensure meta
     test_db.add(Source(name="may it be with you"))

@@ -1,7 +1,11 @@
 import logging
 import os
 from datetime import datetime
-from http.client import INTERNAL_SERVER_ERROR, UNPROCESSABLE_ENTITY
+from http.client import (
+    INTERNAL_SERVER_ERROR,
+    UNPROCESSABLE_ENTITY,
+    UNSUPPORTED_MEDIA_TYPE,
+)
 from pathlib import Path
 from typing import cast
 
@@ -316,7 +320,9 @@ def document_upload(
 
     # TODO: proper content-type validation
     if file_path.suffix.lower() not in CONTENT_TYPE_MAP:
-        raise HTTPException(415, "Unsupported Media Type: must be PDF or HTML.")
+        raise HTTPException(
+            UNSUPPORTED_MEDIA_TYPE, "Unsupported Media Type: must be PDF or HTML."
+        )
 
     try:
         s3_document = s3_client.upload_fileobj(
