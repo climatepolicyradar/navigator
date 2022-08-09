@@ -2,7 +2,14 @@
 
 from typing import Dict, Mapping
 
-from app.db.models import DocumentInstrument, DocumentKeyword, Instrument, Keyword
+from app.db.models import (
+    DocumentInstrument,
+    DocumentKeyword,
+    DocumentSector,
+    Instrument,
+    Keyword,
+    Sector,
+)
 from app.db.session import Base, SessionLocal
 
 
@@ -58,6 +65,23 @@ def cleanup_instrument_duplicates(db: SessionLocal) -> None:  # type: ignore
             db.delete(instrument)
 
 
+def cleanup_sector_duplicates(db: SessionLocal) -> None:  # type: ignore
+    clean_sector_lookup_table = get_model_values(db, Sector)
+    desired_sector_ids = list(clean_sector_lookup_table.values())
+    for document_sector in db.query(DocumentSector).all():
+        if int(document_sector.sector_id) not in desired_sector_ids:
+            # Get the name of the linked sector & update to the desired value
+            existing_sector = db.query(Sector).get(document_sector.sector_id)
+            required_id = clean_sector_lookup_table[existing_sector.name]
+            document_sector.sector_id = required_id
+
+    db.flush()
+
+    for sector in db.query(Sector).all():
+        if sector.id not in desired_sector_ids:
+            db.delete(sector)
+
+
 if __name__ == "__main__":
     print("Cleaning duplicated lookups in database...")
     db = SessionLocal()
@@ -68,6 +92,10 @@ if __name__ == "__main__":
 
     print("Cleaning Instruments...")
     cleanup_instrument_duplicates(db)
+    db.commit()
+
+    print("Cleaning Sectors...")
+    cleanup_sector_duplicates(db)
     db.commit()
 
     print("Done cleaning duplicated lookups in database")
