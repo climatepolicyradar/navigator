@@ -1,14 +1,14 @@
 import { initReactQueryAuth } from 'react-query-auth';
 import Router from 'next/router';
+import LoaderOverlay from '@components/LoaderOverlay';
 import {
   signIn,
   getUserProfile,
   registerWithEmailAndPassword,
   User,
-  handleResetRequest
+  handleResetRequest,
 } from '.';
 import { storage } from '../utils/storage';
-import LoaderOverlay from '@components/LoaderOverlay';
 
 const unprotectedUrls = [
   '/auth/sign-in',

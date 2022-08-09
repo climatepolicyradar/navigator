@@ -2,7 +2,7 @@ import Link from 'next/link';
 import LargeLogo from '../svg/LargeLogo';
 import Logo from '../svg/Logo';
 
-const AlphaLogoSmall = () => {
+function AlphaLogoSmall() {
   return (
     <div data-cy="cpr-logo" className="text-white flex mr-10">
       <Link href="/">
@@ -18,5 +18,5 @@ const AlphaLogoSmall = () => {
       </Link>
     </div>
   );
-};
+}
 export default AlphaLogoSmall;

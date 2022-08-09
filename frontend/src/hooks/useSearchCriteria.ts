@@ -7,7 +7,7 @@ export default function useSearchCriteria() {
     'searchCriteria',
     () => {
       const existingCriteria = queryClient.getQueryData('searchCriteria');
-      return existingCriteria ? existingCriteria : initialSearchCriteria;
+      return existingCriteria || initialSearchCriteria;
     },
     {
       refetchOnWindowFocus: false,

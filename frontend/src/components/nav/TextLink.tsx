@@ -1,11 +1,11 @@
 import Link from 'next/link';
 
-const TextLink = ({
+function TextLink({
   children,
   href = null,
   onClick = () => {},
   target = '_self',
-}) => {
+}) {
   return (
     <>
       {href ? (
@@ -27,5 +27,5 @@ const TextLink = ({
       )}
     </>
   );
-};
+}
 export default TextLink;

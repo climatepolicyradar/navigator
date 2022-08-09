@@ -30,18 +30,14 @@ export default function useNestedLookups(path, filterProp = '', levels = 1) {
   const client = new ApiClient();
 
   const modifyData = (response) => {
-    let { data } = response;
+    const { data } = response;
     let level1 = [];
     let level2Nested = [];
     let level2 = [];
     if (data) {
-      level1 = data.map((item) => {
-        return item.node;
-      });
+      level1 = data.map((item) => item.node);
       if (levels === 2) {
-        level2Nested = data.map((item) => {
-          return [...level2Nested, ...item.children];
-        });
+        level2Nested = data.map((item) => [...level2Nested, ...item.children]);
 
         level2 = level2Nested.flat().map((item) => item.node);
       }

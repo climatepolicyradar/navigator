@@ -1,15 +1,16 @@
 import SearchResult from './SearchResult';
 
-const SearchResultList = ({ searchCriteria, documents }) => {
+function SearchResultList({ searchCriteria, documents }) {
   if (
-    searchCriteria?.keyword_filters?.categories &&
-    searchCriteria?.keyword_filters?.categories[0] === 'Litigation'
+    searchCriteria?.keyword_filters?.categories
+    && searchCriteria?.keyword_filters?.categories[0] === 'Litigation'
   ) {
     return (
       // TODO: translate
       <div className="h-96 mt-4 md:mt-0">
         Climate litigation case documents are coming soon to Climate Policy
-        Radar! In the meantime, head to{' '}
+        Radar! In the meantime, head to
+{' '}
         <a
           className="text-blue-500 transition duration-300 hover:text-indigo-600"
           href="https://climate-laws.org/litigation_cases"
@@ -20,9 +21,9 @@ const SearchResultList = ({ searchCriteria, documents }) => {
     );
   }
   if (
-    searchCriteria.keyword_filters?.categories &&
-    searchCriteria.keyword_filters?.categories[0] === 'Legislative' &&
-    documents.length === 0
+    searchCriteria.keyword_filters?.categories
+    && searchCriteria.keyword_filters?.categories[0] === 'Legislative'
+    && documents.length === 0
   ) {
     return (
       <div className="h-96 mt-4 md:mt-0">
@@ -32,9 +33,9 @@ const SearchResultList = ({ searchCriteria, documents }) => {
     );
   }
   if (
-    searchCriteria.keyword_filters?.categories &&
-    searchCriteria.keyword_filters?.categories[0] === 'Executive' &&
-    documents.length === 0
+    searchCriteria.keyword_filters?.categories
+    && searchCriteria.keyword_filters?.categories[0] === 'Executive'
+    && documents.length === 0
   ) {
     return (
       <div className="h-96 mt-4 md:mt-0">
@@ -53,5 +54,5 @@ const SearchResultList = ({ searchCriteria, documents }) => {
       <SearchResult document={doc} />
     </div>
   ));
-};
+}
 export default SearchResultList;

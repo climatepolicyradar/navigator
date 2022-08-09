@@ -1,18 +1,18 @@
-import { useEffect, useState } from "react";
-import { useRouter } from "next/router";
-import useDocumentDetail from "@hooks/useDocumentDetail";
-import useSortAndStructure from "@hooks/useSortAndStructure";
-import Layout from "@components/layouts/Main";
-import Loader from "@components/Loader";
-import TextLink from "@components/nav/TextLink";
-import DocumentInfo from "@components/blocks/DocumentInfo";
-import Event from "@components/blocks/Event";
-import RelatedDocument from "@components/blocks/RelatedDocument";
-import TabbedNav from "@components/nav/TabbedNav";
-import { ExternalLinkIcon } from "@components/svg/Icons";
-import { convertDate } from "@utils/timedate";
-import { initialSummaryLength } from "@constants/document";
-import { truncateString } from "@helpers/index";
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
+import useDocumentDetail from '@hooks/useDocumentDetail';
+import useSortAndStructure from '@hooks/useSortAndStructure';
+import Layout from '@components/layouts/Main';
+import Loader from '@components/Loader';
+import TextLink from '@components/nav/TextLink';
+import DocumentInfo from '@components/blocks/DocumentInfo';
+import Event from '@components/blocks/Event';
+import RelatedDocument from '@components/blocks/RelatedDocument';
+import TabbedNav from '@components/nav/TabbedNav';
+import { ExternalLinkIcon } from '@components/svg/Icons';
+import { convertDate } from '@utils/timedate';
+import { initialSummaryLength } from '@constants/document';
+import { truncateString } from '@helpers/index';
 
 type TEvent = {
   name: string;
@@ -21,9 +21,9 @@ type TEvent = {
   description: string;
 };
 
-const DocumentCoverPage = () => {
+function DocumentCoverPage() {
   const [showFullSummary, setShowFullSummary] = useState(false);
-  const [summary, setSummary] = useState("");
+  const [summary, setSummary] = useState('');
   const router = useRouter();
   const structureData = useSortAndStructure();
 
@@ -55,7 +55,7 @@ const DocumentCoverPage = () => {
 
   const renderSourceLink = () => {
     let link: string;
-    if (page.content_type === "application/pdf" && page.url.length) {
+    if (page.content_type === 'application/pdf' && page.url.length) {
       link = page.url;
     } else if (page.source_url.length) {
       link = page.source_url;
@@ -65,7 +65,12 @@ const DocumentCoverPage = () => {
 
     return (
       <p className="mt-4">
-        <a href={link} target="_blank" rel="noopener noreferrer nofollow" className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300">
+        <a
+          href={link}
+          target="_blank"
+          rel="noopener noreferrer nofollow"
+          className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300"
+        >
           <span className="mr-1">Link to source document</span>
           <span className="inline-block">
             <ExternalLinkIcon height="16" width="16" />
@@ -76,10 +81,10 @@ const DocumentCoverPage = () => {
   };
 
   // TODO: align with BE on an approach to sources and their logos
-  const sourceLogo = page?.source?.name === "CCLW" ? "lse-logo.png" : null;
+  const sourceLogo = page?.source?.name === 'CCLW' ? 'lse-logo.png' : null;
 
   return (
-    <Layout title={`Climate Policy Radar | Document title`}>
+    <Layout title="Climate Policy Radar | Document title">
       {isFetching || !page?.name ? (
         <div className="w-full flex justify-center h-96">
           <Loader />
@@ -92,9 +97,12 @@ const DocumentCoverPage = () => {
                 <div className="flex-1 mt-6">
                   <h1 className="text-3xl font-medium">{page.name}</h1>
                   <div className="flex text-sm text-indigo-400 mt-3 items-center w-full mb-6">
-                    <div className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
+                    <div
+                      className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`}
+                    />
                     <span className="ml-2">
-                      {page.geography.display_value}, {year}
+                      {page.geography.display_value}
+,{year}
                     </span>
                   </div>
                 </div>
@@ -102,7 +110,12 @@ const DocumentCoverPage = () => {
                   <TextLink href="/search">Back to search results</TextLink>
                 </div>
               </div>
-              <TabbedNav activeIndex={0} items={["Overview"]} handleTabClick={() => false} showBorder={false} />
+              <TabbedNav
+                activeIndex={0}
+                items={['Overview']}
+                handleTabClick={() => false}
+                showBorder={false}
+              />
             </div>
           </div>
           <div className="container">
@@ -114,11 +127,17 @@ const DocumentCoverPage = () => {
                 {page.description.length > initialSummaryLength && (
                   <section className="mt-6 flex justify-end">
                     {showFullSummary ? (
-                      <button onClick={() => setShowFullSummary(false)} className="text-blue-500 font-medium">
+                      <button
+                        onClick={() => setShowFullSummary(false)}
+                        className="text-blue-500 font-medium"
+                      >
                         Collapse
                       </button>
                     ) : (
-                      <button onClick={() => setShowFullSummary(true)} className="text-blue-500 font-medium">
+                      <button
+                        onClick={() => setShowFullSummary(true)}
+                        className="text-blue-500 font-medium"
+                      >
                         Show full summary
                       </button>
                     )}
@@ -132,7 +151,12 @@ const DocumentCoverPage = () => {
                       <div className="flex place-content-center bg-offwhite rounded border border-blue-200 drop-shadow-lg p-4">
                         <div className="flex items-center overflow-x-auto px-[70px]">
                           {page.events.map((event: TEvent, index: number) => (
-                            <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
+                            <Event
+                              event={event}
+                              key={`event-${index}`}
+                              index={index}
+                              last={index === page.events.length - 1}
+                            />
                           ))}
                         </div>
                       </div>
@@ -155,22 +179,63 @@ const DocumentCoverPage = () => {
                 <div className="md:pl-4 md:border-l md:border-blue-100">
                   <h3 className="text-xl text-blue-700">About this document</h3>
                   <div className="grid grid-cols-2 gap-x-2">
-                    <DocumentInfo id="category-tt" heading="Category" text={page.category.name} />
-                    <DocumentInfo id="type-tt" heading="Type" text={page.type.name} />
+                    <DocumentInfo
+                      id="category-tt"
+                      heading="Category"
+                      text={page.category.name}
+                    />
+                    <DocumentInfo
+                      id="type-tt"
+                      heading="Type"
+                      text={page.type.name}
+                    />
                     {/* Topics maps to responses */}
-                    {page.topics.length > 0 && <DocumentInfo id="topics-tt" heading="Topics" list={page.topics} />}
-                    {page.languages.length > 0 && <DocumentInfo heading="Language" text={page.languages[0].name} />}
+                    {page.topics.length > 0 && (
+                      <DocumentInfo
+                        id="topics-tt"
+                        heading="Topics"
+                        list={page.topics}
+                      />
+                    )}
+                    {page.languages.length > 0 && (
+                      <DocumentInfo
+                        heading="Language"
+                        text={page.languages[0].name}
+                      />
+                    )}
                   </div>
 
-                  {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
-                  {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
-                  {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} bulleted={true} />}
+                  {page.keywords.length > 0 && (
+                    <DocumentInfo
+                      id="keywords-tt"
+                      heading="Keywords"
+                      list={page.keywords}
+                    />
+                  )}
+                  {page.sectors.length > 0 && (
+                    <DocumentInfo
+                      id="sectors-tt"
+                      heading="Sectors"
+                      list={page.sectors}
+                    />
+                  )}
+                  {page.instruments.length > 0 && (
+                    <DocumentInfo
+                      id="instruments-tt"
+                      heading="Instruments"
+                      list={structureData(page.instruments)}
+                      bulleted
+                    />
+                  )}
                   <div className="mt-8 border-t border-blue-100">
                     <h3 className="text-xl text-blue-700 mt-4">Source</h3>
                     <div className="flex items-end mt-4">
                       {sourceLogo && (
                         <div className="relative flex-shrink max-w-[40px] mr-1">
-                          <img src={`/images/partners/${sourceLogo}`} alt={page.source.name} />
+                          <img
+                            src={`/images/partners/${sourceLogo}`}
+                            alt={page.source.name}
+                          />
                         </div>
                       )}
                       <p className="text-sm">{page.source.name}</p>
@@ -185,5 +250,5 @@ const DocumentCoverPage = () => {
       )}
     </Layout>
   );
-};
+}
 export default DocumentCoverPage;

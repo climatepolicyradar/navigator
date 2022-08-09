@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import { ReadMoreIcon } from '../svg/Icons';
 
-const Summary = () => {
+function Summary() {
   return (
     <section className="bg-blue-200">
       <div className="max-w-screen-lg mx-auto py-24 px-4 xl:px-0 md:flex items-center">
@@ -28,5 +28,5 @@ const Summary = () => {
       </div>
     </section>
   );
-};
+}
 export default Summary;

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import { postFile } from '../../api';
 import { months } from '../../constants/timedate';
 import { Document, Language } from '../../interfaces';
@@ -10,7 +11,6 @@ import TextInput from '../form-inputs/TextInput';
 import Select from '../form-inputs/Select';
 import LoaderOverlay from '../LoaderOverlay';
 import '../../pages/i18n';
-import { useTranslation } from 'react-i18next';
 
 interface AddDocumentsProps {
   setPopupActive(value: boolean): void;
@@ -23,7 +23,7 @@ interface AddDocumentsProps {
   setValue: any;
 }
 
-const AddDocuments = ({
+function AddDocuments({
   setPopupActive,
   days,
   handleDateChange,
@@ -32,7 +32,7 @@ const AddDocuments = ({
   active,
   getValues,
   setValue,
-}: AddDocumentsProps) => {
+}: AddDocumentsProps) {
   const [fileobj, setFileObj] = useState(null);
 
   const { t, i18n, ready } = useTranslation([
@@ -43,46 +43,42 @@ const AddDocuments = ({
 
   const values = getValues();
 
-  const { year, month, day, documents } = values;
+  const {
+ year, month, day, documents 
+} = values;
 
   const initialValues = {
     name: '',
     language_id: '',
     source_url: '',
     s3_url: '',
-    year: year,
-    month: month,
-    day: day,
+    year,
+    month,
+    day,
     file: '',
   };
 
   const schema = Yup.object({
     name: Yup.string().required(t('Required', { ns: 'formErrors' })),
     year: Yup.string().required(
-      t('Please select a year', { ns: 'formErrors' })
+      t('Please select a year', { ns: 'formErrors' }),
     ),
     language_id: Yup.string().required(
-      t('addDocument.Please select a language.', { ns: 'formErrors' })
+      t('addDocument.Please select a language.', { ns: 'formErrors' }),
     ),
-    source_url: Yup.lazy(() =>
-      Yup.string().when('file', {
-        is: (file) => {
-          return file === undefined;
-        },
+    source_url: Yup.lazy(() => Yup.string().when('file', {
+        is: (file) => file === undefined,
         then: Yup.string().required(
           t('addDocument.Please either enter a file URL or select a file.', {
             ns: 'formErrors',
-          })
+          }),
         ),
-      })
+      }),
     ),
-    file: Yup.lazy(() =>
-      Yup.string().when('source_url', {
-        is: (source_url) => {
-          return source_url === undefined;
-        },
+    file: Yup.lazy(() => Yup.string().when('source_url', {
+        is: (source_url) => source_url === undefined,
         then: Yup.string().required(),
-      })
+      }),
     ),
   });
 
@@ -105,7 +101,7 @@ const AddDocuments = ({
     }
 
     const req = 'document';
-    let formData = new FormData();
+    const formData = new FormData();
     formData.append('file', fileobj);
     const response = await postFile(req, formData);
     data.s3_url = response.url;
@@ -130,7 +126,7 @@ const AddDocuments = ({
     >
       {isSubmitting ? (
         <>
-          <div className="inset-0 fixed"></div>
+          <div className="inset-0 fixed" />
           <LoaderOverlay />
         </>
       ) : null}
@@ -252,7 +248,8 @@ const AddDocuments = ({
             }}
           >
             {t('Cancel', { ns: 'common' })}
-          </Button>{' '}
+          </Button>
+{' '}
           <Button data-cy="submit-add-document-form" type="submit">
             {t('Add', { ns: 'common' })}
           </Button>
@@ -260,6 +257,6 @@ const AddDocuments = ({
       </form>
     </div>
   );
-};
+}
 
 export default AddDocuments;

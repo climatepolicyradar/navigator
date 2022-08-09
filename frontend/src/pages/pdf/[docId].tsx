@@ -10,7 +10,7 @@ import useDocumentDetail from '../../hooks/useDocumentDetail';
 import TextLink from '../../components/nav/TextLink';
 import { v4 as uuidv4 } from 'uuid';
 
-const PDFView = () => {
+function PDFView() {
   const [document, setDocument] = useState(null);
   const { t, i18n, ready } = useTranslation('searchStart');
   const router = useRouter();
@@ -49,16 +49,17 @@ const PDFView = () => {
       ) : (
         <Layout
           title={`Climate Policy Radar | ${t(
-            'Law and Policy Search PDF View'
+            'Law and Policy Search PDF View',
           )}`}
           heading={t('Law and Policy Search PDF View')}
-          screenHeight={true}
+          screenHeight
         >
           <div className="container mt-2">
             <h1 className="text-2xl font-medium">{document.document_name}</h1>
             {/* TODO: translate below text */}
             <TextLink href="/search">
-              <span className="text-lg">&laquo;</span>Back to search results
+              <span className="text-lg">&laquo;</span>
+              Back to search results
             </TextLink>
           </div>
           <section className="mt-4 flex-1">
@@ -70,5 +71,5 @@ const PDFView = () => {
       )}
     </>
   );
-};
+}
 export default PDFView;

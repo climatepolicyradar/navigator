@@ -2,7 +2,7 @@ interface AdminSubheadProps {
   heading: string;
   description?: string;
 }
-const AdminSubhead = ({ heading, description = '' }: AdminSubheadProps) => {
+function AdminSubhead({ heading, description = '' }: AdminSubheadProps) {
   return (
     <div className="border-b border-b-indigo-200 py-6">
       <h3>{heading}</h3>
@@ -11,5 +11,5 @@ const AdminSubhead = ({ heading, description = '' }: AdminSubheadProps) => {
       )}
     </div>
   );
-};
+}
 export default AdminSubhead;

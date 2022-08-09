@@ -1,6 +1,6 @@
-import { useMutation, useQueryClient } from "react-query";
-import { v4 as uuidv4 } from "uuid";
-import { TDocument } from "@types";
+import { useMutation, useQueryClient } from 'react-query';
+import { v4 as uuidv4 } from 'uuid';
+import { TDocument } from '@types';
 
 type TSearchResultsDocuments = {
   data: {
@@ -14,18 +14,17 @@ export default function useUpdateDocument() {
   return useMutation((value) => {
     const {
       data: { documents },
-    }: TSearchResultsDocuments = queryClient.getQueryData<TSearchResultsDocuments>("searches");
+    }: TSearchResultsDocuments =
+      queryClient.getQueryData<TSearchResultsDocuments>('searches');
 
     const id = Number(value);
     const document = documents.find((item) => item.document_id === id);
 
     // add fileid for Adobe PDF embed
     const newDocument = { ...document, document_fileid: uuidv4() };
-    return queryClient.setQueryData("document", (old) => {
-      return {
-        ...old,
-        ...newDocument,
-      };
-    });
+    return queryClient.setQueryData('document', (old) => ({
+      ...old,
+      ...newDocument,
+    }));
   });
 }

@@ -1,5 +1,5 @@
-import { TDocument } from "@types";
-import Loader from "./Loader";
+import { TDocument } from '@types';
+import Loader from './Loader';
 
 type TProps = {
   document: TDocument;
@@ -7,7 +7,7 @@ type TProps = {
   setPassageIndex: (index: number) => void;
 };
 
-const PassageMatches = ({ document, setShowPDF, setPassageIndex }: TProps) => {
+function PassageMatches({ document, setShowPDF, setPassageIndex }: TProps) {
   return (
     <>
       {!document ? (
@@ -39,5 +39,5 @@ const PassageMatches = ({ document, setShowPDF, setPassageIndex }: TProps) => {
       )}
     </>
   );
-};
+}
 export default PassageMatches;

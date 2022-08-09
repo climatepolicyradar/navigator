@@ -1,6 +1,6 @@
-import ViewSDKClient from "@api/pdf";
-import { TDocument } from "@types";
-import { PDF_SCROLL_DELAY } from "@constants/document";
+import ViewSDKClient from '@api/pdf';
+import { TDocument } from '@types';
+import { PDF_SCROLL_DELAY } from '@constants/document';
 
 export default function usePDFPreview(document: TDocument) {
   const viewerConfig = {
@@ -17,7 +17,11 @@ export default function usePDFPreview(document: TDocument) {
   const createPDFClient = (passage: number) => {
     viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
-      const previewFilePromise = viewSDKClient.previewFile(document, "pdf-div", viewerConfig);
+      const previewFilePromise = viewSDKClient.previewFile(
+        document,
+        'pdf-div',
+        viewerConfig,
+      );
       previewFilePromise.then((adobeViewer) => {
         // createAnnotationManager(adobeViewer);
         adobeViewer.getAPIs().then((api) => {
@@ -37,7 +41,9 @@ export default function usePDFPreview(document: TDocument) {
     // Only jump to page if a passage is selected
     if (passage === null) return;
     setTimeout(() => {
-      embedApi.gotoLocation(document.document_passage_matches[passage].text_block_page);
+      embedApi.gotoLocation(
+        document.document_passage_matches[passage].text_block_page,
+      );
     }, PDF_SCROLL_DELAY);
   };
 

@@ -1,16 +1,16 @@
-import Link from 'next/link';
+import { FC } from 'react';
 import Logo from '../svg/Logo';
 
 interface AuthWrapperProps {
   heading: string;
-  children?: React.ReactNode | string;
   description: string;
 }
-const AuthWrapper = ({
+
+const AuthWrapper: FC<AuthWrapperProps> = ({
   heading,
   description,
-  children = '',
-}: AuthWrapperProps) => {
+  children,
+}) => {
   return (
     <div className="sm:w-96 mx-auto flex flex-col justify-center items-center">
       <div className="text-white flex flex-col items-center w-full">
@@ -29,4 +29,5 @@ const AuthWrapper = ({
     </div>
   );
 };
+
 export default AuthWrapper;

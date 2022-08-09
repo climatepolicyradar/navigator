@@ -1,6 +1,6 @@
 import { EyeIcon } from '../svg/Icons';
 
-const LandingPageLinks = ({ handleLinkClick }) => {
+function LandingPageLinks({ handleLinkClick }) {
   const terms = [
     'Adaptation strategy',
     'Energy prices',
@@ -34,5 +34,5 @@ const LandingPageLinks = ({ handleLinkClick }) => {
       </div>
     </section>
   );
-};
+}
 export default LandingPageLinks;

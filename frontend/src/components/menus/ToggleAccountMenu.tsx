@@ -1,9 +1,9 @@
 import { useState, useRef } from 'react';
-import AccountMenu from '../menus/AccountMenu';
+import AccountMenu from './AccountMenu';
 import useOutsideAlerter from '../../hooks/useOutsideAlerter';
 import { MenuIcon } from '../svg/Icons';
 
-const ToggleAccountMenu = ({ logout }) => {
+function ToggleAccountMenu({ logout }) {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   useOutsideAlerter(menuRef, () => setShowMenu(false));
@@ -23,5 +23,5 @@ const ToggleAccountMenu = ({ logout }) => {
       )}
     </div>
   );
-};
+}
 export default ToggleAccountMenu;

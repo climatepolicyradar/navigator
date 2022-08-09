@@ -1,7 +1,7 @@
 import '../../pages/i18n';
 import { useTranslation } from 'react-i18next';
 
-const DocumentList = ({ documents = [] }) => {
+function DocumentList({ documents = [] }) {
   const { t, i18n, ready } = useTranslation([
     'addAction',
     'formErrors',
@@ -23,6 +23,6 @@ const DocumentList = ({ documents = [] }) => {
   ) : (
     <p className="mb-4">{t('form.No documents added.')}</p>
   );
-};
+}
 
 export default DocumentList;

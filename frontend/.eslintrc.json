@@ -1,8 +1,0 @@
-{
-  "extends": ["prettier", "next", "next/babel", "next/core-web-vitals"],
-  "ignorePatterns": ["tailwind.config.js", "postcss.config.js"],
-  "rules": {
-    "react/no-unescaped-entities": "off",
-    "@next/next/no-html-link-for-pages": "off"
-  }
-}

@@ -1,13 +1,13 @@
 import { useEffect, useRef } from 'react';
 
-const BySelectGroup = ({
+function BySelectGroup({
   onChange,
   list,
   title,
   keyField,
   filterType,
   defaultValue,
-}) => {
+}) {
   const selectRef = useRef(null);
   useEffect(() => {
     if (selectRef?.current) {
@@ -42,5 +42,5 @@ const BySelectGroup = ({
       </select>
     </div>
   );
-};
+}
 export default BySelectGroup;

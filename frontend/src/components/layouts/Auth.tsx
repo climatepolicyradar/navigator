@@ -1,15 +1,15 @@
-import React, { FC } from "react";
-import Head from "next/head";
-import Banner from "@components/banner/FullHeight";
-import { Hero } from "@components/blocks/Hero";
-import { pageTitle } from "@constants/title";
+import React, { FC } from 'react';
+import Head from 'next/head';
+import Banner from '@components/banner/FullHeight';
+import { Hero } from '@components/blocks/Hero';
+import { pageTitle } from '@constants/title';
 
 type TProps = {
   title?: string;
   height?: number;
 };
 
-const Layout: FC<TProps> = ({ children, title = "", height }) => (
+const Layout: FC<TProps> = ({ children, title = '', height }) => (
   <div>
     <Head>
       <title>

@@ -1,7 +1,7 @@
-import Link from "next/link";
-import { TDocument } from "@types";
-import ToggleDocumentMenu from "../menus/ToggleDocumentMenu";
-import TextLink from "../nav/TextLink";
+import Link from 'next/link';
+import { TDocument } from '@types';
+import ToggleDocumentMenu from '../menus/ToggleDocumentMenu';
+import TextLink from '../nav/TextLink';
 
 type TProps = {
   document: TDocument;
@@ -10,10 +10,15 @@ type TProps = {
   setShowPDF: (show?: boolean) => void;
 };
 
-const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps) => {
+function DocumentSlideout({
+  document,
+  searchTerm,
+  showPDF,
+  setShowPDF,
+}: TProps) {
   if (!document) return null;
 
-  const year = document?.document_date.split("/")[2] ?? "";
+  const year = document?.document_date.split('/')[2] ?? '';
 
   return (
     <>
@@ -23,19 +28,27 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
             <div className="pl-6 pr-10 mt-2">
               <Link href={`/document/${document.document_id}`}>
                 <a>
-                  <h1 className="text-lg text-blue-500 font-medium">{document.document_name}</h1>
+                  <h1 className="text-lg text-blue-500 font-medium">
+                    {document.document_name}
+                  </h1>
                 </a>
               </Link>
               <div className="flex flex-wrap lg:flex-nowrap text-sm text-indigo-400 my-2 items-center">
-                <div className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`} />
+                <div
+                  className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`}
+                />
                 <span className="ml-2">
-                  {document.document_country_english_shortname}, {year}
+                  {document.document_country_english_shortname},{year}
                 </span>
               </div>
 
               {/* TODO: translate below text, how to handle plurals? */}
               <h3 className="text-indigo-500 text-xl">
-                Document {`match${document.document_passage_matches.length === 1 ? "" : "es"}`} ({document.document_passage_matches.length}) for "{searchTerm}"
+                {`Document match${
+                  document.document_passage_matches.length === 1 ? '' : 'es'
+                } (${
+                  document.document_passage_matches.length
+                }) for "${searchTerm}"`}
               </h3>
             </div>
             <ToggleDocumentMenu document={document} />
@@ -44,7 +57,8 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
             // TODO: translate below text
             <div className="md:hidden">
               <TextLink onClick={() => setShowPDF(false)}>
-                <span className="text-lg">&laquo;</span>Back to passage matches
+                <span className="text-lg">&laquo;</span>
+                Back to passage matches
               </TextLink>
             </div>
           )}
@@ -52,5 +66,5 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
       ) : null}
     </>
   );
-};
+}
 export default DocumentSlideout;

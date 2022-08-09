@@ -1,5 +1,3 @@
-import { string } from "yup";
-
 export type TSector = {
   description: string;
   id: number;

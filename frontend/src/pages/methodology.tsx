@@ -1,12 +1,11 @@
-import { useAuth } from '../api/auth';
-import Layout from '../components/layouts/Main';
-import LoaderOverlay from '../components/LoaderOverlay';
-import './i18n';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@api/auth';
+import Layout from '@components/layouts/Main';
+import LoaderOverlay from '@components/LoaderOverlay';
 
-const Methodology = () => {
+function Methodology() {
   const { user } = useAuth();
-  const { t, i18n, ready } = useTranslation(['common']);
+  const { t } = useTranslation(['common']);
   return (
     <>
       {!user ? (
@@ -336,5 +335,5 @@ const Methodology = () => {
       )}
     </>
   );
-};
+}
 export default Methodology;

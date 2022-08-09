@@ -6,7 +6,7 @@ export default function useLookups(path: string, filterProp: string = '') {
   const client = new ApiClient();
 
   const modifyData = (response) => {
-    let { data } = response;
+    const { data } = response;
     let list = data;
 
     if (filterProp.length) {

@@ -4,12 +4,11 @@ export default function useUpdateSearchCriteria() {
   const queryClient = useQueryClient();
 
   return useMutation(
-    (value: any) => {
-      return queryClient.setQueryData('searchCriteria', (old) => ({
+    (value: any) =>
+      queryClient.setQueryData('searchCriteria', (old) => ({
         ...old,
         ...value,
-      }));
-    },
+      })),
 
     {
       onError: (err) => {

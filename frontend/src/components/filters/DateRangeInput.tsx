@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState } from 'react';
 
 interface DateRangeInputProps {
   label: string;
@@ -9,13 +9,19 @@ interface DateRangeInputProps {
   handleSubmit(updatedDate: number, name: string): void;
   handleChange(value: number): void;
 }
-const DateRangeInput = ({ label, name, value, handleSubmit, handleChange }: DateRangeInputProps) => {
+function DateRangeInput({
+  label,
+  name,
+  value,
+  handleSubmit,
+  handleChange,
+}: DateRangeInputProps) {
   const onBlur = () => {
     handleSubmit(Number(value), name);
   };
 
   const onKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    if (e.key === "Enter") {
+    if (e.key === 'Enter') {
       handleSubmit(Number(value), name);
     }
   };
@@ -36,5 +42,5 @@ const DateRangeInput = ({ label, name, value, handleSubmit, handleChange }: Date
       </div>
     </div>
   );
-};
+}
 export default DateRangeInput;

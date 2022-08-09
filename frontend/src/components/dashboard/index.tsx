@@ -5,7 +5,7 @@ interface DashboardProps {
   terms: string[];
 }
 
-const Dashboard = ({ terms }: DashboardProps) => {
+function Dashboard({ terms }: DashboardProps) {
   return (
     <div
       data-cy="dashboard"
@@ -16,5 +16,5 @@ const Dashboard = ({ terms }: DashboardProps) => {
       <DashboardPanel icon={AddIcon} number={10} text={terms[2]} />
     </div>
   );
-};
+}
 export default Dashboard;

@@ -1,5 +1,5 @@
-import Tooltip from "../tooltip";
-import List from "./List";
+import Tooltip from '../tooltip';
+import List from './List';
 
 type TListType = {
   name: string;
@@ -20,8 +20,14 @@ type TDoucmentInfoProps = {
   bulleted?: boolean;
 };
 
-const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "", bulleted = false }: TDoucmentInfoProps) => {
-
+function DocumentInfo({
+  heading,
+  text = '',
+  list = [],
+  id = '',
+  tooltip = '',
+  bulleted = false,
+}: TDoucmentInfoProps) {
   return (
     <div className="mt-4">
       <h4 className="text-base text-indigo-400 font-semibold flex">
@@ -32,9 +38,13 @@ const DocumentInfo = ({ heading, text = "", list = [], id = "", tooltip = "", bu
           </div>
         )}
       </h4>
-      {list.length ? <List list={list} bulleted={bulleted} /> : <p className="text-indigo-500">{text}</p>}
+      {list.length ? (
+        <List list={list} bulleted={bulleted} />
+      ) : (
+        <p className="text-indigo-500">{text}</p>
+      )}
     </div>
   );
-};
+}
 
 export default DocumentInfo;

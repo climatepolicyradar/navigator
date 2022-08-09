@@ -9,11 +9,11 @@ interface SearchFormProps {
   input?: string;
 }
 
-const SearchForm = ({
+function SearchForm({
   input,
   placeholder,
   handleSearchInput,
-}: SearchFormProps) => {
+}: SearchFormProps) {
   const [term, setTerm] = useState('');
   const windowSize = useWindowResize();
 
@@ -42,7 +42,7 @@ const SearchForm = ({
         {term.length > 0 && (
           <div
             data-cy="search-clear-button"
-            className="flex items-center mx-2 text-indigo-400 shrink-0 absolute top-0 right-0 mr-16 h-full md:mr-20 z-20 h-full items-center"
+            className="flex items-center mx-2 text-indigo-400 shrink-0 absolute top-0 right-0 mr-16 h-full md:mr-20 z-20"
           >
             <Close onClick={clearSearch} size="16" />
           </div>
@@ -53,5 +53,5 @@ const SearchForm = ({
       </div>
     </form>
   );
-};
+}
 export default SearchForm;

@@ -4,12 +4,11 @@ export default function useUpdateSearch() {
   const queryClient = useQueryClient();
 
   return useMutation(
-    (value: any) => {
-      return queryClient.setQueryData('searches', (old) => ({
-        ...old,
-        ...value,
-      }));
-    },
+    (value: any) =>
+      queryClient.setQueryData('searches', (old) => ({
+      ...old,
+      ...value,
+    })),
 
     {
       onError: (err) => {

@@ -6,6 +6,6 @@ export function useDidUpdateEffect(fn, inputs) {
 
   useEffect(() => {
     if (didMountRef.current) return fn();
-    else didMountRef.current = true;
+    didMountRef.current = true;
   }, inputs);
 }

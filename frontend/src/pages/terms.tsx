@@ -1,12 +1,11 @@
-import { useAuth } from '../api/auth';
-import Layout from '../components/layouts/Main';
-import LoaderOverlay from '../components/LoaderOverlay';
-import './i18n';
 import { useTranslation } from 'react-i18next';
+import { useAuth } from '@api/auth';
+import Layout from '@components/layouts/Main';
+import LoaderOverlay from '@components/LoaderOverlay';
 
-const Terms = () => {
+function Terms() {
   const { user } = useAuth();
-  const { t, i18n, ready } = useTranslation(['common']);
+  const { t } = useTranslation(['common']);
   return (
     <>
       {!user ? (
@@ -42,7 +41,7 @@ const Terms = () => {
                 </li>
                 <li>
                   We are pleased to make the content of the CPR Database
-                  available under the Creative Commons Attribution License 
+                  available under the Creative Commons Attribution License
                   <a href="https://creativecommons.org/licenses/by/4.0/">
                     (CC-BY)
                   </a>
@@ -52,12 +51,12 @@ const Terms = () => {
               <h2>Under this Creative Commons licence you are free to:</h2>
               <ul>
                 <li>
-                  <span className="font-bold">Share — </span>copy and
-                  redistribute the CPR material in any medium or format
+                  <span className="font-bold">Share — </span>
+                  copy and redistribute the CPR material in any medium or format
                 </li>
                 <li>
-                  <span className="font-bold">Adapt — </span>remix, transform,
-                  and build upon the material
+                  <span className="font-bold">Adapt — </span>
+                  remix, transform, and build upon the material
                 </li>
               </ul>
               <h2>License Terms:</h2>
@@ -68,8 +67,8 @@ const Terms = () => {
               </p>
               <ul>
                 <li>
-                  <span className="font-bold">Attribution — </span>You must give
-                  CPR{' '}
+                  <span className="font-bold">Attribution — </span>
+                  You must give CPR{' '}
                   <a href="https://creativecommons.org/licenses/by/4.0/#">
                     appropriate credit
                   </a>
@@ -113,9 +112,9 @@ const Terms = () => {
                   .
                 </li>
                 <li>
-                  <span className="font-bold">No warranties — </span>The license
-                  may not give you all of the permissions necessary for your
-                  intended use. For example, other rights such as{' '}
+                  <span className="font-bold">No warranties — </span>
+                  The license may not give you all of the permissions necessary
+                  for your intended use. For example, other rights such as{' '}
                   <a href="https://creativecommons.org/licenses/by/4.0/#">
                     publicity, privacy, or moral rights
                   </a>{' '}
@@ -210,5 +209,5 @@ const Terms = () => {
       )}
     </>
   );
-};
+}
 export default Terms;

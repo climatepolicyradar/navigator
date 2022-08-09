@@ -1,5 +1,5 @@
-import Close from "../buttons/Close";
-import { forwardRef } from "react";
+import { forwardRef } from 'react';
+import Close from '../buttons/Close';
 
 interface SlideoutProps {
   children: JSX.Element | string;
@@ -7,20 +7,25 @@ interface SlideoutProps {
   setShowSlideout(value: boolean): void;
 }
 
-const Slideout = forwardRef(({ children, show, setShowSlideout }: SlideoutProps, ref: React.RefObject<HTMLDivElement>) => {
-  return (
+const Slideout = forwardRef(
+  (
+    { children, show, setShowSlideout }: SlideoutProps,
+    ref: React.RefObject<HTMLDivElement>,
+  ) => (
     <div
       ref={ref}
       className={`${
-        show ? "translate-x-0" : "translate-x-[110%]"
+        show ? 'translate-x-0' : 'translate-x-[110%]'
       } transition duration-500 origin-left transform bg-white pt-16 z-50 shadow-2xl shadow-black/40 h-screen fixed top-0 right-0 w-11/12`}
     >
       <div className="absolute top-0 right-0 mt-4 mr-4">
         <Close size="16" onClick={() => setShowSlideout(false)} />
       </div>
 
-      <div className="h-full overflow-y-auto scrollbar-thumb-indigo-300 scrollbar-thin scrollbar-track-white scrollbar-thumb-rounded-full mr-2">{children}</div>
+      <div className="h-full overflow-y-auto scrollbar-thumb-indigo-300 scrollbar-thin scrollbar-track-white scrollbar-thumb-rounded-full mr-2">
+        {children}
+      </div>
     </div>
-  );
-});
+  )
+);
 export default Slideout;

@@ -1,10 +1,11 @@
 import Link from 'next/link';
+
 interface AccountNavItemProps {
   href: string;
   path: string;
   title: string;
 }
-const AccountNavItem = ({ href, path, title }: AccountNavItemProps) => {
+function AccountNavItem({ href, path, title }: AccountNavItemProps) {
   return (
     <Link href={href} passHref>
       <a
@@ -16,5 +17,5 @@ const AccountNavItem = ({ href, path, title }: AccountNavItemProps) => {
       </a>
     </Link>
   );
-};
+}
 export default AccountNavItem;

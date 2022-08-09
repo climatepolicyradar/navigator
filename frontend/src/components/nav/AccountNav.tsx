@@ -1,7 +1,7 @@
 import { useRouter } from 'next/router';
 import AccountNavItem from './AccountNavItem';
 
-const AccountNav = () => {
+function AccountNav() {
   /* TODO: Internationalize this menu */
   const menu = [
     {
@@ -33,5 +33,5 @@ const AccountNav = () => {
       </div>
     </div>
   );
-};
+}
 export default AccountNav;
