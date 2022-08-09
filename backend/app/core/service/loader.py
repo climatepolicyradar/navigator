@@ -26,7 +26,7 @@ from app.db.models import (
 )
 from app.db.schemas.document import DocumentCreateWithMetadata
 
-logger = logging.getLogger(__file__)
+_LOGGER = logging.getLogger(__file__)
 
 
 class UnknownMetadataError(Exception):
@@ -98,7 +98,7 @@ def persist_document_and_metadata(
 
         return db_document
     except Exception as e:
-        logger.error(
+        _LOGGER.error(
             f"Error saving document {document_with_metadata.document}", exc_info=e
         )
         if isinstance(e, IntegrityError):
@@ -107,7 +107,7 @@ def persist_document_and_metadata(
 
 
 def write_metadata(
-    db,
+    db: Session,
     db_document: Document,
     document_with_metadata: DocumentCreateWithMetadata,
 ):
@@ -136,17 +136,16 @@ def write_metadata(
     # sectors
     for sector in document_with_metadata.sectors:
         # A sector should already exist, so fail if we cannot find it
-        existing_sector = (
-            db.query(Sector)
+        existing_sector_id = (
+            db.query(Sector.id)
             .filter(Sector.name == sector.name)
             .filter(Sector.source_id == db_document.source_id)
-        ).first()
-        if existing_sector is None:
+        ).scalar()
+        if existing_sector_id is None:
             raise UnknownSectorError(sector.name)
 
-        sector_id = existing_sector.id  # type: ignore
         doc_sector = DocumentSector(
-            sector_id=sector_id,
+            sector_id=existing_sector_id,
             document_id=db_document.id,
         )
         db.add(doc_sector)
@@ -154,17 +153,16 @@ def write_metadata(
     # instruments
     for instrument in document_with_metadata.instruments:
         # An instrument should already exist, so fail if we cannot find it
-        existing_instrument = (
-            db.query(Instrument)
+        existing_instrument_id = (
+            db.query(Instrument.id)
             .filter(Instrument.name == instrument.name)
             .filter(Instrument.source_id == db_document.source_id)
-        ).first()
-        if existing_instrument is None:
+        ).scalar()
+        if existing_instrument_id is None:
             raise UnknownInstrumentError(instrument.name)
 
-        instrument_id = existing_instrument.id  # type: ignore
         doc_instrument = DocumentInstrument(
-            instrument_id=instrument_id,
+            instrument_id=existing_instrument_id,
             document_id=db_document.id,
         )
         db.add(doc_instrument)
@@ -172,13 +170,14 @@ def write_metadata(
     # hazards
     for hazard in document_with_metadata.hazards:
         # A hazard should already exist, so fail if we cannot find it
-        existing_hazard = (db.query(Hazard).filter(Hazard.name == hazard.name)).first()
-        if existing_hazard is None:
+        existing_hazard_id = (
+            db.query(Hazard.id).filter(Hazard.name == hazard.name)
+        ).scalar()
+        if existing_hazard_id is None:
             raise UnknownHazardError(hazard.name)
 
-        hazard_id = existing_hazard.id  # type: ignore
         doc_hazard = DocumentHazard(
-            hazard_id=hazard_id,
+            hazard_id=existing_hazard_id,
             document_id=db_document.id,
         )
         db.add(doc_hazard)
@@ -186,15 +185,14 @@ def write_metadata(
     # responses
     for response in document_with_metadata.responses:
         # A response should already exist, so fail if we cannot find it
-        existing_response = (
-            db.query(Response).filter(Response.name == response.name)
-        ).first()
-        if existing_response is None:
+        existing_response_id = (
+            db.query(Response.id).filter(Response.name == response.name)
+        ).scalar()
+        if existing_response_id is None:
             raise UnknownResponseError(response.name)
 
-        response_id = existing_response.id  # type: ignore
         doc_response = DocumentResponse(
-            response_id=response_id,
+            response_id=existing_response_id,
             document_id=db_document.id,
         )
         db.add(doc_response)
@@ -202,15 +200,14 @@ def write_metadata(
     # frameworks
     for framework in document_with_metadata.frameworks:
         # A framework should already exist, so fail if we cannot find it
-        existing_framework = (
-            db.query(Framework).filter(Framework.name == framework.name)
-        ).first()
-        if existing_framework is None:
+        existing_framework_id = (
+            db.query(Framework.id).filter(Framework.name == framework.name)
+        ).scalar()
+        if existing_framework_id is None:
             raise UnknownFrameworkError(framework.name)
 
-        framework_id = existing_framework.id  # type: ignore
         doc_framework = DocumentFramework(
-            framework_id=framework_id,
+            framework_id=existing_framework_id,
             document_id=db_document.id,
         )
         db.add(doc_framework)
@@ -218,15 +215,14 @@ def write_metadata(
     # keywords
     for keyword in document_with_metadata.keywords:
         # A keyword should already exist, so fail if we cannot find it
-        existing_keyword = (
-            db.query(Keyword).filter(Keyword.name == keyword.name)
-        ).first()
-        if existing_keyword is None:
+        existing_keyword_id = (
+            db.query(Keyword.id).filter(Keyword.name == keyword.name)
+        ).scalar()
+        if existing_keyword_id is None:
             raise UnknownKeywordError(keyword.name)
 
-        keyword_id = existing_keyword.id  # type: ignore
         doc_keyword = DocumentKeyword(
-            keyword_id=keyword_id,
+            keyword_id=existing_keyword_id,
             document_id=db_document.id,
         )
         db.add(doc_keyword)
