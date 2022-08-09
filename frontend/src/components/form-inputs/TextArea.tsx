@@ -13,7 +13,7 @@ interface TextAreaProps {
   register: any;
 }
 
-const TextArea = ({
+function TextArea({
   id = '',
   name,
   label,
@@ -22,7 +22,7 @@ const TextArea = ({
   errors,
   classes = '',
   register,
-}: TextAreaProps) => {
+}: TextAreaProps) {
   return (
     <div className={`${classes}`}>
       <label htmlFor={id} className="text-indigo-600">
@@ -40,6 +40,6 @@ const TextArea = ({
       {errors[name] && <FormFieldError message={errors[name].message} />}
     </div>
   );
-};
+}
 
 export default TextArea;

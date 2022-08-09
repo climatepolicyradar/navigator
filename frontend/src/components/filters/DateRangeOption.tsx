@@ -1,4 +1,4 @@
-import { SyntheticEvent } from "react";
+import { SyntheticEvent } from 'react';
 
 interface DateRangeOptionProps {
   id: string;
@@ -9,9 +9,19 @@ interface DateRangeOptionProps {
   checked?: boolean;
 }
 
-const DateRangeOption = ({ id, label, name, value, onChange, checked }: DateRangeOptionProps) => {
+function DateRangeOption({
+  id,
+  label,
+  name,
+  value,
+  onChange,
+  checked,
+}: DateRangeOptionProps) {
   return (
-    <label className="checkbox-input flex items-center border p-2 rounded-md cursor-pointer border-indigo-200 bg-white" htmlFor={id}>
+    <label
+      className="checkbox-input flex items-center border p-2 rounded-md cursor-pointer border-indigo-200 bg-white"
+      htmlFor={id}
+    >
       <input
         className="text-white border-indigo-400 cursor-pointer"
         id={id}
@@ -28,6 +38,6 @@ const DateRangeOption = ({ id, label, name, value, onChange, checked }: DateRang
       </span>
     </label>
   );
-};
+}
 
 export default DateRangeOption;

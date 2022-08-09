@@ -13,7 +13,7 @@ interface CheckboxProps {
   // checked: boolean;
 }
 
-const Checkbox = ({
+function Checkbox({
   id,
   label,
   name,
@@ -23,7 +23,7 @@ const Checkbox = ({
   register,
   // checked,
   onClick = () => {},
-}: CheckboxProps) => {
+}: CheckboxProps) {
   return (
     <div>
       <label className="checkbox-input" htmlFor={id}>
@@ -41,6 +41,6 @@ const Checkbox = ({
       </label>
     </div>
   );
-};
+}
 
 export default Checkbox;

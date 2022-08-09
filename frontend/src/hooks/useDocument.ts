@@ -7,7 +7,7 @@ export default function useDocument() {
     'document',
     (): TDocument => {
       const document: TDocument = queryClient.getQueryData('document');
-      return document ? document : null;
+      return document || null;
     },
     {
       refetchOnWindowFocus: false,

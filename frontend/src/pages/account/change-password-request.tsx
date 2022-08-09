@@ -1,20 +1,19 @@
 import { useAuth, resetRequest } from '../../api/auth';
-import { useState, useEffect } from 'react';
-import '../i18n';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import Layout from '../../components/layouts/Main';
-import TextInput from '../../components/form-inputs/TextInput';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import AccountNav from '../../components/nav/AccountNav';
-import AdminSubhead from '../../components/headers/AdminSubhead';
-import Button from '../../components/buttons/Button';
-import LoaderOverlay from '../../components/LoaderOverlay';
+import TextInput from '@components/form-inputs/TextInput';
+import Layout from '@components/layouts/Main';
+import AccountNav from '@components/nav/AccountNav';
+import AdminSubhead from '@components/headers/AdminSubhead';
+import Button from '@components/buttons/Button';
+import LoaderOverlay from '@components/LoaderOverlay';
 
-const Account = () => {
+function Account() {
   const [status, setStatus] = useState(null);
-  const { t, i18n, ready } = useTranslation(['account', 'auth']);
+  const { t } = useTranslation(['account', 'auth']);
   const { user, register: request } = useAuth();
 
   const schema = Yup.object({
@@ -26,7 +25,9 @@ const Account = () => {
     register,
     handleSubmit,
     reset,
-    formState: { isSubmitting, errors, isSubmitSuccessful, isValid, isDirty },
+    formState: {
+ isSubmitting, errors, isSubmitSuccessful, isValid, isDirty 
+},
   } = useForm({
     resolver: yupResolver(schema),
     defaultValues: {
@@ -59,7 +60,7 @@ const Account = () => {
             <AdminSubhead
               heading={t('Password change requested')}
               description={t(
-                'Please check your email for the link to change your password.'
+                'Please check your email for the link to change your password.',
               )}
             />
           ) : (
@@ -67,14 +68,15 @@ const Account = () => {
               <AdminSubhead
                 heading={t('Request password change')}
                 description={t(
-                  'You will receive an email to confirm this change. Your password will not be updated until you click the confirm link in the email.'
+                  'You will receive an email to confirm this change. Your password will not be updated until you click the confirm link in the email.',
                 )}
               />
               <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                 <div className="form-row__border md:flex">
                   <label className="flex-shrink-0 md:w-1/4">
-                    {t('Your email address:')}:
-                    <strong className="text-red-500"> *</strong>
+                    {t('Your email address:')}
+:
+<strong className="text-red-500"> *</strong>
                   </label>
                   <div className="flex-grow">
                     <TextInput
@@ -92,10 +94,11 @@ const Account = () => {
                     color="clear"
                     type="button"
                     onClick={cancelUpdate}
-                    disabled={isDirty ? false : true}
+                    disabled={!isDirty}
                   >
                     {t('common:Cancel')}
-                  </Button>{' '}
+                  </Button>
+{' '}
                   &nbsp; &nbsp;
                   <Button color="light-hover-dark" type="submit">
                     {t('Request password change')}
@@ -108,5 +111,5 @@ const Account = () => {
       </section>
     </Layout>
   );
-};
+}
 export default Account;

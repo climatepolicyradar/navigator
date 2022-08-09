@@ -2,7 +2,9 @@
   "extends": ["next", "airbnb", "airbnb/hooks", "airbnb-typescript"],
   "plugins": ["prettier"],
   "rules": {
-    "prettier/prettier": ["error"]
+    "prettier/prettier": ["error"],
+    "import/prefer-default-export": "off",
+    "react/react-in-jsx-scope": "off"
   },
   "ignorePatterns": ["tailwind.config.js", "postcss.config.js"],
   "parserOptions": {

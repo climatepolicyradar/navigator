@@ -1,7 +1,7 @@
 import Image from 'next/image';
 import { partners } from '../../constants/partners';
 
-const Partners = () => {
+function Partners() {
   return (
     <div className="py-24">
       <div className="max-w-screen-lg mx-auto">
@@ -27,5 +27,5 @@ const Partners = () => {
       </div>
     </div>
   );
-};
+}
 export default Partners;

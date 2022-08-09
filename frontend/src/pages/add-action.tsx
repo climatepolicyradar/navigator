@@ -7,7 +7,7 @@ import LoaderOverlay from '../components/LoaderOverlay';
 import useLookups from '../hooks/useLookups';
 import { useAuth } from '../api/auth';
 
-const AddActionPage = () => {
+function AddActionPage() {
   const geosQuery = useLookups('geographies');
   const langsQuery = useLookups('languages');
   const sourcesQuery = useLookups('sources');
@@ -18,31 +18,31 @@ const AddActionPage = () => {
 
   return (
     <>
-      {!ready ||
-      !user ||
-      !geosQuery.isSuccess ||
-      !langsQuery.isSuccess ||
-      !sourcesQuery.isSuccess ? (
+      {!ready
+      || !user
+      || !geosQuery.isSuccess
+      || !langsQuery.isSuccess
+      || !sourcesQuery.isSuccess ? (
         <LoaderOverlay />
-      ) : (
+        ) : (
         <Layout
-          title={`Navigator | ${t('Add Action')}`}
-          heading={t('Add Action')}
-        >
-          <section>
+            title={`Navigator | ${t('Add Action')}`}
+            heading={t('Add Action')}
+          >
+            <section>
             <div className="container py-4">
-              <AddAction
+                <AddAction
                 geographies={geosQuery?.data}
                 languages={langsQuery?.data}
                 actionTypes={[]}
                 sources={sourcesQuery?.data}
               />
-            </div>
+              </div>
           </section>
-        </Layout>
-      )}
+          </Layout>
+        )}
     </>
   );
-};
+}
 
 export default AddActionPage;

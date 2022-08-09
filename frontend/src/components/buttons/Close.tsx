@@ -5,7 +5,7 @@ interface CloseProps {
   size?: string;
 }
 
-const Close = ({ onClick, size = '20' }: CloseProps) => {
+function Close({ onClick, size = '20' }: CloseProps) {
   return (
     <button
       className="focus:outline-none pointer-events-auto"
@@ -19,5 +19,5 @@ const Close = ({ onClick, size = '20' }: CloseProps) => {
       <CloseIcon height={size} width={size} />
     </button>
   );
-};
+}
 export default Close;

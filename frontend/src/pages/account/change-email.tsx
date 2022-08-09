@@ -1,17 +1,16 @@
-import { useAuth } from '../../api/auth';
-import '../i18n';
+import { useAuth } from '@api/auth';
 import { useTranslation } from 'react-i18next';
-import Layout from '../../components/layouts/Main';
-import TextInput from '../../components/form-inputs/TextInput';
 import { useForm } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import AccountNav from '../../components/nav/AccountNav';
-import AdminSubhead from '../../components/headers/AdminSubhead';
-import Button from '../../components/buttons/Button';
+import TextInput from '@components/form-inputs/TextInput';
+import Layout from '@components/layouts/Main';
+import AccountNav from '@components/nav/AccountNav';
+import AdminSubhead from '@components/headers/AdminSubhead';
+import Button from '@components/buttons/Button';
 
-const Account = () => {
-  const { t, i18n, ready } = useTranslation(['account', 'auth']);
+function Account() {
+  const { t } = useTranslation(['account', 'auth']);
 
   const schema = Yup.object({
     email: Yup.string()
@@ -71,7 +70,7 @@ const Account = () => {
                 color="clear"
                 type="button"
                 onClick={cancelUpdate}
-                disabled={isDirty ? false : true}
+                disabled={!isDirty}
               >
                 {t('common:Cancel')}
               </Button>{' '}
@@ -85,5 +84,5 @@ const Account = () => {
       </section>
     </Layout>
   );
-};
+}
 export default Account;

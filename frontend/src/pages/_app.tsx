@@ -1,4 +1,4 @@
-import "./i18n";
+import './i18n';
 import { useEffect } from 'react';
 import Head from 'next/head';
 import { AppProps } from 'next/app';
@@ -12,7 +12,10 @@ import { AuthProvider } from '../api/auth';
 const queryClient = new QueryClient();
 
 declare global {
-  interface Window { Cypress: any; queryClient: any }
+  interface Window {
+    Cypress: any;
+    queryClient: any;
+  }
 }
 
 function MyApp({ Component, pageProps }: AppProps) {

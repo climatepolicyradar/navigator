@@ -1,25 +1,24 @@
 import { useState, useEffect } from 'react';
-import '../i18n';
 import { useTranslation } from 'react-i18next';
-import Layout from '../../components/layouts/Main';
 import { useForm, useFieldArray } from 'react-hook-form';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
-import AccountNav from '../../components/nav/AccountNav';
-import AdminSubhead from '../../components/headers/AdminSubhead';
-import TextInput from '../../components/form-inputs/TextInput';
-import Select from '../../components/form-inputs/Select';
-import Checkbox from '../../components/form-inputs/Checkbox';
-import Button from '../../components/buttons/Button';
-import { geo_scope, affiliation_types } from '../../constants/formOptions';
-import { EditIcon } from '../../components/svg/Icons';
 import Link from 'next/link';
-import { useAuth } from '../../api/auth';
-import useUpdateAccount from '../../hooks/useUpdateAccount';
-import Loader from '../../components/Loader';
+import Layout from '@components/layouts/Main';
+import AccountNav from '@components/nav/AccountNav';
+import AdminSubhead from '@components/headers/AdminSubhead';
+import TextInput from '@components/form-inputs/TextInput';
+import Select from '@components/form-inputs/Select';
+import Checkbox from '@components/form-inputs/Checkbox';
+import Button from '@components/buttons/Button';
+import { geo_scope, affiliation_types } from '@constants/formOptions';
+import { EditIcon } from '@components/svg/Icons';
+import { useAuth } from '@api/auth';
+import useUpdateAccount from '@hooks/useUpdateAccount';
+import Loader from '@components/Loader';
 
-const Account = () => {
-  const { t, i18n, ready } = useTranslation(['account', 'common']);
+function Account() {
+  const { t } = useTranslation(['account', 'common']);
   const { user } = useAuth();
   const updateAccount = useUpdateAccount();
 
@@ -82,7 +81,7 @@ const Account = () => {
   };
 
   const selectValueToArray = (e, name) => {
-    const value = e.currentTarget.value;
+    const { value } = e.currentTarget;
     setValue(name, value.split());
   };
 
@@ -143,7 +142,8 @@ const Account = () => {
               <form className="w-full" onSubmit={handleSubmit(submitForm)}>
                 <div className="form-row__border md:flex">
                   <label className="flex-shrink-0 md:w-1/4">
-                    {t('Full name')}{' '}
+                    {t('Full name')}
+{' '}
                     <strong className="text-red-500"> *</strong>
                   </label>
                   <div className="flex-grow">
@@ -258,10 +258,11 @@ const Account = () => {
                     color="clear"
                     type="button"
                     onClick={cancelUpdate}
-                    disabled={isDirty ? false : true}
+                    disabled={!isDirty}
                   >
                     {t('common:Cancel')}
-                  </Button>{' '}
+                  </Button>
+{' '}
                   &nbsp; &nbsp;
                   <Button color="light-hover-dark" type="submit">
                     {t('Update account')}
@@ -274,5 +275,5 @@ const Account = () => {
       </section>
     </Layout>
   );
-};
+}
 export default Account;

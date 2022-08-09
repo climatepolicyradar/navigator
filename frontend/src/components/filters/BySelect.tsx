@@ -1,5 +1,5 @@
-import { useEffect, useRef, useState } from "react";
-import { sortData } from "@utils/sorting";
+import { useEffect, useRef, useState } from 'react';
+import { sortData } from '@utils/sorting';
 
 type TProps = {
   onChange(type: string, value: string, action?: string): void;
@@ -12,7 +12,16 @@ type TProps = {
   defaultText?: string;
 };
 
-const BySelect = ({ onChange, list, title, keyField, keyFieldDisplay = null, filterType, defaultValue, defaultText = "All" }: TProps) => {
+function BySelect({
+  onChange,
+  list,
+  title,
+  keyField,
+  keyFieldDisplay = null,
+  filterType,
+  defaultValue,
+  defaultText = 'All',
+}: TProps) {
   const [sortedList, setSortedList] = useState(list);
   const selectRef = useRef(null);
 
@@ -37,9 +46,7 @@ const BySelect = ({ onChange, list, title, keyField, keyFieldDisplay = null, fil
         }}
         value={defaultValue}
       >
-        <option value="">
-          {defaultText}
-        </option>
+        <option value="">{defaultText}</option>
         {sortedList.map((item, index) => (
           <option key={`${keyField}${index}`} value={item[keyField]}>
             {keyFieldDisplay ? item[keyFieldDisplay] : item[keyField]}
@@ -48,5 +55,5 @@ const BySelect = ({ onChange, list, title, keyField, keyFieldDisplay = null, fil
       </select>
     </div>
   );
-};
+}
 export default BySelect;

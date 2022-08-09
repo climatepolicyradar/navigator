@@ -29,7 +29,7 @@ class ViewSDKClient {
   }
 
   previewFile(doc, divId, viewerConfig) {
-    if(!doc) return;
+    if (!doc) return;
     const config = {
       /* Pass your registered client id */
       clientId: process.env.NEXT_PUBLIC_ADOBE_API_KEY,
@@ -74,6 +74,7 @@ class ViewSDKClient {
 
     return previewFilePromise;
   }
+
   previewFileBlob(doc, divId, viewerConfig) {
     const config = {
       /* Pass your registered client id */
@@ -88,9 +89,9 @@ class ViewSDKClient {
     this.adobeDCView = new window.AdobeDC.View(config);
     const previewFilePromise = fetch(doc.document_url)
       .then((res) => res.blob())
-      .then((blob) => {
+      .then((blob) =>
         /* Invoke the file preview API on Adobe DC View object */
-        return this.adobeDCView.previewFile(
+        this.adobeDCView.previewFile(
           {
             /* Pass information on how to access the file */
             content: { promise: Promise.resolve(blob.arrayBuffer()) },
@@ -103,12 +104,12 @@ class ViewSDKClient {
               id: doc.document_fileid,
             },
           },
-          viewerConfig
-        );
-      });
+          viewerConfig,
+        ),);
 
     return previewFilePromise;
   }
+
   previewFileUsingFilePromise(divId, filePromise, fileName) {
     /* Initialize the AdobeDC View object */
     this.adobeDCView = new window.AdobeDC.View({
@@ -129,7 +130,7 @@ class ViewSDKClient {
         /* Pass meta data of file */
         metaData: {
           /* file name */
-          fileName: fileName,
+          fileName,
         },
       },
       {}
@@ -138,9 +139,9 @@ class ViewSDKClient {
 
   registerSaveApiHandler() {
     /* Define Save API Handler */
-    const saveApiHandler = (metaData, content, options) => {
+    const saveApiHandler = (metaData, content, options) =>
       // console.log(metaData, content, options);
-      return new Promise((resolve) => {
+      new Promise((resolve) => {
         /* Dummy implementation of Save API, replace with your business logic */
         setTimeout(() => {
           const response = {
@@ -154,8 +155,6 @@ class ViewSDKClient {
           resolve(response);
         }, 2000);
       });
-    };
-
     this.adobeDCView.registerCallback(
       window.AdobeDC.View.Enum.CallbackType.SAVE_API,
       saveApiHandler,

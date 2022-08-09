@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Range, getTrackBackground } from 'react-range';
+
 interface ByRangeProps {
   title: string;
   type: string;
@@ -9,14 +10,14 @@ interface ByRangeProps {
   defaultValues: number[] | string[];
 }
 
-const ByRange = ({
+function ByRange({
   title,
   type,
   min,
   max,
   handleChange,
   defaultValues,
-}: ByRangeProps) => {
+}: ByRangeProps) {
   const [values, setValues] = useState([
     parseInt(defaultValues[0] as string),
     parseInt(defaultValues[1] as string),
@@ -41,7 +42,7 @@ const ByRange = ({
             values={values}
             onChange={(values) => setValues(values)}
             onFinalChange={(values) => handleChange(values)}
-            draggableTrack={true}
+            draggableTrack
             renderTrack={({ props, children }) => (
               <div
                 className="slider-track-outer"
@@ -79,6 +80,6 @@ const ByRange = ({
       ) : null}
     </div>
   );
-};
+}
 
 export default ByRange;

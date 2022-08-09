@@ -1,12 +1,12 @@
 import ToggleAccountMenu from '../menus/ToggleAccountMenu';
 import { useAuth } from '../../api/auth';
 
-const LandingPageHeader = () => {
+function LandingPageHeader() {
   const { logout } = useAuth();
   return (
     <header
       data-cy="header"
-      className={`absolute bg-transparent w-full top-0 left-0 transition duration-300 z-30`}
+      className="absolute bg-transparent w-full top-0 left-0 transition duration-300 z-30"
     >
       <div className="container my-4">
         <div className="flex items-start justify-end">
@@ -17,5 +17,5 @@ const LandingPageHeader = () => {
       </div>
     </header>
   );
-};
+}
 export default LandingPageHeader;

@@ -1,10 +1,11 @@
 import ReactTooltip from 'react-tooltip';
+
 interface TooltipProps {
   id: string;
   tooltip: string;
 }
 
-const Tooltip = ({ id, tooltip }: TooltipProps) => {
+function Tooltip({ id, tooltip }: TooltipProps) {
   return (
     <div>
       <button
@@ -16,10 +17,10 @@ const Tooltip = ({ id, tooltip }: TooltipProps) => {
       </button>
       <ReactTooltip
         className="customTooltip"
-        getContent={(dataTip) => tooltip}
+        getContent={() => tooltip}
         id={id}
       />
     </div>
   );
-};
+}
 export default Tooltip;

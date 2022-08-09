@@ -5,19 +5,17 @@ interface PaginationProps {
   maxNeighbourDistance?: number;
 }
 
-const Pagination = ({
+function Pagination({
   pageNumber,
   pageCount,
   onChange,
   maxNeighbourDistance = 2,
-}: PaginationProps) => {
-  const renderPlaceholder = (page) => {
-    return (
-      <span key={page} className="md:mx-1">
-        ...
-      </span>
-    );
-  };
+}: PaginationProps) {
+  const renderPlaceholder = (page) => (
+    <span key={page} className="md:mx-1">
+      ...
+    </span>
+  );
   const renderPageButton = (page) => {
     const baseCssClasses =
       'mx-1 rounded px-3 py-1 transition duration-300 text-sm md:text-base';
@@ -25,6 +23,7 @@ const Pagination = ({
       page === pageNumber
         ? 'bg-blue-500 text-white pointer-events-none'
         : 'bg-indigo-100 hover:bg-indigo-200 text-indigo-600';
+
     return (
       <button
         key={page}
@@ -58,6 +57,6 @@ const Pagination = ({
       })}
     </div>
   );
-};
+}
 
 export default Pagination;

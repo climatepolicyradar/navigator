@@ -1,20 +1,23 @@
-import { useRef, useMemo, useEffect } from "react";
-import { v4 as uuidv4 } from "uuid";
-import Script from "next/script";
-import { TDocument } from "@types";
-import { padNumber } from "@utils/timedate";
-import usePDFPreview from "@hooks/usePDFPreview";
-import Loader from "./Loader";
+import { useRef, useMemo, useEffect } from 'react';
+import { v4 as uuidv4 } from 'uuid';
+import Script from 'next/script';
+import { TDocument } from '@types';
+import { padNumber } from '@utils/timedate';
+import usePDFPreview from '@hooks/usePDFPreview';
+import Loader from './Loader';
 
 type TProps = {
   document: TDocument;
   passageIndex?: number;
 };
 
-const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
+function EmbeddedPDF({ document, passageIndex = null }: TProps) {
   const containerRef = useRef();
   // Ensure the instance of the PDF client is not reset on render
-  const { createPDFClient, passageIndexChangeHandler } = useMemo(() => usePDFPreview(document), [document]);
+  const { createPDFClient, passageIndexChangeHandler } = useMemo(
+    () => usePDFPreview(document),
+    [document]
+  );
 
   // TODO: refactor and enable annotation highlighting
   const annotationManagerConfig = {
@@ -27,10 +30,10 @@ const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
   const createAnnotationManager = (adobeViewer) => {
     adobeViewer.getAnnotationManager().then((annotationManager) => {
       annotationManager.setConfig(annotationManagerConfig);
-      annotationManager.registerEventListener(function (event) {
-        //console.log(event);
-        if (event.type === "ANNOTATION_ADDED") {
-          //console.log('added');
+      annotationManager.registerEventListener((event) => {
+        // console.log(event);
+        if (event.type === 'ANNOTATION_ADDED') {
+          // console.log('added');
         }
       });
       if (document?.document_passage_matches?.length) {
@@ -40,11 +43,11 @@ const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
     });
   };
   const addAnnotations = (annotationManager) => {
-    let annotations = [];
+    const annotations = [];
     document.document_passage_matches.map((passage, index) => {
       const obj = generateAnnotationObject(passage, index);
       annotations.push(obj);
-      //console.log(index);
+      // console.log(index);
       annotationManager.addAnnotations([obj]);
     });
     // annotationManager.addAnnotations(annotations);
@@ -72,11 +75,14 @@ const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
     const quadPoints = [...coords[0], ...coords[1], ...coords[3], ...coords[2]];
 
     return {
-      "@context": ["https://www.w3.org/ns/anno.jsonld", "https://comments.acrobat.com/ns/anno.jsonld"],
-      type: "Annotation",
+      '@context': [
+        'https://www.w3.org/ns/anno.jsonld',
+        'https://comments.acrobat.com/ns/anno.jsonld',
+      ],
+      type: 'Annotation',
       id: uuidv4(),
-      bodyValue: "",
-      motivation: "commenting",
+      bodyValue: '',
+      motivation: 'commenting',
       target: {
         // source: document.document_fileid,
         selector: {
@@ -84,18 +90,18 @@ const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
             index,
           },
           opacity: 0.25,
-          subtype: "highlight",
+          subtype: 'highlight',
           boundingBox,
           quadPoints,
-          strokeColor: "#FFFF00",
+          strokeColor: '#FFFF00',
           strokeWidth: 1,
-          type: "AdobeAnnoSelector",
-          styleClass: "highlight",
+          type: 'AdobeAnnoSelector',
+          styleClass: 'highlight',
         },
       },
       creator: {
-        type: "Person",
-        name: "Climate Policy Radar",
+        type: 'Person',
+        name: 'Climate Policy Radar',
       },
       created: nowStr,
       modified: nowStr,
@@ -120,11 +126,9 @@ const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
           <Loader />
         </div>
       ) : (
-        <>
-          <div ref={containerRef} id="pdf-div" className="h-full"></div>
-        </>
+        <div ref={containerRef} id="pdf-div" className="h-full" />
       )}
     </>
   );
-};
+}
 export default EmbeddedPDF;

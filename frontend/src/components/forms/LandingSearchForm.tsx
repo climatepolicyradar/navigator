@@ -1,8 +1,8 @@
 import { useState, useEffect, useRef } from 'react';
 import Close from '../buttons/Close';
-import useWindowResize from '../../hooks/useWindowResize';
+import useWindowResize from '@hooks/useWindowResize';
 import { SearchIcon } from '../svg/Icons';
-import { StartTextAnimation } from '../../utils/typewriter';
+import { StartTextAnimation } from '@utils/typewriter';
 
 interface SearchFormProps {
   placeholder: string;
@@ -10,7 +10,7 @@ interface SearchFormProps {
   input?: string;
 }
 
-const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
+function LandingSearchForm({ input, handleSearchInput }: SearchFormProps) {
   const [term, setTerm] = useState('');
   const windowSize = useWindowResize();
   const inputRef = useRef(null);
@@ -52,7 +52,7 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
         {term.length > 0 && (
           <div
             data-cy="search-clear-button"
-            className="flex text-indigo-300 items-center mx-2 shrink-0 absolute top-0 right-0 mr-20 h-full z-20 h-full items-center"
+            className="flex text-indigo-300 mx-2 shrink-0 absolute top-0 right-0 mr-20 h-full z-20 items-center"
           >
             <Close onClick={clearSearch} size="16" />
           </div>
@@ -66,5 +66,5 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
       </div>
     </form>
   );
-};
+}
 export default LandingSearchForm;

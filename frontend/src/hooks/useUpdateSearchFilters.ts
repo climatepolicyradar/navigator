@@ -24,9 +24,7 @@ export default function useUpdateSearchFilters() {
       let new_keyword_filters = {};
       if (multipleValuesAllowed.indexOf(key) > -1) {
         // remove value from array
-        valArray = keyword_filters[key].filter((item) => {
-          return item !== val;
-        });
+        valArray = keyword_filters[key].filter((item) => item !== val);
         if (!valArray.length) {
           // if array becomes empty then remove the property from the keyword_filters object
           new_keyword_filters = removeProperty(key, keyword_filters);
@@ -52,7 +50,7 @@ export default function useUpdateSearchFilters() {
   const processFilter = (value: any) => {
     const prev: any = queryClient.getQueryData('searchCriteria');
     const { keyword_filters } = prev;
-    let [key, val] = getKeyAndValue(value);
+    const [key, val] = getKeyAndValue(value);
     const { action } = val.length ? value : { action: 'delete' };
     const new_keyword_filters = actions[action](key, val, keyword_filters);
 
@@ -65,12 +63,10 @@ export default function useUpdateSearchFilters() {
   return useMutation(
     (value: any) => {
       const newObj = processFilter(value);
-      return queryClient.setQueryData('searchCriteria', (old) => {
-        return {
-          ...old,
-          ...newObj,
-        };
-      });
+      return queryClient.setQueryData('searchCriteria', (old) => ({
+        ...old,
+        ...newObj,
+      }));
     },
 
     {

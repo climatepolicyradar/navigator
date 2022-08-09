@@ -6,9 +6,7 @@ export default function useDocumentDetail(id: string) {
 
   return useQuery(
     'document_detail',
-    () => {
-      return client.get(`/documents/${id}`, null);
-    },
+    () => client.get(`/documents/${id}`, null),
 
     { refetchOnWindowFocus: false, enabled: id !== undefined }
   );

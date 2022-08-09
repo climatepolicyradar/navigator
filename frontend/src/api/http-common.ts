@@ -3,6 +3,7 @@ import { storage } from '../utils/storage';
 
 class ApiClient {
   private baseUrl;
+
   private axiosClient;
 
   constructor(baseUrl = '') {
@@ -31,6 +32,7 @@ class ApiClient {
       .then((res) => res)
       .catch((err) => Promise.reject(err));
   }
+
   post(url, values, config = {}) {
     return this.axiosClient
       .post(`${this.baseUrl}${url}`, values, config)
@@ -40,6 +42,7 @@ class ApiClient {
         return Promise.reject(err);
       });
   }
+
   put(url, values) {
     return this.axiosClient
       .put(`${this.baseUrl}${url}`, values)

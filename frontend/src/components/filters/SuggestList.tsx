@@ -1,14 +1,14 @@
 import { useEffect, useRef } from 'react';
 import { addClass, removeClass } from '../../utils/cssClass';
 
-const SuggestList = ({
+function SuggestList({
   list,
   setList,
   keyField,
   type,
   setInput,
   handleFilterChange,
-}) => {
+}) {
   const ulRef = useRef(null);
   let liSelected;
   let index = -1;
@@ -22,7 +22,7 @@ const SuggestList = ({
       // down
       if (liSelected) {
         removeClass(liSelected, 'selected');
-        let next = ul.getElementsByTagName('li')[index];
+        const next = ul.getElementsByTagName('li')[index];
         if (typeof next !== undefined && index <= len) {
           liSelected = next;
         } else {
@@ -40,7 +40,7 @@ const SuggestList = ({
       if (liSelected) {
         removeClass(liSelected, 'selected');
         index -= 1;
-        let next = ul.getElementsByTagName('li')[index];
+        const next = ul.getElementsByTagName('li')[index];
         if (typeof next !== undefined && index >= 0) {
           liSelected = next;
         } else {
@@ -86,8 +86,7 @@ const SuggestList = ({
       className="bg-white rounded-b-lg border-t-dotted border-b border-l border-r"
     >
       {list.map(
-        (item, index) =>
-          index < 10 && (
+        (item, index) => index < 10 && (
             <li
               key={index}
               onClick={() => {
@@ -97,10 +96,10 @@ const SuggestList = ({
             >
               {item[keyField]}
             </li>
-          )
+          ),
       )}
     </ul>
   );
-};
+}
 
 export default SuggestList;

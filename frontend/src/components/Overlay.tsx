@@ -1,10 +1,11 @@
+import { FC } from 'react';
+
 interface OverlayProps {
   active: boolean;
   onClick(): void;
-  children?: JSX.Element | string;
 }
 
-const Overlay = ({ active, onClick, children }: OverlayProps): JSX.Element => {
+const Overlay: FC<OverlayProps> = ({ active, onClick, children }) => {
   return (
     <div
       onClick={onClick}

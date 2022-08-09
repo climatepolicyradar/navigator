@@ -1,5 +1,5 @@
-import { minYear, currentYear } from '../constants/timedate';
-import { PER_PAGE } from '../constants/paging';
+import { minYear, currentYear } from './timedate';
+import { PER_PAGE } from './paging';
 
 export const initialSearchCriteria = {
   query_string: '',

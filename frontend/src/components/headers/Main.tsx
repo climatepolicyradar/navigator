@@ -1,12 +1,12 @@
 import { useEffect, useState, useRef } from 'react';
-import Logo from '../svg/Logo';
 import Link from 'next/link';
+import Logo from '../svg/Logo';
 import ProductName from '../ProductName';
 import { useAuth } from '../../api/auth';
 import ToggleAccountMenu from '../menus/ToggleAccountMenu';
 import AlphaLogoSmall from '../logo/AlphaLogoSmall';
 
-const Header = () => {
+function Header() {
   const [fixed, setFixed] = useState(false);
   const { logout } = useAuth();
   const headerRef = useRef(null);
@@ -31,5 +31,5 @@ const Header = () => {
       </div>
     </header>
   );
-};
+}
 export default Header;

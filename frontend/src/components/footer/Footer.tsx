@@ -1,6 +1,6 @@
 import FooterLinks from './FooterLinks';
 
-const Footer = () => {
+function Footer() {
   return (
     <footer className="py-12 dark-gradient flex items-center shrink-0">
       <div className="container">
@@ -8,9 +8,9 @@ const Footer = () => {
           Need help? Found a bug? Please email us at
           support@climatepolicyradar.org
         </p>
-        <FooterLinks landing={true} />
+        <FooterLinks landing />
       </div>
     </footer>
   );
-};
+}
 export default Footer;

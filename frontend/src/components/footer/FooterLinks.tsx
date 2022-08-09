@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const FooterLinks = ({ landing = false }) => {
+function FooterLinks({ landing = false }) {
   return (
     <nav>
       <div
@@ -32,5 +32,5 @@ const FooterLinks = ({ landing = false }) => {
       </div>
     </nav>
   );
-};
+}
 export default FooterLinks;

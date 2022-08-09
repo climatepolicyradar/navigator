@@ -1,6 +1,6 @@
 import { sortOptions } from '../../constants/sortOptions';
 
-const Sort = ({ updateSort, defaultValue }) => {
+function Sort({ updateSort, defaultValue }) {
   return (
     <>
       <div className="flex-shrink-0 font-medium text-indigo-400">Sort by:</div>
@@ -9,7 +9,7 @@ const Sort = ({ updateSort, defaultValue }) => {
         onChange={updateSort}
         defaultValue={defaultValue}
       >
-        {sortOptions.map((item, index) => (
+        {sortOptions.map((item) => (
           <option key={item.value} value={item.value}>
             {item.label}
           </option>
@@ -17,5 +17,5 @@ const Sort = ({ updateSort, defaultValue }) => {
       </select>
     </>
   );
-};
+}
 export default Sort;

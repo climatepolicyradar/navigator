@@ -1,7 +1,6 @@
 import { useEffect, useState } from 'react';
-import SuggestList from './SuggestList';
-import '../../pages/i18n';
 import { useTranslation } from 'react-i18next';
+import SuggestList from './SuggestList';
 import { sortData } from '../../utils/sorting';
 
 interface ByTextInputProps {
@@ -13,17 +12,17 @@ interface ByTextInputProps {
   handleFilterChange(filterType: string, value: string, action?: string): void;
 }
 
-const ByTextInput = ({
+function ByTextInput({
   title,
   list,
   selectedList,
   keyField,
   filterType,
   handleFilterChange,
-}: ByTextInputProps) => {
+}: ByTextInputProps) {
   const [input, setInput] = useState('');
   const [suggestList, setSuggestList] = useState([]);
-  const { t, i18n, ready } = useTranslation('searchResults');
+  const { t } = useTranslation('searchResults');
   const handleChange = (e: React.FormEvent<HTMLInputElement>): void => {
     setInput(e.currentTarget.value);
   };
@@ -32,13 +31,12 @@ const ByTextInput = ({
       setSuggestList([]);
       return;
     }
-    const filteredList = list?.filter((item) => {
-      /* Make sure item hasn't already been selected and limit list to 20 items */
-      return (
+    const filteredList = list?.filter(
+      (item) =>
+        /* Make sure item hasn't already been selected and limit list to 20 items */
         item[keyField].toLowerCase().indexOf(input.toLowerCase()) > -1 &&
         selectedList.indexOf(item[keyField]) === -1
-      );
-    });
+    );
     setSuggestList(sortData(filteredList, keyField));
   };
   useEffect(() => {
@@ -69,5 +67,5 @@ const ByTextInput = ({
       )}
     </div>
   );
-};
+}
 export default ByTextInput;

@@ -6,7 +6,7 @@ interface RelatedDocumentProps {
   document: any;
 }
 
-const RelatedDocument = ({ document }: RelatedDocumentProps) => {
+function RelatedDocument({ document }: RelatedDocumentProps) {
   const [year] = convertDate(document?.publication_ts);
   return (
     <div className="relative">
@@ -31,5 +31,5 @@ const RelatedDocument = ({ document }: RelatedDocumentProps) => {
       </p>
     </div>
   );
-};
+}
 export default RelatedDocument;

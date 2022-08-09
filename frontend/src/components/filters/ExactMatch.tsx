@@ -1,4 +1,6 @@
-const ExactMatch = ({ id, handleSearchChange, checked, landing = false }) => {
+function ExactMatch({
+ id, handleSearchChange, checked, landing = false 
+}) {
   const handleClick = (e) => {
     const isChecked = e.currentTarget.checked;
     handleSearchChange('exact_match', isChecked);
@@ -26,5 +28,5 @@ const ExactMatch = ({ id, handleSearchChange, checked, landing = false }) => {
       </label>
     </div>
   );
-};
+}
 export default ExactMatch;

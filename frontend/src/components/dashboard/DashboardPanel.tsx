@@ -6,7 +6,7 @@ interface DashboardPanelProps {
   text: string;
 }
 
-const DashboardPanel = ({ icon, number, text }) => {
+function DashboardPanel({ icon, number, text }) {
   const DashIcon = icon;
   return (
     <div className="mr-8 text-white flex flex-col shrink-0 items-start justify-center p-8 bg-blue-500/50 rounded-3xl text-yellow-500 w-8/12 sm:w-1/2 md:w-full md:mr-0 xl:p-12">
@@ -17,5 +17,5 @@ const DashboardPanel = ({ icon, number, text }) => {
       <span className="font-medium">{text}</span>
     </div>
   );
-};
+}
 export default DashboardPanel;

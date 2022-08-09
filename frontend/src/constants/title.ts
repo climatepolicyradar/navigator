@@ -1,1 +1,1 @@
-export const pageTitle = "Climate Policy Radar";
+export const pageTitle = 'Climate Policy Radar';

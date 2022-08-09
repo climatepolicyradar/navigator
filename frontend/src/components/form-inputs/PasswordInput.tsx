@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { FieldErrors } from "react-hook-form";
-import FormFieldError from "../blocks/Error";
-import { EyeIcon } from "@components/svg/Icons";
+import React, { useState } from 'react';
+import { FieldErrors } from 'react-hook-form';
+import { EyeIcon } from '@components/svg/Icons';
+import FormFieldError from '../blocks/Error';
 
 interface InputProps {
   label?: string;
@@ -14,7 +14,16 @@ interface InputProps {
   register: any;
 }
 
-const PasswordInput = ({ label = "", required = false, errors, name, placeholder = "", className = "", onChange, register }: InputProps): JSX.Element => {
+function PasswordInput({
+  label = '',
+  required = false,
+  errors,
+  name,
+  placeholder = '',
+  className = '',
+  onChange,
+  register,
+}: InputProps): JSX.Element {
   const [passwordReveal, setPasswordReveal] = useState(false);
 
   const handleOnClick = () => {
@@ -25,21 +34,25 @@ const PasswordInput = ({ label = "", required = false, errors, name, placeholder
     <div className={className}>
       <label className="">
         {label}
-        {required && label ? <strong className="text-red-500"> *</strong> : null}
+        {required && label ? (
+          <strong className="text-red-500"> *</strong>
+        ) : null}
       </label>
       <div className="relative mt-1">
         <input
-          type={passwordReveal ? "text" : "password"}
+          type={passwordReveal ? 'text' : 'password'}
           placeholder={placeholder}
-          className={`border ${errors[name] ? "border-red-500" : "border-gray-300"}`}
+          className={`border ${
+            errors[name] ? 'border-red-500' : 'border-gray-300'
+          }`}
           onChange={onChange}
           {...register(name)}
         />
         <div
           className={`absolute inset-y-0 right-5 flex items-center cursor-pointer 
-            ${passwordReveal ? "text-blue-500" : "text-black"}`}
+            ${passwordReveal ? 'text-blue-500' : 'text-black'}`}
           onClick={handleOnClick}
-          title={`${passwordReveal ? "Hide" : "Show"} password`}
+          title={`${passwordReveal ? 'Hide' : 'Show'} password`}
         >
           <EyeIcon height="24" width="24" />
         </div>
@@ -47,6 +60,6 @@ const PasswordInput = ({ label = "", required = false, errors, name, placeholder
       {errors[name] && <FormFieldError message={errors[name].message} />}
     </div>
   );
-};
+}
 
 export default PasswordInput;

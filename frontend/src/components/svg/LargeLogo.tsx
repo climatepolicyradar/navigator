@@ -1,4 +1,4 @@
-const LargeLogo = () => {
+function LargeLogo() {
   return (
     <svg
       width="225"
@@ -122,5 +122,5 @@ const LargeLogo = () => {
       </defs>
     </svg>
   );
-};
+}
 export default LargeLogo;

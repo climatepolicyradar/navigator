@@ -13,20 +13,14 @@ export default function useSearch(id, obj = initialSearchCriteria) {
   };
 
   const getResults = async () => {
-    const results = await client.post(`/searches`, obj, config);
+    const results = await client.post('/searches', obj, config);
     return results;
   };
 
-  return useQuery(
-    id,
-    () => {
-      return getResults();
-    },
-    {
-      enabled: obj.query_string.length > 0,
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      cacheTime: 1000 * 60 * 60 * 24,
-    }
-  );
+  return useQuery(id, () => getResults(), {
+    enabled: obj.query_string.length > 0,
+    refetchOnWindowFocus: false,
+    refetchOnMount: false,
+    cacheTime: 1000 * 60 * 60 * 24,
+  });
 }

@@ -1,8 +1,9 @@
 import { KebabMenuIcon } from '../svg/Icons';
+
 interface KebabProps {
   onClick(): void;
 }
-const Kebab = ({ onClick }) => {
+function Kebab({ onClick }) {
   return (
     <button
       className="bg-indigo-500 text-white p-3 shadow rounded-full"
@@ -11,5 +12,5 @@ const Kebab = ({ onClick }) => {
       <KebabMenuIcon />
     </button>
   );
-};
+}
 export default Kebab;

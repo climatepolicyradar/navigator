@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import * as Yup from 'yup';
 import { yupResolver } from '@hookform/resolvers/yup';
 import { useForm } from 'react-hook-form';
+import { useTranslation } from 'react-i18next';
 import Button from '../buttons/Button';
 import TextInput from '../form-inputs/TextInput';
 import TextArea from '../form-inputs/TextArea';
@@ -20,7 +21,6 @@ import {
 } from '../../interfaces';
 import LoaderOverlay from '../LoaderOverlay';
 import '../../pages/i18n';
-import { useTranslation } from 'react-i18next';
 import useCreateAction from '../../hooks/useCreateAction';
 import DocumentList from './DocumentList';
 
@@ -31,12 +31,12 @@ interface AddActionProps {
   sources: Source[];
 }
 
-const AddAction = ({
+function AddAction({
   geographies,
   languages,
   actionTypes,
   sources,
-}: AddActionProps) => {
+}: AddActionProps) {
   const [days, setDays] = useState([]);
   const [popupActive, setPopupActive] = useState(false);
   const initialValues = {
@@ -61,23 +61,23 @@ const AddAction = ({
 
   const schema = Yup.object({
     action_source_id: Yup.string().required(
-      t('addAction.Please select a source.', { ns: 'formErrors' })
+      t('addAction.Please select a source.', { ns: 'formErrors' }),
     ),
     name: Yup.string().required(t('Required', { ns: 'formErrors' })),
     year: Yup.string().required(t('Year', { ns: 'formErrors' })),
     geography_id: Yup.string().required(
-      t('addAction.Please select a geography.', { ns: 'formErrors' })
+      t('addAction.Please select a geography.', { ns: 'formErrors' }),
     ),
     action_type_id: Yup.string().required(
       t('addAction.Please select an action type.', {
         ns: 'formErrors',
-      })
+      }),
     ),
     documents: Yup.array().min(
       1,
       t('addAction.You must add at least one document.', {
         ns: 'formErrors',
-      })
+      }),
     ),
   });
 
@@ -86,7 +86,9 @@ const AddAction = ({
     handleSubmit,
     getValues,
     setValue,
-    formState: { isSubmitting, errors, isSubmitSuccessful, isValid },
+    formState: {
+ isSubmitting, errors, isSubmitSuccessful, isValid 
+},
     reset,
     watch,
   } = useForm({
@@ -157,11 +159,7 @@ const AddAction = ({
 
   return (
     <>
-      {createAction.isLoading || !ready ? (
-        <>
-          <LoaderOverlay />
-        </>
-      ) : null}
+      {createAction.isLoading || !ready ? <LoaderOverlay /> : null}
       <Overlay
         active={popupActive}
         onClick={() => {
@@ -187,7 +185,7 @@ const AddAction = ({
           ) : (
             <p className="text-indigo-600 text-xl">
               {t(
-                'Add a new action using the form below. Multiple documents can be added to an action.'
+                'Add a new action using the form below. Multiple documents can be added to an action.',
               )}
             </p>
           )}
@@ -377,6 +375,6 @@ const AddAction = ({
       )}
     </>
   );
-};
+}
 
 export default AddAction;

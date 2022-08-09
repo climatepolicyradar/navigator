@@ -4,7 +4,7 @@ interface ProductNameProps {
   fixed: boolean;
 }
 
-const ProductName = ({ fixed }: ProductNameProps) => {
+function ProductName({ fixed }: ProductNameProps) {
   return (
     <div data-cy="product-name" className="-mt-1">
       <Link href="/">
@@ -30,5 +30,5 @@ const ProductName = ({ fixed }: ProductNameProps) => {
       </Link>
     </div>
   );
-};
+}
 export default ProductName;

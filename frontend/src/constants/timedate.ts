@@ -26,14 +26,9 @@ export const yearRange = () => {
   for (let i = min; i <= max; i++) {
     arr.push(i);
   }
-  return arr.sort(function (a, b) {
-    return b - a;
-  });
+  return arr.sort((a, b) => b - a);
 };
 
-export const daysInMonth = (month, year) => {
+export const daysInMonth = (month, year) =>
   // Use 1 for January, 2 for February, etc.
-  return new Date(year, month, 0).getDate();
-};
-
-export const dayRange = (month) => {};
+  new Date(year, month, 0).getDate();

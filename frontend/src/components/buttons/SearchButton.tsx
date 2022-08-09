@@ -1,11 +1,11 @@
+import { FC } from 'react';
 import { SearchIcon } from '../svg/Icons';
 
 interface SearchButtonProps {
   onClick?(event: React.FormEvent<HTMLButtonElement>): void;
-  children?: React.ReactNode | string;
 }
 
-const SearchButton = ({ onClick, children = null }: SearchButtonProps) => {
+const SearchButton: FC<SearchButtonProps> = ({ onClick, children }) => {
   return (
     <button
       onClick={onClick}
