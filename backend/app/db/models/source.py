@@ -1,5 +1,4 @@
 import sqlalchemy as sa
-from sqlalchemy.sql import func
 
 from app.db.session import Base
 

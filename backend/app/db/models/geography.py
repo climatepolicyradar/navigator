@@ -1,12 +1,11 @@
-from enum import unique
 import sqlalchemy as sa
-from sqlalchemy.sql import func
-from sqlalchemy import UniqueConstraint
 
 from app.db.session import Base
 
 
 class Geography(Base):  # noqa: D101
+    """Database model for Geography"""
+
     __tablename__ = "geography"
 
     id = sa.Column(sa.SmallInteger, primary_key=True)
@@ -21,11 +20,15 @@ class Geography(Base):  # noqa: D101
 
 
 class GeoStatistics(Base):
+    """Database model for statistics based on geography."""
+
     __tablename__ = "geo_statistics"
 
     id = sa.Column(sa.SmallInteger(), primary_key=True)
     name = sa.Column(sa.Text(), unique=True)
-    geography_id = sa.Column(sa.Integer(), sa.ForeignKey("geography.id"), nullable=False)
+    geography_id = sa.Column(
+        sa.Integer(), sa.ForeignKey("geography.id"), nullable=False
+    )
     legislative_process = sa.Column(sa.Text(), nullable=False)
     federal = sa.Column(sa.Boolean(), nullable=False)
     federal_details = sa.Column(sa.Text(), nullable=False)

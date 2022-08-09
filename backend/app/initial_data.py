@@ -13,7 +13,7 @@ from app.data_migrations import (
     populate_geography,
     populate_language,
     populate_source,
-    populate_geo_statistics
+    populate_geo_statistics,
 )
 
 
@@ -24,8 +24,8 @@ def run_data_migrations(db):
     populate_document_type(db)
     populate_geography(db)
 
-    db.commit() # Geography data is used to geo-stats so commit here
-    
+    db.commit()  # Geography data is used to geo-stats so commit here
+
     populate_geo_statistics(db)
     # TODO - framework, keyword, instrument, hazard
 
@@ -54,10 +54,11 @@ def create_loader_machine_user(db) -> None:
     machineuser_email = os.getenv("MACHINE_USER_LOADER_EMAIL")
     try:
 
-        create_user(db,
-                    machineuser_email,
-                    os.getenv("MACHINE_USER_LOADER_PASSWORD"),
-                    )
+        create_user(
+            db,
+            machineuser_email,
+            os.getenv("MACHINE_USER_LOADER_PASSWORD"),
+        )
     except IntegrityError:
         print(
             f"Skipping - loader machine user already exists with email/username {machineuser_email}"

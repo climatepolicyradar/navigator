@@ -8,6 +8,7 @@ from .source import Source
 from .geography import Geography
 from app.db.session import Base
 
+
 class DocumentType(Base):
     """A document type.
 
