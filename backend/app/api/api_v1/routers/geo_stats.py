@@ -2,7 +2,7 @@ from http.client import NOT_FOUND
 import logging
 from app.db.session import get_db
 from app.db.models.geography import GeoStatistics
-from fastapi import Depends
+from fastapi import Depends, HTTPException
 from app.core.auth import get_current_active_user
 from pydantic import BaseModel
 from sqlalchemy import exc
@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GeoStatsResponse(BaseModel):
-    """The response definition from /get_stats/{geogrpahy_id}"""
+    """The response definition from /get_stats/{geography_id}"""
 
     id: int
     name: str
@@ -26,7 +26,9 @@ class GeoStatsResponse(BaseModel):
     visibility_status: str
 
 
-get_get_stats_responses = {404: {"description": "Ooops"}}
+get_geo_stats_responses = {
+    404: {"description": "Statistics for Geography Id was not found"}
+}
 
 
 def get_geo_stats(
@@ -40,12 +42,18 @@ def get_geo_stats(
     type ISO-3166
     """
 
+    _LOGGER.info(f"Getting geo stats for {geography_id}")
     try:
         row = db.query(GeoStatistics).filter_by(geography_id=geography_id).first()
     except exc.SQLAlchemyError as e:
-        print(f"Unable to get geo stats for {geography_id}: Exception {e}")
-        _LOGGER.error(f"Unable to get geo stats for {geography_id}: Exception {e}")
-        return NOT_FOUND
+        msg = f"Unable to get geo stats for {geography_id}: Exception {e}"
+        _LOGGER.error(msg)
+        raise HTTPException(status_code=NOT_FOUND, detail=msg)
+
+    if row is None:
+        msg = f"Unable to get geo stats for {geography_id}"
+        _LOGGER.error(msg)
+        raise HTTPException(status_code=NOT_FOUND, detail=msg)
 
     return GeoStatsResponse(
         id=row.id,
@@ -63,12 +71,11 @@ def get_geo_stats(
 
 
 def add_geo_stats_route(router):
-    print("Adding route for geo_stats")
     _LOGGER.info("Adding route for geo_stats")
     router.add_api_route(
         "/geo_stats/{geography_id}",
         summary="Get climate statistics for a geography",
         endpoint=get_geo_stats,
         response_model=GeoStatsResponse,
-        responses=get_get_stats_responses,
+        responses=get_geo_stats_responses,
     )
