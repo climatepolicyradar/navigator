@@ -9,9 +9,8 @@ def test_initial_data_populates_tables(engine):
 
     with Session(engine) as db:
         populate_initial_data(db)
-        db.commit()
+        db.flush()
 
-    with Session(engine) as db:
         geo_count = db.execute("SELECT count(*) FROM geography;").scalar()
         language_count = db.execute("SELECT count(*) FROM language;").scalar()
         geo_stats_count = db.execute("SELECT count(*) FROM geo_statistics;").scalar()
