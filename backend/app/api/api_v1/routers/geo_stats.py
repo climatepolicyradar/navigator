@@ -11,7 +11,7 @@ _LOGGER = logging.getLogger(__name__)
 
 
 class GeoStatsResponse(BaseModel):
-    """The response definition from /get_stats/{geogrpahy_id}"""
+    """The response definition from /get_stats/{geography_id}"""
 
     id: int
     name: str
