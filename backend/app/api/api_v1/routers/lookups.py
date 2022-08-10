@@ -1,4 +1,5 @@
 from typing import Any, Dict, List
+from .geo_stats import add_geo_stats_route
 
 from fastapi import APIRouter, Depends, Request
 
@@ -14,7 +15,8 @@ from app.db.models import (
 )
 from app.db.session import Base, SessionLocal, get_db
 
-lookups_router = r = APIRouter()
+lookups_router = APIRouter()
+add_geo_stats_route(lookups_router)
 
 
 def table_to_json(
@@ -56,7 +58,7 @@ def tree_table_to_json(
     return json_out
 
 
-@r.get(
+@lookups_router.get(
     "/geographies",
 )
 def lookup_geographies(
@@ -68,7 +70,7 @@ def lookup_geographies(
     return tree_table_to_json(table=Geography, db=db)
 
 
-@r.get(
+@lookups_router.get(
     "/languages",
 )
 def lookup_languages(
@@ -84,7 +86,7 @@ def lookup_languages(
     ]
 
 
-@r.get(
+@lookups_router.get(
     "/sources",
 )
 def lookup_sources(
@@ -96,7 +98,7 @@ def lookup_sources(
     return table_to_json(table=Source, db=db)
 
 
-@r.get(
+@lookups_router.get(
     "/instruments",
 )
 def lookup_instruments(
@@ -109,7 +111,7 @@ def lookup_instruments(
     return tree_table_to_json(table=Instrument, db=db)
 
 
-@r.get(
+@lookups_router.get(
     "/sectors",
 )
 def lookup_sectors(
@@ -121,7 +123,7 @@ def lookup_sectors(
     return tree_table_to_json(table=Sector, db=db)
 
 
-@r.get("/document_types")
+@lookups_router.get("/document_types")
 def lookup_document_types(
     request: Request,
     db=Depends(get_db),
@@ -131,7 +133,7 @@ def lookup_document_types(
     return table_to_json(table=DocumentType, db=db)
 
 
-@r.get("/categories")
+@lookups_router.get("/categories")
 def lookup_document_categories(
     request: Request,
     db=Depends(get_db),
