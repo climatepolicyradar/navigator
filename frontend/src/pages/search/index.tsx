@@ -264,8 +264,8 @@ const Search = () => {
               <div className="flex flex-col h-full relative">
                 <DocumentSlideout document={document} searchTerm={searchCriteria.query_string} showPDF={showPDF} setShowPDF={setShowPDF} />
                 <div className="flex flex-col md:flex-row flex-1 h-0">
-                  <div className={`${showPDF ? "hidden" : "block"} md:block md:w-1/3 overflow-y-scroll`}>
-                    <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} />
+                  <div className={`${showPDF ? "hidden" : "block"} md:block md:w-1/3 overflow-y-scroll pl-3`}>
+                    <PassageMatches document={document} setPassageIndex={setPassageIndex} setShowPDF={setShowPDF} activeIndex={passageIndex} />
                   </div>
                   <div className={`${showPDF ? "block" : "hidden"} md:block md:w-2/3 mt-4 px-6 flex-1`}>
                     <EmbeddedPDF document={document} passageIndex={passageIndex} />
