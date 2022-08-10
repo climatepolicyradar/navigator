@@ -80,21 +80,17 @@ function Search() {
     instrumentsQuery;
 
   // search criteria and filters
-  const {
-    isFetching: isFetchingSearchCriteria,
-    isSuccess: isSearchCriteriaSuccess,
-    data: searchCriteria,
-  }: any = useSearchCriteria();
+  const { isFetching: isFetchingSearchCriteria, data: searchCriteria }: any =
+    useSearchCriteria();
 
   // search results
   const resultsQuery: any = useSearch('searches', searchCriteria);
   const {
-    data: { data: { documents = [] } = [] } = [],
-    data: { data: { hits } = 0 } = 0,
-    isSuccess,
+    data: { data: { documents = [] } = {} } = {},
+    data: { data: { hits } = 0 } = {},
   } = resultsQuery;
 
-  const { data: document }: { data: TDocument } = ({} = useDocument());
+  const { data: document }: { data: TDocument } = useDocument();
   const { t, ready } = useTranslation(['searchStart', 'searchResults']);
   const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
@@ -111,6 +107,15 @@ function Search() {
     setShowSlideout(slideOut ?? !showSlideout);
   };
 
+  const handleFilterChange = (
+    type: string,
+    value: string,
+    action: string = 'update'
+  ) => {
+    resetPaging();
+    updateSearchFilters.mutate({ [type]: value, action });
+  };
+
   const handleRegionChange = (type, regionName) => {
     handleFilterChange(type, regionName);
     updateCountries.mutate({
@@ -125,14 +130,6 @@ function Search() {
     setShowSlideout(false);
   };
 
-  const handleFilterChange = (
-    type: string,
-    value: string,
-    action: string = 'update'
-  ) => {
-    resetPaging();
-    updateSearchFilters.mutate({ [type]: value, action });
-  };
   const handleSearchChange = (type: string, value: any) => {
     if (type !== 'offset') resetPaging();
     updateSearchCriteria.mutate({ [type]: value });
@@ -171,9 +168,7 @@ function Search() {
     handleSearchChange('year_range', newVals);
   };
   const handleClearSearch = () => {
-    const {
- query_string, exact_match, sort_field, sort_order, ...initial 
-} =
+    const { query_string, exact_match, sort_field, sort_order, ...initial } =
       initialSearchCriteria;
     updateSearchCriteria.mutate(initial);
     // reset filtered countries which show in suggest list
@@ -184,26 +179,25 @@ function Search() {
       countries,
     });
   };
+
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
+
   const handleDocumentClick = (e: any) => {
     // Check if we are clicking on the document matches button
     const id = e.target.dataset.docid;
     if (!id) return;
 
     // keep panel open if clicking a different document
-    if (document?.document_id != id) {
-      // setShowSlideout(true);
+    if (document?.document_id !== id) {
       resetSlideOut(true);
     } else {
-      // setShowSlideout(!showSlideout);
       resetSlideOut();
     }
     updateDocument.mutate(id);
-
-    // setShowPDF(false);
   };
+
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
     const order = searchCriteria.sort_order;
@@ -231,6 +225,7 @@ function Search() {
     const catIndex = index === -1 ? 0 : index;
     setCategoryIndex(catIndex);
   };
+  
   const getCurrentPage = () => searchCriteria?.offset / PER_PAGE + 1;
 
   useDidUpdateEffect(() => {
@@ -269,7 +264,13 @@ function Search() {
     if (documents.length === 0 && searchCriteria?.query_string.length) {
       resultsQuery.refetch();
     }
-  }, []);
+  }, [
+    setCurrentCategoryIndex,
+    getCurrentPage,
+    resultsQuery,
+    documents.length,
+    searchCriteria?.query_string.length,
+  ]);
 
   return (
     <>
@@ -352,7 +353,7 @@ function Search() {
                     instrumentsQuery.isFetching ? (
                       <p>Loading filters...</p>
                     ) : (
-                        <SearchFilters
+                      <SearchFilters
                         handleFilterChange={handleFilterChange}
                         searchCriteria={searchCriteria}
                         handleYearChange={handleYearChange}
