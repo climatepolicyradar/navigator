@@ -133,6 +133,8 @@ app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 async def startup() -> None:
     upgrade(Config("./alembic.ini"), "head")
 
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8888,
-                log_config=DEFAULT_LOGGING)  # type: ignore
+    uvicorn.run(
+        app, host="0.0.0.0", port=8888, log_config=DEFAULT_LOGGING
+    )  # type: ignore
