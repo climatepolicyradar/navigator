@@ -19,7 +19,7 @@ const TextLink = ({
         </Link>
       ) : (
         <button
-          className="ml-6 text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300"
+          className="text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300"
           onClick={onClick}
         >
           {children}

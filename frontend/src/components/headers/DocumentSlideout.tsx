@@ -42,7 +42,7 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
           </div>
           {showPDF && (
             // TODO: translate below text
-            <div className="md:hidden">
+            <div className="md:hidden ml-6">
               <TextLink onClick={() => setShowPDF(false)}>
                 <span className="text-lg">&laquo;</span>Back to passage matches
               </TextLink>
