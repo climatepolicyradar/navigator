@@ -13,6 +13,7 @@ from app.data_migrations import (
     populate_geography,
     populate_language,
     populate_source,
+    populate_geo_statistics,
 )
 
 
@@ -22,6 +23,10 @@ def run_data_migrations(db):
     populate_language(db)
     populate_document_type(db)
     populate_geography(db)
+
+    db.flush()  # Geography data is used by geo-stats so flush
+
+    populate_geo_statistics(db)
     # TODO - framework, keyword, instrument, hazard
 
 
@@ -62,16 +67,20 @@ def create_loader_machine_user(db) -> None:
         )
 
 
-if __name__ == "__main__":
-    print("Creating initial data...")
-    db = SessionLocal()
-
+def populate_initial_data(db):
     print("Creating superuser...")
     create_superuser(db)
+
     print("Creating loader machine user...")
     create_loader_machine_user(db)
 
     print("Running data migrations...")
     run_data_migrations(db)
+
+
+if __name__ == "__main__":
+    print("Creating initial data...")
+    db = SessionLocal()
+    populate_initial_data(db)
     db.commit()
     print("Done creating initial data")

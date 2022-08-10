@@ -1,105 +1,12 @@
-"""Models.
-
-Some of these tables are lookup tables, i.e. the ones which have a DocumentXXX counterpart.
-
-Values for these lookups can be found here:
-https://www.notion.so/climatepolicyradar/External-Pre-Existing-Classifications-0409cd1a01d44362b48b34c24d10cd4c
-
-However, for now we write the values into the lookups as they come from the uploader.
-As more sources come online, we'll set up a mapping between the source's term, and our term
-(the latter which is currently based on CCLW).
-
-
-These lookups are global:
-- language
-- geography
-- source
-- category
-- framework
-- hazard
-- response (named 'topic' outside the app)
-
-These lookups are source-specific:
-- instrument
-- sector
-"""
-
 import sqlalchemy as sa
-from sqlalchemy import UniqueConstraint
 from sqlalchemy.sql import func
+from sqlalchemy import UniqueConstraint
 
+from .auditable import Auditable
+from .user import User
+from .source import Source
+from .geography import Geography
 from app.db.session import Base
-
-
-class Auditable:  # noqa: D101
-    created_ts = sa.Column(sa.DateTime(timezone=True), server_default=func.now())
-    updated_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
-
-
-class User(Base, Auditable):  # noqa: D101
-    __tablename__ = "user"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    email = sa.Column(sa.String, unique=True, index=True, nullable=False)
-    names = sa.Column(sa.String)
-    hashed_password = sa.Column(sa.String)
-    is_active = sa.Column(sa.Boolean, default=False, nullable=False)
-    is_superuser = sa.Column(sa.Boolean, default=False, nullable=False)
-    job_role = sa.Column(sa.String)
-    location = sa.Column(sa.String)
-    affiliation_organisation = sa.Column(sa.String)
-    affiliation_type = sa.Column(sa.ARRAY(sa.Text))
-    policy_type_of_interest = sa.Column(sa.ARRAY(sa.Text))
-    geographies_of_interest = sa.Column(sa.ARRAY(sa.Text))
-    data_focus_of_interest = sa.Column(sa.ARRAY(sa.Text))
-
-
-class PasswordResetToken(Base, Auditable):  # noqa: D101
-    __tablename__ = "password_reset_token"
-
-    id = sa.Column(sa.BigInteger, primary_key=True)
-    token = sa.Column(sa.Text, unique=True, nullable=False)
-    expiry_ts = sa.Column(sa.DateTime, nullable=False)
-    is_redeemed = sa.Column(sa.Boolean, nullable=False, default=False)
-    is_cancelled = sa.Column(sa.Boolean, nullable=False, default=False)
-    user_id = sa.Column(sa.Integer, sa.ForeignKey(User.id), nullable=False)
-
-
-class Language(Base):  # noqa: D101
-    __tablename__ = "language"
-
-    id = sa.Column(sa.SmallInteger, primary_key=True)
-    language_code = sa.Column(sa.CHAR(length=3), nullable=False, unique=True)
-    part1_code = sa.Column(sa.CHAR(length=2))
-    part2_code = sa.Column(sa.CHAR(length=3))
-    name = sa.Column(sa.Text)
-
-
-class Geography(Base):  # noqa: D101
-    __tablename__ = "geography"
-
-    id = sa.Column(sa.SmallInteger, primary_key=True)
-    # to display to end-users
-    display_value = sa.Column(sa.Text, unique=True)
-    # e.g. ISO code, World Bank, etc - not necessarily for display
-    # non-unique, as some unrecognised territories might share the same code, e.g.
-    # at the time of writing, "Sahrawi Republic" and "Western Sahara" both share "ESH"
-    value = sa.Column(sa.Text)
-    type = sa.Column(sa.Text)
-    parent_id = sa.Column(sa.Integer, sa.ForeignKey("geography.id"))
-
-
-class Source(Base):  # noqa: D101
-    """The action data source.
-
-    CCLW is the only source for alpha.
-    Future will be extras like CPD (https://climatepolicydatabase.org/), etc.
-    """
-
-    __tablename__ = "source"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    name = sa.Column(sa.String(128), nullable=False, unique=True)
 
 
 class DocumentType(Base):
@@ -161,6 +68,24 @@ class Document(Base, Auditable):
     )
     category_id = sa.Column(sa.Integer, sa.ForeignKey(Category.id), nullable=False)
     UniqueConstraint(name, geography_id, type_id, source_id, source_url)
+
+
+class Association(Base):  # noqa: D101
+    __tablename__ = "association"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    document_id_from = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+    )
+    document_id_to = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+    )
+    type = sa.Column(sa.Text, nullable=False)
+    name = sa.Column(sa.Text, nullable=False)
 
 
 class Sector(Base):  # noqa: D101
@@ -258,6 +183,28 @@ class DocumentResponse(Base):  # noqa: D101
     )
 
 
+class Language(Base):  # noqa: D101
+    __tablename__ = "language"
+
+    id = sa.Column(sa.SmallInteger, primary_key=True)
+    language_code = sa.Column(sa.CHAR(length=3), nullable=False, unique=True)
+    part1_code = sa.Column(sa.CHAR(length=2))
+    part2_code = sa.Column(sa.CHAR(length=3))
+    name = sa.Column(sa.Text)
+
+
+class DocumentLanguage(Base):
+    """A document's languages."""
+
+    __tablename__ = "document_language"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    language_id = sa.Column(sa.Integer, sa.ForeignKey(Language.id), nullable=False)
+    document_id = sa.Column(
+        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
+    )
+
+
 class Hazard(Base):  # noqa: D101
     __tablename__ = "hazard"
 
@@ -345,33 +292,3 @@ class Event(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     created_ts = sa.Column(sa.DateTime(timezone=True), nullable=False)
-
-
-class Association(Base):  # noqa: D101
-    __tablename__ = "association"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    document_id_from = sa.Column(
-        sa.Integer,
-        sa.ForeignKey(Document.id, ondelete="CASCADE"),
-        nullable=False,
-    )
-    document_id_to = sa.Column(
-        sa.Integer,
-        sa.ForeignKey(Document.id, ondelete="CASCADE"),
-        nullable=False,
-    )
-    type = sa.Column(sa.Text, nullable=False)
-    name = sa.Column(sa.Text, nullable=False)
-
-
-class DocumentLanguage(Base):
-    """A document's languages."""
-
-    __tablename__ = "document_language"
-
-    id = sa.Column(sa.Integer, primary_key=True)
-    language_id = sa.Column(sa.Integer, sa.ForeignKey(Language.id), nullable=False)
-    document_id = sa.Column(
-        sa.Integer, sa.ForeignKey(Document.id, ondelete="CASCADE"), nullable=False
-    )

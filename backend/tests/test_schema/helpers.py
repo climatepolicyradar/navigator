@@ -1,6 +1,5 @@
 import logging
 import os
-import pathlib
 from subprocess import STDOUT, check_output
 from typing import Any, cast
 

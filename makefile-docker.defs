@@ -80,7 +80,10 @@ test_backend_search: clear_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'search'
 
 test_backend:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'not search'
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -v -m 'not search'
+
+test_backend_unit:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -v tests/unit
 
 test_loader:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader pytest
