@@ -24,7 +24,7 @@ def run_data_migrations(db):
     populate_document_type(db)
     populate_geography(db)
 
-    db.commit()  # Geography data is used to geo-stats so commit here
+    db.flush()  # Geography data is used by geo-stats so flush
 
     populate_geo_statistics(db)
     # TODO - framework, keyword, instrument, hazard
