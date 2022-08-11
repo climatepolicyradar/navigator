@@ -1,40 +1,43 @@
+from http.client import NOT_FOUND, OK, UNAUTHORIZED
 from unittest.mock import Mock
 from app.initial_data import populate_initial_data
 
-from app.api.api_v1.routers.geo_stats import (
+from app.api.api_v1.routers.lookups.geo_stats import (
     GeoStatsResponse,
-    add_geo_stats_route,
-    get_geo_stats,
+    lookup_geo_stats,
 )
 
-
-def test_adds_route():
-    router = Mock()
-    add_geo_stats_route(router)
-    router.add_api_route.assert_called_once()
+TEST_ID = 11
+TEST_GEO_NAME = "Antigua and Barbuda"
+URL_UNDER_TEST = f"/api/v1/geo_stats/{TEST_ID}"
 
 
 def test_endpoint_security(client):
-    response = client.get("/api/v1/geo_stats/11")
-    assert response.status_code == 401
+    response = client.get(URL_UNDER_TEST)
+    assert response.status_code == UNAUTHORIZED
 
 
 def test_endpoint_returns_correct_data(client, user_token_headers, test_db):
     populate_initial_data(test_db)
     test_db.flush()  # update the session, no need to commit as its just a test
 
-    TEST_ID = 11
-    TEST_GEO_NAME = "Antigua and Barbuda"
-
     response = client.get(
-        f"/api/v1/geo_stats/{TEST_ID}",
+        URL_UNDER_TEST,
         headers=user_token_headers,
     )
     stats = response.json()
-    assert response.status_code == 200
+    assert response.status_code == OK
     assert stats["id"] == 6
-    assert stats["geography_id"] == {TEST_ID}
+    assert stats["geography_id"] == TEST_ID
     assert stats["name"] == TEST_GEO_NAME
+
+
+def test_endpoint_returns_not_found(client, user_token_headers, test_db):
+    response = client.get(
+        URL_UNDER_TEST,
+        headers=user_token_headers,
+    )
+    assert response.status_code == NOT_FOUND
 
 
 def test_queries_db():
@@ -45,8 +48,8 @@ def test_queries_db():
     db.query.return_value = query
     query.filter_by.return_value = filter_by
     filter_by.first.return_value = GeoStatsResponse(
-        id=123,
-        name="row.name",
+        id=TEST_ID,
+        name=TEST_GEO_NAME,
         geography_id=1,
         legislative_process="row.legislative_process",
         federal=True,
@@ -58,6 +61,7 @@ def test_queries_db():
         visibility_status="row.visibility_status",
     )
 
-    response = get_geo_stats(123, db=db, current_user=None)
+    response = lookup_geo_stats(TEST_ID, db=db, current_user=None)
     db.query.assert_called_once()
-    assert response.id == 123
+    assert response.id == TEST_ID
+    assert response.name == TEST_GEO_NAME

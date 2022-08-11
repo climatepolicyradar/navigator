@@ -6,6 +6,7 @@ from fastapi import Depends, HTTPException
 from app.core.auth import get_current_active_user
 from pydantic import BaseModel
 from sqlalchemy import exc
+from .router import lookups_router
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -26,12 +27,18 @@ class GeoStatsResponse(BaseModel):
     visibility_status: str
 
 
-get_geo_stats_responses = {
+lookup_geo_stats_responses = {
     404: {"description": "Statistics for Geography Id was not found"}
 }
 
 
-def get_geo_stats(
+@lookups_router.get(
+    "/geo_stats/{geography_id}",
+    summary="Get climate statistics for a geography",
+    response_model=GeoStatsResponse,
+    responses=lookup_geo_stats_responses,
+)
+def lookup_geo_stats(
     geography_id: int,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
@@ -67,15 +74,4 @@ def get_geo_stats(
         climate_risk_index=row.climate_risk_index,
         worldbank_income_group=row.worldbank_income_group,
         visibility_status=row.visibility_status,
-    )
-
-
-def add_geo_stats_route(router):
-    _LOGGER.info("Adding route for geo_stats")
-    router.add_api_route(
-        "/geo_stats/{geography_id}",
-        summary="Get climate statistics for a geography",
-        endpoint=get_geo_stats,
-        response_model=GeoStatsResponse,
-        responses=get_geo_stats_responses,
     )
