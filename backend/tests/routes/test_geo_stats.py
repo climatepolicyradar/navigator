@@ -11,6 +11,9 @@ TEST_ID = 11
 TEST_GEO_NAME = "Antigua and Barbuda"
 URL_UNDER_TEST = f"/api/v1/geo_stats/{TEST_ID}"
 
+TEST_ID_BAD = 123456
+URL_UNDER_TEST_BAD = f"/api/v1/geo_stats/{TEST_ID_BAD}"
+
 
 def test_endpoint_security(client):
     response = client.get(URL_UNDER_TEST)
@@ -18,6 +21,7 @@ def test_endpoint_security(client):
 
 
 def test_endpoint_returns_correct_data(client, user_token_headers, test_db):
+    """Tests when the db is populated we can get out the data as expected."""
     populate_initial_data(test_db)
     test_db.flush()  # update the session, no need to commit as its just a test
 
@@ -33,6 +37,19 @@ def test_endpoint_returns_correct_data(client, user_token_headers, test_db):
 
 
 def test_endpoint_returns_not_found(client, user_token_headers, test_db):
+    """Tests the fact if the db is populated then 404 is returned for an unknown id."""
+    populate_initial_data(test_db)
+    test_db.flush()  # update the session, no need to commit as its just a test
+
+    response = client.get(
+        URL_UNDER_TEST_BAD,
+        headers=user_token_headers,
+    )
+    assert response.status_code == NOT_FOUND
+
+
+def test_endpoint_returns_not_found_empty_db(client, user_token_headers):
+    """Tests the fact if the db is empty then no error is generated and 404 is returned."""
     response = client.get(
         URL_UNDER_TEST,
         headers=user_token_headers,

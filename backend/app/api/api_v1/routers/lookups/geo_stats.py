@@ -1,5 +1,6 @@
 from http.client import NOT_FOUND
 import logging
+from typing import Mapping
 from app.db.session import get_db
 from app.db.models.geography import GeoStatistics
 from fastapi import Depends, HTTPException
@@ -27,7 +28,7 @@ class GeoStatsResponse(BaseModel):
     visibility_status: str
 
 
-lookup_geo_stats_responses = {
+lookup_geo_stats_responses: Mapping[int, Mapping] = {
     404: {"description": "Statistics for Geography Id was not found"}
 }
 
@@ -52,9 +53,9 @@ def lookup_geo_stats(
     _LOGGER.info(f"Getting geo stats for {geography_id}")
     try:
         row = db.query(GeoStatistics).filter_by(geography_id=geography_id).first()
-    except exc.SQLAlchemyError as e:
-        msg = f"Unable to get geo stats for {geography_id}: Exception {e}"
-        _LOGGER.error(msg)
+    except exc.SQLAlchemyError:
+        msg = f"Unable to get geo stats for {geography_id}"
+        _LOGGER.exception(msg)
         raise HTTPException(status_code=NOT_FOUND, detail=msg)
 
     if row is None:

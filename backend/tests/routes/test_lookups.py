@@ -12,7 +12,7 @@ from app.db.models import (
     DocumentType,
     Category,
 )
-from app.api.api_v1.routers.lookups import tree_table_to_json
+from app.api.api_v1.routers.lookups.utils import tree_table_to_json
 from app.db.session import SessionLocal
 
 
