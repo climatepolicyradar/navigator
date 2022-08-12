@@ -11,6 +11,8 @@ from fastapi_pagination import add_pagination
 from slowapi.errors import RateLimitExceeded
 from slowapi.extension import _rate_limit_exceeded_handler
 from starlette.requests import Request
+from alembic.command import upgrade
+from alembic.config import Config
 
 from app.api.api_v1.routers.admin import admin_users_router
 from app.api.api_v1.routers.auth import auth_router
@@ -24,8 +26,8 @@ from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
 from app.core.ratelimit import limiter
 from app.db.session import SessionLocal
-from alembic.command import upgrade
-from alembic.config import Config
+
+os.environ["SKIP_ALEMBIC_LOGGING"] = "1"
 
 # Clear existing log handlers so we always log in structured JSON
 root_logger = logging.getLogger()
