@@ -1,6 +1,6 @@
 """Tree result parser for backend API lookup results.
 
-See backend's app.api.api_v1.routers.lookups.tree_table_to_json
+See backend's app.api.api_v1.routers.lookups.utils.tree_table_to_json
 
 A tree had 0/1/many nodes.
 A node typically looks like this:
