@@ -127,9 +127,11 @@ def get_clean_keyword_map(db: SessionLocal) -> Mapping[int, int]:  # type: ignor
     return id_lookup
 
 
-def cleanup_human_error_keywords(db: SessionLocal) -> None:  # type: ignore
-    clean_keyword_lookup_table = get_clean_keyword_map(db)
-
+def update_keyword_links(
+    db: SessionLocal,  # type: ignore
+    clean_keyword_lookup_table: Mapping[int, int],
+) -> None:
+    """Updates the join tables between document & keyword to the preferred IDs"""
     for document_keyword in db.query(DocumentKeyword).all():
         dkid = document_keyword.keyword_id
         if dkid in clean_keyword_lookup_table:
@@ -141,6 +143,11 @@ def cleanup_human_error_keywords(db: SessionLocal) -> None:  # type: ignore
         if clean_keyword_lookup_table[kid] != kid:
             keyword_to_delete = db.query(Keyword).get(kid)
             db.delete(keyword_to_delete)
+
+
+def cleanup_human_error_keywords(db: SessionLocal) -> None:  # type: ignore
+    clean_keyword_lookup_table = get_clean_keyword_map(db)
+    update_keyword_links(db, clean_keyword_lookup_table)
 
 
 if __name__ == "__main__":
