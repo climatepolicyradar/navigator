@@ -1,6 +1,8 @@
 import ViewSDKClient from "@api/pdf";
+import { TDocument } from "@types";
+import { PDF_SCROLL_DELAY } from "@constants/document";
 
-export default function usePDFPreview(document: any) {
+export default function usePDFPreview(document: TDocument) {
   const viewerConfig = {
     showDownloadPDF: true,
     showPrintPDF: true,
@@ -36,7 +38,7 @@ export default function usePDFPreview(document: any) {
     if (passage === null) return;
     setTimeout(() => {
       embedApi.gotoLocation(document.document_passage_matches[passage].text_block_page);
-    }, 500);
+    }, PDF_SCROLL_DELAY);
   };
 
   return { createPDFClient, passageIndexChangeHandler };

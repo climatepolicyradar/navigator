@@ -1,6 +1,14 @@
+import { TDocument } from "@types";
 import Loader from "./Loader";
 
-const PassageMatches = ({ document, setShowPDF, setPassageIndex }) => {
+type TProps = {
+  document: TDocument;
+  setShowPDF: (show?: boolean) => void;
+  setPassageIndex: (index: number) => void;
+  activeIndex?: number;
+};
+
+const PassageMatches = ({ document, setShowPDF, setPassageIndex, activeIndex }: TProps) => {
   return (
     <>
       {!document ? (
@@ -8,11 +16,11 @@ const PassageMatches = ({ document, setShowPDF, setPassageIndex }) => {
           <Loader />
         </div>
       ) : (
-        <div className="px-6">
-          {document.document_passage_matches.map((item, index) => (
+        <>
+          {document.document_passage_matches.map((item, index: number) => (
             <div
               key={item.text_block_id}
-              className="py-4 cursor-pointer"
+              className={`p-4 cursor-pointer border hover:bg-offwhite ${activeIndex === index ? "border-blue-200 bg-lightgray" : "border-transparent"}`}
               onClick={() => {
                 setShowPDF(true);
                 setPassageIndex(index);
@@ -25,10 +33,10 @@ const PassageMatches = ({ document, setShowPDF, setPassageIndex }) => {
                 </span>
                 <span>go to page &gt;</span>
               </div>
-              <p className="mt-2 text-indigo-400">...{item.text}...</p>
+              <p className="mt-2 text-indigo-400">{item.text}</p>
             </div>
           ))}
-        </div>
+        </>
       )}
     </>
   );

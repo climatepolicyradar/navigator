@@ -11,6 +11,8 @@ from fastapi_pagination import add_pagination
 from slowapi.errors import RateLimitExceeded
 from slowapi.extension import _rate_limit_exceeded_handler
 from starlette.requests import Request
+from alembic.command import upgrade
+from alembic.config import Config
 
 from app.api.api_v1.routers.admin import admin_users_router
 from app.api.api_v1.routers.auth import auth_router
@@ -24,6 +26,8 @@ from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
 from app.core.ratelimit import limiter
 from app.db.session import SessionLocal
+
+os.environ["SKIP_ALEMBIC_LOGGING"] = "1"
 
 # Clear existing log handlers so we always log in structured JSON
 root_logger = logging.getLogger()
@@ -127,5 +131,12 @@ app.state.limiter = limiter
 app.add_exception_handler(RateLimitExceeded, _rate_limit_exceeded_handler)
 
 
+@app.on_event("startup")
+async def startup() -> None:
+    upgrade(Config("./alembic.ini"), "head")
+
+
 if __name__ == "__main__":
-    uvicorn.run(app, host="0.0.0.0", port=8888, log_config=DEFAULT_LOGGING)  # type: ignore
+    uvicorn.run(
+        app, host="0.0.0.0", port=8888, log_config=DEFAULT_LOGGING
+    )  # type: ignore

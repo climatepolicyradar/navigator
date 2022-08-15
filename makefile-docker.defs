@@ -27,16 +27,14 @@ up:
 # ----------------------------------
 
 migrations_docker_backend:
-	# Run database migrations when using docker for development
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic upgrade head
 	# Create initial data in database
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 app/initial_data.py
 
-migrations_docker_loader:
-	# Run database migrations when using docker for development
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic upgrade head
+cleanup_tables:
+	# Cleanup duplicate data
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 scripts/cleanup_lookups.py
 
-migrations: migrations_docker_backend migrations_docker_loader
+migrations: migrations_docker_backend 
 
 %:
 	@:
@@ -82,7 +80,10 @@ test_backend_search: clear_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'search'
 
 test_backend:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'not search'
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -v -m 'not search'
+
+test_backend_unit:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -v tests/unit
 
 test_loader:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader pytest

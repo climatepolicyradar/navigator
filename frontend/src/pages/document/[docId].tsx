@@ -13,7 +13,7 @@ import TabbedNav from "@components/nav/TabbedNav";
 import { ExternalLinkIcon } from "@components/svg/Icons";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
-import { truncateString } from "../../helpers";
+import { truncateString } from "@helpers/index";
 
 import { TEvent } from "@types";
 
@@ -24,8 +24,7 @@ const DocumentCoverPage = () => {
   const structureData = useSortAndStructure();
 
   const documentQuery = useDocumentDetail(router.query.docId as string);
-  const { isFetching } = documentQuery;
-  const { data: { data: page } = {} } = documentQuery;
+  const { data: { data: page } = {}, isFetching } = documentQuery;
 
   const [year] = convertDate(page?.publication_ts);
 

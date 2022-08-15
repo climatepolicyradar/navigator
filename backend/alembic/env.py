@@ -15,7 +15,8 @@ config = context.config
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
-fileConfig(config.config_file_name)  # type: ignore
+if "SKIP_ALEMBIC_LOGGING" not in os.environ.keys():
+    fileConfig(config.config_file_name, disable_existing_loggers=False)  # type: ignore
 
 # add your model's MetaData object here
 # for 'autogenerate' support
@@ -32,7 +33,6 @@ target_metadata = Base.metadata
 
 def get_url():
     db_url = os.environ["DATABASE_URL"]
-    print(f"DATABASE_URL={db_url}")
     return db_url
 
 
