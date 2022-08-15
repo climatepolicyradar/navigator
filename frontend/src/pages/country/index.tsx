@@ -1,9 +1,11 @@
 import { useState } from "react";
 import Link from "next/link";
-import { TCountry, TTarget, TEvent } from "@types";
+import { TCountry, TTarget, TEvent, TCountryAPI } from "@types";
+import useGeoStats from "@hooks/useGeoStats";
 import Layout from "@components/layouts/Main";
 import { SingleCol } from "@components/SingleCol";
 import Event from "@components/blocks/Event";
+import { Loading } from "@components/blocks/Loading";
 import { Timeline } from "@components/blocks/Timeline";
 import { CountryHeader } from "@components/blocks/CountryHeader";
 import { KeyDetail } from "@components/KeyDetail";
@@ -40,6 +42,8 @@ const Targets = ({ targets }: TTargets) => {
 
 const CountryPage = () => {
   // TODO: replace with API lookup
+  const { data, isFetching, isError } = useGeoStats("1");
+  console.log(data, isFetching, isError);
   const country = COUNTRY;
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
   const [showAllTargets, setShowAllTargets] = useState(false);
@@ -56,76 +60,82 @@ const CountryPage = () => {
   const targets = showAllTargets ? country.targets : country.targets.slice(0, TARGETS_SHOW);
 
   return (
-    <Layout title={`Climate Policy Radar | ${country.name}`}>
-      <section className="mb-8">
-        <CountryHeader country={country} />
-        <SingleCol>
-          <div className="grid grid-cols-2 md:grid-cols-3 gap-px rounded">
-            <KeyDetail detail="Laws" amount={country.laws} icon={<LawIcon />} />
-            <KeyDetail detail="Policies" amount={country.policies} icon={<PolicyIcon />} />
-            <KeyDetail detail="Cases" amount={country.cases} icon={<CaseIcon />} />
-          </div>
-          <section className="mt-12">
-            <h3 className="mb-4">Events</h3>
-            <Timeline>
-              {country.events.map((event: TEvent, index: number) => (
-                <Event event={event} key={`event-${index}`} index={index} last={index === country.events.length - 1 ? true : false} />
-              ))}
-            </Timeline>
+    <>
+      {isFetching ? (
+        <Loading />
+      ) : (
+        <Layout title={`Climate Policy Radar | ${country.name}`}>
+          <section className="mb-8">
+            <CountryHeader country={country} />
+            <SingleCol>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-px rounded">
+                <KeyDetail detail="Laws" amount={country.laws} icon={<LawIcon />} />
+                <KeyDetail detail="Policies" amount={country.policies} icon={<PolicyIcon />} />
+                <KeyDetail detail="Cases" amount={country.cases} icon={<CaseIcon />} />
+              </div>
+              <section className="mt-12">
+                <h3 className="mb-4">Events</h3>
+                <Timeline>
+                  {country.events.map((event: TEvent, index: number) => (
+                    <Event event={event} key={`event-${index}`} index={index} last={index === country.events.length - 1 ? true : false} />
+                  ))}
+                </Timeline>
+              </section>
+              {country.targets && (
+                <section className="mt-12">
+                  <div>
+                    <h3 className="flex mb-4">
+                      <span className="mr-2">
+                        <TargetIcon />
+                      </span>
+                      Targets ({country.targets.length})
+                    </h3>
+                    <Targets targets={targets} />
+                  </div>
+                </section>
+              )}
+              {!showAllTargets && country.targets.length > TARGETS_SHOW && (
+                <div className="mt-12">
+                  <Divider>
+                    <Button color="secondary" wider onClick={() => setShowAllTargets(true)}>
+                      See more
+                    </Button>
+                  </Divider>
+                </div>
+              )}
+              <section className="mt-12">
+                <h3>Documents</h3>
+                <div className="mt-4 md:flex">
+                  <div className="flex-grow">
+                    <TabbedNav activeIndex={selectedCategoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} indent={false} />
+                  </div>
+                  <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
+                    <Sort defaultValue="date:desc" updateSort={handleSortClick} browse />
+                  </div>
+                </div>
+                {country.documents.map((doc) => (
+                  <div key={doc.related_id} className="mt-4 mb-10">
+                    <RelatedDocument document={doc} />
+                  </div>
+                ))}
+              </section>
+              <div className="mt-12">
+                <Divider>
+                  <Link href="/search">
+                    <Button color="secondary" extraClasses="flex items-center">
+                      See more
+                      <span className="ml-8">
+                        <RightArrowIcon height="20" width="20" />
+                      </span>
+                    </Button>
+                  </Link>
+                </Divider>
+              </div>
+            </SingleCol>
           </section>
-          {country.targets && (
-            <section className="mt-12">
-              <div>
-                <h3 className="flex mb-4">
-                  <span className="mr-2">
-                    <TargetIcon />
-                  </span>
-                  Targets ({country.targets.length})
-                </h3>
-                <Targets targets={targets} />
-              </div>
-            </section>
-          )}
-          {!showAllTargets && country.targets.length > TARGETS_SHOW && (
-            <div className="mt-12">
-              <Divider>
-                <Button color="secondary" wider onClick={() => setShowAllTargets(true)}>
-                  See more
-                </Button>
-              </Divider>
-            </div>
-          )}
-          <section className="mt-12">
-            <h3>Documents</h3>
-            <div className="mt-4 md:flex">
-              <div className="flex-grow">
-                <TabbedNav activeIndex={selectedCategoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} indent={false} />
-              </div>
-              <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
-                <Sort defaultValue="date:desc" updateSort={handleSortClick} browse />
-              </div>
-            </div>
-            {country.documents.map((doc) => (
-              <div key={doc.related_id} className="mt-4 mb-10">
-                <RelatedDocument document={doc} />
-              </div>
-            ))}
-          </section>
-          <div className="mt-12">
-            <Divider>
-              <Link href="/search">
-                <Button color="secondary" extraClasses="flex items-center">
-                  See more
-                  <span className="ml-8">
-                    <RightArrowIcon height="20" width="20" />
-                  </span>
-                </Button>
-              </Link>
-            </Divider>
-          </div>
-        </SingleCol>
-      </section>
-    </Layout>
+        </Layout>
+      )}
+    </>
   );
 };
 
