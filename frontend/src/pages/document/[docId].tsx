@@ -8,6 +8,7 @@ import TextLink from "@components/nav/TextLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
 import { Timeline } from "@components/blocks/Timeline";
 import Event from "@components/blocks/Event";
+import { Loading } from "@components/blocks/Loading";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
 import { ExternalLinkIcon } from "@components/svg/Icons";
@@ -77,9 +78,7 @@ const DocumentCoverPage = () => {
   return (
     <Layout title={`Climate Policy Radar | Document title`}>
       {isFetching || !page?.name ? (
-        <div className="w-full flex justify-center h-96">
-          <Loader />
-        </div>
+        <Loading />
       ) : (
         <section className="mb-8">
           <div className="bg-offwhite border-solid border-blue-200 border-b">

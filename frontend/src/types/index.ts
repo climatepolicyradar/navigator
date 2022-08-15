@@ -1,4 +1,10 @@
-import { string } from "yup";
+export type TAPIError = {
+  detail: {
+    loc: string[];
+    msg: string;
+    type: string;
+  }[];
+};
 
 export type TSector = {
   description: string;
@@ -59,11 +65,24 @@ export type TTarget = {
   target_year: string;
 };
 
+export type TCountryAPI = {
+  id: number;
+  name: string;
+  geography_id: number;
+  legislative_process: string;
+  federal: boolean;
+  federal_details: string;
+  political_groups: string;
+  global_emissions_percent: number;
+  climate_risk_index: number;
+  worldbank_income_group: string;
+  visibility_status: string;
+};
 
 export type TCategory = "Law" | "Policy" | "Case";
 export type TDisplayCategory = "All" | "Legislative" | "Executive" | "Litigation";
 
-export type TEventCategory = TCategory | & "Target";
+export type TEventCategory = TCategory | "Target";
 
 export type TEvent = {
   name: string;
@@ -80,4 +99,4 @@ export type TAssociatedDocument = {
   publication_ts: string;
   related_id: number;
   category?: TCategory;
-}
+};
