@@ -2,6 +2,7 @@ import csv
 from typing import Union
 from app.db.models import Geography, GeoStatistics
 from app.db.session import SessionLocal
+from .utils import has_rows
 
 
 def to_float(value: str) -> Union[float, None]:
@@ -16,6 +17,9 @@ def to_float(value: str) -> Union[float, None]:
 
 def populate_geo_statistics(db: SessionLocal) -> None:
     """Populates the geography table with data in the CSV."""
+
+    if has_rows(db, GeoStatistics):
+        return
 
     # Get iso-3166 country codes. This file contains the standard iso-3166 codes + additional country codes for
     # regions that are missing - e.g. sub-saharan africa

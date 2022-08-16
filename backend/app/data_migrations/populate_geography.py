@@ -1,10 +1,13 @@
 import csv
 from app.db.models import Geography
 from app.db.session import SessionLocal
+from .utils import has_rows
 
 
 def populate_geography(db: SessionLocal) -> None:
     """Populates the geography table with data in the CSV."""
+    if has_rows(db, Geography):
+        return
 
     # Get iso-3166 country codes. This file contains the standard iso-3166 codes + additional country codes for
     # regions that are missing - e.g. sub-saharan africa
