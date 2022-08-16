@@ -85,6 +85,7 @@ document_respoonses: Mapping[int, Mapping] = {
 
 documents_router.add_api_route
 
+
 @documents_router.get(
     "/documents",
     response_model=List[DocumentBrowseResponse],
@@ -92,7 +93,7 @@ documents_router.add_api_route
     responses=document_respoonses,
 )
 async def document_browse(
-    country_code: Union[str, None] = None, 
+    country_code: Union[str, None] = None,
     q: Union[str, None] = None,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
@@ -100,7 +101,7 @@ async def document_browse(
     """Filter all documents"""
     query = (
         db.query(
-            Document.name, 
+            Document.name,
             Document.description,
             Document.publication_ts,
             Geography.display_value.label("country_name"),
@@ -109,11 +110,10 @@ async def document_browse(
         .join(Geography, Document.geography_id == Geography.id)
         .join(DocumentType, Document.type_id == DocumentType.id)
     )
-    
+
     if country_code is not None:
-        print("!"*80)
         query = query.filter(Geography.value == country_code)
-        
+
     def row_to_response(row):
         return DocumentBrowseResponse(
             name=row["name"],
@@ -122,10 +122,11 @@ async def document_browse(
             country_name=row["country_name"],
             publication_ts=row["publication_ts"],
         )
-        
+
     found = query.all()
-    
+
     return [*map(row_to_response, found)]
+
 
 @documents_router.get(
     "/documents/{document_id}",

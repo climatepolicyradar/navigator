@@ -100,7 +100,9 @@ class RelatedDocumentResponse(BaseModel):  # noqa: D101
         frozen = True
 
 
-class DocumentBrowseResponse(BaseModel):  # noqa: D101
+class DocumentBrowseResponse(BaseModel):
+    """Used for the browse endpoint."""
+
     name: str
     description: str
     country_code: str
