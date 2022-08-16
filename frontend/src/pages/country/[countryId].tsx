@@ -48,9 +48,6 @@ const CountryPage = () => {
   const { refetch, data: { data: country } = {}, isFetching: isFetching, isError } = countryQuery;
   const [showAllTargets, setShowAllTargets] = useState(false);
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
-  const hasTargets = false,
-    hasEvents = false,
-    hasDocuments = false;
 
   const documentCategories = DOCUMENT_CATEGORIES;
   const TARGETS_SHOW = 2;
