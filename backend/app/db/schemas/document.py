@@ -100,6 +100,17 @@ class RelatedDocumentResponse(BaseModel):  # noqa: D101
         frozen = True
 
 
+class DocumentBrowseResponse(BaseModel):  # noqa: D101
+    name: str
+    description: str
+    country_code: str
+    country_name: str
+    publication_ts: datetime.datetime
+
+    class Config:  # noqa: D106
+        frozen = True
+
+
 class DocumentDetailResponse(_DocumentExtraDetail):
     """A Document to return to the client for the Document cover page"""
 
