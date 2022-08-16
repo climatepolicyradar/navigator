@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { storage } from '../utils/storage';
-import { TAPIError } from "@types";
 
 class ApiClient {
   private baseUrl;
@@ -30,7 +29,7 @@ class ApiClient {
     return this.axiosClient
       .get(`${this.baseUrl}${url}`, { params })
       .then((res: any) => res)
-      .catch((err: TAPIError) => Promise.reject(err));
+      .catch((err: any) => Promise.reject(err));
   }
   post(url, values, config = {}) {
     return this.axiosClient
