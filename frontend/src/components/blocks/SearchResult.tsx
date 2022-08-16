@@ -20,9 +20,9 @@ const SearchResult = ({ document }: SearchResultProps) => {
     if (document.document_passage_matches.length || document.document_title_match || document.document_description_match) {
       return (
         <>
-          <div className="w-full lg:w-auto flex flex-nowrap mt-2 lg:mt-0 ">
+          <div className="w-full lg:w-auto flex flex-nowrap mt-2 lg:mt-0 lg:mr-4">
             {/* TODO: translate below text, how to handle plurals? */}
-            <span className="font-medium lg:ml-10 mr-2">Matches</span>
+            <span className="font-medium lg:ml-10 mr-2">Matches:</span>
             <div className="divide-x divide-current flex-grow-0">
               {document.document_title_match && <span className="px-2">Title</span>}
               {document.document_description_match && <span className="px-2">Summary</span>}
@@ -32,7 +32,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
           {document.document_content_type === "application/pdf" && document.document_passage_matches.length > 0 && (
             <button
               data-docid={document.document_id}
-              className="lg:ml-4 mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600"
+              className="mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600"
             >
               {`See ${document.document_passage_matches.length} match${document.document_passage_matches.length > 1 ? "es" : ""} in document`}
             </button>
@@ -52,8 +52,12 @@ const SearchResult = ({ document }: SearchResultProps) => {
         </h2>
       </div>
 
-      <div className="flex flex-wrap lg:flex-nowrap text-sm text-indigo-400 mt-4 items-center">
-      {document.document_category && <div className="mr-3" title={document.document_category}>{getCategoryIcon(document.document_category, "20")}</div>}
+      <div className="flex flex-wrap text-sm text-indigo-400 mt-4 items-center space-y-1.5">
+        {document.document_category && (
+          <div className="mr-3" title={document.document_category}>
+            {getCategoryIcon(document.document_category, "20")}
+          </div>
+        )}
         <CountryLink countryCode={document.document_country_code}>
           <span className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`} />
           <span className="ml-2">{document.document_country_english_shortname}</span>
