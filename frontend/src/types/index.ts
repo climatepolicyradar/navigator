@@ -1,9 +1,11 @@
-export type TAPIError = {
-  detail: {
-    loc: string[];
-    msg: string;
-    type: string;
-  }[];
+type TErrorDetail = {
+  loc: string[];
+  msg: string;
+  type: string;
+};
+
+export type TError = {
+  detail: TErrorDetail[];
 };
 
 export type TSector = {
@@ -40,23 +42,23 @@ export type TDocument = {
   document_url: string;
 };
 
-export type TCountry = {
-  name: string;
-  short_name: string;
-  continent: string;
-  legal_structure: string;
-  legal_bodies: string;
-  political_groups: string[];
-  financial_status: string;
-  gcri: number;
-  emissions: number;
-  laws: number;
-  policies: number;
-  cases: number;
-  events: TEvent[];
-  targets: TTarget[];
-  documents: TAssociatedDocument[];
-};
+// export type TCountry = {
+//   name: string;
+//   short_name: string;
+//   continent: string;
+//   legal_structure: string;
+//   legal_bodies: string;
+//   political_groups: string[];
+//   financial_status: string;
+//   gcri: number;
+//   emissions: number;
+//   laws: number;
+//   policies: number;
+//   cases: number;
+//   events: TEvent[];
+//   targets: TTarget[];
+//   documents: TAssociatedDocument[];
+// };
 
 export type TTarget = {
   target: string;
@@ -65,7 +67,7 @@ export type TTarget = {
   target_year: string;
 };
 
-export type TCountryAPI = {
+export type TCountry = {
   id: number;
   name: string;
   geography_id: number;

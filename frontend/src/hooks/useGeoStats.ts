@@ -1,18 +1,24 @@
 import { useQuery } from "react-query";
 import { ApiClient } from "../api/http-common";
-import { TCountryAPI } from "@types";
+import { TCountry } from "@types";
 
 export default function useGeoStats(id: string) {
   const client = new ApiClient();
 
-  return useQuery<TCountryAPI>(
+  const isEnabled = (parameter: any) => {
+    if (typeof parameter !== "string") return false;
+    if (parameter === "undefined") return false;
+    return true;
+  };
+
+  return useQuery<{ data: TCountry }>(
     ["geo_stats"],
     () => {
       return client.get(`/geo_stats/${id}`, null);
     },
     {
       refetchOnWindowFocus: false,
-      enabled: id !== undefined,
+      enabled: isEnabled(id),
     }
   );
 }
