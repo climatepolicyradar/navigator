@@ -7,8 +7,8 @@ from http.client import (
     UNSUPPORTED_MEDIA_TYPE,
 )
 from pathlib import Path
-from typing import List, Mapping, Union, cast
-
+from typing import List, Union, cast
+from sqlalchemy import extract
 from fastapi import (
     APIRouter,
     Depends,
@@ -79,22 +79,16 @@ _LOGGER = logging.getLogger(__file__)
 documents_router = APIRouter()
 
 
-document_respoonses: Mapping[int, Mapping] = {
-    404: {"description": "Cannot find a document that matches the filter criteria."}
-}
-
-documents_router.add_api_route
-
-
 @documents_router.get(
     "/documents",
     response_model=List[DocumentBrowseResponse],
     summary="Get a list of documents",
-    responses=document_respoonses,
 )
 async def document_browse(
     country_code: Union[str, None] = None,
     q: Union[str, None] = None,
+    start_year: Union[int, None] = None,
+    end_year: Union[int, None] = None,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
@@ -114,18 +108,15 @@ async def document_browse(
     if country_code is not None:
         query = query.filter(Geography.value == country_code)
 
-    def row_to_response(row):
-        return DocumentBrowseResponse(
-            name=row["name"],
-            description=row["description"],
-            country_code=row["country_code"],
-            country_name=row["country_name"],
-            publication_ts=row["publication_ts"],
-        )
+    if start_year is not None:
+        query = query.filter(extract("year", Document.publication_ts) >= start_year)
 
-    found = query.all()
+    if end_year is not None:
+        query = query.filter(extract("year", Document.publication_ts) <= end_year)
 
-    return [*map(row_to_response, found)]
+    query = query.order_by(Document.publication_ts.desc())
+
+    return [DocumentBrowseResponse(**row) for row in query.all()]
 
 
 @documents_router.get(

@@ -16,7 +16,12 @@ template_doc = {
 
 
 def make_doc(
-    name: str, source_id: int, category_id: int, geography_id: int, type_id: int
+    name: str,
+    source_id: int,
+    category_id: int,
+    geography_id: int,
+    type_id: int,
+    year: int = 2022,
 ):
     doc = template_doc.copy()
     doc["name"] = name
@@ -24,6 +29,7 @@ def make_doc(
     doc["category_id"] = category_id
     doc["geography_id"] = geography_id
     doc["type_id"] = type_id
+    doc["publication_ts"] = f"{year}-08-17"
     return Document(**doc)
 
 
@@ -34,15 +40,9 @@ def doc_browse_data(test_db):
         Geography(display_value="A place in the sea", value="YYY"),
         Geography(display_value="A place in the sky", value="ZZZ"),
     ]
-    doc_types = [
-        DocumentType(name="doctype", description="for testing")
-    ]
-    sources = [
-        Source(name="May the source be with you")
-    ]
-    cats = [
-        Category(name="Felix", description="Persian Cat")
-    ]
+    doc_types = [DocumentType(name="doctype", description="for testing")]
+    sources = [Source(name="May the source be with you")]
+    cats = [Category(name="Felix", description="Persian Cat")]
 
     test_db.add_all(geos)
     test_db.add_all(doc_types)
@@ -52,8 +52,8 @@ def doc_browse_data(test_db):
 
     # Now setup the Document set
     docs = [
-        make_doc("doc1", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id),
-        make_doc("doc2", sources[0].id, cats[0].id, geos[1].id, doc_types[0].id),
+        make_doc("doc1", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),
+        make_doc("doc2", sources[0].id, cats[0].id, geos[1].id, doc_types[0].id, 2007),
         make_doc("doc3", sources[0].id, cats[0].id, geos[2].id, doc_types[0].id),
     ]
 
