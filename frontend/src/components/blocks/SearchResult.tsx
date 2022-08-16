@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { truncateString } from "../../helpers";
 import { convertDate } from "@utils/timedate";
+import { CountryLink } from "@components/CountryLink";
 
 interface SearchResultProps {
   document: any;
@@ -28,7 +29,10 @@ const SearchResult = ({ document }: SearchResultProps) => {
             </div>
           </div>
           {document.document_content_type === "application/pdf" && document.document_passage_matches.length > 0 && (
-            <button data-docid={document.document_id} className="lg:ml-4 mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600">
+            <button
+              data-docid={document.document_id}
+              className="lg:ml-4 mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600"
+            >
               {`See ${document.document_passage_matches.length} match${document.document_passage_matches.length > 1 ? "es" : ""} in document`}
             </button>
           )}
@@ -48,10 +52,11 @@ const SearchResult = ({ document }: SearchResultProps) => {
       </div>
 
       <div className="flex flex-wrap lg:flex-nowrap text-sm text-indigo-400 mt-4 items-center">
-        <div className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`} />
-        <span className="ml-2">
-          {document.document_country_english_shortname}, {year}
-        </span>
+        <CountryLink countryCode={document.document_country_code}>
+          <span className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`} />
+          <span className="ml-2">{document.document_country_english_shortname}</span>
+        </CountryLink>
+        <span>, {year}</span>
         {showMatches()}
       </div>
 

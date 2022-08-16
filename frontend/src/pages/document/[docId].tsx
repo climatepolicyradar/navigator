@@ -12,6 +12,7 @@ import { Loading } from "@components/blocks/Loading";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
 import { ExternalLinkIcon } from "@components/svg/Icons";
+import { CountryLink } from "@components/CountryLink";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
 import { truncateString } from "@helpers/index";
@@ -87,10 +88,11 @@ const DocumentCoverPage = () => {
                 <div className="flex-1 mt-6">
                   <h1 className="text-3xl lg:smaller">{page.name}</h1>
                   <div className="flex text-sm text-indigo-400 mt-3 items-center w-full mb-6">
-                    <div className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
-                    <span className="ml-2">
-                      {page.geography.display_value}, {year}
-                    </span>
+                    <CountryLink countryCode={page.geography.value}>
+                      <span className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
+                      <span className="ml-2">{page.geography.display_value}</span>
+                    </CountryLink>
+                    <span>, {year}</span>
                   </div>
                 </div>
                 <div className="my-6 md:w-2/5 lg:w-1/4 md:pl-16 flex-shrink-0">
