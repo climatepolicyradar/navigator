@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import Link from "next/link";
-import { TCountry, TTarget, TEvent } from "@types";
+import { TCountryGeoStats, TTarget, TEvent } from "@types";
 import useGeoStats from "@hooks/useGeoStats";
 import Layout from "@components/layouts/Main";
 import { SingleCol } from "@components/SingleCol";
