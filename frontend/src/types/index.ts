@@ -60,6 +60,14 @@ export type TDocument = {
 //   documents: TAssociatedDocument[];
 // };
 
+export type TGeography = {
+  id: number;
+  display_value: string;
+  value: string;
+  type: string;
+  parent_id: number | null;
+};
+
 export type TTarget = {
   target: string;
   group: string;
@@ -67,7 +75,7 @@ export type TTarget = {
   target_year: string;
 };
 
-export type TCountry = {
+export type TCountryGeoStats = {
   id: number;
   name: string;
   geography_id: number;

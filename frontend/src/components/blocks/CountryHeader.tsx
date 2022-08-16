@@ -1,19 +1,19 @@
-import { TCountry } from "@types";
+import { TCountryGeoStats, TGeography } from "@types";
 import useNestedLookups from "@hooks/useNestedLookups";
 import Tooltip from "@components/tooltip";
 
 type TProps = {
-  country: TCountry;
+  country: TCountryGeoStats;
 };
 
 export const CountryHeader = ({ country }: TProps) => {
   const geosQuery = useNestedLookups("geographies", "", 2);
-  const { data: { data: { level1: regions = [], level2: countries = [] } = {} } = {}, isFetching } = geosQuery;
+  const { data: { data: { level1: regions = [], level2: countries = [] } = {} } = {} } = geosQuery;
 
   const getCountryRegion = (countryName: string) => {
-    const country = countries.find((c) => c.display_value === countryName);
+    const country = countries.find((c: TGeography) => c.display_value === countryName);
     if (!country) return "";
-    const region = regions.find((r) => r.id === country.parent_id);
+    const region = regions.find((r: TGeography) => r.id === country.parent_id);
     return region.display_value ?? "";
   };
 

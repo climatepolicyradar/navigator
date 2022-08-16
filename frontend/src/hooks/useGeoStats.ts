@@ -1,6 +1,6 @@
 import { useQuery } from "react-query";
 import { ApiClient } from "../api/http-common";
-import { TCountry } from "@types";
+import { TCountryGeoStats } from "@types";
 
 export default function useGeoStats(id: string) {
   const client = new ApiClient();
@@ -11,7 +11,7 @@ export default function useGeoStats(id: string) {
     return true;
   };
 
-  return useQuery<{ data: TCountry }>(
+  return useQuery<{ data: TCountryGeoStats }>(
     ["geo_stats"],
     () => {
       return client.get(`/geo_stats/${id}`, null);
