@@ -15,6 +15,7 @@ from app.core.search import OpenSearchConnection, OpenSearchConfig
 from app.db.models import User, PasswordResetToken
 from app.db.session import Base, get_db
 from app.main import app
+from .routes.test_document_browse_data import doc_browse_data  # noqa F401
 
 
 @pytest.fixture
