@@ -1,5 +1,5 @@
 from typing import Any, Dict, List
-from unittest.mock import MagicMock
+from unittest.mock import ANY, MagicMock
 
 import pytest
 
@@ -100,7 +100,7 @@ EXPECTED_TREE_1 = [_EX_ONE]
 def test_tree_table_to_json(data, expected):
     db = MagicMock(spec=SessionLocal)
     db.query = lambda _: _MockQuery(data)
-    processed_data = tree_table_to_json(None, db)
+    processed_data = tree_table_to_json(ANY, db)
 
     from pprint import pprint
 
