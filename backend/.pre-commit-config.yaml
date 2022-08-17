@@ -24,7 +24,7 @@ repos:
     hooks:
       - id: mypy
         name: mypy (backend)
-        additional_dependencies: [ "types-boto" ]
+        additional_dependencies: [ "types-boto", "types-python-dateutil", "types-requests"  ]
         files: ^backend/
       - id: mypy
         name: mypy (pipeline)

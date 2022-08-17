@@ -1,6 +1,6 @@
 from http.client import NOT_FOUND
 import logging
-from typing import Mapping
+from typing import Any, Dict, Optional, Union
 from app.db.session import get_db
 from app.db.models.geography import GeoStatistics
 from fastapi import Depends, HTTPException
@@ -28,7 +28,7 @@ class GeoStatsResponse(BaseModel):
     visibility_status: str
 
 
-lookup_geo_stats_responses: Mapping[int, Mapping] = {
+lookup_geo_stats_responses: Optional[Dict[Union[int, str], Dict[str, Any]]] = {
     404: {"description": "Statistics for Geography Id was not found"}
 }
 
