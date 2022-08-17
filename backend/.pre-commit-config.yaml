@@ -19,15 +19,14 @@ repos:
     hooks:
       - id: pydocstyle
         additional_dependencies: [ "toml" ]
-  - repo: https://github.com/pre-commit/mirrors-mypy
-    rev: v0.931
+  - repo: local
     hooks:
-      - id: mypy
-        name: mypy (backend)
-        additional_dependencies: [ "types-boto", "types-python-dateutil", "types-requests"  ]
+      - id: pyright
+        name: pyright (backend)
+        entry: pyright
+        language: node
         files: ^backend/
-      - id: mypy
-        name: mypy (pipeline)
-        files: ^pipeline/
+        types: [python]
+        additional_dependencies: ['pyright@1.1.267']
 
-# TODO bandit, safety
+# TODO bandit?, safety?, snyk?
