@@ -77,7 +77,7 @@ const CountryPage = () => {
 
   return (
     <>
-      <Layout title={`Climate Policy Radar | ${country?.name}`}>
+      <Layout title={`Climate Policy Radar | ${country?.name ?? "Loading..."}`}>
         {isError || !country ? (
           <SingleCol>
             <p>We were not able to load the data for the country.</p>
