@@ -1,10 +1,12 @@
 import csv
+
+from sqlalchemy.orm import Session
+
 from app.db.models import Geography
-from app.db.session import SessionLocal
 from .utils import has_rows
 
 
-def populate_geography(db: SessionLocal) -> None:
+def populate_geography(db: Session) -> None:
     """Populates the geography table with data in the CSV."""
     if has_rows(db, Geography):
         return

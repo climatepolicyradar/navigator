@@ -43,8 +43,8 @@ def deactivate_user(db: Session, user_id: int) -> User:
     user = get_user(db, user_id)
     if not user:
         raise HTTPException(status.HTTP_404_NOT_FOUND, detail="User not found")
-    user.is_active = False
-    user.hashed_password = None
+    user.is_active = False  # type: ignore
+    user.hashed_password = None  # type: ignore
     db.add(user)
     db.commit()
     return user
@@ -78,11 +78,11 @@ def activate_user(
     Sets a password, and toggles activation flags on user and password_reset_token.
     """
 
-    user.hashed_password = get_password_hash(password)
-    user.is_active = True
+    user.hashed_password = get_password_hash(password)  # type: ignore
+    user.is_active = True  # type: ignore
     db.add(user)
 
-    password_reset_token.is_redeemed = True
+    password_reset_token.is_redeemed = True  # type: ignore
     db.add(password_reset_token)
 
     db.commit()

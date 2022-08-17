@@ -1,7 +1,7 @@
 import contextlib
-import os
 
 import pytest
+from app.core import config
 from app.db.session import Base
 from tests.test_schema.helpers import clean_tables
 from sqlalchemy import create_engine
@@ -13,7 +13,7 @@ from sqlalchemy_utils import create_database, database_exists, drop_database
 def create_test_db():
     """Create a test database and use it for the whole test session."""
 
-    test_db_url = os.environ.get("DATABASE_URL") + "_test"
+    test_db_url = config.SQLALCHEMY_DATABASE_URI + "_test"
 
     # Create the test database
     if database_exists(test_db_url):
@@ -37,7 +37,7 @@ def sqlalchemy_base():
 
 @pytest.fixture(scope="session")
 def original_engine():
-    engine = create_engine(os.environ.get("DATABASE_URL") + "_test")
+    engine = create_engine(config.SQLALCHEMY_DATABASE_URI + "_test")
     yield engine
 
 

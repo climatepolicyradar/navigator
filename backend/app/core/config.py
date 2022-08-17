@@ -1,10 +1,10 @@
 import os
 
-# TODO is this module really needed?
-
 PROJECT_NAME = "navigator"
 
-SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL")
+SQLALCHEMY_DATABASE_URI = os.getenv("DATABASE_URL", "")
+if not SQLALCHEMY_DATABASE_URI:
+    raise RuntimeError("'{DATABASE_URL}' environment variable must be set")
 
 API_V1_STR = "/api/v1"
 
