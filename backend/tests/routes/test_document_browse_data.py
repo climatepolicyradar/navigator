@@ -54,9 +54,9 @@ def doc_browse_data(test_db):
 
     # Now setup the Document set
     docs = [
-        make_doc("doc1", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),
-        make_doc("doc2", sources[0].id, cats[0].id, geos[1].id, doc_types[0].id, 2007),
-        make_doc("doc3", sources[0].id, cats[0].id, geos[2].id, doc_types[0].id),
+        make_doc("doc1", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),  # type: ignore
+        make_doc("doc2", sources[0].id, cats[0].id, geos[1].id, doc_types[0].id, 2007),  # type: ignore
+        make_doc("doc3", sources[0].id, cats[0].id, geos[2].id, doc_types[0].id),  # type: ignore
     ]
 
     test_db.add_all(docs)
