@@ -104,10 +104,10 @@ def _log_response(response: requests.Response) -> None:
     if response.status_code >= 400:
         logger.error(
             f"There was an error during a request to {response.url}. "
-            f"STATUS: {response.status_code}, BODY:{response.content}"
+            f"STATUS: {response.status_code}, BODY:{response.content!r}"
         )
 
-    logger.debug(f"STATUS: {response.status_code}, BODY:{response.content}")
+    logger.debug(f"STATUS: {response.status_code}, BODY:{response.content!r}")
 
 
 def get_admin_token() -> str:

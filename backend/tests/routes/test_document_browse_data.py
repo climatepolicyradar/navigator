@@ -23,13 +23,15 @@ def make_doc(
     type_id: int,
     year: int = 2022,
 ):
-    doc = template_doc.copy()
-    doc["name"] = name
-    doc["source_id"] = source_id
-    doc["category_id"] = category_id
-    doc["geography_id"] = geography_id
-    doc["type_id"] = type_id
-    doc["publication_ts"] = f"{year}-08-17"
+    doc = template_doc | {
+        "name": name,
+        "source_id": source_id,
+        "category_id": category_id,
+        "geography_id": geography_id,
+        "type_id": type_id,
+        "publication_ts": f"{year}-08-17",
+    }
+
     return Document(**doc)
 
 

@@ -11,7 +11,6 @@ def test_document_browse_security(client):
 
 def test_endpoint_returns_ok(client, user_token_headers, test_db):
     """Test the endpoint returns an empty set with no data"""
-    test_db.flush()
     response = client.get(
         URL_UNDER_TEST,
         headers=user_token_headers,
