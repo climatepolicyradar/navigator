@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { TCountryGeoStats, TGeography } from "@types";
 import useNestedLookups from "@hooks/useNestedLookups";
 import Tooltip from "@components/tooltip";
@@ -9,11 +10,13 @@ type TProps = {
 export const CountryHeader = ({ country }: TProps) => {
   const geosQuery = useNestedLookups("geographies", "", 2);
   const { data: { data: { level1: regions = [], level2: countries = [] } = {} } = {} } = geosQuery;
+  const countryGeography = countries.find((c: TGeography) => c.display_value === country.name);
 
-  const getCountryRegion = (countryName: string) => {
-    const country = countries.find((c: TGeography) => c.display_value === countryName);
-    if (!country) return "";
-    const region = regions.find((r: TGeography) => r.id === country.parent_id);
+  console.log(countries);
+
+  const getCountryRegion = () => {
+    if (!countryGeography) return "";
+    const region = regions.find((r: TGeography) => r.id === countryGeography.parent_id);
     return region.display_value ?? "";
   };
 
@@ -25,12 +28,12 @@ export const CountryHeader = ({ country }: TProps) => {
         <div className="md:max-w-lg flex-shrink-0">
           <h1>{name}</h1>
           <div className="grid grid-cols-2 gap-6 items-center">
-            <div className="font-semibold text-blue-700 text-xl">{getCountryRegion(name)}</div>
+            <div className="font-semibold text-blue-700 text-xl">{getCountryRegion()}</div>
             <div className="font-semibold text-blue-700 text-xl">
               {federal ? "Federative" : "Unitary"} {federal_details && <span className="font-light text-lg">({federal_details})</span>}
             </div>
             <div>
-              <div className="text-blue-700 text-lg">Political groups</div>
+              <div className="text-blue-700 text-lg">Political Groups</div>
               <div className="font-semibold text-blue-700 text-xl">{political_groups.split(";").join(", ")}</div>
             </div>
             <div className="font-semibold text-blue-700 text-xl">{worldbank_income_group}</div>
@@ -46,7 +49,9 @@ export const CountryHeader = ({ country }: TProps) => {
             </div>
           </div>
         </div>
-        <div className="hidden place-items-center md:flex overflow-hidden">{/* <img src={`/images/countries/${country.short_name}.png`} alt={country.name} /> */}</div>
+        <div className="hidden place-items-center md:flex overflow-hidden svg-country">
+          <img className="w-full max-h-[400px]" src={`/images/countries/${countryGeography?.value}.svg`} alt={`${country.name} map`} />
+        </div>
       </div>
     </div>
   );
