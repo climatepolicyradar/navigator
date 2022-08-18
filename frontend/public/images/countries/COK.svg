@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1629" height="923" xml:space="preserve">
+        <style>
+          path { 
+            stroke-width: 0.5;
+            fill: #616161;
+            fill-opacity: 0.4;
+            stroke: #000000;
+            stroke-opacity: 0.75; 
+          }
+        </style>
+        <g>
+            <g transform="translate(523.6506095065612,-2.463285370550958) scale(1)">
+                <g transform="translate(0,0) scale(0.727705640746194)">
+                    <path cs="100,100" d="M736.48,13.75L734.12,10.82L737.47,15.31L736.48,13.75zM734.37,0L737.16,2.2L740.71,2.65L734.37,0z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-1" role="menuitem" aria-label="Penrhyn  " countryId="CK-1"></path>
+                    <path cs="100,100" d="M454.71,136.16L459.23,140.04L453.75,135.15L454.71,136.16z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-2" role="menuitem" aria-label="Manihiki  " countryId="CK-2"></path>
+                    <path cs="100,100" d="M445.15,103.04L445.22,103.95L446.84,102.31L445.15,103.04z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-3" role="menuitem" aria-label="Rakahanga  " countryId="CK-3"></path>
+                    <path cs="100,100" d="M2.28,190.19L2.13,189.36L0.32,190.35L2.28,190.19zM1.32,184.6L1.92,183.85L0.33,183.9L1.32,184.6z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-4" role="menuitem" aria-label="Pukapuka  " countryId="CK-4"></path>
+                    <path cs="100,100" d="M567.51,956.94L565.89,960.41L566.71,962.56L568.32,961.64L568.96,957.28L569.74,958.38L568.68,956.75L567.51,956.94z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-5" role="menuitem" aria-label="Palmerston  " countryId="CK-5"></path>
+                    <path cs="100,100" d="M799.68,1088.88L798.6,1087.53L796.29,1087.69L797.1,1090.93L799.2,1090.54L799.68,1088.88z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-6" role="menuitem" aria-label="Mauke  " countryId="CK-6"></path>
+                    <path cs="100,100" d="M762.57,1050.11L759.37,1053.84L761.29,1058.96L762.55,1057.5L762.57,1050.11z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-7" role="menuitem" aria-label="Mitiaro  " countryId="CK-7"></path>
+                    <path cs="100,100" d="M566.31,1192.36L563.16,1193.31L561.76,1197.16L571.44,1199.23L571.49,1193.91L566.31,1192.36z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-8" role="menuitem" aria-label="Rarotonga  " countryId="CK-8"></path>
+                    <path cs="100,100" d="M741.94,1268.37L745.76,1267.1L741.3,1262.16L738.53,1264.48L738.81,1266.85L741.94,1268.37z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-9" role="menuitem" aria-label="Mangaia  " countryId="CK-9"></path>
+                    <path cs="100,100" d="M647.06,999.29L645.41,998.11L647.11,1000L648.86,999.98L647.06,999.29zM650.77,999.03L649.34,997.32L649.6,999.03L650.77,999.03z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-10" role="menuitem" aria-label="Aitutaki  " countryId="CK-10"></path>
+                    <path cs="100,100" d="M727.47,1074.64L727.8,1072.78L722.45,1071.01L724.34,1074.93L727.47,1074.64z" transform="translate(0,3)" stroke-width="1.3741820098777764" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-CK-11" role="menuitem" aria-label="Atiu  " countryId="CK-11"></path>
+                </g>
+            </g>
+        </g>
+    </svg>

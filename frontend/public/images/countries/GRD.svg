@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1629" height="923" xml:space="preserve">
+        <style>
+          path { 
+            stroke-width: 0.5;
+            fill: #616161;
+            fill-opacity: 0.4;
+            stroke: #000000;
+            stroke-opacity: 0.75; 
+          }
+        </style>
+        <g>
+            <g transform="translate(466.45019947811187,164.8189428712878) scale(1)">
+                <g transform="translate(0,0) scale(0.8709519056150546)">
+                    <path cs="100,100" d="M368.49,710.31L362.97,616.44L320.43,589.6L234.38,590.91L213.39,616.52L264.86,705.34L368.49,710.31zM408.4,460.62L399.68,431.4L373.61,467.17L397.28,482.96L408.4,460.62z" transform="translate(0,-189)" stroke-width="1.1481690246648157" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GD-06" role="menuitem" aria-label="Saint Patrick  " countryId="GD-06"></path>
+                    <path cs="100,100" d="M264.86,705.34L213.39,616.52L148.51,695.72L251.92,746.68L264.86,705.34z" transform="translate(0,-189)" stroke-width="1.1481690246648157" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GD-05" role="menuitem" aria-label="Saint Mark  " countryId="GD-05"></path>
+                    <path cs="100,100" d="M251.92,746.68L148.51,695.72L77.95,844.2L205.04,842.59L251.92,746.68z" transform="translate(0,-189)" stroke-width="1.1481690246648157" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GD-04" role="menuitem" aria-label="Saint John  " countryId="GD-04"></path>
+                    <path cs="100,100" d="M188.23,1059.76L211.74,1014.47L185.64,948.39L224.44,895.49L205.04,842.59L77.95,844.2L80.99,992.47L0.38,1048.64L66.35,1058.62L120.02,1033.68L188.23,1059.76z" transform="translate(0,-189)" stroke-width="1.1481690246648157" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GD-03" role="menuitem" aria-label="Saint George  " countryId="GD-03"></path>
+                    <path cs="100,100" d="M326.67,926.72L260.01,885.57L224.44,895.49L185.64,948.39L211.74,1014.47L312.75,976.85L326.67,926.72z" transform="translate(0,-189)" stroke-width="1.1481690246648157" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GD-02" role="menuitem" aria-label="Saint David  " countryId="GD-02"></path>
+                    <path cs="100,100" d="M368.49,710.31L264.86,705.34L251.92,746.68L205.04,842.59L224.44,895.49L260.01,885.57L326.67,926.72L368.49,710.31z" transform="translate(0,-189)" stroke-width="1.1481690246648157" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GD-01" role="menuitem" aria-label="Saint Andrew  " countryId="GD-01"></path>
+                    <path cs="100,100" d="M799.62,19.17L773.71,34.16L791.47,43.01L799.62,19.17zM712.77,0L635.68,109.03L593.21,96.09L578.74,123.61L605.45,123.61L578.74,179.87L678.14,140.81L712.77,151.13L722.05,69.55L712.77,0z" transform="translate(0,-189)" stroke-width="1.1481690246648157" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GD-10" role="menuitem" aria-label="Carriacou and Petite Martinique  " countryId="GD-10"></path>
+                </g>
+            </g>
+        </g>
+    </svg>
