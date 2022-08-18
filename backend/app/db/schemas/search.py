@@ -85,13 +85,20 @@ class SearchResponseDocument(BaseModel):
     document_passage_matches: List[SearchResponseDocumentPassage]
 
 
+class BrowseInformation(BaseModel):
+    """Information when browsing and not searching"""
+
+    pass
+
+
 class SearchResponseBody(BaseModel):
     """The response body produced by the search API endpoint."""
 
     hits: int
     query_time_ms: int
 
-    documents: List[SearchResponseDocument]
+    browse_info: BrowseInformation  # empty when searching
+    documents: List[SearchResponseDocument]  # empty when browsing
 
 
 class OpenSearchResponseMatchBase(BaseModel):
