@@ -1,7 +1,9 @@
 import csv
 from typing import Union
+
+from sqlalchemy.orm import Session
+
 from app.db.models import Geography, GeoStatistics
-from app.db.session import SessionLocal
 from .utils import has_rows
 
 
@@ -15,7 +17,7 @@ def to_float(value: str) -> Union[float, None]:
     return retval
 
 
-def populate_geo_statistics(db: SessionLocal) -> None:
+def populate_geo_statistics(db: Session) -> None:
     """Populates the geography table with data in the CSV."""
 
     if has_rows(db, GeoStatistics):
