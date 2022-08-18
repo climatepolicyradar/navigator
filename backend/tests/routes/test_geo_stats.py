@@ -2,9 +2,9 @@ from http.client import NOT_FOUND, OK, UNAUTHORIZED
 from unittest.mock import Mock
 from app.initial_data import populate_initial_data
 
-from app.api.api_v1.routers.lookups.geo_stats import (
+from app.api.api_v1.routers.documents.geo_stats import (
     GeoStatsResponse,
-    lookup_geo_stats,
+    documents_with_geo_stats,
 )
 
 TEST_ID = 11
@@ -78,7 +78,7 @@ def test_queries_db():
         visibility_status="row.visibility_status",
     )
 
-    response = lookup_geo_stats(TEST_ID, db=db, current_user=None)
+    response = documents_with_geo_stats(TEST_ID, db=db, current_user=None)
     db.query.assert_called_once()
     assert response.id == TEST_ID
     assert response.name == TEST_GEO_NAME

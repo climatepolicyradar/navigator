@@ -7,7 +7,7 @@ from fastapi import Depends, HTTPException
 from app.core.auth import get_current_active_user
 from pydantic import BaseModel
 from sqlalchemy import exc
-from .router import lookups_router
+from .router import documents_router
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -33,13 +33,13 @@ lookup_geo_stats_responses: Optional[Dict[Union[int, str], Dict[str, Any]]] = {
 }
 
 
-@lookups_router.get(
+@documents_router.get(
     "/geo_stats/{geography_id}",
     summary="Get climate statistics for a geography",
     response_model=GeoStatsResponse,
     responses=lookup_geo_stats_responses,
 )
-def lookup_geo_stats(
+def documents_with_geo_stats(
     geography_id: int,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),

@@ -8,6 +8,4 @@ from .main import (  # noqa F401
     lookup_sectors,
 )
 
-from .geo_stats import lookup_geo_stats  # noqa F401
-
 from .router import lookups_router  # noqa F401

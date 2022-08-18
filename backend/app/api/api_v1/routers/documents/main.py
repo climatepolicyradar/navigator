@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import List, Union, cast
 from sqlalchemy import extract
 from fastapi import (
-    APIRouter,
     Depends,
     File,
     HTTPException,
@@ -73,10 +72,9 @@ from app.db.schemas.metadata import (
     Topic as TopicSchema,
 )
 from app.db.session import get_db
+from .router import documents_router
 
 _LOGGER = logging.getLogger(__file__)
-
-documents_router = APIRouter()
 
 
 @documents_router.get(
