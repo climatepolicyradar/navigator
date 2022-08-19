@@ -42,24 +42,6 @@ export type TDocument = {
   document_url: string;
 };
 
-// export type TCountry = {
-//   name: string;
-//   short_name: string;
-//   continent: string;
-//   legal_structure: string;
-//   legal_bodies: string;
-//   political_groups: string[];
-//   financial_status: string;
-//   gcri: number;
-//   emissions: number;
-//   laws: number;
-//   policies: number;
-//   cases: number;
-//   events: TEvent[];
-//   targets: TTarget[];
-//   documents: TAssociatedDocument[];
-// };
-
 export type TGeography = {
   id: number;
   display_value: string;
