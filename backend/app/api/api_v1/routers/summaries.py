@@ -20,7 +20,7 @@ summary_router = APIRouter()
 
 @summary_router.post(
     "/summaries/country",
-    summary="Gets documents associated with a country by geoography id.",
+    summary="Gets a summary of the documents associated with a country.",
     response_model=SummaryCountryResponse,
 )
 def search_by_country(
