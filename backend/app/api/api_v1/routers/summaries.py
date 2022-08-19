@@ -3,12 +3,8 @@
 Like searches but with pre-defined results based on the summary context.
 """
 import logging
-from typing import Union
-
 from fastapi import APIRouter, Depends, Request
-
 from app.core.auth import get_current_active_db_user
-
 from app.db.schemas.search import (
     SummaryCountryResponse,
 )
@@ -26,8 +22,6 @@ summary_router = APIRouter()
 def search_by_country(
     request: Request,
     geography_id: int,
-    start_year: Union[int, None] = None,
-    end_year: Union[int, None] = None,
     current_user=Depends(get_current_active_db_user),
 ):
     # FIXME: Implement this RDS search
