@@ -62,6 +62,10 @@ const Search = () => {
   });
 
   // get lookups/filters
+  const configQuery: any = useLookups("config");
+  const { data: { data: config = {} } = {} } = configQuery;
+  console.log("config", config);
+
   const documentTypesQuery: any = useLookups("document_types");
   const { data: { data: documentTypes = {} } = {} } = documentTypesQuery;
 
@@ -291,7 +295,7 @@ const Search = () => {
                     <div className="md:hidden absolute right-0 top-0">
                       <Close onClick={() => setShowFilters(false)} size="16" />
                     </div>
-                    {geosQuery.isFetching || sectorsQuery.isFetching || documentTypesQuery.isFetching || instrumentsQuery.isFetching ? (
+                     {configQuery.isFetching ? (
                       <p>Loading filters...</p>
                     ) : (
                       <SearchFilters
@@ -302,9 +306,9 @@ const Search = () => {
                         handleClearSearch={handleClearSearch}
                         handleSearchChange={handleSearchChange}
                         regions={regions}
-                        filteredCountries={filteredCountries}
+                        filteredCountries={config.metadata.filteredCountries}
                         sectors={sectors}
-                        documentTypes={documentTypes}
+                        documentTypes={config.metadata.documentTypes}
                         instruments={structureData(instruments)}
                       />
                     )}

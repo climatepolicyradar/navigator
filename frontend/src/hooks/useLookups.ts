@@ -22,7 +22,7 @@ export default function useLookups(path: string, filterProp: string = '') {
     },
     {
       onSuccess: (data) => {
-        // console.log(data);
+//         console.log(data);
       },
       refetchOnWindowFocus: false,
       refetchOnMount: false,
