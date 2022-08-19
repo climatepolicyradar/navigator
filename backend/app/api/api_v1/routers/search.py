@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Union
 
 from fastapi import APIRouter, Depends, Request
 
@@ -26,9 +27,13 @@ _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 
 
 def get_browse_info() -> BrowseInformation:
+    """Query RDS for browse information."""
     return BrowseInformation(
         document_counts={}, top_documents={}, events=[], targets=[]
     )
+
+
+BrowseOrSearchResponse = Union[BrowseInformation, SearchResponseBody]
 
 
 @search_router.post("/searches", response_model=SearchResponseBody)
@@ -37,7 +42,10 @@ def search_documents(
     search_body: SearchRequestBody,
     current_user=Depends(get_current_active_db_user),
 ):
-    """Search for documents matching the search criteria."""
+    """Search for documents matching the search criteria.
+
+    TODO: Don't return documents with no source urls?
+    """
     logger.info(
         "Search request",
         extra={"props": {"search_request": json.loads(search_body.json())}},
