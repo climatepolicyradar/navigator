@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Mapping, Optional, Tuple
+from typing import Dict, List, Mapping, Optional, Tuple, Union
 
 from pydantic import BaseModel, conlist
 
@@ -119,6 +119,17 @@ class SearchResponseBody(BaseModel):
 
     browse_info: BrowseResponseBody  # empty when searching
     documents: List[SearchResponseDocument]  # empty when browsing
+
+
+class BrowseOrSearchResponse(BaseModel):
+    """Need to use a smart union for a union response"""
+
+    content: Union[BrowseResponseBody, SearchResponseBody]
+
+    class Config:
+        """Enble smart union"""
+
+        smart_union = True
 
 
 class OpenSearchResponseMatchBase(BaseModel):

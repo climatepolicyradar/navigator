@@ -1,6 +1,5 @@
 import json
 import logging
-from typing import Union
 
 from fastapi import APIRouter, Depends, Request
 
@@ -11,9 +10,9 @@ from app.core.search import (
     OpenSearchQueryConfig,
 )
 from app.db.schemas.search import (
+    BrowseOrSearchResponse,
     BrowseResponseBody,
     SearchRequestBody,
-    SearchResponseBody,
 )
 
 logger = logging.getLogger(__name__)
@@ -24,9 +23,6 @@ search_router = APIRouter()
 _OPENSEARCH_CONFIG = OpenSearchConfig()
 _OPENSEARCH_CONNECTION = OpenSearchConnection(opensearch_config=_OPENSEARCH_CONFIG)
 _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
-
-
-BrowseOrSearchResponse = Union[BrowseResponseBody, SearchResponseBody]
 
 
 @search_router.post("/searches", response_model=BrowseOrSearchResponse)
