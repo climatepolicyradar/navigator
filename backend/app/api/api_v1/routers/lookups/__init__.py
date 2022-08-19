@@ -6,6 +6,7 @@ from .main import (  # noqa F401
     lookup_document_categories,
     lookup_document_types,
     lookup_sectors,
+    lookup_config,
 )
 
 from .geo_stats import lookup_geo_stats  # noqa F401

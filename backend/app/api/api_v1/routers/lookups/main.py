@@ -98,3 +98,20 @@ def lookup_document_categories(
 ):
     """Get tree of document types."""
     return table_to_json(table=Category, db=db)
+
+
+@lookups_router.get("/config")
+def lookup_config(
+    request: Request,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_user),
+):
+    """geographies, document_types, sectors, instruments"""
+    metadata = {
+        'geographies': tree_table_to_json(table=Geography, db=db),
+        'document_types': table_to_json(table=DocumentType, db=db),
+        'sectors': tree_table_to_json(table=Sector, db=db),
+        'instruments': tree_table_to_json(table=Instrument, db=db)
+    }
+
+    return {'metadata': metadata}
