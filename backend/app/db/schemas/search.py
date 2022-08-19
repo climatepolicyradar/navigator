@@ -117,8 +117,7 @@ class SearchResponseBody(BaseModel):
     hits: int
     query_time_ms: int
 
-    browse_info: BrowseResponseBody  # empty when searching
-    documents: List[SearchResponseDocument]  # empty when browsing
+    documents: List[SearchResponseDocument]
 
 
 class BrowseOrSearchResponse(BaseModel):
