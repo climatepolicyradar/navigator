@@ -101,7 +101,7 @@ class Category(str, Enum):
 Top5DocumentList = conlist(SearchResponseDocument, max_items=5)
 
 
-class BrowseInformation(BaseModel):
+class BrowseResponseBody(BaseModel):
     """Information when browsing and not searching"""
 
     document_counts: Mapping[Category, int]
@@ -117,7 +117,7 @@ class SearchResponseBody(BaseModel):
     hits: int
     query_time_ms: int
 
-    browse_info: BrowseInformation  # empty when searching
+    browse_info: BrowseResponseBody  # empty when searching
     documents: List[SearchResponseDocument]  # empty when browsing
 
 
