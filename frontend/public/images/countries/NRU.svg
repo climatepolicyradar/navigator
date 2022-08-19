@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1789" height="923" xml:space="preserve">
+        <style>
+          path { 
+            stroke-width: 0.5;
+            fill: #616161;
+            fill-opacity: 0.4;
+            stroke: #000000;
+            stroke-opacity: 0.75; 
+          }
+        </style>
+        <g>
+            <g transform="translate(455.9760472770949,0.14289987660662218) scale(1)">
+                <g transform="translate(0,0) scale(1.099333047688406)">
+                    <path cs="100,100" d="M402.02,0L45.38,330.53L0.48,572.06L83.34,717.38L264.12,839.6L586.1,742.42L658.39,684.86L691.63,435.32L799.52,283.35L764.77,141.11L609.7,17.18L402.02,0z" transform="translate(0,0)" stroke-width="0.9096424437550786" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-NR" role="menuitem" aria-label="Nauru  " countryId="NR"></path>
+                </g>
+            </g>
+        </g>
+    </svg>
