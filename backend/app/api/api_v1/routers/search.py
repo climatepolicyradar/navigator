@@ -17,7 +17,6 @@ from app.core.search import (
     OpenSearchQueryConfig,
 )
 from app.db.schemas.search import (
-    SearchByCountryResponse,
     SearchRequestBody,
     SearchResponseBody,
 )
@@ -57,19 +56,3 @@ def search_documents(
     else:
         """When no query string - search using RDS"""
         return browse_rds(search_body)
-
-
-@search_router.post(
-    "/searches/country/{geography_id}",
-    summary="Gets documents associated with a country by geoography id.",
-    response_model=SearchByCountryResponse,
-)
-def search_by_country(
-    geography_id: int,
-    request: Request,
-    search_body: SearchRequestBody,
-    current_user=Depends(get_current_active_db_user),
-):
-    return SearchByCountryResponse(
-        document_counts={}, top_documents={}, events=[], targets=[]
-    )

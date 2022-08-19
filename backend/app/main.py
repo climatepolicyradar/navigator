@@ -21,6 +21,7 @@ from app.api.api_v1.routers.lookups import lookups_router
 from app.api.api_v1.routers.search import search_router
 from app.api.api_v1.routers.unauthenticated import unauthenticated_router
 from app.api.api_v1.routers.users import users_router
+from app.api.api_v1.routers.summaries import summary_router
 from app.core import config
 from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
@@ -34,6 +35,7 @@ root_logger = logging.getLogger()
 if root_logger.handlers:
     for handler in root_logger.handlers:
         root_logger.removeHandler(handler)
+
 for _, logger in logging.root.manager.loggerDict.items():
     if isinstance(logger, logging.Logger):
         logger.propagate = True
@@ -122,6 +124,7 @@ app.include_router(
 app.include_router(documents_router, prefix="/api/v1", tags=["Documents"])
 app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
 app.include_router(search_router, prefix="/api/v1", tags=["Searches"])
+app.include_router(summary_router, prefix="/api/v1", tags=["Summaries"])
 
 # add pagination support to all routes that ask for it
 add_pagination(app)
