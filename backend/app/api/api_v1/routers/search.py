@@ -1,3 +1,9 @@
+"""Searches for documents.
+
+All endpoints should perform document searches using the SearchRequestBody as
+its input. The individual endpoints will return different responses tailored
+for the type of document search being performed.
+"""
 import json
 import logging
 
@@ -11,7 +17,7 @@ from app.core.search import (
     OpenSearchQueryConfig,
 )
 from app.db.schemas.search import (
-    CountryCoverPageResponse,
+    SearchByCountryResponse,
     SearchRequestBody,
     SearchResponseBody,
 )
@@ -56,7 +62,7 @@ def search_documents(
 @search_router.post(
     "/searches/country/{geography_id}",
     summary="Gets documents associated with a country by geoography id.",
-    response_model=CountryCoverPageResponse,
+    response_model=SearchByCountryResponse,
 )
 def search_by_country(
     geography_id: int,
@@ -64,6 +70,6 @@ def search_by_country(
     search_body: SearchRequestBody,
     current_user=Depends(get_current_active_db_user),
 ):
-    return CountryCoverPageResponse(
+    return SearchByCountryResponse(
         document_counts={}, top_documents={}, events=[], targets=[]
     )

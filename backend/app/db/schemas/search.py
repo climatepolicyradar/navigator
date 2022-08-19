@@ -101,7 +101,7 @@ class Category(str, Enum):
 Top5DocumentList = conlist(SearchResponseDocument, max_items=5)
 
 
-class CountryCoverPageResponse(BaseModel):
+class SearchByCountryResponse(BaseModel):
     """Additional information for the Country page over geo stats"""
 
     document_counts: Mapping[Category, int]
