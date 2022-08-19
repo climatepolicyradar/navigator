@@ -12,8 +12,6 @@ export const CountryHeader = ({ country }: TProps) => {
   const { data: { data: { level1: regions = [], level2: countries = [] } = {} } = {} } = geosQuery;
   const countryGeography = countries.find((c: TGeography) => c.display_value === country.name);
 
-  console.log(countries);
-
   const getCountryRegion = () => {
     if (!countryGeography) return "";
     const region = regions.find((r: TGeography) => r.id === countryGeography.parent_id);
