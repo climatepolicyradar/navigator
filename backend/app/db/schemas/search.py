@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Dict, List, Mapping, Optional, Tuple, Union
+from typing import Dict, List, Mapping, Optional, Tuple
 
 from pydantic import BaseModel, conlist
 
@@ -101,11 +101,10 @@ class Category(str, Enum):
 Top5DocumentList = conlist(SearchResponseDocument, max_items=5)
 
 
-class BrowseResponseBody(BaseModel):
-    """Information when browsing and not searching"""
+class CountryCoverPageResponse(BaseModel):
+    """Additional information for the Country page over geo stats"""
 
     document_counts: Mapping[Category, int]
-    # top_documnets: conlist(Mapping[Category, SearchResponseDocument], max_items=5)
     top_documents: Mapping[Category, Top5DocumentList]
     events: List[Event]
     targets: List[str]  # TODO: Placeholder for later
@@ -118,17 +117,6 @@ class SearchResponseBody(BaseModel):
     query_time_ms: int
 
     documents: List[SearchResponseDocument]
-
-
-class BrowseOrSearchResponse(BaseModel):
-    """Need to use a smart union for a union response"""
-
-    content: Union[BrowseResponseBody, SearchResponseBody]
-
-    class Config:
-        """Enble smart union"""
-
-        smart_union = True
 
 
 class OpenSearchResponseMatchBase(BaseModel):

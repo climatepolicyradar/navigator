@@ -4,15 +4,16 @@ import logging
 from fastapi import APIRouter, Depends, Request
 
 from app.core.auth import get_current_active_db_user
+from app.core.browse import browse_rds
 from app.core.search import (
     OpenSearchConnection,
     OpenSearchConfig,
     OpenSearchQueryConfig,
 )
 from app.db.schemas.search import (
-    BrowseOrSearchResponse,
-    BrowseResponseBody,
+    CountryCoverPageResponse,
     SearchRequestBody,
+    SearchResponseBody,
 )
 
 logger = logging.getLogger(__name__)
@@ -25,7 +26,7 @@ _OPENSEARCH_CONNECTION = OpenSearchConnection(opensearch_config=_OPENSEARCH_CONF
 _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 
 
-@search_router.post("/searches", response_model=BrowseOrSearchResponse)
+@search_router.post("/searches", response_model=SearchResponseBody)
 def search_documents(
     request: Request,
     search_body: SearchRequestBody,
@@ -49,6 +50,15 @@ def search_documents(
         )
     else:
         """When no query string - search using RDS"""
-        return BrowseResponseBody(
-            document_counts={}, top_documents={}, events=[], targets=[]
-        )
+        return browse_rds(search_body)
+
+
+@search_router.post("/searches/country", response_model=CountryCoverPageResponse)
+def search_by_country(
+    request: Request,
+    search_body: SearchRequestBody,
+    current_user=Depends(get_current_active_db_user),
+):
+    return CountryCoverPageResponse(
+        document_counts={}, top_documents={}, events=[], targets=[]
+    )
