@@ -1,6 +1,7 @@
 import { useQuery } from 'react-query';
 import { ApiClient } from '../api/http-common';
 import { removeDuplicates } from '../utils/removeDuplicates';
+import useFilteredCountries from "@hooks/useFilteredCountries";
 
 export default function useLookups(path: string, filterProp: string = '') {
   const client = new ApiClient();
@@ -12,7 +13,7 @@ export default function useLookups(path: string, filterProp: string = '') {
     if (filterProp.length) {
       list = removeDuplicates(list, filterProp);
     }
-    return { ...response, data: list };
+    return list;
   };
 
   const modifyGeoData = (response, levels, filterProp) => {
@@ -35,7 +36,11 @@ export default function useLookups(path: string, filterProp: string = '') {
         level1 = removeDuplicates(level1, filterProp);
         level2 = removeDuplicates(level2, filterProp);
       }
-      return { data: { level1, level2 } };
+
+      console.log('level2', level2);
+
+      const filteredCountries = useFilteredCountries(level1);
+      return { level1, level2, filteredCountries };
     }
   };
 
@@ -44,8 +49,25 @@ export default function useLookups(path: string, filterProp: string = '') {
     async () => {
       const response = await client.get(`/${path}`, null);
       const response_deduplicated = modifyData(response);
-      const response_geo = modifyGeoData(response_deduplicated.data.geographies, 2, '');
-      return { data: { response_deduplicated, response_geo }};
+      const response_geo = modifyGeoData(response_deduplicated.geographies, 2, '');
+      const document_types = response_deduplicated.document_types;
+      const geographies = response_deduplicated.geographies;
+      const instruments = response_deduplicated.instruments;
+      const sectors = response_deduplicated.sectors;
+      const regions = response_geo.level1;
+      const countries = response_geo.level2;
+      const filteredCountries = response_geo.filteredCountries;
+
+      const resp_end = {
+        document_types,
+        geographies,
+        instruments,
+        sectors,
+        regions,
+        countries,
+        filteredCountries
+      }
+      return resp_end;
     },
     {
       onSuccess: (data) => {
