@@ -1,7 +1,9 @@
 from enum import Enum
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, Mapping, Optional, Tuple
 
-from pydantic import BaseModel
+from pydantic import BaseModel, conlist
+
+from app.db.schemas.metadata import Event
 
 
 Coord = Tuple[float, float]
@@ -83,6 +85,29 @@ class SearchResponseDocument(BaseModel):
     document_title_match: bool
     document_description_match: bool
     document_passage_matches: List[SearchResponseDocumentPassage]
+
+
+class Category(str, Enum):
+    """Representation of what is in the database.
+
+    TODO: Add test to ensure there is equivalence with the initial_data
+    """
+
+    LAW = "Law"
+    POLICY = "Policy"
+    CASE = "Case"
+
+
+Top5DocumentList = conlist(SearchResponseDocument, max_items=5)
+
+
+class SummaryCountryResponse(BaseModel):
+    """Additional information for the Country page over geo stats"""
+
+    document_counts: Mapping[Category, int]
+    top_documents: Mapping[Category, Top5DocumentList]
+    events: List[Event]
+    targets: List[str]  # TODO: Placeholder for later
 
 
 class SearchResponseBody(BaseModel):
