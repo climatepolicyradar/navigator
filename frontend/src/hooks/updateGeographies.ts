@@ -37,10 +37,10 @@ export default function useLookups(path: string, filterProp: string = '') {
         level2 = removeDuplicates(level2, filterProp);
       }
 
-      console.log('level2', level2);
-
-      const filteredCountries = useFilteredCountries(level1);
-      return { level1, level2, filteredCountries };
+//       console.log('level2', level2);
+//
+//       const filteredCountries = useFilteredCountries(level2);
+      return { level1, level2 };
     }
   };
 
@@ -52,11 +52,11 @@ export default function useLookups(path: string, filterProp: string = '') {
       const response_geo = modifyGeoData(response_deduplicated.geographies, 2, '');
       const document_types = response_deduplicated.document_types;
       const geographies = response_deduplicated.geographies;
-      const instruments = response_deduplicated.instruments;
+      const instruments = response_deduplicated.instruments; // modifyGeoData(response_deduplicated.instruments, "name");
       const sectors = response_deduplicated.sectors;
       const regions = response_geo.level1;
       const countries = response_geo.level2;
-      const filteredCountries = response_geo.filteredCountries;
+//       const filteredCountries = response_geo.filteredCountries;
 
       const resp_end = {
         document_types,
@@ -65,7 +65,7 @@ export default function useLookups(path: string, filterProp: string = '') {
         sectors,
         regions,
         countries,
-        filteredCountries
+//         filteredCountries
       }
       return resp_end;
     },

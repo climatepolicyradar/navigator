@@ -68,27 +68,18 @@ const Search = () => {
 
   // get lookups/filters
   const configQuery: any = updateGeographies("config");
-  const { document_types, geographies, instruments, sectors, regions, countries, filteredCountries } = configQuery; // Casting the object  data: { sectors, regions, countries, geographies,  } = {}
-  console.log("configQuery", configQuery);
+  const {
+            data: {
+                    document_types: document_types = {},
+                    geographies: geographies = {},
+                    instruments: instruments = {},
+                    sectors: sectors = {},
+                    regions: regions = {},
+                    countries: countries = {}
+                  } = {}
+        } = configQuery;
 
-//   const { data: filteredCountries } = useFilteredCountries(countries);
-//   const config = {};
-
-//   const documentTypesQuery: any = useLookups("document_types");
-//   const { data: { data: documentTypes = {} } = {} } = documentTypesQuery;
-//   console.log("documentTypes", documentTypes);
-
-//   const geosQuery: any = useNestedLookups("geographies", "", 2);
-//   const { data: { data: { level1: regions = [], level2: countries = [] } = {} } = {} } = geosQuery;
-//   console.log("geos", regions, countries);
-
-//   const sectorsQuery: any = useNestedLookups("sectors", "name");
-//   const { data: { data: { level1: sectors = [] } = {} } = {} } = sectorsQuery;
-//   console.log("sectors", sectors);
-
-//   const instrumentsQuery: any = useNestedLookups("instruments", "name");
-//   const { data: { data: { level1: instruments = [] } = {} } = {} } = instrumentsQuery;
-//   console.log("instruments", instruments);
+  const { data: filteredCountries } = useFilteredCountries(countries);
 
   // search criteria and filters
   const { isFetching: isFetchingSearchCriteria, isSuccess: isSearchCriteriaSuccess, data: searchCriteria }: any = useSearchCriteria();
