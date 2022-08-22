@@ -1,4 +1,5 @@
 import { FC } from "react";
+import Link from "next/link";
 import useNestedLookups from "@hooks/useNestedLookups";
 import { getCountryId } from "@helpers/getCountryId";
 
@@ -12,8 +13,8 @@ export const CountryLink: FC<TCountryLink> = ({ countryCode, children }) => {
   const countryId = getCountryId(countryCode, countries);
   if (!countryId) return <>{children}</>;
   return (
-    <a className="flex underline text-blue-600" href={`/country/${countryId}`}>
-      {children}
-    </a>
+    <Link href={`/country/${countryId}`}>
+      <a className="flex underline text-blue-600">{children}</a>
+    </Link>
   );
 };
