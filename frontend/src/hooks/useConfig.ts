@@ -1,12 +1,11 @@
 import { useQuery } from 'react-query';
 import { ApiClient } from '../api/http-common';
 import { removeDuplicates } from '../utils/removeDuplicates';
-import useFilteredCountries from "@hooks/useFilteredCountries";
 
-export default function useLookups(path: string, filterProp: string = '') {
+export default function useConfig(path: string, filterProp: string = '') {
   const client = new ApiClient();
 
-  const modifyData = (response) => {
+  const deduplicateData = (response) => {
     let { data } = response;
     let list = data;
 
@@ -16,7 +15,7 @@ export default function useLookups(path: string, filterProp: string = '') {
     return list;
   };
 
-  const modifyGeoData = (response, levels, filterProp) => {
+  const extractNestedData = (response, levels, filterProp) => {
     let level1 = [];
     let level2Nested = [];
     let level2 = [];
@@ -37,9 +36,6 @@ export default function useLookups(path: string, filterProp: string = '') {
         level2 = removeDuplicates(level2, filterProp);
       }
 
-//       console.log('level2', level2);
-//
-//       const filteredCountries = useFilteredCountries(level2);
       return { level1, level2 };
     }
   };
@@ -48,15 +44,14 @@ export default function useLookups(path: string, filterProp: string = '') {
     path,
     async () => {
       const response = await client.get(`/${path}`, null);
-      const response_deduplicated = modifyData(response);
-      const response_geo = modifyGeoData(response_deduplicated.geographies, 2, '');
+      const response_deduplicated = deduplicateData(response);
+      const response_geo = extractNestedData(response_deduplicated.geographies, 2, '');
       const document_types = response_deduplicated.document_types;
       const geographies = response_deduplicated.geographies;
-      const instruments = response_deduplicated.instruments; // modifyGeoData(response_deduplicated.instruments, "name");
+      const instruments = response_deduplicated.instruments;
       const sectors = response_deduplicated.sectors;
       const regions = response_geo.level1;
       const countries = response_geo.level2;
-//       const filteredCountries = response_geo.filteredCountries;
 
       const resp_end = {
         document_types,
@@ -65,7 +60,6 @@ export default function useLookups(path: string, filterProp: string = '') {
         sectors,
         regions,
         countries,
-//         filteredCountries
       }
       return resp_end;
     },

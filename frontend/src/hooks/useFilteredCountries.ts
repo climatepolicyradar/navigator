@@ -5,7 +5,6 @@ export default function useFilteredCountries(all) {
   if (all === undefined) {
     return []
   } else {
-      console.log("From within useFilteredCountries", all)
       const queryClient = useQueryClient();
 
       return useQuery(

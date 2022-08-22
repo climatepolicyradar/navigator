@@ -9,7 +9,7 @@ import useUpdateDocument from "@hooks/useUpdateDocument";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
 import useUpdateSearchFilters from "@hooks/useUpdateSearchFilters";
 import useUpdateCountries from "@hooks/useUpdateCountries";
-import updateGeographies from "@hooks/updateGeographies";
+import useConfig from "@hooks/useConfig";
 import useNestedLookups from "@hooks/useNestedLookups";
 import useLookups from "@hooks/useLookups";
 import useFilteredCountries from "@hooks/useFilteredCountries";
@@ -62,12 +62,8 @@ const Search = () => {
     setShowSlideout(false);
   });
 
-  // TODO create a new hook called useConfig that modifies the response to get an array for regions and sectors, look at the use nested lookups hook
-  // For sectors just need to de-duplicate it, rather than level 1 & 2 have regions and countries
-  // Stretch / pair programming remove the mutation to remove global state of countries
-
   // get lookups/filters
-  const configQuery: any = updateGeographies("config");
+  const configQuery: any = useConfig("config");
   const {
             data: {
                     document_types: document_types = {},
