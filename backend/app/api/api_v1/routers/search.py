@@ -59,4 +59,4 @@ def search_documents(
         # FIXME: Implement and test this for browse
         # db = SessionLocal()
         # return browse_rds(db.begin_nested(), BrowseArgs())
-        pass
+        return SearchResponseBody(hits=0, query_time_ms=0, documents=[])
