@@ -118,4 +118,5 @@ def lookup_config(
         'instruments': tree_table_to_json(table=Instrument, db=db)
     }
 
-    return {'metadata': metadata}
+    return metadata
+
