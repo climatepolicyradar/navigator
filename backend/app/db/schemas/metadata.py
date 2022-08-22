@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, List
 
 from pydantic import BaseModel
 
@@ -86,3 +86,11 @@ class Topic(BaseModel):  # noqa: D101
 
     name: str
     description: str
+
+
+class Config(BaseModel):
+    geographies: List[Dict]
+    document_types: List[Dict]
+    sectors: List[Dict]
+    instruments: List[Dict]
+

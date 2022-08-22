@@ -10,6 +10,7 @@ from app.db.models import (
     DocumentType,
     Category,
 )
+from app.db.schemas.metadata import Config
 from app.db.session import get_db
 from .router import lookups_router
 from .utils import tree_table_to_json, table_to_json
@@ -100,7 +101,10 @@ def lookup_document_categories(
     return table_to_json(table=Category, db=db)
 
 
-@lookups_router.get("/config")
+@lookups_router.get(
+    "/config",
+    response_model=Config
+)
 def lookup_config(
     request: Request,
     db=Depends(get_db),
