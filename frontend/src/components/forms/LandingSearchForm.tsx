@@ -21,8 +21,7 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
     StartTextAnimation(0, text, inputRef.current);
   };
 
-  const clearSearch = (e) => {
-    e.preventDefault();
+  const clearSearch = () => {
     setTerm("");
   };
 
