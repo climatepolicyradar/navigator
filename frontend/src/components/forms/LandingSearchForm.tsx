@@ -12,8 +12,9 @@ interface SearchFormProps {
 
 const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
   const [term, setTerm] = useState("");
-  const [inputFocus, setInputFocus] = useState(false);
+  const [formFocus, setFormFocus] = useState(false);
   const inputRef = useRef(null);
+  const formRef = useRef(null);
 
   const typePlaceholder = () => {
     const text = ["Search full text of 3000+ laws and policies"];
@@ -41,8 +42,21 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
     if (inputRef.current) typePlaceholder();
   }, [inputRef]);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (formRef.current && !formRef.current.contains(event.target)) {
+        return setFormFocus(false);
+      }
+      setFormFocus(true);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [formRef]);
+
   return (
-    <form data-cy="search-form">
+    <form data-cy="search-form" ref={formRef}>
       <div className="max-w-screen-lg mx-auto text-white flex items-stretch relative">
         <input
           data-cy="search-input"
@@ -61,7 +75,7 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
         <button className="absolute top-0 right-0 -mt-1" onClick={() => handleSearchInput(term)}>
           <SearchIcon height="40" width="80" />
         </button>
-        <SearchDropdown term={term} show={!!term} handleSearchClick={() => handleSearchInput(term)} />
+        <SearchDropdown term={term} show={formFocus} handleSearchClick={() => handleSearchInput(term)} />
       </div>
     </form>
   );
