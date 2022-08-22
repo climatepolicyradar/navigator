@@ -9,6 +9,7 @@ import useUpdateDocument from "@hooks/useUpdateDocument";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
 import useUpdateSearchFilters from "@hooks/useUpdateSearchFilters";
 import useUpdateCountries from "@hooks/useUpdateCountries";
+import updateGeographies from "@hooks/updateGeographies";
 import useNestedLookups from "@hooks/useNestedLookups";
 import useLookups from "@hooks/useLookups";
 import useFilteredCountries from "@hooks/useFilteredCountries";
@@ -61,24 +62,31 @@ const Search = () => {
     setShowSlideout(false);
   });
 
+  // TODO create a new hook called useConfig that modifies the response to get an array for regions and sectors, look at the use nested lookups hook
+  // For sectors just need to de-duplicate it, rather than level 1 & 2 have regions and countries
+  // Stretch / pair programming remove the mutation to remove global state of countries
+
   // get lookups/filters
-  const configQuery: any = useLookups("config");
+  const configQuery: any = updateGeographies("config");
   const { data: { data: config = {} } = {} } = configQuery;
   console.log("config", config);
 
+
   const documentTypesQuery: any = useLookups("document_types");
   const { data: { data: documentTypes = {} } = {} } = documentTypesQuery;
+  console.log("documentTypes", documentTypes);
 
   const geosQuery: any = useNestedLookups("geographies", "", 2);
   const { data: { data: { level1: regions = [], level2: countries = [] } = {} } = {} } = geosQuery;
-
-  const { data: filteredCountries } = useFilteredCountries(countries);
+  console.log("geos", regions, countries);
 
   const sectorsQuery: any = useNestedLookups("sectors", "name");
   const { data: { data: { level1: sectors = [] } = {} } = {} } = sectorsQuery;
+  console.log("sectors", sectors);
 
   const instrumentsQuery: any = useNestedLookups("instruments", "name");
   const { data: { data: { level1: instruments = [] } = {} } = {} } = instrumentsQuery;
+  console.log("instruments", instruments);
 
   // search criteria and filters
   const { isFetching: isFetchingSearchCriteria, isSuccess: isSearchCriteriaSuccess, data: searchCriteria }: any = useSearchCriteria();
@@ -306,9 +314,9 @@ const Search = () => {
                         handleClearSearch={handleClearSearch}
                         handleSearchChange={handleSearchChange}
                         regions={regions}
-                        filteredCountries={config.metadata.filteredCountries}
+                        filteredCountries={config.filteredCountries}
                         sectors={sectors}
-                        documentTypes={config.metadata.documentTypes}
+                        documentTypes={config.documentTypes}
                         instruments={structureData(instruments)}
                       />
                     )}
