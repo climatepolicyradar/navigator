@@ -180,3 +180,4 @@ dmypy.json
 .DS_Store
 .vim
 backend/models
+**/.vscode

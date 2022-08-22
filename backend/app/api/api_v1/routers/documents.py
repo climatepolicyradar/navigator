@@ -92,7 +92,7 @@ async def document_browse(
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
-    """Filter all documents"""
+    """TODO: Remove this endpoint"""
     query = (
         db.query(
             Document.name,

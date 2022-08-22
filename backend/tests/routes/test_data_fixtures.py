@@ -70,3 +70,47 @@ def doc_browse_data(test_db):
         "sources": sources,
         "cats": cats,
     }
+
+
+@pytest.fixture
+def summary_country_data(test_db):
+    geos = [
+        Geography(display_value="A place on the land", value="XXX"),
+        Geography(display_value="A place in the sea", value="YYY"),
+    ]
+    doc_types = [DocumentType(name="doctype", description="for testing")]
+    sources = [Source(name="May the source be with you")]
+    cats = [
+        Category(name="Law", description="Persian Cat"),
+        Category(name="Policy", description="Mog"),
+        Category(name="Case", description="Ginger Cat"),
+    ]
+
+    test_db.add_all(geos)
+    test_db.add_all(doc_types)
+    test_db.add_all(sources)
+    test_db.add_all(cats)
+    test_db.flush()
+
+    # Now setup the Document set
+    docs = [
+        # Sheba's documents
+        make_doc("doc1", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),  # type: ignore
+        make_doc("doc2", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 2007),  # type: ignore
+        make_doc("doc3", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id),  # type: ignore
+        # Cuddles' documents
+        make_doc("doc4", sources[0].id, cats[1].id, geos[0].id, doc_types[0].id, 1991),  # type: ignore
+        make_doc("doc5", sources[0].id, cats[1].id, geos[0].id, doc_types[0].id, 2005),  # type: ignore
+    ]
+
+    test_db.add_all(docs)
+    test_db.commit()
+
+    yield {
+        "db": test_db,
+        "docs": docs,
+        "geos": geos,
+        "doc_types": doc_types,
+        "sources": sources,
+        "cats": cats,
+    }
