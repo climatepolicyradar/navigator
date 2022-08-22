@@ -9,7 +9,7 @@ from app.core.search import (
     OpenSearchConfig,
     OpenSearchQueryConfig,
 )
-from app.db.schemas.search import SearchRequestBody, SearchResponseBody
+from app.api.api_v1.schemas.search import SearchRequestBody, SearchResponseBody
 
 logger = logging.getLogger(__name__)
 

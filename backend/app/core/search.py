@@ -31,7 +31,7 @@ from app.core.config import (
     OPENSEARCH_SSL_WARNINGS,
 )
 from app.core.util import content_type_from_path, s3_to_cdn_url
-from app.db.schemas.search import (
+from app.api.api_v1.schemas.search import (
     FilterField,
     OpenSearchResponseDescriptionMatch,
     OpenSearchResponseNameMatch,

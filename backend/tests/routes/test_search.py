@@ -4,7 +4,7 @@ from datetime import datetime
 import pytest
 
 from app.api.api_v1.routers import search
-from app.db.schemas.search import SortOrder, FilterField
+from app.api.api_v1.schemas.search import SortOrder, FilterField
 from app.core.search import _FILTER_FIELD_MAP
 
 

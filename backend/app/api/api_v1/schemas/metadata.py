@@ -9,7 +9,6 @@ class Source(BaseModel):  # noqa: D101
 
 
 class Event(BaseModel):  # noqa: D101
-    # document_id: int  # this won't be posted by loader.
     name: str
     description: str
     created_ts: datetime
