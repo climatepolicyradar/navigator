@@ -3,7 +3,7 @@ from typing import Dict, List, Mapping, Optional, Tuple
 
 from pydantic import BaseModel, conlist
 
-from app.db.schemas.metadata import Event
+from app.api.api_v1.schemas.metadata import Event
 
 
 Coord = Tuple[float, float]

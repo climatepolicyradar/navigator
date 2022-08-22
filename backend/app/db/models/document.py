@@ -158,12 +158,8 @@ class DocumentFramework(Base):  # noqa: D101
     )
 
 
-class Response(Base):
-    """A response.
-
-    Response is called 'topic' outside the app.
-    """
-
+class Response(Base):  # noqa: D101
+    # TODO: rename Response -> Topic
     __tablename__ = "response"
 
     id = sa.Column(sa.Integer, primary_key=True)
