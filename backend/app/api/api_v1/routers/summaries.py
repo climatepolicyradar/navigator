@@ -6,7 +6,7 @@ import logging
 from fastapi import APIRouter, Depends, Request
 from app.core.auth import get_current_active_db_user
 from app.db.schemas.search import SummaryCountryResponse, CategoryName
-from app.core.browse import BrowseArgs, browse_rds
+from app.core.browse import BrowseArgs, browse_rds, get_events_for_country
 from app.db.session import get_db
 
 logger = logging.getLogger(__name__)
@@ -47,8 +47,7 @@ def search_by_country(
     top_documents[CategoryName.CASE] = list(case_result.documents[:5])
     top_documents[CategoryName.POLICY] = list(policy_result.documents[:5])
 
-    # FIXME: Implement events
-    events = []
+    events = get_events_for_country(db, geography_id)
 
     # TODO: Add targets
     targets = []

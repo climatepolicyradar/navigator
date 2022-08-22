@@ -1,9 +1,10 @@
 """Functions to support browsing the RDS document structure"""
 
 from time import perf_counter
-from typing import Optional
+from typing import List, Optional
 from pydantic import BaseModel
-from app.db.models.document import Category, Document, Geography, DocumentType
+from app.db.models.document import Category, Document, Event, Geography, DocumentType
+from app.db.schemas.metadata import Event as MetaEvent
 from app.db.schemas.search import (
     SearchResponseBody,
     SearchResponseDocument,
@@ -86,3 +87,18 @@ def browse_rds(db: Session, req: BrowseArgs) -> SearchResponseBody:
         query_time_ms=int((perf_counter() - t0) * 1e3),
         documents=documents,
     )
+
+
+def get_events_for_country(db: Session, geography_id: int) -> List[MetaEvent]:
+    query = (
+        db.query(
+            Event.name,
+            Event.description,
+            Event.created_ts,
+        )
+        .join(Document, Document.id == Event.document_id)
+        .filter(Document.geography_id == geography_id)
+    )
+    query = query.order_by(Event.created_ts.desc())
+
+    return [MetaEvent(**(dict(ev))) for ev in query.all()]

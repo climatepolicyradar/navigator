@@ -1,5 +1,6 @@
+from dateutil.parser import parse
 import pytest
-from app.db.models import Category, Document, DocumentType, Geography, Source
+from app.db.models import Category, Document, DocumentType, Geography, Source, Event
 
 template_doc = {
     "name": "doc",
@@ -93,6 +94,7 @@ def summary_country_data(test_db):
     test_db.flush()
 
     # Now setup the Document set
+
     docs = [
         # Sheba's documents
         make_doc("doc1", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),  # type: ignore
@@ -104,8 +106,39 @@ def summary_country_data(test_db):
     ]
 
     test_db.add_all(docs)
-    test_db.commit()
+    test_db.flush()
 
+    # Now some events
+    events = [
+        Event(
+            document_id=docs[3].id,
+            name="Red Dwarf Ep1",
+            description="-",
+            created_ts=parse("15 February 1988"),
+        ),
+        Event(
+            document_id=docs[3].id,
+            name="Red Dwarf Ep2",
+            description="",
+            created_ts=parse("22 February 1988"),
+        ),
+        Event(
+            document_id=docs[3].id,
+            name="Red Dwarf Ep3",
+            description="",
+            created_ts=parse("29 February 1988"),
+        ),
+        Event(
+            document_id=docs[3].id,
+            name="Red Dwarf Ep4",
+            description="",
+            created_ts=parse("7 March 1988"),
+        ),
+    ]
+
+    test_db.add_all(events)
+
+    test_db.commit()
     yield {
         "db": test_db,
         "docs": docs,
@@ -113,4 +146,5 @@ def summary_country_data(test_db):
         "doc_types": doc_types,
         "sources": sources,
         "cats": cats,
+        "events": events,
     }

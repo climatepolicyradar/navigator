@@ -49,7 +49,7 @@ def test_geography_with_documents(client, user_token_headers, summary_country_da
     assert len(resp["top_documents"]["Policy"]) == 2
     assert len(resp["top_documents"]["Case"]) == 0
 
-    assert len(resp["events"]) == 0
+    assert len(resp["events"]) == 4
     assert len(resp["targets"]) == 0
 
 
@@ -70,3 +70,21 @@ def test_geography_with_documents_ordered(
     assert resp["top_documents"]["Law"][0]["document_name"] == "doc3"
     assert resp["top_documents"]["Law"][1]["document_name"] == "doc2"
     assert resp["top_documents"]["Law"][2]["document_name"] == "doc1"
+
+
+def test_geography_events_ordered(client, user_token_headers, summary_country_data):
+    """Test that all the data is returned ordered by published date"""
+    geography_id = summary_country_data["geos"][0].id
+
+    response = client.get(
+        URL_UNDER_TEST(geography_id),
+        headers=user_token_headers,
+    )
+    assert response.status_code == OK
+    resp = response.json()
+
+    assert len(resp["events"]) == 4
+    assert resp["events"][0]["name"] == "Red Dwarf Ep4"
+    assert resp["events"][1]["name"] == "Red Dwarf Ep3"
+    assert resp["events"][2]["name"] == "Red Dwarf Ep2"
+    assert resp["events"][3]["name"] == "Red Dwarf Ep1"

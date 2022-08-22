@@ -10,7 +10,8 @@ import logging
 from fastapi import APIRouter, Depends, Request
 
 from app.core.auth import get_current_active_db_user
-from app.core.browse import BrowseArgs, browse_rds
+
+# from app.core.browse import BrowseArgs, browse_rds
 from app.core.search import (
     OpenSearchConnection,
     OpenSearchConfig,
@@ -20,7 +21,6 @@ from app.db.schemas.search import (
     SearchRequestBody,
     SearchResponseBody,
 )
-from app.db.session import SessionLocal
 
 logger = logging.getLogger(__name__)
 
@@ -57,5 +57,6 @@ def search_documents(
     else:
         """When no query string - search using RDS"""
         # FIXME: Implement and test this for browse
-        db = SessionLocal()
-        return browse_rds(db.begin_nested(), BrowseArgs())
+        # db = SessionLocal()
+        # return browse_rds(db.begin_nested(), BrowseArgs())
+        pass
