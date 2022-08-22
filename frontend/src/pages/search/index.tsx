@@ -111,8 +111,7 @@ const Search = () => {
     if (type !== "offset") resetPaging();
     updateSearchCriteria.mutate({ [type]: value });
   };
-  const handleSearchInput = (e, term) => {
-    e.preventDefault();
+  const handleSearchInput = (term: string) => {
     handleSearchChange("query_string", term);
   };
   const handleDocumentCategoryClick = (e) => {
