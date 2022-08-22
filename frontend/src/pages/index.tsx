@@ -31,8 +31,7 @@ const IndexPage = () => {
   const configQuery: any = useConfig("config");
   const { data: { geographies: geographies = [], regions: regions = [], countries: countries = [] } = {} } = configQuery;
 
-  const handleSearchInput = (e, term) => {
-    e.preventDefault();
+  const handleSearchInput = (term: string) => {
     updateSearchCriteria.mutate({ ["query_string"]: term });
     router.push("/search");
   };
@@ -42,7 +41,7 @@ const IndexPage = () => {
   const handleLinkClick = (e) => {
     e.preventDefault();
     const term = e.currentTarget.textContent;
-    handleSearchInput(e, term);
+    handleSearchInput(term);
   };
   const clearAllFilters = () => {
     /*
