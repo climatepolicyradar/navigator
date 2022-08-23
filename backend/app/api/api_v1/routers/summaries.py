@@ -5,11 +5,14 @@ Like searches but with pre-defined results based on the summary context.
 import logging
 from fastapi import APIRouter, Depends, Request
 from app.core.auth import get_current_active_db_user
-from app.db.schemas.search import SummaryCountryResponse, CategoryName
+from app.api.api_v1.schemas.search import (
+    SummaryCountryResponse,
+    CategoryName,
+)
 from app.core.browse import BrowseArgs, browse_rds, get_events_for_country
 from app.db.session import get_db
 
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 summary_router = APIRouter()
 

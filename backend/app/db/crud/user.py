@@ -6,7 +6,7 @@ from starlette import status
 
 from app.core.security import get_password_hash
 from app.db.models import User, PasswordResetToken
-from app.db.schemas.user import User as UserSchema, UserCreate, UserCreateAdmin
+from app.api.api_v1.schemas.user import User as UserSchema, UserCreate, UserCreateAdmin
 
 
 def get_user(db: Session, user_id: int) -> User:

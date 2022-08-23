@@ -4,10 +4,10 @@ from time import perf_counter
 from typing import List, Optional
 from pydantic import BaseModel
 from app.db.models.document import Category, Document, Event, Geography, DocumentType
-from app.db.schemas.metadata import Event as MetaEvent
-from app.db.schemas.search import (
-    SearchResponseBody,
+from app.api.api_v1.schemas.metadata import Event as MetaEvent
+from app.api.api_v1.schemas.search import (
     SearchResponseDocument,
+    SearchResponseBody,
 )
 from sqlalchemy import extract
 from sqlalchemy.orm import Session
