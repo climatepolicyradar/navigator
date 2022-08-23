@@ -81,7 +81,7 @@ export type TGeographySummary = {
   document_counts: { Law: number; Policy: number; Case: number };
   events: [];
   targets: [];
-  top_documents: {};
+  top_documents: { Law: TDocument[]; Policy: TDocument[]; Case: TDocument[] };
 };
 
 export type TCategory = "Law" | "Policy" | "Case";

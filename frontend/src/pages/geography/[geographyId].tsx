@@ -147,11 +147,12 @@ const CountryPage = () => {
                         <Sort defaultValue="date:desc" updateSort={handleSortClick} browse />
                       </div>
                     </div>
-                    {/* {summary.top_documents.map((doc) => (
-                      <div key={doc.related_id} className="mt-4 mb-10">
-                        <RelatedDocument document={doc} />
+                    {summary.top_documents.Case.map((doc) => (
+                      <div key={doc.document_id} className="mt-4 mb-10">
+                        {/* <RelatedDocument document={doc} /> */}
+                        {doc.document_name}
                       </div>
-                    ))} */}
+                    ))}
                   </section>
                   <div className="mt-12">
                     <Divider>
