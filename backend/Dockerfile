@@ -11,7 +11,7 @@ RUN pip install --upgrade pip
 RUN pip install "poetry==1.1.8"
 
 # Create layer for dependencies
-COPY ./backend/poetry.lock ./backend/pyproject.toml .
+COPY ./backend/poetry.lock ./backend/pyproject.toml ./
 
 # Install python dependencies using poetry
 RUN poetry config virtualenvs.create false
