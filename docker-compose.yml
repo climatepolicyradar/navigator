@@ -117,7 +117,7 @@ services:
     image: elasticdump/elasticsearch-dump
     container_name: opensearch-test-loader
     volumes:
-      - ./search-index:/app/:cached
+      - ./backend:/app/:cached
     env_file:
       - .env
     depends_on:
