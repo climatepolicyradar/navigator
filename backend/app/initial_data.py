@@ -91,7 +91,7 @@ def wait_for_app():
             response = requests.get(health)
             if response.status_code == OK:
                 return
-        except ConnectionRefusedError:
+        except requests.ConnectionError:
             pass
 
         sleep(1)
