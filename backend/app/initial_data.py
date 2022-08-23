@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+from http.client import OK
 import os
+from time import sleep
+import requests
 
 from sqlalchemy.exc import IntegrityError
 
@@ -68,18 +71,37 @@ def create_loader_machine_user(db) -> None:
 
 
 def populate_initial_data(db):
-    print("Running data migrations...")
-    run_data_migrations(db)
-
     print("Creating superuser...")
     create_superuser(db)
 
     print("Creating loader machine user...")
     create_loader_machine_user(db)
 
+    print("Running data migrations...")
+    run_data_migrations(db)
+
+
+def wait_for_app():
+    url = os.getenv("API_HOST")
+    health = f"{url}/health"
+
+    # wait for health url
+    for i in range(100):
+        try:
+            response = requests.get(health)
+            if response.status_code == OK:
+                return
+        except ConnectionRefusedError:
+            pass
+
+        sleep(1)
+    raise TimeoutError()
+
 
 if __name__ == "__main__":
     print("Creating initial data...")
+    wait_for_app()
+
     db = SessionLocal()
     populate_initial_data(db)
     db.commit()
