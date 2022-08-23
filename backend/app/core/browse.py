@@ -1,6 +1,6 @@
 """Functions to support browsing the RDS document structure"""
 
-from app.db.schemas.search import (
+from app.api.api_v1.schemas.search import (
     SearchRequestBody,
     SearchResponseBody,
 )
