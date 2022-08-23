@@ -48,15 +48,14 @@ const CountryPage = () => {
   const { geographyId } = router.query;
   const geographyQuery = useGeoStats(String(geographyId));
   const geographySummaryQuery = useGeoSummary(String(geographyId));
-  const { refetch: refetchGeography, data: { data: country } = {}, isFetching: isFetching, isError } = geographyQuery;
+  const { refetch: refetchGeography, data: { data: geography } = {}, isFetching: isFetching, isError } = geographyQuery;
   const { refetch: refetchSummary, data: { data: summary } = {}, isFetching: isFetchingSummary } = geographySummaryQuery;
   const [showAllTargets, setShowAllTargets] = useState(false);
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
 
-  const hasStats = !!country?.laws || !!country?.cases || !!country?.policies;
-  const hasEvents = !!country?.events && country?.events?.length > 0;
-  const hasTargets = !!country?.targets && country?.targets?.length > 0;
-  const hasDocuments = !!country?.documents && country?.documents?.length > 0;
+  const hasEvents = !!summary?.events && summary?.events?.length > 0;
+  const hasTargets = !!summary?.targets && summary?.targets?.length > 0;
+  const hasDocuments = !!summary?.top_documents;
 
   const documentCategories = DOCUMENT_CATEGORIES;
   const TARGETS_SHOW = 5;
@@ -76,41 +75,39 @@ const CountryPage = () => {
   }, [router.query.geographyId, refetchGeography, refetchSummary]);
 
   let targets = [];
-  if (!!country?.targets) targets = showAllTargets ? country.targets : country.targets.slice(0, TARGETS_SHOW);
+  if (!!summary?.targets) targets = showAllTargets ? summary.targets : summary.targets.slice(0, TARGETS_SHOW);
 
   if (isFetching || isFetchingSummary) return <Loading />;
 
   return (
     <>
-      <Layout title={`Climate Policy Radar | ${country?.name ?? "Loading..."}`}>
-        {isError || !country ? (
+      <Layout title={`Climate Policy Radar | ${geography?.name ?? "Loading..."}`}>
+        {isError || !geography ? (
           <SingleCol>
             <TextLink onClick={() => router.back()}>Go back</TextLink>
             <p>We were not able to load the data for the country.</p>
           </SingleCol>
         ) : (
           <section className="mb-8">
-            <CountryHeader country={country} />
+            <CountryHeader country={geography} />
             <SingleCol>
-              {hasStats && (
-                <section className="grid grid-cols-2 md:grid-cols-3 gap-px rounded mb-8">
-                  {!!country.laws && <KeyDetail detail="Laws" amount={country.laws} icon={<LawIcon />} />}
-                  {!!country.policies && <KeyDetail detail="Policies" amount={country.policies} icon={<PolicyIcon />} />}
-                  {!!country.cases && <KeyDetail detail="Cases" amount={country.cases} icon={<CaseIcon />} />}
-                </section>
-              )}
-              {country.legislative_process && (
+              <section className="grid grid-cols-2 md:grid-cols-3 gap-px rounded mb-8">
+                {<KeyDetail detail="Laws" amount={summary.document_counts.Law} icon={<LawIcon />} />}
+                {<KeyDetail detail="Policies" amount={summary.document_counts.Policy} icon={<PolicyIcon />} />}
+                {<KeyDetail detail="Cases" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
+              </section>
+              {geography.legislative_process && (
                 <>
                   <h3 className="mb-4">Legislative Process</h3>
-                  <div dangerouslySetInnerHTML={{ __html: country.legislative_process }} />
+                  <div dangerouslySetInnerHTML={{ __html: geography.legislative_process }} />
                 </>
               )}
               {hasEvents && (
                 <section className="mt-12">
                   <h3 className="mb-4">Events</h3>
                   <Timeline>
-                    {country.events.map((event: TEvent, index: number) => (
-                      <Event event={event} key={`event-${index}`} index={index} last={index === country.events.length - 1 ? true : false} />
+                    {summary.events.map((event: TEvent, index: number) => (
+                      <Event event={event} key={`event-${index}`} index={index} last={index === summary.events.length - 1 ? true : false} />
                     ))}
                   </Timeline>
                 </section>
@@ -123,13 +120,13 @@ const CountryPage = () => {
                       <span className="mr-2">
                         <TargetIcon />
                       </span>
-                      Targets ({country.targets.length})
+                      Targets ({summary.targets.length})
                     </h3>
                     <Targets targets={targets} />
                   </div>
                 </section>
               )}
-              {!showAllTargets && country?.targets?.length > TARGETS_SHOW && (
+              {!showAllTargets && summary?.targets?.length > TARGETS_SHOW && (
                 <div className="mt-12">
                   <Divider>
                     <Button color="secondary" wider onClick={() => setShowAllTargets(true)}>
@@ -150,22 +147,24 @@ const CountryPage = () => {
                         <Sort defaultValue="date:desc" updateSort={handleSortClick} browse />
                       </div>
                     </div>
-                    {country.documents.map((doc) => (
+                    {/* {summary.top_documents.map((doc) => (
                       <div key={doc.related_id} className="mt-4 mb-10">
                         <RelatedDocument document={doc} />
                       </div>
-                    ))}
+                    ))} */}
                   </section>
                   <div className="mt-12">
                     <Divider>
-                      <Link href="/search">
-                        <Button color="secondary" extraClasses="flex items-center">
-                          See more
-                          <span className="ml-8">
-                            <RightArrowIcon height="20" width="20" />
-                          </span>
-                        </Button>
-                      </Link>
+                      <Button color="secondary" extraClasses="flex items-center">
+                        <Link href="/search">
+                          <>
+                            See more
+                            <span className="ml-8">
+                              <RightArrowIcon height="20" width="20" />
+                            </span>
+                          </>
+                        </Link>
+                      </Button>
                     </Divider>
                   </div>
                 </>

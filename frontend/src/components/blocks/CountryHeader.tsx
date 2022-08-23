@@ -47,9 +47,11 @@ export const CountryHeader = ({ country }: TProps) => {
             </div>
           </div>
         </div>
-        <div className="hidden place-items-center md:flex overflow-hidden svg-country">
-          <img className="w-full max-h-[400px]" src={`/images/countries/${countryGeography?.value}.svg`} alt={`${country.name} map`} />
-        </div>
+        {countryGeography?.value && (
+          <div className="hidden place-items-center md:flex overflow-hidden svg-country">
+            <img className="w-full max-h-[400px]" src={`/images/countries/${countryGeography?.value}.svg`} alt={`${country.name} map`} />
+          </div>
+        )}
       </div>
     </div>
   );

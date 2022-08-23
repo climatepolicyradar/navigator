@@ -78,7 +78,7 @@ export type TGeographyStats = {
 };
 
 export type TGeographySummary = {
-  document_counts: {};
+  document_counts: { Law: number; Policy: number; Case: number };
   events: [];
   targets: [];
   top_documents: {};
