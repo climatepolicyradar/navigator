@@ -28,27 +28,14 @@ def search_by_country(
     current_user=Depends(get_current_active_db_user),
     db=Depends(get_db),
 ):
-    law_result = browse_rds(
-        db, BrowseArgs(geography_id=geography_id, category=CategoryName.LAW)
-    )
-    policy_result = browse_rds(
-        db, BrowseArgs(geography_id=geography_id, category=CategoryName.POLICY)
-    )
-    case_result = browse_rds(
-        db, BrowseArgs(geography_id=geography_id, category=CategoryName.CASE)
-    )
-
-    # Counts
-    document_counts = {}
-    document_counts[CategoryName.LAW] = len(law_result.documents)
-    document_counts[CategoryName.CASE] = len(case_result.documents)
-    document_counts[CategoryName.POLICY] = len(policy_result.documents)
-
-    # Top Docs
+    """Searches the documents filtering by country and grouping by category."""
     top_documents = {}
-    top_documents[CategoryName.LAW] = list(law_result.documents[:5])
-    top_documents[CategoryName.CASE] = list(case_result.documents[:5])
-    top_documents[CategoryName.POLICY] = list(policy_result.documents[:5])
+    document_counts = {}
+
+    for cat in CategoryName:
+        results = browse_rds(db, BrowseArgs(geography_id=geography_id, category=cat))
+        document_counts[cat] = len(results.documents)
+        top_documents[cat] = list(results.documents[:5])
 
     events = get_events_for_country(db, geography_id)
 
