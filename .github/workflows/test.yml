@@ -37,16 +37,3 @@ jobs:
         if: always()
         run: docker-compose logs
                 
-  test_loader:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-      - name: Build docker-compose stack using .env.example
-        run: cp .env.example .env
-      - name: Build
-        run: make build_loader
-      - name: Test
-        run: make test_loader
-      - name: Log Dump
-        if: always()
-        run: docker-compose logs
