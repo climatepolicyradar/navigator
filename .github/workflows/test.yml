@@ -15,6 +15,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
+        with:
+          context: .
+          cache-from: type=gha
+          cache-to: type=gha,mode=max      
       - name: Build docker-compose stack using .env.example
         run: cp .env.example .env && make start
       - name: verify backend is up
