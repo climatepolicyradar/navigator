@@ -45,8 +45,8 @@ const Targets = ({ targets }: TTargets) => {
 const CountryPage = () => {
   const router = useRouter();
   const { geographyId } = router.query;
-  const countryQuery = useGeoStats(String(geographyId));
-  const { refetch, data: { data: country } = {}, isFetching: isFetching, isError } = countryQuery;
+  const geographyQuery = useGeoStats(String(geographyId));
+  const { refetch, data: { data: country } = {}, isFetching: isFetching, isError } = geographyQuery;
   const [showAllTargets, setShowAllTargets] = useState(false);
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
 
