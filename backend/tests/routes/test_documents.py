@@ -17,7 +17,7 @@ from app.db.models import (
     Category,
     Keyword,
 )
-from app.db.schemas.document import DocumentAssociation
+from app.api.api_v1.schemas.document import DocumentAssociationCreateRequest
 
 
 def test_document_upload(
@@ -64,9 +64,13 @@ def test_post_documents(client, superuser_token_headers, test_db):
 
     # ensure meta
     test_db.add(Source(name="may it be with you"))
-    test_db.add(Geography(display_value="not my favourite subject"))
+    test_db.add(
+        Geography(
+            display_value="not my favourite subject", value="NMFS", type="country"
+        )
+    )
     test_db.add(DocumentType(name="just my type", description="sigh"))
-    test_db.add(Language(language_code="afr"))
+    test_db.add(Language(language_code="afr", name="Afrikaans"))
     test_db.add(Category(name="a category", description="a category description"))
     test_db.add(Hazard(name="some hazard", description="Imported by CPR loader"))
     test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
@@ -90,21 +94,18 @@ def test_post_documents(client, superuser_token_headers, test_db):
     test_db.commit()
 
     payload = {
-        "document": {
-            "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
-            "publication_ts": "2000-01-01T00:00:00.000000+00:00",
-            "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
-            "description": "the document description",
-            "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
-            "md5_sum": "the md5 sum",
-            "type_id": 1,
-            "geography_id": 1,
-            "source_id": 1,
-            "category_id": 1,
-        },
-        "language_ids": [1],
-        "source_id": 1,
+        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
+        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
+        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+        "description": "the document description",
+        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
+        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
+        "md5_sum": "the md5 sum",
+        "type": "just my type",
+        "geography": "not my favourite subject",
+        "source": "may it be with you",
+        "category": "a category",
+        "languages": ["afr"],
         "events": [
             {
                 "name": "Publication",
@@ -112,31 +113,12 @@ def test_post_documents(client, superuser_token_headers, test_db):
                 "created_ts": "2008-12-25T00:00:00+00:00",
             }
         ],
-        "sectors": [
-            {
-                "name": "Energy",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            }
-        ],
-        "instruments": [
-            {
-                "name": "some instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-            {
-                "name": "another instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-        ],
-        "frameworks": [
-            {"name": "some framework", "description": "Imported by CPR loader"}
-        ],
-        "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
-        "hazards": [{"name": "some hazard", "description": "Imported by CPR loader"}],
-        "keywords": [{"name": "some keyword", "description": "Imported by CPR loader"}],
+        "sectors": ["Energy"],
+        "instruments": ["some instrument", "another instrument"],
+        "frameworks": ["some framework"],
+        "topics": ["Mitigation"],
+        "hazards": ["some hazard"],
+        "keywords": ["some keyword"],
     }
 
     response = client.post(
@@ -146,10 +128,10 @@ def test_post_documents(client, superuser_token_headers, test_db):
     assert response.status_code == 200
 
     doc: Document = test_db.query(Document).first()
-    assert doc.name == payload["document"]["name"]
-    assert doc.description == payload["document"]["description"]
-    assert doc.url == payload["document"]["url"]
-    assert doc.md5_sum == payload["document"]["md5_sum"]
+    assert doc.name == payload["name"]
+    assert doc.description == payload["description"]
+    assert doc.url == payload["url"]
+    assert doc.md5_sum == payload["md5_sum"]
     assert doc.publication_ts == datetime(2000, 1, 1)
 
     event = test_db.query(Event).first()
@@ -163,9 +145,13 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
 
     # ensure meta
     test_db.add(Source(name="may it be with you"))
-    test_db.add(Geography(display_value="not my favourite subject"))
+    test_db.add(
+        Geography(
+            display_value="not my favourite subject", value="NMFS", type="country"
+        )
+    )
     test_db.add(DocumentType(name="just my type", description="sigh"))
-    test_db.add(Language(language_code="afr"))
+    test_db.add(Language(language_code="afr", name="Afrikaans"))
     test_db.add(Category(name="a category", description="a category description"))
     test_db.add(Hazard(name="some other hazard", description="Imported by CPR loader"))
     test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
@@ -191,21 +177,18 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
     test_db.commit()
 
     payload = {
-        "document": {
-            "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
-            "publication_ts": "2000-01-01T00:00:00.000000+00:00",
-            "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
-            "description": "the document description",
-            "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
-            "md5_sum": "the md5 sum",
-            "type_id": 1,
-            "geography_id": 1,
-            "source_id": 1,
-            "category_id": 1,
-        },
-        "language_ids": [1],
-        "source_id": 1,
+        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
+        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
+        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+        "description": "the document description",
+        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
+        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
+        "md5_sum": "the md5 sum",
+        "type": "just my type",
+        "geography": "not my favourite subject",
+        "source": "may it be with you",
+        "category": "a category",
+        "languages": ["afr"],
         "events": [
             {
                 "name": "Publication",
@@ -213,31 +196,12 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
                 "created_ts": "2008-12-25T00:00:00+00:00",
             }
         ],
-        "sectors": [
-            {
-                "name": "Energy",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            }
-        ],
-        "instruments": [
-            {
-                "name": "some instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-            {
-                "name": "another instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-        ],
-        "frameworks": [
-            {"name": "some framework", "description": "Imported by CPR loader"}
-        ],
-        "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
-        "hazards": [{"name": "some hazard", "description": "Imported by CPR loader"}],
-        "keywords": [{"name": "some keyword", "description": "Imported by CPR loader"}],
+        "sectors": ["Energy"],
+        "instruments": ["some instrument", "another instrument"],
+        "frameworks": ["some framework"],
+        "topics": ["Mitigation"],
+        "hazards": ["some hazard"],
+        "keywords": ["some keyword"],
     }
 
     response = client.post(
@@ -268,7 +232,7 @@ def test_document_detail(
         )
     )
     test_db.add(DocumentType(name="just my type", description="sigh"))
-    test_db.add(Language(language_code="afr", name="AFRAFR"))
+    test_db.add(Language(language_code="afr", name="Afrikaans"))
     test_db.add(Category(name="a category", description="a category description"))
     test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
     test_db.add(
@@ -324,21 +288,18 @@ def test_document_detail(
     test_db.commit()
 
     document1_payload = {
-        "document": {
-            "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
-            "publication_ts": "2000-01-01T00:00:00.000000+00:00",
-            "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
-            "description": "the document description",
-            "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
-            "md5_sum": "the md5 sum",
-            "type_id": 1,
-            "geography_id": 1,
-            "source_id": 1,
-            "category_id": 1,
-        },
-        "language_ids": [1],
-        "source_id": 1,
+        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
+        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
+        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+        "description": "the document description",
+        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
+        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
+        "md5_sum": "the md5 sum",
+        "type": "just my type",
+        "geography": "not my favourite subject",
+        "source": "may it be with you",
+        "category": "a category",
+        "languages": ["afr"],
         "events": [
             {
                 "name": "Publication",
@@ -346,31 +307,12 @@ def test_document_detail(
                 "created_ts": "2008-12-25T00:00:00+00:00",
             }
         ],
-        "sectors": [
-            {
-                "name": "Energy",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            }
-        ],
-        "instruments": [
-            {
-                "name": "some instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-            {
-                "name": "another instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-        ],
-        "frameworks": [
-            {"name": "some framework", "description": "Imported by CPR loader"}
-        ],
-        "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
-        "hazards": [{"name": "some hazard", "description": "Imported by CPR loader"}],
-        "keywords": [{"name": "some keyword", "description": "Imported by CPR loader"}],
+        "sectors": ["Energy"],
+        "instruments": ["some instrument", "another instrument"],
+        "frameworks": ["some framework"],
+        "topics": ["Mitigation"],
+        "hazards": ["some hazard"],
+        "keywords": ["some keyword"],
     }
     response1 = client.post(
         "/api/v1/documents", headers=superuser_token_headers, json=document1_payload
@@ -381,21 +323,18 @@ def test_document_detail(
     # Document 2 payload also checks that we correctly associate new documents with
     # existing metadata values.
     document2_payload = {
-        "document": {
-            "loaded_ts": "2022-04-26T15:34:40.470413+00:00",
-            "publication_ts": "1999-01-01T00:00:00.000000+00:00",
-            "name": "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)",
-            "description": "the document description",
-            "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g",
-            "url": "https://juan-test-bucket.s3.eu-west-2.amazonaws.com/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector+Strategy 1487-1491 (2008/9-2013/4)-1.html",
-            "md5_sum": "the other md5 sum",
-            "type_id": 1,
-            "geography_id": 1,
-            "source_id": 1,
-            "category_id": 1,
-        },
-        "language_ids": [1],
-        "source_id": 1,
+        "loaded_ts": "2022-04-26T15:34:40.470413+00:00",
+        "publication_ts": "1999-01-01T00:00:00.000000+00:00",
+        "name": "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)",
+        "description": "the document description",
+        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g",
+        "url": "https://juan-test-bucket.s3.eu-west-2.amazonaws.com/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector+Strategy 1487-1491 (2008/9-2013/4)-1.html",
+        "md5_sum": "the other md5 sum",
+        "type": "just my type",
+        "geography": "not my favourite subject",
+        "source": "may it be with you",
+        "category": "a category",
+        "languages": ["afr"],
         "events": [
             {
                 "name": "Publication",
@@ -403,50 +342,20 @@ def test_document_detail(
                 "created_ts": "2009-10-12T00:00:00+00:00",
             }
         ],
-        "sectors": [
-            {
-                "name": "Energy",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-            {
-                "name": "Agriculture",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-        ],
+        "sectors": ["Energy", "Agriculture"],
         "instruments": [
-            {
-                "name": "some instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-            {
-                "name": "some other instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-            {
-                "name": "another other instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
+            "some instrument",
+            "some other instrument",
+            "another other instrument",
         ],
         "frameworks": [
-            {"name": "some framework", "description": "Imported by CPR loader"},
-            {"name": "some other framework 1", "description": "Imported by CPR loader"},
-            {"name": "some other framework 2", "description": "Imported by CPR loader"},
+            "some framework",
+            "some other framework 1",
+            "some other framework 2",
         ],
-        "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
-        "hazards": [
-            {"name": "some hazard", "description": "Imported by CPR loader"},
-            {"name": "some other hazard 1", "description": "Imported by CPR loader"},
-            {"name": "some other hazard 2", "description": "Imported by CPR loader"},
-        ],
-        "keywords": [
-            {"name": "some keyword", "description": "Imported by CPR loader"},
-            {"name": "some other keyword", "description": "Imported by CPR loader"},
-        ],
+        "topics": ["Mitigation"],
+        "hazards": ["some hazard", "some other hazard 1", "some other hazard 2"],
+        "keywords": ["some keyword", "some other keyword"],
     }
     response2 = client.post(
         "/api/v1/documents", headers=superuser_token_headers, json=document2_payload
@@ -456,21 +365,18 @@ def test_document_detail(
 
     # Document 3 payload checks we find related documents across the master doc.
     document3_payload = {
-        "document": {
-            "loaded_ts": "2022-04-26T15:35:40.470413+00:00",
-            "publication_ts": "1998-01-01T00:00:00.000000+00:00",
-            "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
-            "description": "the document description",
-            "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2010-12-25-Energy Sector Strategy 1387-1391 (2009/8-2014/3)-1.docx",
-            "md5_sum": "the md5 sum",
-            "type_id": 1,
-            "geography_id": 2,
-            "source_id": 1,
-            "category_id": 1,
-        },
-        "language_ids": [1],
-        "source_id": 1,
+        "loaded_ts": "2022-04-26T15:35:40.470413+00:00",
+        "publication_ts": "1998-01-01T00:00:00.000000+00:00",
+        "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
+        "description": "the document description",
+        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
+        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2010-12-25-Energy Sector Strategy 1387-1391 (2009/8-2014/3)-1.docx",
+        "md5_sum": "the md5 sum",
+        "type": "just my type",
+        "geography": "not my fav subject again",
+        "source": "may it be with you",
+        "category": "a category",
+        "languages": ["afr"],
         "events": [
             {
                 "name": "Publication",
@@ -478,31 +384,12 @@ def test_document_detail(
                 "created_ts": "2010-12-25T00:00:00+00:00",
             }
         ],
-        "sectors": [
-            {
-                "name": "Energy",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            }
-        ],
-        "instruments": [
-            {
-                "name": "some instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-            {
-                "name": "another instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-        ],
-        "frameworks": [
-            {"name": "some framework", "description": "Imported by CPR loader"}
-        ],
-        "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
-        "hazards": [{"name": "some hazard", "description": "Imported by CPR loader"}],
-        "keywords": [{"name": "some keyword", "description": "Imported by CPR loader"}],
+        "sectors": ["Energy"],
+        "instruments": ["some instrument", "another instrument"],
+        "frameworks": ["some framework"],
+        "topics": ["Mitigation"],
+        "hazards": ["some hazard"],
+        "keywords": ["some keyword"],
     }
     response3 = client.post(
         "/api/v1/documents", headers=superuser_token_headers, json=document3_payload
@@ -512,21 +399,18 @@ def test_document_detail(
 
     # Document 4 payload checks we do not find unrelated docs.
     document4_payload = {
-        "document": {
-            "loaded_ts": "2022-04-26T15:36:40.470413+00:00",
-            "publication_ts": "1997-01-01T00:00:00.000000+00:00",
-            "name": "Energy Sector Strategy 1387-1391 (2010/8-2015/3)",
-            "description": "the document description",
-            "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-            "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2012-12-25-Energy Sector Strategy 1387-1391 (2010/8-2015/3)-1.arrrr",
-            "md5_sum": "the md5 sum",
-            "type_id": 1,
-            "geography_id": 1,
-            "source_id": 1,
-            "category_id": 1,
-        },
-        "language_ids": [1],
-        "source_id": 1,
+        "loaded_ts": "2022-04-26T15:36:40.470413+00:00",
+        "publication_ts": "1997-01-01T00:00:00.000000+00:00",
+        "name": "Energy Sector Strategy 1387-1391 (2010/8-2015/3)",
+        "description": "the document description",
+        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
+        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2012-12-25-Energy Sector Strategy 1387-1391 (2010/8-2015/3)-1.arrrr",
+        "md5_sum": "the md5 sum",
+        "type": "just my type",
+        "geography": "not my favourite subject",
+        "source": "may it be with you",
+        "category": "a category",
+        "languages": ["afr"],
         "events": [
             {
                 "name": "Publication",
@@ -534,31 +418,12 @@ def test_document_detail(
                 "created_ts": "2012-12-25T00:00:00+00:00",
             }
         ],
-        "sectors": [
-            {
-                "name": "Energy",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            }
-        ],
-        "instruments": [
-            {
-                "name": "some instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-            {
-                "name": "another instrument",
-                "description": "Imported by CPR loader",
-                "source_id": 1,
-            },
-        ],
-        "frameworks": [
-            {"name": "some framework", "description": "Imported by CPR loader"}
-        ],
-        "responses": [{"name": "Mitigation", "description": "Imported by CPR loader"}],
-        "hazards": [{"name": "some hazard", "description": "Imported by CPR loader"}],
-        "keywords": [{"name": "some keyword", "description": "Imported by CPR loader"}],
+        "sectors": ["Energy"],
+        "instruments": ["some instrument", "another instrument"],
+        "frameworks": ["some framework"],
+        "topics": ["Mitigation"],
+        "hazards": ["some hazard"],
+        "keywords": ["some keyword"],
     }
     response4 = client.post(
         "/api/v1/documents", headers=superuser_token_headers, json=document4_payload
@@ -567,7 +432,7 @@ def test_document_detail(
     response4_document = response4.json()
 
     # Set up associations
-    doc_association_payload_1 = DocumentAssociation(
+    doc_association_payload_1 = DocumentAssociationCreateRequest(
         document_id_from=response2_document["id"],
         document_id_to=response1_document["id"],
         name="related",
@@ -580,7 +445,7 @@ def test_document_detail(
     )
     assert response_assoc_1.status_code == 200
 
-    doc_association_payload_2 = DocumentAssociation(
+    doc_association_payload_2 = DocumentAssociationCreateRequest(
         document_id_from=response3_document["id"],
         document_id_to=response1_document["id"],
         name="related",
@@ -624,7 +489,7 @@ def test_document_detail(
     }
     assert get_detail_json_2["type"] == {"name": "just my type", "description": "sigh"}
     assert get_detail_json_2["languages"] == [
-        {"language_code": "afr", "name": "AFRAFR"}
+        {"language_code": "afr", "name": "Afrikaans"}
     ]
     assert get_detail_json_2["category"] == {
         "name": "a category",
@@ -633,11 +498,11 @@ def test_document_detail(
 
     sorted_related_docs = sorted(
         get_detail_json_2["related_documents"],
-        key=lambda d: d["related_id"],
+        key=lambda d: d["document_id"],
     )
     assert sorted_related_docs == [
         {
-            "related_id": response1_document["id"],
+            "document_id": response1_document["id"],
             "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
             "description": "the document description",
             "country_code": "NMFS",
@@ -645,7 +510,7 @@ def test_document_detail(
             "publication_ts": "2000-01-01T00:00:00",
         },
         {
-            "related_id": response3_document["id"],
+            "document_id": response3_document["id"],
             "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
             "description": "the document description",
             "country_code": "NMFSA",
@@ -657,24 +522,48 @@ def test_document_detail(
     assert get_detail_json_2["events"] == document2_payload["events"]
     assert get_detail_json_2["sectors"] == [
         {
-            "name": s["name"],
-            "description": s["description"],
+            "name": s,
+            "description": "Imported by CPR loader",
             "source": {"name": "may it be with you"},
         }
         for s in document2_payload["sectors"]
     ]
     assert get_detail_json_2["instruments"] == [
         {
-            "name": i["name"],
-            "description": i["description"],
+            "name": i,
+            "description": "Imported by CPR loader",
             "source": {"name": "may it be with you"},
         }
         for i in document2_payload["instruments"]
     ]
-    assert get_detail_json_2["frameworks"] == document2_payload["frameworks"]
-    assert get_detail_json_2["topics"] == document2_payload["responses"]
-    assert get_detail_json_2["hazards"] == document2_payload["hazards"]
-    assert get_detail_json_2["keywords"] == document2_payload["keywords"]
+    assert get_detail_json_2["frameworks"] == [
+        {
+            "name": f,
+            "description": "Imported by CPR loader",
+        }
+        for f in document2_payload["frameworks"]
+    ]
+    assert get_detail_json_2["topics"] == [
+        {
+            "name": t,
+            "description": "Imported by CPR loader",
+        }
+        for t in document2_payload["topics"]
+    ]
+    assert get_detail_json_2["hazards"] == [
+        {
+            "name": h,
+            "description": "Imported by CPR loader",
+        }
+        for h in document2_payload["hazards"]
+    ]
+    assert get_detail_json_2["keywords"] == [
+        {
+            "name": k,
+            "description": "Imported by CPR loader",
+        }
+        for k in document2_payload["keywords"]
+    ]
 
     # Test associations
     get_detail_response_1 = client.get(
@@ -684,7 +573,7 @@ def test_document_detail(
     assert get_detail_response_1.status_code == 200
     get_detail_json_1 = get_detail_response_1.json()
 
-    assert set(rd["related_id"] for rd in get_detail_json_1["related_documents"]) == {
+    assert set(rd["document_id"] for rd in get_detail_json_1["related_documents"]) == {
         2,
         3,
     }
@@ -696,7 +585,7 @@ def test_document_detail(
     assert get_detail_response_3.status_code == 200
     get_detail_json_3 = get_detail_response_3.json()
 
-    assert set(rd["related_id"] for rd in get_detail_json_3["related_documents"]) == {
+    assert set(rd["document_id"] for rd in get_detail_json_3["related_documents"]) == {
         1,
         2,
     }

@@ -2,11 +2,11 @@
 name = "navigator_backend"
 version = "0.1.0"
 description = ""
-authors = ["chrisaballard <chris@climatepolicyradar.org>", "kalyandutia <kalyan@climatepolicyradar.org>", "paulahightower <paula@climatepolicyradar.org>"]
+authors = ["CPR-dev-team <tech@climatepolicyradar.org>"]
 
 [tool.poetry.dependencies]
 python = "^3.9"
-alembic = "^1.7.6"  # TODO move alembic to dev dependencies
+alembic = "^1.7.6"
 Authlib = "^0.15.5"
 bcrypt = "^3.2.0"
 fastapi = "^0.74.0"
@@ -40,10 +40,8 @@ pytest-dotenv = "^0.5.2"
 pytest-mock = "^3.7.0"
 pydocstyle = { version = "^6.1.1", extras = ["pydocstyle[toml]"] }
 black = "^22.1.0"
-mypy = "^0.931"
+pyright = "^1.1.267"
 pytest-asyncio = "^0.18.3"
-types-requests = "^2.28.0"
-types-python-dateutil = "^2.8.19"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]
@@ -85,9 +83,6 @@ D400,D401,D406,D407,D413,D415
 [tool.flake8]
 max-line-length = 88
 extend-ignore = "E203"
-
-[tool.mypy]
-ignore_missing_imports = "True"
 
 [tool.black]
 line-length = 88

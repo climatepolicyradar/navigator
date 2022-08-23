@@ -1,6 +1,8 @@
 import csv
+
+from sqlalchemy.orm import Session
+
 from app.db.models import Language
-from app.db.session import SessionLocal
 from .utils import has_rows
 
 
@@ -19,7 +21,7 @@ class iso_csv(csv.Dialect):
 csv.register_dialect("iso_csv", iso_csv)
 
 
-def populate_language(db: SessionLocal) -> None:
+def populate_language(db: Session) -> None:
     """Populate languages from CSV file."""
 
     if has_rows(db, Language):
