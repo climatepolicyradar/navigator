@@ -68,14 +68,14 @@ def create_loader_machine_user(db) -> None:
 
 
 def populate_initial_data(db):
+    print("Running data migrations...")
+    run_data_migrations(db)
+
     print("Creating superuser...")
     create_superuser(db)
 
     print("Creating loader machine user...")
     create_loader_machine_user(db)
-
-    print("Running data migrations...")
-    run_data_migrations(db)
 
 
 if __name__ == "__main__":
