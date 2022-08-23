@@ -43,8 +43,12 @@ export default function useConfig(path: string, filterProp: string = '') {
   return useQuery(
     path,
     async () => {
-      const response = await client.get(`/${path}`, null);
+      const resp = await client.get(`/${path}`, null);
+      console.log("resp", resp);
+      const response = resp.data.metadata.CCLW;
+      console.log("response", response);
       const response_deduplicated = deduplicateData(response);
+      console.log("response_deduplicated", response_deduplicated);
       const response_geo = extractNestedData(response_deduplicated.geographies, 2, '');
       const document_types = response_deduplicated.document_types;
       const geographies = response_deduplicated.geographies;

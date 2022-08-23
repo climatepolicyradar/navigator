@@ -64,6 +64,7 @@ const Search = () => {
 
   // get lookups/filters
   const configQuery: any = useConfig("config");
+  console.log("configQuery", configQuery);
   const {
             data: {
                     document_types: document_types = {},
