@@ -101,22 +101,22 @@ def lookup_document_categories(
     return table_to_json(table=Category, db=db)
 
 
-@lookups_router.get(
-    "/config",
-    response_model=Config
-)
+@lookups_router.get("/config", response_model=Config)
 def lookup_config(
     request: Request,
     db=Depends(get_db),
     current_user=Depends(get_current_active_user),
 ):
-    """geographies, document_types, sectors, instruments"""
-    metadata = {
-        'geographies': tree_table_to_json(table=Geography, db=db),
-        'document_types': table_to_json(table=DocumentType, db=db),
-        'sectors': tree_table_to_json(table=Sector, db=db),
-        'instruments': tree_table_to_json(table=Instrument, db=db)
+    """Get the config for the metadata."""
+    cclw_source_collection = {
+        "geographies": tree_table_to_json(table=Geography, db=db),
+        "document_types": table_to_json(table=DocumentType, db=db),
+        "sectors": tree_table_to_json(table=Sector, db=db),
+        "instruments": tree_table_to_json(table=Instrument, db=db),
     }
 
-    return metadata
+    source_collections = {"CCLW": cclw_source_collection}
 
+    metadata = {"metadata": source_collections}
+
+    return metadata
