@@ -78,6 +78,7 @@ class SearchResponseDocument(BaseModel):
     document_country_english_shortname: str
     document_description: str
     document_type: str
+    document_category: str
     document_source_url: str
     document_url: str
     document_content_type: str
@@ -87,7 +88,7 @@ class SearchResponseDocument(BaseModel):
     document_passage_matches: List[SearchResponseDocumentPassage]
 
 
-class Category(str, Enum):
+class CategoryName(str, Enum):
     """Representation of what is in the database.
 
     TODO: Add test to ensure there is equivalence with the initial_data
@@ -104,8 +105,8 @@ Top5DocumentList = conlist(SearchResponseDocument, max_items=5)
 class SummaryCountryResponse(BaseModel):
     """Additional information for the Country page over geo stats"""
 
-    document_counts: Mapping[Category, int]
-    top_documents: Mapping[Category, Top5DocumentList]
+    document_counts: Mapping[CategoryName, int]
+    top_documents: Mapping[CategoryName, Top5DocumentList]
     events: List[Event]
     targets: List[str]  # TODO: Placeholder for later
 
@@ -133,6 +134,7 @@ class OpenSearchResponseMatchBase(BaseModel):
     document_type: str
     document_source_url: str
     document_url: str
+    document_category: str
 
 
 class OpenSearchResponseNameMatch(OpenSearchResponseMatchBase):
