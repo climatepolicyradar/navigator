@@ -57,7 +57,7 @@ export type TTarget = {
   target_year: string;
 };
 
-export type TCountryGeoStats = {
+export type TGeographyStats = {
   id: number;
   name: string;
   geography_id: number;
@@ -75,6 +75,13 @@ export type TCountryGeoStats = {
   events?: TEvent[];
   targets?: TTarget[];
   documents?: TAssociatedDocument[];
+};
+
+export type TGeographySummary = {
+  document_counts: {};
+  events: [];
+  targets: [];
+  top_documents: {};
 };
 
 export type TCategory = "Law" | "Policy" | "Case";

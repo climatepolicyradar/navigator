@@ -1,10 +1,10 @@
 import Image from "next/image";
-import { TCountryGeoStats, TGeography } from "@types";
+import { TGeographyStats, TGeography } from "@types";
 import useNestedLookups from "@hooks/useNestedLookups";
 import Tooltip from "@components/tooltip";
 
 type TProps = {
-  country: TCountryGeoStats;
+  country: TGeographyStats;
 };
 
 export const CountryHeader = ({ country }: TProps) => {

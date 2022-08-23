@@ -1,8 +1,8 @@
 import { useQuery } from "react-query";
 import { ApiClient } from "../api/http-common";
-import { TGeographyStats } from "@types";
+import { TGeographySummary } from "@types";
 
-export default function useGeoStats(id: string) {
+export default function useGeoSummary(id: string) {
   const client = new ApiClient();
 
   const isEnabled = (parameter: any) => {
@@ -11,10 +11,10 @@ export default function useGeoStats(id: string) {
     return true;
   };
 
-  return useQuery<{ data: TGeographyStats }>(
-    ["geo_stats"],
+  return useQuery<{ data: TGeographySummary }>(
+    ["geo_summary"],
     () => {
-      return client.get(`/geo_stats/${id}`, null);
+      return client.get(`/summaries/country/${id}`, null);
     },
     {
       refetchOnWindowFocus: false,

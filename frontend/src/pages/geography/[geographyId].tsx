@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import Link from "next/link";
 import { TTarget, TEvent } from "@types";
 import useGeoStats from "@hooks/useGeoStats";
+import useGeoSummary from "@hooks/useGeoSummary";
 import Layout from "@components/layouts/Main";
 import { SingleCol } from "@components/SingleCol";
 import Event from "@components/blocks/Event";
@@ -46,7 +47,9 @@ const CountryPage = () => {
   const router = useRouter();
   const { geographyId } = router.query;
   const geographyQuery = useGeoStats(String(geographyId));
-  const { refetch, data: { data: country } = {}, isFetching: isFetching, isError } = geographyQuery;
+  const geographySummaryQuery = useGeoSummary(String(geographyId));
+  const { refetch: refetchGeography, data: { data: country } = {}, isFetching: isFetching, isError } = geographyQuery;
+  const { refetch: refetchSummary, data: { data: summary } = {}, isFetching: isFetchingSummary } = geographySummaryQuery;
   const [showAllTargets, setShowAllTargets] = useState(false);
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
 
@@ -67,14 +70,15 @@ const CountryPage = () => {
 
   useEffect(() => {
     if (router.query.geographyId) {
-      refetch();
+      refetchGeography();
+      refetchSummary();
     }
-  }, [router.query.geographyId, refetch]);
+  }, [router.query.geographyId, refetchGeography, refetchSummary]);
 
   let targets = [];
   if (!!country?.targets) targets = showAllTargets ? country.targets : country.targets.slice(0, TARGETS_SHOW);
 
-  if (isFetching) return <Loading />;
+  if (isFetching || isFetchingSummary) return <Loading />;
 
   return (
     <>
