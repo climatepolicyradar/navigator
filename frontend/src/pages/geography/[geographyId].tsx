@@ -44,8 +44,8 @@ const Targets = ({ targets }: TTargets) => {
 
 const CountryPage = () => {
   const router = useRouter();
-  const { countryId } = router.query;
-  const countryQuery = useGeoStats(String(countryId));
+  const { geographyId } = router.query;
+  const countryQuery = useGeoStats(String(geographyId));
   const { refetch, data: { data: country } = {}, isFetching: isFetching, isError } = countryQuery;
   const [showAllTargets, setShowAllTargets] = useState(false);
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
@@ -66,10 +66,10 @@ const CountryPage = () => {
   };
 
   useEffect(() => {
-    if (router.query.countryId) {
+    if (router.query.geographyId) {
       refetch();
     }
-  }, [router.query.countryId, refetch]);
+  }, [router.query.geographyId, refetch]);
 
   let targets = [];
   if (!!country?.targets) targets = showAllTargets ? country.targets : country.targets.slice(0, TARGETS_SHOW);
