@@ -23,7 +23,7 @@ export const CountryHeader = ({ country }: TProps) => {
   return (
     <div className="bg-offwhite border-solid border-blue-200 border-b py-6">
       <div className="container flex items-end justify-between overflow-hidden">
-        <div className="md:max-w-lg flex-shrink-0">
+        <div className="md:max-w-lg md:flex-shrink-0">
           <h1>{name}</h1>
           <div className="grid grid-cols-2 gap-6 items-center">
             <div className="font-semibold text-blue-700 text-xl">{getCountryRegion()}</div>
