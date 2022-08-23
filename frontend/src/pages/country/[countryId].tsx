@@ -16,6 +16,7 @@ import Button from "@components/buttons/Button";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
 import Sort from "@components/filters/Sort";
+import TextLink from "@components/nav/TextLink";
 import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
 import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
 
@@ -80,6 +81,7 @@ const CountryPage = () => {
       <Layout title={`Climate Policy Radar | ${country?.name ?? "Loading..."}`}>
         {isError || !country ? (
           <SingleCol>
+            <TextLink onClick={() => router.back()}>Go back</TextLink>
             <p>We were not able to load the data for the country.</p>
           </SingleCol>
         ) : (
