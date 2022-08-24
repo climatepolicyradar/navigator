@@ -11,8 +11,6 @@ def populate_sector(db: Session) -> None:
     if has_rows(db, Sector):
         return
 
-    # Get iso-3166 country codes. This file contains the standard iso-3166 codes + additional country codes for
-    # regions that are missing - e.g. sub-saharan africa
     with open("app/data_migrations/data/sector.csv", mode="r") as file:
         # reading the CSV file
         csvFile = csv.DictReader(file)
