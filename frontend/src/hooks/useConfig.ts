@@ -5,16 +5,6 @@ import { removeDuplicates } from '../utils/removeDuplicates';
 export default function useConfig(path: string, filterProp: string = '') {
   const client = new ApiClient();
 
-  const deduplicateData = (response) => {
-    let { data } = response;
-    let list = data;
-
-    if (filterProp.length) {
-      list = removeDuplicates(list, filterProp);
-    }
-    return list;
-  };
-
   const extractNestedData = (response, levels, filterProp) => {
     let level1 = [];
     let level2Nested = [];
@@ -43,17 +33,13 @@ export default function useConfig(path: string, filterProp: string = '') {
   return useQuery(
     path,
     async () => {
-      const resp = await client.get(`/${path}`, null);
-      console.log("resp", resp);
-      const response = resp.data.metadata.CCLW;
-      console.log("response", response);
-      const response_deduplicated = deduplicateData(response);
-      console.log("response_deduplicated", response_deduplicated);
-      const response_geo = extractNestedData(response_deduplicated.geographies, 2, '');
-      const document_types = response_deduplicated.document_types;
-      const geographies = response_deduplicated.geographies;
-      const instruments = response_deduplicated.instruments;
-      const sectors = response_deduplicated.sectors;
+      const query_response = await client.get(`/${path}`, null);
+      const response = query_response.data.metadata.CCLW;
+      const response_geo = extractNestedData(response.geographies, 2, '');
+      const document_types = response.document_types;
+      const geographies = response.geographies;
+      const instruments = response.instruments;
+      const sectors = response.sectors;
       const regions = response_geo.level1;
       const countries = response_geo.level2;
 
