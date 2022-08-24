@@ -64,15 +64,14 @@ const Search = () => {
 
   // get lookups/filters
   const configQuery: any = useConfig("config");
-  console.log("configQuery", configQuery);
   const {
             data: {
-                    document_types: document_types = {},
-                    geographies: geographies = {},
-                    instruments: instruments = {},
-                    sectors: sectors = {},
-                    regions: regions = {},
-                    countries: countries = {}
+                    document_types: document_types = [],
+                    geographies: geographies = [],
+                    instruments: instruments = [],
+                    sectors: sectors = [],
+                    regions: regions = [],
+                    countries: countries = [],
                   } = {}
         } = configQuery;
 
