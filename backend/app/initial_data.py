@@ -17,6 +17,7 @@ from app.data_migrations import (
     populate_language,
     populate_source,
     populate_geo_statistics,
+    populate_sector,
 )
 
 
@@ -26,6 +27,7 @@ def run_data_migrations(db):
     populate_language(db)
     populate_document_type(db)
     populate_geography(db)
+    populate_sector(db)
 
     db.flush()  # Geography data is used by geo-stats so flush
 
