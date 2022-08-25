@@ -50,42 +50,6 @@ services:
       timeout: 3s
       retries: 30
 
-  loader_db:
-    image: postgres:12
-    restart: always
-    environment:
-      POSTGRES_USER: ${LOADER_POSTGRES_USER}
-      POSTGRES_PASSWORD: ${LOADER_POSTGRES_PASSWORD}
-    ports:
-      - '5433:5432'
-    volumes:
-      - db-data-loader:/var/lib/postgresql/data:cached
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${LOADER_POSTGRES_USER}" ]
-      interval: 5s
-      timeout: 3s
-      retries: 30
-
-  loader:
-    build:
-      context: loader
-      dockerfile: Dockerfile
-    tty: true
-    volumes:
-      - ./loader:/app/:cached
-    environment:
-      PYTHONPATH: .
-      DATA_DIR: /app/data
-      DATABASE_URL: ${LOADER_DATABASE_URL}
-      ENV: production
-    env_file:
-      - .env
-    depends_on:
-      loader_db:
-        condition: service_healthy
-      backend:
-        condition: service_healthy
-
   frontend:
     #    user: node
     build:
@@ -153,7 +117,7 @@ services:
     image: elasticdump/elasticsearch-dump
     container_name: opensearch-test-loader
     volumes:
-      - ./search-index:/app/:cached
+      - ./backend:/app/:cached
     env_file:
       - .env
     depends_on:
@@ -162,5 +126,4 @@ services:
 
 volumes:
   db-data-backend:
-  db-data-loader:
   opensearch-data1:

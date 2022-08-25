@@ -9,12 +9,6 @@ services:
     ports:
       - "8888:8888"
 
-  loader:
-    environment:
-      PYTHONDONTWRITEBYTECODE: 0
-    volumes:
-      - ./loader:/app/:ro
-
   opensearch-node1:
     environment:
       - bootstrap.memory_lock=true # along with the memlock settings below, disables swapping
