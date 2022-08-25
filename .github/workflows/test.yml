@@ -16,10 +16,13 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
+      - name: Use .env.example
+        run:  cp .env.example .env 
+
         # Pull the latest image to build, and avoid caching pull-only images.
         # (docker pull is faster than caching in most cases.)
       - name: Pull images
-        run: docker-compose pull
+        run:  docker-compose pull
 
         # In this step, this action saves a list of existing images,
         # the cache is created without them in the post run.
@@ -28,12 +31,12 @@ jobs:
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
-      - name: Build docker-compose stack using .env.example
-        run: cp .env.example .env && make start
+      - name: Build docker-compose stack
+        run:  make start
       - name: verify backend is up
-        run: curl http://localhost:8000/api/docs
+        run:  curl http://localhost:8000/api/docs
       - name: Run backend tests
-        run: make test_backend && make test_backend_search
+        run:  make test_backend && make test_backend_search
       - name: docker
         run: |
           docker-compose logs
@@ -41,11 +44,11 @@ jobs:
           docker ps -a
           ls -la
       - name: verify frontend is up
-        run: curl http://localhost:3000
+        run:  curl http://localhost:3000
       - name: Configure frontend test env
-        run: cp frontend/e2e/.env.example frontend/e2e/.env
+        run:  cp frontend/e2e/.env.example frontend/e2e/.env
       - name: Run frontend tests
-        run: make test_frontend
+        run:  make test_frontend
       - name: Log Dump
-        if: always()
-        run: docker-compose logs
+        if:   always()
+        run:  docker-compose logs
