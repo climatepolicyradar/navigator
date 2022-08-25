@@ -1,6 +1,6 @@
 from http.client import NOT_FOUND
 import logging
-from typing import Any, Dict, Union
+from typing import Any, Dict, Optional, Union
 from app.db.session import get_db
 from app.db.models.geography import GeoStatistics
 from fastapi import Depends, HTTPException
@@ -22,8 +22,8 @@ class GeoStatsResponse(BaseModel):
     federal: bool
     federal_details: str
     political_groups: str
-    global_emissions_percent: float
-    climate_risk_index: float
+    global_emissions_percent: Optional[float] = None
+    climate_risk_index: Optional[float] = None
     worldbank_income_group: str
     visibility_status: str
 
