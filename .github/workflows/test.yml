@@ -9,17 +9,25 @@ on:
     branches:
       - main
       - dev
-
+# https://github.com/marketplace/actions/docker-layer-caching
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - uses: docker/setup-buildx-action@v1
-        with:
-          context: .
-          cache-from: type=gha
-          cache-to: type=gha,mode=max      
+
+        # Pull the latest image to build, and avoid caching pull-only images.
+        # (docker pull is faster than caching in most cases.)
+      - name: Pull images
+        run: docker-compose pull
+
+        # In this step, this action saves a list of existing images,
+        # the cache is created without them in the post run.
+        # It also restores the cache if it exists.
+      - uses: satackey/action-docker-layer-caching@v0.0.11
+        # Ignore the failure of a step and avoid terminating the job.
+        continue-on-error: true
+
       - name: Build docker-compose stack using .env.example
         run: cp .env.example .env && make start
       - name: verify backend is up
