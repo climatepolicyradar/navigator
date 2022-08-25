@@ -22,6 +22,11 @@ summary_router = APIRouter()
     summary="Gets a summary of the documents associated with a country.",
     response_model=SummaryCountryResponse,
 )
+@summary_router.get(
+    "/summaries/geography/{geography_id}",
+    summary="Gets a summary of the documents associated with a geography.",
+    response_model=SummaryCountryResponse,
+)
 def search_by_country(
     request: Request,
     geography_id: int,
