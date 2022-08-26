@@ -12,16 +12,21 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
+[ "${AWS_ACCESS_KEY_ID}" == "" ] && (echo "AWS_ACCESS_KEY_ID is not set" ; exit 1)
+[ "${AWS_SECRET_ACCESS_KEY}" == "" ] && (echo "AWS_SECRET_ACCESS_KEY is not set" ; exit 1)
+
 project="$1"
 image_tag="$2"
 
 
 # login
 DOCKER_REGISTRY="${DOCKER_REGISTRY:-}"
-echo "${DOCKER_PASSWORD}" | docker login --username "${DOCKER_USERNAME}" --password-stdin "${DOCKER_REGISTRY}"
 
-name="${DOCKER_REGISTRY}cpr/${project}"
-input_image="cpr/${project}:${image_tag}"
+aws ecr get-login-password --region eu-west-2 | \
+    docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
+
+name="${DOCKER_REGISTRY}/${project}"
+input_image="${project}:${image_tag}"
 
 if [[ "$GITHUB_REF" == "refs/heads"* ]]; then
     # push `branch-sha` tagged image
