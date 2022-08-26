@@ -5,8 +5,6 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_docker as docker
 
-from cpr.util.bluegreen import get_bluegreen_status_for_current_stack
-
 default_tag = {
     "CPR-Created-By": "pulumi",
     "CPR-Pulumi-Stack-Name": pulumi.get_stack(),
@@ -24,10 +22,11 @@ class DeploymentResources:
     deploy_bucket: aws.s3.Bucket
 
     def __init__(self):
-        target_environment = get_bluegreen_status_for_current_stack()
+        config = pulumi.Config()
+        resource_tag = pulumi.get_stack()
 
         self.navigator_frontend_repo = aws.ecr.Repository(
-            f"navigator-frontend-{target_environment}",
+            f"navigator-frontend-{resource_tag}",
             # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
             #     scan_on_push=True,
             # ),
@@ -35,7 +34,7 @@ class DeploymentResources:
             tags=({"key": "created-by", "value": "pulumi"}),
         )
         self.navigator_backend_repo = aws.ecr.Repository(
-            f"navigator-backend-{target_environment}",
+            f"navigator-backend-{resource_tag}",
             # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
             #     scan_on_push=True,
             # ),
@@ -43,7 +42,7 @@ class DeploymentResources:
             tags=({"key": "created-by", "value": "pulumi"}),
         )
         self.navigator_nginx_repo = aws.ecr.Repository(
-            f"navigator-nginx-{target_environment}",
+            f"navigator-nginx-{resource_tag}",
             # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
             #     scan_on_push=True,
             # ),
@@ -53,7 +52,7 @@ class DeploymentResources:
 
         # keep the last 5 images
         frontend_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
-            f"navigator-frontend-{target_environment}-repository-lifecycle-policy",
+            f"navigator-frontend-{resource_tag}-repository-lifecycle-policy",
             repository=self.navigator_frontend_repo.name,
             policy="""{
                 "rules": [
@@ -73,7 +72,7 @@ class DeploymentResources:
             }""",
         )
         backend_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
-            f"navigator-backend-{target_environment}-repository-lifecycle-policy",
+            f"navigator-backend-{resource_tag}-repository-lifecycle-policy",
             repository=self.navigator_backend_repo.name,
             policy="""{
                 "rules": [
@@ -93,7 +92,7 @@ class DeploymentResources:
             }""",
         )
         nginx_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
-            f"navigator-nginx-{target_environment}-repository-lifecycle-policy",
+            f"navigator-nginx-{resource_tag}-repository-lifecycle-policy",
             repository=self.navigator_nginx_repo.name,
             policy="""{
                 "rules": [

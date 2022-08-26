@@ -1,0 +1,27 @@
+config:
+  aws:region: eu-west-2
+  infra:backend_secret_key:
+    secure: AAABAOjSBWjNbr7Cz/iuJRE+qX79syl1e62otMKQqKMJK0PlxCx+CUqMXOuNTGf+Bg7Yna7j9xo/sMqAc8GklSh5XHE=
+  infra:db_password:
+    secure: AAABAI73hsA+fbMqxrcUhp+uhdTLSOjWv7GvAKrhPROh0PUEGoduSxD6sZ0m4TEpSLioBgjo4nyYwhMri/AdDSmnv7djQCeXJcVzBYLuwCI=
+  infra:db_username:
+    secure: AAABAPyX1rn9gbj9ch5L4Lgqc/82btrJuNAKtHEQqihE9j1EkPbyxTUP2/xrcqhUtA==
+  infra:domain: dev.app.climatepolicyradar.org
+  infra:opensearch_password:
+    secure: AAABAKELLGI2dutnlKwN+haqdv9+xRdPoNfVKuUL+86DlPLY/pNtBMJxciQ=
+  infra:opensearch_url:
+    secure: AAABABvIN5U9oyhoBYZM4C3DF8cN+D7bxvsn2VwOtEARsP2FVEPhtkXxYJ0gIA3t+uhI7LqNgOPFf3rT4oEhEjbGvdWOljArt4MGxNv8j9kC/1UevxC3ZdKeH1G/1zwFn14tHQ3FU7XdEkSUXsHsn6RvsiEY0tzi
+  infra:opensearch_user:
+    secure: AAABAJPqWR5PwwtfT5/hdsW/vDGICsFgnQwJajH/PJ9+KaLizBZeUg+Z
+  infra:pdf_embed_key:
+    secure: AAABANVQDVcdpCdPwTUPoScZ/wCQd7jaFlDRtoqwLy1dzaNAl7Nt3O4mthQEYJj1BWZwub63brBXnVCCli49Bg==
+  infra:self_registration_enabled: "False"
+  infra:sendgrid_api_token:
+    secure: AAABAIx5NZLnA8N7H6ec9fypWzO6N8QNbs8dvksE9OOJpvWQp149WX+HCDsC273ycBnuaDcLyvwqUi5q0Kdwo25TMR3bzLmVruHUi/jnlehi3fIzktGlAmNWLVV0CKf0z9ATBPA=
+  infra:sendgrid_enabled: "True"
+  infra:sendgrid_from_email:
+    secure: AAABAEOqJUw2Erm5S1wj0sys4xuluZfVYVYHjZNeCK0iHlwjR8ARdherx2QUo4DtwbvcTnpbf5K01UY0IZE=
+  infra:slack_webhook_url:
+    secure: AAABAMUes5svFzrNHBz53rR6fCMYhPYs3Z8GuQ8WU4KKcM0tUK7U76vlgzwqtmGLAZJ42n6uKGe2Am4G7xiqUJakzWsuaycRYxAYTf+KV4/dWAmYgfPcIhFlh8YF1G5gpGAqp4HJcney12lfUnVZ5lc=
+  infra:validation_account_id:
+    secure: AAABAFm7Umu9mwdiFNDwaOth/y3G/4Fx2+O23Y/f6tN25uVfk7cWI5MDhrc=
