@@ -26,8 +26,9 @@ WORKDIR /opt/node_app/app
 # user who runs the app.
 # https://github.com/nodejs/docker-node/blob/master/docs/BestPractices.md#non-root-user
 #USER node
-COPY --chown=node:node package.json package-lock.json* ./
-RUN npm install && npm cache clean --force && mv node_modules ../ && mkdir node_modules && chown node:node node_modules
+COPY --chown=node:node package.json package-lock.json ./
+
+RUN npm ci && npm cache clean --force && mv node_modules ../ && mkdir node_modules && chown node:node node_modules
 ENV PATH /opt/node_app/node_modules/.bin:$PATH
 
 COPY --chown=node:node . .
