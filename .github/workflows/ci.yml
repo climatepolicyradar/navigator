@@ -36,12 +36,17 @@ jobs:
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
-      - name: Build and Package Container Images
+      - name: Build and 
         run: |
           docker-compose build
+          docker images
+
+      - name: Package Container Images
+        run: |
           mkdir -p docker-image
-          docker save -o ${BACKEND_TAR} cpr/navigator_backend:${IMAGE_TAG}
-          docker save -o ${FRONTEND_TAR} cpr/navigator_frontend:${IMAGE_TAG}
+          docker save -o ${BACKEND_TAR} navigator_backend:${IMAGE_TAG}
+          docker save -o ${FRONTEND_TAR} navigator_frontend:${IMAGE_TAG}
+
       - uses: actions/upload-artifact@v1
         with:
           name: docker-image
