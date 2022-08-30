@@ -1,6 +1,8 @@
 import time
+import logging
 import os
 from dataclasses import dataclass
+from enum import Enum
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from opensearchpy import OpenSearch
@@ -45,6 +47,8 @@ from app.api.api_v1.schemas.search import (
     SortOrder,
 )
 
+_LOGGER = logging.getLogger(__name__)
+
 _ENCODER = SentenceTransformer(
     model_name_or_path=OPENSEARCH_INDEX_ENCODER,
     cache_folder=os.environ.get("INDEX_ENCODER_CACHE_FOLDER", "/models"),
@@ -72,6 +76,15 @@ _FILTER_FIELD_MAP: Mapping[FilterField, str] = {
     FilterField.TOPIC: "document_response_name",
 }
 _REQUIRED_FIELDS = ["document_name"]
+_DEFAULT_SORT_FIELD = SortField.DATE
+_DEFAULT_SORT_ORDER = SortOrder.DESCENDING
+
+
+class QueryMode(Enum):
+    """High level modes we use for querying Opensearch"""
+
+    BROWSE = "browse"
+    SEARCH = "search"
 
 
 def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
@@ -123,7 +136,7 @@ class OpenSearchConfig:
 class OpenSearchResponse:
     """Opensearch response container."""
 
-    raw_response: Dict[str, Any]
+    raw_response: Mapping[str, Any]
     request_time_ms: int
 
 
@@ -145,21 +158,30 @@ class OpenSearchConnection:
     ) -> SearchResponseBody:
         """Build & make an OpenSearch query based on the given request body."""
 
-        opensearch_request_body = build_opensearch_request_body(
+        opensearch_request = build_opensearch_request_body(
             search_request=search_request_body,
             opensearch_internal_config=opensearch_internal_config,
         )
+        opensearch_response_body = self.raw_query(opensearch_request.query, preference)
 
-        opensearch_response_body = self.raw_query(opensearch_request_body, preference)
+        if opensearch_request.mode == QueryMode.SEARCH:
+            return process_search_response_body(
+                opensearch_response_body,
+                limit=search_request_body.limit,
+                offset=search_request_body.offset,
+            )
 
-        return process_opensearch_response_body(
-            opensearch_response_body,
-            limit=search_request_body.limit,
-            offset=search_request_body.offset,
+        if opensearch_request.mode == QueryMode.BROWSE:
+            return process_browse_response_body(
+                opensearch_response_body,
+            )
+
+        raise RuntimeError(
+            f"Could not execute unknown query type: {opensearch_request.mode}"
         )
 
     def raw_query(
-        self, request_body: Dict[str, Any], preference: Optional[str]
+        self, request_body: Mapping[str, Any], preference: Optional[str]
     ) -> OpenSearchResponse:
         """Query the configured OpenSearch instance with a JSON OpenSearch body."""
 
@@ -184,7 +206,17 @@ class OpenSearchConnection:
             preference=preference,
         )
         end = time.time()
+        search_request_time = round(1000 * (end - start))
 
+        _LOGGER.info(
+            "Search request completed",
+            extra={
+                "props": {
+                    "search_request": request_body,
+                    "search_request_time": search_request_time,
+                },
+            },
+        )
         # TODO: Log request time:
         # f"query execution time: {round(end-start, 2)}s"
 
@@ -203,7 +235,7 @@ class OpenSearchConnection:
 
         return OpenSearchResponse(
             raw_response=response,
-            request_time_ms=round(1000 * (end - start)),
+            request_time_ms=search_request_time,
         )
 
 
@@ -228,42 +260,30 @@ def _year_range_filter(
     return None
 
 
-def build_opensearch_request_body(
-    search_request: SearchRequestBody,
-    opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
-) -> Dict[str, Any]:
-    """Build a complete OpenSearch request body."""
-    search_config = opensearch_internal_config or OpenSearchQueryConfig(
-        max_passages_per_doc=search_request.max_passages_per_doc,
-    )
-    builder = QueryBuilder(search_config)
-
-    if search_request.exact_match:
-        builder.with_exact_query(search_request.query_string)
-    else:
-        builder.with_semantic_query(search_request.query_string)
-
-    if _REQUIRED_FIELDS:
-        builder.with_required_fields(_REQUIRED_FIELDS)
-
-    if search_request.keyword_filters is not None:
-        for keyword, values in search_request.keyword_filters.items():
-            builder.with_keyword_filter(keyword, values)
-
-    if search_request.year_range is not None:
-        builder.with_year_range_filter(search_request.year_range)
-
-    if search_request.sort_field is not None:
-        builder.order_by(search_request.sort_field, search_request.sort_order)
-
-    return builder.query
-
-
 class QueryBuilder:
     """Helper class for building OpenSearch queries."""
 
-    def __init__(self, search_config):
-        self._search_config = search_config
+    def __init__(self, config: OpenSearchQueryConfig):
+        self._config = config
+        self._mode: Optional[QueryMode] = None
+        self._request_body: Dict[str, Any] = {}
+
+    @property
+    def query(self) -> Mapping[str, Any]:
+        """Property to allow access to the build request body."""
+
+        return self._request_body
+
+    @property
+    def mode(self) -> Optional[QueryMode]:
+        """Property to allow access to the query mode for the configured request."""
+
+        return self._mode
+
+    def _with_search_term_base(self):
+        if self._mode is not None:
+            raise RuntimeError("Query base has already been configured")
+        self._mode = QueryMode.SEARCH
         self._request_body = {
             "size": 0,  # only return aggregations
             "query": {
@@ -275,14 +295,14 @@ class QueryBuilder:
             "aggs": {
                 "sample": {
                     "sampler": {
-                        "shard_size": self._search_config.n_passages_to_sample_per_shard
+                        "shard_size": self._config.n_passages_to_sample_per_shard
                     },
                     "aggs": {
                         "top_docs": {
                             "terms": {
                                 "field": OPENSEARCH_INDEX_INDEX_KEY,
-                                "order": {"top_hit": SortOrder.DESCENDING.value},
-                                "size": self._search_config.max_doc_count,
+                                "order": {"top_hit": _DEFAULT_SORT_ORDER.value},
+                                "size": self._config.max_doc_count,
                             },
                             "aggs": {
                                 "top_passage_hits": {
@@ -293,13 +313,13 @@ class QueryBuilder:
                                                 OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY,
                                             ]
                                         },
-                                        "size": self._search_config.max_passages_per_doc,
+                                        "size": self._config.max_passages_per_doc,
                                     },
                                 },
                                 "top_hit": {"max": {"script": {"source": "_score"}}},
-                                _SORT_FIELD_MAP[SortField.DATE]: {
+                                _SORT_FIELD_MAP[_DEFAULT_SORT_FIELD]: {
                                     "stats": {
-                                        "field": _SORT_FIELD_MAP[SortField.DATE],
+                                        "field": _SORT_FIELD_MAP[_DEFAULT_SORT_FIELD],
                                     },
                                 },
                             },
@@ -310,16 +330,35 @@ class QueryBuilder:
             },
         }
 
-    @property
-    def query(self):
-        """Property to allow access to the build request body."""
-
-        return self._request_body
+    def _with_browse_base(self):
+        if self._mode is not None:
+            raise RuntimeError("Query base has already been configured")
+        self._mode = QueryMode.BROWSE
+        self._request_body = {
+            "from": 0,
+            "size": 10,
+            "_source": {
+                "excludes": ["document_description_embedding"],
+            },
+            "sort": {
+                _SORT_FIELD_MAP[_DEFAULT_SORT_FIELD]: {
+                    "order": _DEFAULT_SORT_ORDER.value,
+                },
+            },
+            "query": {
+                "bool": {
+                    "must": [
+                        {"exists": {"field": "for_search_document_description"}},
+                    ],
+                },
+            },
+        }
 
     def with_semantic_query(self, query_string: str):
         """Configure the query to search semantically for a given query string."""
 
         embedding = _ENCODER.encode(query_string)
+        self._with_search_term_base()
         self._request_body["query"]["bool"]["should"] = [
             {
                 "bool": {
@@ -340,7 +379,7 @@ class QueryBuilder:
                             }
                         },
                     ],
-                    "boost": self._search_config.name_boost,
+                    "boost": self._config.name_boost,
                 }
             },
             {
@@ -360,16 +399,16 @@ class QueryBuilder:
                                     "knn": {
                                         OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY: {
                                             "vector": embedding,
-                                            "k": self._search_config.k,
+                                            "k": self._config.k,
                                         },
                                     },
                                 },
-                                "min_score": self._search_config.lucene_threshold,
+                                "min_score": self._config.lucene_threshold,
                             }
                         },
                     ],
                     "minimum_should_match": 1,
-                    "boost": self._search_config.description_boost,
+                    "boost": self._config.description_boost,
                 },
             },
             {
@@ -388,16 +427,16 @@ class QueryBuilder:
                                     "knn": {
                                         "text_embedding": {
                                             "vector": embedding,
-                                            "k": self._search_config.k,
+                                            "k": self._config.k,
                                         },
                                     },
                                 },
-                                "min_score": self._search_config.lucene_threshold,
+                                "min_score": self._config.lucene_threshold,
                             }
                         },
                     ],
                     "minimum_should_match": 1,
-                    "boost": self._search_config.embedded_text_boost,
+                    "boost": self._config.embedded_text_boost,
                 }
             },
         ]
@@ -405,13 +444,14 @@ class QueryBuilder:
     def with_exact_query(self, query_string: str):
         """Configure the query to search for an exact match to a given query string."""
 
+        self._with_search_term_base()
         self._request_body["query"]["bool"]["should"] = [
             # Document title matching
             {
                 "match_phrase": {
                     OPENSEARCH_INDEX_NAME_KEY: {
                         "query": query_string,
-                        "boost": self._search_config.name_boost,
+                        "boost": self._config.name_boost,
                     },
                 }
             },
@@ -420,7 +460,7 @@ class QueryBuilder:
                 "match_phrase": {
                     OPENSEARCH_INDEX_DESCRIPTION_KEY: {
                         "query": query_string,
-                        "boost": self._search_config.description_boost,
+                        "boost": self._config.description_boost,
                     },
                 }
             },
@@ -433,6 +473,10 @@ class QueryBuilder:
                 }
             },
         ]
+
+    def with_browse_query(self):
+        """Configure the query to browse documents according to supplied filters."""
+        self._with_browse_base()
 
     def with_keyword_filter(self, field: FilterField, values: List[str]):
         """Add a keyword filter to the configured query."""
@@ -450,25 +494,117 @@ class QueryBuilder:
             filters.append(year_range_filter)
             self._request_body["query"]["bool"]["filter"] = filters
 
-    def order_by(self, field: SortField, order: SortOrder):
-        """Change sort order for results."""
+    def with_search_order(self, field: SortField, order: SortOrder):
+        """Set sort order for search results."""
+        if self._mode != QueryMode.SEARCH:
+            raise RuntimeError(
+                "Cannot configure search sort ordering for non-search mode."
+            )
+
         terms_field = self._request_body["aggs"]["sample"]["aggs"]["top_docs"]["terms"]
+
         if field == SortField.DATE:
             terms_field["order"] = {f"{_SORT_FIELD_MAP[field]}.avg": order.value}
         elif field == SortField.TITLE:
             terms_field["order"] = {"_key": order.value}
         else:
-            raise RuntimeError("Unknown sort ordering field: {field}")
+            raise RuntimeError(f"Unknown sort ordering field: {field}")
+
+    def with_browse_order(self, field: SortField, order: SortOrder):
+        """Set sort order for browse results."""
+        if self._mode != QueryMode.BROWSE:
+            raise RuntimeError(
+                "Cannot configure browse sort ordering for non-browse mode."
+            )
+
+        if field in _SORT_FIELD_MAP:
+            self._request_body["sort"] = {
+                _SORT_FIELD_MAP[field]: {
+                    "order": order.value,
+                },
+            }
+        else:
+            raise RuntimeError(f"Unknown sort ordering field: {field}")
+
+    def with_browse_limit(self, limit: int):
+        """Set result limit for browse results."""
+        if self._mode != QueryMode.BROWSE:
+            raise RuntimeError("Cannot configure limit when not in browse mode.")
+        self._request_body["size"] = limit
+
+    def with_browse_offset(self, offset: int):
+        """Set result offset for browse results."""
+        if self._mode != QueryMode.BROWSE:
+            raise RuntimeError("Cannot configure offset when not in browse mode.")
+        self._request_body["from"] = offset
 
     def with_required_fields(self, required_fields: Sequence[str]):
         """Ensure that required fields are present in opensearch responses."""
-        must_clause = [
-            {"exists": {"field": field_name}} for field_name in required_fields
-        ]
+        must_clause = self._request_body["query"]["bool"].get("must") or []
+        must_clause.extend(
+            [{"exists": {"field": field_name}} for field_name in required_fields]
+        )
         self._request_body["query"]["bool"]["must"] = must_clause
 
 
-def process_opensearch_response_body(
+def build_opensearch_request_body(
+    search_request: SearchRequestBody,
+    opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
+) -> QueryBuilder:
+    """Build a complete OpenSearch request body."""
+    search_config = opensearch_internal_config or OpenSearchQueryConfig(
+        max_passages_per_doc=search_request.max_passages_per_doc,
+    )
+    builder = QueryBuilder(search_config)
+
+    if search_request.query_string:
+        if search_request.exact_match:
+            builder.with_exact_query(search_request.query_string)
+        else:
+            builder.with_semantic_query(search_request.query_string)
+
+        should_update_search_order = (
+            search_request.sort_field is not None
+            or search_request.sort_order is not None
+        )
+        if should_update_search_order:
+            builder.with_search_order(
+                search_request.sort_field or _DEFAULT_SORT_FIELD,
+                search_request.sort_order or _DEFAULT_SORT_ORDER,
+            )
+    else:
+        builder.with_browse_query()
+
+        should_update_browse_order = (
+            search_request.sort_field is not None
+            or search_request.sort_order is not None
+        )
+        if should_update_browse_order:
+            builder.with_browse_order(
+                search_request.sort_field or _DEFAULT_SORT_FIELD,
+                search_request.sort_order or _DEFAULT_SORT_ORDER,
+            )
+
+        if search_request.limit is not None:
+            builder.with_browse_limit(search_request.limit)
+
+        if search_request.offset is not None:
+            builder.with_browse_offset(search_request.offset)
+
+    if _REQUIRED_FIELDS:
+        builder.with_required_fields(_REQUIRED_FIELDS)
+
+    if search_request.keyword_filters is not None:
+        for keyword, values in search_request.keyword_filters.items():
+            builder.with_keyword_filter(keyword, values)
+
+    if search_request.year_range is not None:
+        builder.with_year_range_filter(search_request.year_range)
+
+    return builder
+
+
+def process_search_response_body(
     opensearch_response_body: OpenSearchResponse,
     limit: int = 10,
     offset: int = 0,
@@ -528,6 +664,26 @@ def process_opensearch_response_body(
 
         search_response.documents.append(search_response_document)
         search_response_document = None
+
+    return search_response
+
+
+def process_browse_response_body(
+    opensearch_response_body: OpenSearchResponse,
+) -> SearchResponseBody:
+    opensearch_json_response = opensearch_response_body.raw_response
+    search_response = SearchResponseBody(
+        hits=opensearch_json_response["hits"]["total"]["value"],
+        query_time_ms=opensearch_response_body.request_time_ms,
+        documents=[],
+    )
+
+    result_docs = opensearch_json_response["hits"]["hits"]
+    for result_doc in result_docs:
+        search_response_document = create_search_response_document(
+            OpenSearchResponseDescriptionMatch(**result_doc["_source"])
+        )
+        search_response.documents.append(search_response_document)
 
     return search_response
 
