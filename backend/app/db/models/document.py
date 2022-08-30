@@ -306,11 +306,11 @@ class DocumentRelationship(Base):  # noqa: D101
         sa.Integer,
         sa.ForeignKey(Document.id, ondelete="CASCADE"),
         nullable=False,
+        primary_key=True,
     )
     relationship_id = sa.Column(
         sa.Integer,
         sa.ForeignKey(Relationship.id, ondelete="CASCADE"),
         nullable=False,
+        primary_key=True,
     )
-    __mapper_args__ = {"primary_key": [document_id, relationship_id]}
-    UniqueConstraint("document_id", "relationship_id")
