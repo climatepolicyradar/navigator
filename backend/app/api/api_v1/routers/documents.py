@@ -26,7 +26,8 @@ from app.core.aws import get_s3_client
 from app.core.util import CONTENT_TYPE_MAP
 from app.db.crud.document import (
     UnknownMetadataError,
-    create_document_association,
+    create_document_relationship,
+    create_relationship,
     get_document_detail,
     get_document_overviews,
     persist_document_and_metadata,
@@ -35,8 +36,8 @@ from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
-    DocumentAssociationCreateRequest,
-    DocumentAssociationCreateResponse,
+    RelationshipCreateRequest,
+    RelationshipCreateResponse,
 )
 
 from app.db.session import get_db
@@ -146,19 +147,36 @@ def document_upload(
 
 
 @documents_router.post(
-    "/associations", response_model=DocumentAssociationCreateResponse
+    "/document-relationship", response_model=RelationshipCreateResponse, status_code=201
 )
-async def post_association(
+async def post_relationship(
     request: Request,
-    document_association: DocumentAssociationCreateRequest,
+    relatoionship: RelationshipCreateRequest,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
-    """Create a document, with associated metadata."""
-    return create_document_association(
+    """Create a relationship"""
+    return create_relationship(
         db,
-        document_association.document_id_from,
-        document_association.document_id_to,
-        document_association.name,
-        document_association.type,
+        relatoionship.name,
+        relatoionship.type,
+        relatoionship.description,
+    )
+
+
+@documents_router.post(
+    "/document-relationship/{relationship_id}/document/{document_id}", status_code=201
+)
+async def post_document_relationship(
+    request: Request,
+    document_id: int,
+    relationship_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a document-relationship link"""
+    create_document_relationship(
+        db,
+        document_id,
+        relationship_id,
     )

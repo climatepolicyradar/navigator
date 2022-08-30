@@ -17,7 +17,7 @@ from app.db.models import (
     Category,
     Keyword,
 )
-from app.api.api_v1.schemas.document import DocumentAssociationCreateRequest
+from app.api.api_v1.schemas.document import RelationshipCreateRequest
 
 
 def test_document_upload(
@@ -431,32 +431,35 @@ def test_document_detail(
     assert response4.status_code == 200
     response4_document = response4.json()
 
-    # Set up associations
-    doc_association_payload_1 = DocumentAssociationCreateRequest(
-        document_id_from=response2_document["id"],
-        document_id_to=response1_document["id"],
-        name="related",
-        type="related",
-    ).dict()
-    response_assoc_1 = client.post(
-        "/api/v1/associations",
+    # Set up relationship entities
+    response_rel1 = client.post(
+        "/api/v1/document-relationship",
         headers=superuser_token_headers,
-        json=doc_association_payload_1,
+        json=RelationshipCreateRequest(
+            name="Rel1", type="test", description="test relationship 1"
+        ).dict(),
     )
-    assert response_assoc_1.status_code == 200
+    assert response_rel1.status_code == 201
+    rel1_id = response_rel1.json()["id"]
 
-    doc_association_payload_2 = DocumentAssociationCreateRequest(
-        document_id_from=response3_document["id"],
-        document_id_to=response1_document["id"],
-        name="related",
-        type="related",
-    ).dict()
-    response_assoc_2 = client.post(
-        "/api/v1/associations",
+    # Set up document relationship
+    response_docrel1 = client.post(
+        f"/api/v1/document-relationship/{rel1_id}/document/{response1_document['id']}",
         headers=superuser_token_headers,
-        json=doc_association_payload_2,
     )
-    assert response_assoc_2.status_code == 200
+    assert response_docrel1.status_code == 201
+
+    response_docrel2 = client.post(
+        f"/api/v1/document-relationship/{rel1_id}/document/{response2_document['id']}",
+        headers=superuser_token_headers,
+    )
+    assert response_docrel2.status_code == 201
+
+    response_docrel3 = client.post(
+        f"/api/v1/document-relationship/{rel1_id}/document/{response3_document['id']}",
+        headers=superuser_token_headers,
+    )
+    assert response_docrel3.status_code == 201
 
     # Test properties
     get_detail_response_2 = client.get(
