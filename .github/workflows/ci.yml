@@ -36,7 +36,7 @@ jobs:
         # Ignore the failure of a step and avoid terminating the job.
         continue-on-error: true
 
-      - name: Build and 
+      - name: Build 
         run: |
           docker-compose build
           docker images
