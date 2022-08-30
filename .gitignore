@@ -181,3 +181,6 @@ dmypy.json
 .vim
 backend/models
 **/.vscode
+
+# PyCharm
+.idea/
