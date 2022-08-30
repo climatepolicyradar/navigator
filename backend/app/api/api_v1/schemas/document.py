@@ -96,18 +96,16 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
         validate_assignment = True
 
 
-# TODO: replace doc-doc with proper association model
-class DocumentAssociationCreateRequest(BaseModel):
-    """Schema for associations create request."""
+class RelationshipCreateRequest(BaseModel):
+    """Schema for Relationship create request."""
 
-    document_id_from: int
-    document_id_to: int
     name: str
     type: str
+    description: str
 
 
-class DocumentAssociationCreateResponse(DocumentAssociationCreateRequest):
-    """Schema for associations create response."""
+class RelationshipCreateResponse(RelationshipCreateRequest):
+    """Response for Relationship create request."""
 
     id: int
 

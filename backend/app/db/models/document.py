@@ -288,3 +288,29 @@ class Event(Base):  # noqa: D101
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
     created_ts = sa.Column(sa.DateTime(timezone=True), nullable=False)
+
+
+class Relationship(Base):  # noqa: D101
+    __tablename__ = "relationship"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    type = sa.Column(sa.Text, nullable=False)
+    name = sa.Column(sa.Text, nullable=False)
+    description = sa.Column(sa.Text, nullable=False)
+
+
+class DocumentRelationship(Base):  # noqa: D101
+    __tablename__ = "document_relationship"
+
+    document_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+    )
+    relationship_id = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Relationship.id, ondelete="CASCADE"),
+        nullable=False,
+    )
+    __mapper_args__ = {"primary_key": [document_id, relationship_id]}
+    UniqueConstraint("document_id", "relationship_id")
