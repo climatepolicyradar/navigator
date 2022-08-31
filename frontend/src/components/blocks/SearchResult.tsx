@@ -46,7 +46,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-center">
           <Link href={`/document/${document.document_id}`}>
-            <a className="text-left font-medium text-lg leading-tight">{truncateString(document.document_name, 80)}</a>
+            <a className="text-left font-medium text-lg leading-tight underline">{truncateString(document.document_name, 80)}</a>
           </Link>
         </h2>
       </div>

@@ -17,7 +17,7 @@ export const RelatedDocument = ({ document }: RelatedDocumentProps) => {
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-start">
           <Link href={`/document/${related_id}`}>
-            <a className="text-left text-blue-500 font-medium text-lg transition duration-300 hover:text-indigo-600 leading-tight">{truncateString(name, 80)}</a>
+            <a className="text-left text-blue-500 font-medium text-lg transition duration-300 hover:text-indigo-600 leading-tight underline">{truncateString(name, 80)}</a>
           </Link>
         </h2>
       </div>

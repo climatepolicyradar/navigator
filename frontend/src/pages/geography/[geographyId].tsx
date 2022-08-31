@@ -78,12 +78,14 @@ const CountryPage = () => {
     router.push("/search");
   };
 
+  const renderEmpty = (documentType: string = "") => <p className="mt-4">{`There are no ${documentType} documents for ${geography.name}`}</p>;
+
   const renderDocuments = () => {
     // All
     if (selectedCategoryIndex === 0) {
       const allDocuments = summary.top_documents.Policy.concat(summary.top_documents.Law).concat(summary.top_documents.Case);
       if (allDocuments.length === 0) {
-        return `There are no documents for ${geography.name}`;
+        return renderEmpty();
       }
       allDocuments.sort((a, b) => {
         return new Date(b.document_date).getTime() - new Date(a.document_date).getTime();
@@ -97,7 +99,7 @@ const CountryPage = () => {
     // Executive
     if (selectedCategoryIndex === 1) {
       return summary.top_documents.Policy.length === 0
-        ? `There are no Executive documents for ${geography.name}`
+        ? renderEmpty("Executive")
         : summary.top_documents.Policy.map((doc) => (
             <div key={doc.document_id} className="mt-4 mb-10">
               <RelatedDocumentFull document={doc} />
@@ -107,7 +109,7 @@ const CountryPage = () => {
     // Legislative
     if (selectedCategoryIndex === 2) {
       return summary.top_documents.Law.length === 0
-        ? `There are no Legislative documents for ${geography.name}`
+        ? renderEmpty("Legislative")
         : summary.top_documents.Law.map((doc) => (
             <div key={doc.document_id} className="mt-4 mb-10">
               <RelatedDocumentFull document={doc} />
