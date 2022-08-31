@@ -15,5 +15,6 @@ export default function useFilteredCountries(all) {
       enabled: all.length > 0,
       cacheTime: Infinity,
     }
-  );
+  )
 }
+
