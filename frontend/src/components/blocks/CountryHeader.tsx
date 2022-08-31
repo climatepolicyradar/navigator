@@ -33,7 +33,10 @@ export const CountryHeader = ({ country }: TProps) => {
               <div className="text-blue-700 text-lg">Political Groups</div>
               <div className="font-semibold text-blue-700 text-xl">{political_groups.split(";").join(", ")}</div>
             </div>
-            <div className="font-semibold text-blue-700 text-xl">{worldbank_income_group}</div>
+            <div>
+              <div className="text-blue-700 text-lg">World Bank Income Group</div>
+              <div className="font-semibold text-blue-700 text-xl">{worldbank_income_group}</div>
+            </div>
             <div>
               <div className="text-blue-700 text-lg">Global Climate Risk Index</div>
               <div className="font-semibold text-blue-700 text-xl flex">
@@ -41,7 +44,7 @@ export const CountryHeader = ({ country }: TProps) => {
               </div>
             </div>
             <div>
-              <div className="text-blue-700 text-lg">% Global Emissions</div>
+              <div className="text-blue-700 text-lg">Share of Global Emissions</div>
               <div className="font-semibold text-blue-700 text-xl">{global_emissions_percent}%</div>
             </div>
           </div>
