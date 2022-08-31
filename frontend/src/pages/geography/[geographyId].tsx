@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
-import Link from "next/link";
 import { TTarget, TEvent } from "@types";
 import useGeoStats from "@hooks/useGeoStats";
 import useGeoSummary from "@hooks/useGeoSummary";
@@ -14,9 +13,8 @@ import { KeyDetail } from "@components/KeyDetail";
 import { Divider } from "@components/dividers/Divider";
 import { RightArrowIcon } from "@components/svg/Icons";
 import Button from "@components/buttons/Button";
-import { RelatedDocument } from "@components/blocks/RelatedDocument";
+import { RelatedDocumentFull } from "@components/blocks/RelatedDocumentFull";
 import TabbedNav from "@components/nav/TabbedNav";
-import Sort from "@components/filters/Sort";
 import TextLink from "@components/nav/TextLink";
 import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
 import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
@@ -60,11 +58,73 @@ const CountryPage = () => {
   const documentCategories = DOCUMENT_CATEGORIES;
   const TARGETS_SHOW = 5;
 
-  const handleDocumentCategoryClick = (e: any) => {
-    return false;
+  const handleDocumentCategoryClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    e.preventDefault();
+    const val = e.currentTarget.textContent;
+    if (val === "Executive") {
+      return setselectedCategoryIndex(1);
+    }
+    if (val === "Legislative") {
+      return setselectedCategoryIndex(2);
+    }
+    if (val === "Litigation") {
+      return setselectedCategoryIndex(3);
+    }
+    return setselectedCategoryIndex(0);
   };
-  const handleSortClick = (e: any) => {
-    return false;
+
+  const handleDocumentSeeMoreClick = (event: React.FormEvent<HTMLButtonElement>) => {
+    event.preventDefault();
+    router.push("/search");
+  };
+
+  const renderDocuments = () => {
+    // All
+    if (selectedCategoryIndex === 0) {
+      const allDocuments = summary.top_documents.Policy.concat(summary.top_documents.Law).concat(summary.top_documents.Case);
+      if (allDocuments.length === 0) {
+        return `There are no documents for ${geography.name}`;
+      }
+      allDocuments.sort((a, b) => {
+        return new Date(b.document_date).getTime() - new Date(a.document_date).getTime();
+      });
+      return allDocuments.slice(0, 5).map((doc) => (
+        <div key={doc.document_id} className="mt-4 mb-10">
+          <RelatedDocumentFull document={doc} />
+        </div>
+      ));
+    }
+    // Executive
+    if (selectedCategoryIndex === 1) {
+      return summary.top_documents.Policy.length === 0
+        ? `There are no Executive documents for ${geography.name}`
+        : summary.top_documents.Policy.map((doc) => (
+            <div key={doc.document_id} className="mt-4 mb-10">
+              <RelatedDocumentFull document={doc} />
+            </div>
+          ));
+    }
+    // Legislative
+    if (selectedCategoryIndex === 2) {
+      return summary.top_documents.Law.length === 0
+        ? `There are no Legislative documents for ${geography.name}`
+        : summary.top_documents.Law.map((doc) => (
+            <div key={doc.document_id} className="mt-4 mb-10">
+              <RelatedDocumentFull document={doc} />
+            </div>
+          ));
+    }
+    // Litigation
+    if (selectedCategoryIndex === 3) {
+      return (
+        <div className="mt-4">
+          Climate litigation case documents are coming soon to Climate Policy Radar. In the meantime, head to{" "}
+          <a className="text-blue-500 transition duration-300 hover:text-indigo-600" href="https://climate-laws.org/litigation_cases" target={"_blank"}>
+            climate-laws.org/litigation_cases
+          </a>
+        </div>
+      );
+    }
   };
 
   useEffect(() => {
@@ -92,8 +152,8 @@ const CountryPage = () => {
             <CountryHeader country={geography} />
             <SingleCol>
               <section className="grid grid-cols-2 md:grid-cols-3 gap-px rounded mb-8">
-                {<KeyDetail detail="Legislative" extraDetail="Laws, Decrees" amount={summary.document_counts.Law} icon={<LawIcon />} />}
                 {<KeyDetail detail="Executive" extraDetail="Policies" amount={summary.document_counts.Policy} icon={<PolicyIcon />} />}
+                {<KeyDetail detail="Legislative" extraDetail="Laws, Decrees" amount={summary.document_counts.Law} icon={<LawIcon />} />}
                 {<KeyDetail detail="Litigation" extraDetail="Cases" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
               </section>
               {hasEvents && (
@@ -132,43 +192,33 @@ const CountryPage = () => {
               {hasDocuments && (
                 <>
                   <section className="mt-12">
-                    <h3>Documents</h3>
+                    <h3>Latest Documents</h3>
                     <div className="mt-4 md:flex">
                       <div className="flex-grow">
                         <TabbedNav activeIndex={selectedCategoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} indent={false} />
                       </div>
-                      <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
-                        <Sort defaultValue="date:desc" updateSort={handleSortClick} browse />
-                      </div>
                     </div>
-                    {summary.top_documents.Case.map((doc) => (
-                      <div key={doc.document_id} className="mt-4 mb-10">
-                        {/* <RelatedDocument document={doc} /> */}
-                        {doc.document_name}
-                      </div>
-                    ))}
+                    {renderDocuments()}
                   </section>
-                  <div className="mt-12">
+                  <div className="mt-12 hidden">
                     <Divider>
-                      <Button color="secondary" extraClasses="flex items-center">
-                        <Link href="/search">
-                          <>
-                            See more
-                            <span className="ml-8">
-                              <RightArrowIcon height="20" width="20" />
-                            </span>
-                          </>
-                        </Link>
+                      <Button color="secondary" extraClasses="flex items-center" onClick={handleDocumentSeeMoreClick}>
+                        <>
+                          See more
+                          <span className="ml-8">
+                            <RightArrowIcon height="20" width="20" />
+                          </span>
+                        </>
                       </Button>
                     </Divider>
                   </div>
                 </>
               )}
               {geography.legislative_process && (
-                <>
+                <section className="mt-12">
                   <h3 className="mb-4">Legislative Process</h3>
                   <div dangerouslySetInnerHTML={{ __html: geography.legislative_process }} />
-                </>
+                </section>
               )}
             </SingleCol>
           </section>

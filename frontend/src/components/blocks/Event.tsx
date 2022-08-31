@@ -19,7 +19,7 @@ const Event = ({ event, last, index }: EventProps) => {
   const renderText = (name: string, date: string) => (
     <div>
       <div className="w-[280px]">
-        <h3 className="text-lg">{name}</h3>
+        <h3 className="text-lg capitalize">{name}</h3>
         <p>{date}</p>
       </div>
     </div>

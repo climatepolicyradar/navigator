@@ -26,6 +26,7 @@ export type TPassage = {
 };
 
 export type TDocument = {
+  document_category: TEventCategory;
   document_content_type: string;
   document_country_code: string;
   document_country_english_shortname: string;

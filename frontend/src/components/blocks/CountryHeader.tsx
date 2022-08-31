@@ -1,4 +1,3 @@
-import Image from "next/image";
 import { TGeographyStats, TGeography } from "@types";
 import useNestedLookups from "@hooks/useNestedLookups";
 import Tooltip from "@components/tooltip";
@@ -24,7 +23,7 @@ export const CountryHeader = ({ country }: TProps) => {
     <div className="bg-offwhite border-solid border-blue-200 border-b py-6">
       <div className="container flex items-end justify-between overflow-hidden">
         <div className="md:max-w-lg lg:max-w-5xl md:flex-shrink-0">
-        <h1>{name}</h1>
+          <h1>{name}</h1>
           <div className="grid grid-cols-2 gap-6 items-center">
             <div className="font-semibold text-blue-700 text-xl">{getCountryRegion()}</div>
             <div className="font-semibold text-blue-700 text-xl">
