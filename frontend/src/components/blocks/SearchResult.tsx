@@ -2,6 +2,7 @@ import Link from "next/link";
 import { truncateString } from "../../helpers";
 import { convertDate } from "@utils/timedate";
 import { CountryLink } from "@components/CountryLink";
+import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
 
 interface SearchResultProps {
   document: any;
@@ -52,6 +53,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
       </div>
 
       <div className="flex flex-wrap lg:flex-nowrap text-sm text-indigo-400 mt-4 items-center">
+      {document.document_category && <div className="mr-3" title={document.document_category}>{getCategoryIcon(document.document_category, "20")}</div>}
         <CountryLink countryCode={document.document_country_code}>
           <span className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`} />
           <span className="ml-2">{document.document_country_english_shortname}</span>
