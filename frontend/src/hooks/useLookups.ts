@@ -19,14 +19,6 @@ export default function useLookups(path: string, filterProp: string = '') {
     async () => {
       const response = await client.get(`/${path}`, null);
       return modifyData(response);
-    },
-    {
-      onSuccess: (data) => {
-//         console.log(data);
-      },
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      cacheTime: 1000 * 60 * 60 * 24,
     }
   );
 }

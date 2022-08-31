@@ -52,14 +52,6 @@ export default function useConfig(path: string, filterProp: string = '') {
         countries,
       }
       return resp_end;
-    },
-    {
-      onSuccess: (data) => {
-//         console.log(data);
-      },
-      refetchOnWindowFocus: false,
-      refetchOnMount: false,
-      cacheTime: 1000 * 60 * 60 * 24,
     }
   );
 }
