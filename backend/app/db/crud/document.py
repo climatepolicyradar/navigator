@@ -13,7 +13,8 @@ from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
-    RelationshipCreateResponse,
+    RelationshipEntityResponse,
+    RelationshipGetResponse,
 )
 from app.api.api_v1.schemas.metadata import (
     Category as CategorySchema,
@@ -583,12 +584,22 @@ def create_relationship(
     name: str,
     type: str,
     description: str,
-) -> RelationshipCreateResponse:
+) -> RelationshipEntityResponse:
     new_rel = Relationship(name=name, type=type, description=description)
     db.add(new_rel)
     db.commit()
 
-    return RelationshipCreateResponse.from_orm(new_rel)
+    return RelationshipEntityResponse.from_orm(new_rel)
+
+
+def get_relationships(
+    db: Session,
+) -> RelationshipGetResponse:
+    return RelationshipGetResponse(
+        relationships=[
+            RelationshipEntityResponse.from_orm(r) for r in db.query(Relationship).all()
+        ]
+    )
 
 
 def create_document_relationship(

@@ -30,6 +30,7 @@ from app.db.crud.document import (
     create_relationship,
     get_document_detail,
     get_document_overviews,
+    get_relationships,
     persist_document_and_metadata,
 )
 from app.api.api_v1.schemas.document import (
@@ -37,7 +38,8 @@ from app.api.api_v1.schemas.document import (
     DocumentDetailResponse,
     DocumentOverviewResponse,
     RelationshipCreateRequest,
-    RelationshipCreateResponse,
+    RelationshipEntityResponse,
+    RelationshipGetResponse,
 )
 
 from app.db.session import get_db
@@ -147,7 +149,7 @@ def document_upload(
 
 
 @documents_router.post(
-    "/document-relationship", response_model=RelationshipCreateResponse, status_code=201
+    "/document-relationship", response_model=RelationshipEntityResponse, status_code=201
 )
 async def post_relationship(
     request: Request,
@@ -162,6 +164,16 @@ async def post_relationship(
         relatoionship.type,
         relatoionship.description,
     )
+
+
+@documents_router.get("/document-relationship", response_model=RelationshipGetResponse)
+async def get_relationship(
+    request: Request,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a relationship"""
+    return get_relationships(db)
 
 
 @documents_router.post(

@@ -213,6 +213,29 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
     assert test_db.query(Event).first() is None
 
 
+def test_get_relationships(
+    client,
+    superuser_token_headers,
+    user_token_headers,
+    test_db,
+):
+    # Set up relationship entities
+    for x in range(10):
+        response_rel = client.post(
+            "/api/v1/document-relationship",
+            headers=superuser_token_headers,
+            json=RelationshipCreateRequest(
+                name=f"Rel{x}", type="test", description=f"test relationship {x}"
+            ).dict(),
+        )
+        assert response_rel.status_code == 201
+    response_get = client.get(
+        "/api/v1/document-relationship", headers=superuser_token_headers
+    )
+    assert response_get.status_code == 200
+    assert len(response_get.json()["relationships"]) == 10
+
+
 def test_document_detail(
     client,
     superuser_token_headers,

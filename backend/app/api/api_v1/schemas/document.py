@@ -104,10 +104,19 @@ class RelationshipCreateRequest(BaseModel):
     description: str
 
 
-class RelationshipCreateResponse(RelationshipCreateRequest):
+class RelationshipEntityResponse(RelationshipCreateRequest):
     """Response for Relationship create request."""
 
     id: int
+
+    class Config:  # noqa: D106
+        orm_mode = True
+
+
+class RelationshipGetResponse(BaseModel):
+    """Response for Relationship get request."""
+
+    relationships: List[RelationshipEntityResponse]
 
     class Config:  # noqa: D106
         orm_mode = True
