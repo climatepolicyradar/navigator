@@ -40,7 +40,12 @@ export const CountryHeader = ({ country }: TProps) => {
             <div>
               <div className="text-blue-700 text-lg">Global Climate Risk Index</div>
               <div className="font-semibold text-blue-700 text-xl flex">
-                <div className="mr-1">{climate_risk_index}</div> <Tooltip id="country-gcri" tooltip="Global Climate Risk Index" icon="i" />
+                <div className="mr-1">{climate_risk_index}</div>{" "}
+                <Tooltip
+                  id="country-gcri"
+                  tooltip="The Index analyses the extent to which countries and regions have been affected by the impacts of weather-related loss events (storms, floods, heat waves etc.). The impact is calculated in terms of fatalities and economic losses, both."
+                  icon="i"
+                />
               </div>
             </div>
             <div>
