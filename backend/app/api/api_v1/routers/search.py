@@ -19,7 +19,7 @@ from app.core.search import (
 )
 from app.api.api_v1.schemas.search import SearchRequestBody, SearchResponseBody
 
-logger = logging.getLogger(__name__)
+_LOGGER = logging.getLogger(__name__)
 
 search_router = APIRouter()
 
@@ -35,11 +35,9 @@ def search_documents(
     search_body: SearchRequestBody,
     current_user=Depends(get_current_active_db_user),
 ):
-    """Search for documents matching the search criteria.
+    """Search for documents matching the search criteria."""
 
-    TODO: Don't return documents with no source urls?
-    """
-    logger.info(
+    _LOGGER.info(
         "Search request",
         extra={"props": {"search_request": json.loads(search_body.json())}},
     )
