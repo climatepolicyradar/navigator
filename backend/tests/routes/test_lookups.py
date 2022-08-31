@@ -4,12 +4,8 @@ from unittest.mock import ANY, MagicMock
 import pytest
 
 from app.db.models import (
-    Geography,
     Language,
     Source,
-    Instrument,
-    Sector,
-    DocumentType,
     Category,
 )
 from app.api.api_v1.routers.lookups.utils import tree_table_to_json
@@ -19,12 +15,8 @@ from app.db.session import SessionLocal
 @pytest.mark.parametrize(
     "path,table",
     [
-        ("geographies", Geography),
         ("languages", Language),
         ("sources", Source),
-        ("instruments", Instrument),
-        ("sectors", Sector),
-        ("document_types", DocumentType),
         ("categories", Category),
     ],
 )
@@ -47,12 +39,8 @@ def test_get_lookups(client, user_token_headers, test_db, path, table):
 @pytest.mark.parametrize(
     "path",
     [
-        "geographies",
         "languages",
         "sources",
-        "instruments",
-        "sectors",
-        "document_types",
         "categories",
     ],
 )

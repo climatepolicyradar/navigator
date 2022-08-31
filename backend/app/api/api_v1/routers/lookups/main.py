@@ -17,18 +17,6 @@ from .utils import tree_table_to_json, table_to_json
 
 
 @lookups_router.get(
-    "/geographies",
-)
-def lookup_geographies(
-    request: Request,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
-):
-    """Get tree of regions/geographies and associated metadata."""
-    return tree_table_to_json(table=Geography, db=db)
-
-
-@lookups_router.get(
     "/languages",
 )
 def lookup_languages(
@@ -54,41 +42,6 @@ def lookup_sources(
 ):
     """Get list of sources and associated metadata."""
     return table_to_json(table=Source, db=db)
-
-
-@lookups_router.get(
-    "/instruments",
-)
-def lookup_instruments(
-    request: Request,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
-):
-    """Get tree of instruments and associated metadata."""
-    # TODO: this should follow a flat instruments structure for now.
-    return tree_table_to_json(table=Instrument, db=db)
-
-
-@lookups_router.get(
-    "/sectors",
-)
-def lookup_sectors(
-    request: Request,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
-):
-    """Get tree of sectors and associated metadata."""
-    return tree_table_to_json(table=Sector, db=db)
-
-
-@lookups_router.get("/document_types")
-def lookup_document_types(
-    request: Request,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
-):
-    """Get tree of document types."""
-    return table_to_json(table=DocumentType, db=db)
 
 
 @lookups_router.get("/categories")
