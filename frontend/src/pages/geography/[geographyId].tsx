@@ -92,16 +92,10 @@ const CountryPage = () => {
             <CountryHeader country={geography} />
             <SingleCol>
               <section className="grid grid-cols-2 md:grid-cols-3 gap-px rounded mb-8">
-                {<KeyDetail detail="Laws" amount={summary.document_counts.Law} icon={<LawIcon />} />}
-                {<KeyDetail detail="Policies" amount={summary.document_counts.Policy} icon={<PolicyIcon />} />}
-                {<KeyDetail detail="Cases" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
+                {<KeyDetail detail="Legislative" extraDetail="Laws, Decrees" amount={summary.document_counts.Law} icon={<LawIcon />} />}
+                {<KeyDetail detail="Executive" extraDetail="Policies" amount={summary.document_counts.Policy} icon={<PolicyIcon />} />}
+                {<KeyDetail detail="Litigation" extraDetail="Cases" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
               </section>
-              {geography.legislative_process && (
-                <>
-                  <h3 className="mb-4">Legislative Process</h3>
-                  <div dangerouslySetInnerHTML={{ __html: geography.legislative_process }} />
-                </>
-              )}
               {hasEvents && (
                 <section className="mt-12">
                   <h3 className="mb-4">Events</h3>
@@ -168,6 +162,12 @@ const CountryPage = () => {
                       </Button>
                     </Divider>
                   </div>
+                </>
+              )}
+              {geography.legislative_process && (
+                <>
+                  <h3 className="mb-4">Legislative Process</h3>
+                  <div dangerouslySetInnerHTML={{ __html: geography.legislative_process }} />
                 </>
               )}
             </SingleCol>
