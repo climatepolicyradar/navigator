@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1629" height="923" xml:space="preserve">
+        <style>
+          path { 
+            stroke-width: 0.5;
+            fill: #616161;
+            fill-opacity: 0.4;
+            stroke: #000000;
+            stroke-opacity: 0.75; 
+          }
+        </style>
+        <g>
+            <g transform="translate(213.21901798946175,179.10751956656512) scale(1)">
+                <g transform="translate(0,0) scale(1.5056114333196569)">
+                    <path cs="100,100" d="M580.81,507.97L413.67,524.43L409.49,554.88L410.74,566.79L676.53,549.91L760.42,609.14L776.07,533.04L580.81,507.97z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-SE" role="menuitem" aria-label="Sud-Est  " countryId="HT-SE"></path>
+                    <path cs="100,100" d="M765.76,107.85L683.3,107.27L665.47,151.24L702.9,220.6L742.99,238.24L768.01,237.46L765.76,107.85z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-NE" role="menuitem" aria-label="Nord-Est  " countryId="HT-NE"></path>
+                    <path cs="100,100" d="M742.99,238.24L702.9,220.6L640.11,230.78L626.66,358.38L593.23,361.42L756.01,417.29L774.13,362.31L735.11,332.19L799.35,257.79L768.01,237.46L742.99,238.24z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-CE" role="menuitem" aria-label="Centre  " countryId="HT-CE"></path>
+                    <path cs="100,100" d="M476.6,37.3L365.59,39.18L280.13,103.42L378.73,132.27L505.12,78.7L536.46,57.89L476.6,37.3zM480.46,0L424.28,1.86L515.53,24.93L480.46,0z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-NO" role="menuitem" aria-label="Nord-Ouest  " countryId="HT-NO"></path>
+                    <path cs="100,100" d="M397.14,483.84L203.14,458.29L190.45,493.94L247.84,497.51L380.13,514.76L409.49,554.88L413.67,524.43L397.14,483.84z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-NI" role="menuitem" aria-label="Nippes  " countryId="HT-NI"></path>
+                    <path cs="100,100" d="M210.17,441.07L186.92,432.88L194.58,444.95L210.17,441.07zM83.73,423.74L10.34,436.22L0.65,513L190.45,493.94L203.14,458.29L83.73,423.74z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-GA" role="menuitem" aria-label="Grand'Anse  " countryId="HT-GA"></path>
+                    <path cs="100,100" d="M505.12,78.7L378.73,132.27L498.43,187.47L468.84,251.83L496.15,285.88L464.59,297.92L496.47,338.25L544.74,333.4L593.23,361.42L626.66,358.38L640.11,230.78L604.01,151.54L559.96,158.2L505.12,78.7z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-AR" role="menuitem" aria-label="L'Artibonite  " countryId="HT-AR" cursor="pointer"></path>
+                    <path cs="100,100" d="M215.94,588.95L223.61,602.01L248.95,600.87L215.94,588.95zM165.12,613.04L229.55,543.58L410.74,566.79L409.49,554.88L380.13,514.76L247.84,497.51L190.45,493.94L0.65,513L165.12,613.04z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-SD" role="menuitem" aria-label="Sud  " countryId="HT-SD"></path>
+                    <path cs="100,100" d="M463.99,411.3L456.71,373.4L328.94,340.57L463.99,411.3zM544.74,333.4L496.47,338.25L603.1,416.51L596.46,462.39L397.14,483.84L413.67,524.43L580.81,507.97L776.07,533.04L694.11,441.82L756.01,417.29L593.23,361.42L544.74,333.4z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-OU" role="menuitem" aria-label="Ouest  " countryId="HT-OU" cursor="pointer"></path>
+                    <path cs="100,100" d="M683.3,107.27L536.46,57.89L505.12,78.7L559.96,158.2L604.01,151.54L640.11,230.78L702.9,220.6L665.47,151.24L683.3,107.27z" transform="translate(-1,-119)" stroke-width="0.664181991362236" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-HT-ND" role="menuitem" aria-label="Nord  " countryId="HT-ND"></path>
+                </g>
+            </g>
+        </g>
+    </svg>

@@ -1,8 +1,8 @@
-import { useQuery } from 'react-query';
-import { ApiClient } from '../api/http-common';
-import { removeDuplicates } from '../utils/removeDuplicates';
+import { useQuery } from "react-query";
+import { ApiClient } from "../api/http-common";
+import { removeDuplicates } from "../utils/removeDuplicates";
 
-export default function useNestedLookups(path, filterProp = '', levels = 1) {
+export default function useNestedLookups(path, filterProp = "", levels = 1) {
   /*
   path: the path / name of the collection
   filterProp: if we are filtering out duplicates, the property to filter on (assuming it's the same on all levels)
@@ -60,9 +60,6 @@ export default function useNestedLookups(path, filterProp = '', levels = 1) {
       return modifyData(response);
     },
     {
-      onSuccess: (data) => {
-        // console.log(data);
-      },
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       cacheTime: 1000 * 60 * 60 * 24,

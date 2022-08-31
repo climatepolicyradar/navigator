@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1789" height="923" xml:space="preserve">
+        <style>
+          path { 
+            stroke-width: 0.5;
+            fill: #616161;
+            fill-opacity: 0.4;
+            stroke: #000000;
+            stroke-opacity: 0.75; 
+          }
+        </style>
+        <g>
+            <g transform="translate(572.9825814513141,4.706329908810649) scale(1)">
+                <g transform="translate(0,0) scale(0.8044974816681744)">
+                    <path cs="100,100" d="M242.45,627.65L243.86,624.95L241.01,624.33L242.45,627.65z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-SO" role="menuitem" aria-label="Sonsorol  " countryId="PW-SO"></path>
+                    <path cs="100,100" d="M698.33,229.18L690.38,243.97L690.09,249.38L701.34,233.64L698.33,229.18z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-PE" role="menuitem" aria-label="Peleliu  " countryId="PW-PE"></path>
+                    <path cs="100,100" d="M784.29,113.43L776.6,111.4L775.77,117.47L773.07,124.38L777.07,127.01L784.29,113.43z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-NW" role="menuitem" aria-label="Ngiwal  " countryId="PW-NW"></path>
+                    <path cs="100,100" d="M775.77,117.47L759.6,115.82L751.69,127.64L755.42,130.23L758.96,128.57L767.05,139.67L770.17,131.08L773.07,124.38L775.77,117.47z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-NL" role="menuitem" aria-label="Ngeremlengui  " countryId="PW-NL"></path>
+                    <path cs="100,100" d="M777.61,136.31L770.17,131.08L767.05,139.67L763.73,149.09L770.07,151.52L777.61,136.31z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-NS" role="menuitem" aria-label="Ngchesar  " countryId="PW-NS"></path>
+                    <path cs="100,100" d="M767.05,139.67L758.96,128.57L755.42,130.23L757.75,133.91L746.36,140.59L758.54,142.6L763.73,149.09L767.05,139.67z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-NP" role="menuitem" aria-label="Ngatpang  " countryId="PW-NP"></path>
+                    <path cs="100,100" d="M776.6,111.4L776.45,105.62L764.48,108.35L759.6,115.82L775.77,117.47L776.6,111.4z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-NM" role="menuitem" aria-label="Ngardmau  " countryId="PW-NM"></path>
+                    <path cs="100,100" d="M784.72,92.13L780.98,83.06L776.98,81.35L779.16,92.57L784.72,92.13z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-NC" role="menuitem" aria-label="Ngarchelong  " countryId="PW-NC"></path>
+                    <path cs="100,100" d="M784.29,113.43L784.72,92.13L779.16,92.57L780.45,101.11L776.45,105.62L776.6,111.4L784.29,113.43z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-ND" role="menuitem" aria-label="Ngaraard  " countryId="PW-ND"></path>
+                    <path cs="100,100" d="M777.07,127.01L773.07,124.38L770.17,131.08L777.61,136.31L777.07,127.01z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-ME" role="menuitem" aria-label="Melekeok  " countryId="PW-ME"></path>
+                    <path cs="100,100" d="M730.57,190.33L741.09,186.83L737.84,180.9L723.02,192.57L715.97,185.13L715.59,192.61L725.32,195.58L730.57,190.33zM751.77,168.07L739.54,164.62L737.89,172.32L747.17,169.11L751.77,176.75L755.2,171.6L751.77,168.07z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-KO" role="menuitem" aria-label="Koror  " countryId="PW-KO"></path>
+                    <path cs="100,100" d="M795.73,0L791.98,4.73L793.85,10.41L799.65,3.08L795.73,0z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-KA" role="menuitem" aria-label="Kayangel  " countryId="PW-KA"></path>
+                    <path cs="100,100" d="M151.91,1147.3L147.13,1143.45L143.55,1146.5L151.91,1147.3zM6.88,1133.43L13.9,1127.63L6.97,1125.41L0.35,1131.93L6.88,1133.43z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-HA" role="menuitem" aria-label="Hatobohei  " countryId="PW-HA"></path>
+                    <path cs="100,100" d="M673.48,271.74L676.48,262.69L669.03,260.59L673.48,271.74z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-AN" role="menuitem" aria-label="Angaur  " countryId="PW-AN"></path>
+                    <path cs="100,100" d="M770.07,151.52L763.73,149.09L755.84,156.83L751.46,155.32L754.41,164.99L763.7,161.79L769.49,163.68L770.07,151.52z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-AR" role="menuitem" aria-label="Airai  " countryId="PW-AR"></path>
+                    <path cs="100,100" d="M763.73,149.09L758.54,142.6L746.36,140.59L751.46,155.32L755.84,156.83L763.73,149.09z" transform="translate(0,-6)" stroke-width="1.2430119705613487" fill="#6d6d6d" fill-opacity="1" stroke="#505050" stroke-opacity="1" class="amcharts-map-area amcharts-map-area-PW-AM" role="menuitem" aria-label="Aimeliik  " countryId="PW-AM"></path>
+                </g>
+            </g>
+        </g>
+    </svg>

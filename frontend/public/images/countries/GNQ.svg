@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1629" height="923" xml:space="preserve">
+        <style>
+          path { 
+            stroke-width: 0.5;
+            fill: #616161;
+            fill-opacity: 0.4;
+            stroke: #000000;
+            stroke-opacity: 0.75; 
+          }
+        </style>
+        <g>
+            <g transform="translate(311.5376487218844,0.5288228447631133) scale(1)">
+                <g transform="translate(0,0) scale(1.2591056708509378)">
+                    <path cs="100,100" d="M437.75,25.51L420.36,17.92L394.52,47.61L398.34,70.5L428.67,79L453.48,34.46L437.75,25.51z" transform="translate(-1,0)" stroke-width="0.7942145152314125" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GQ-BS" role="menuitem" aria-label="Bioko Sur  " countryId="GQ-BS"></path>
+                    <path cs="100,100" d="M430.94,0L420.36,17.92L437.75,25.51L453.48,34.46L461.76,1.43L430.94,0z" transform="translate(-1,0)" stroke-width="0.7942145152314125" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GQ-BN" role="menuitem" aria-label="Bioko Norte  " countryId="GQ-BN"></path>
+                    <path cs="100,100" d="M732.82,256.47L684.87,258.6L692.92,304.47L749.73,306.46L720.99,343.1L747.34,386.6L799.46,386.77L798.85,284.13L755.01,284.08L746.06,251.88L732.82,256.47z" transform="translate(-1,0)" stroke-width="0.7942145152314125" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GQ-WN" role="menuitem" aria-label="Wele-Nzás  " countryId="GQ-WN"></path>
+                    <path cs="100,100" d="M519.35,402.66L515.5,395.56L514.77,400.23L519.35,402.66zM608.39,223.05L581.68,200.79L585.87,255.8L557.54,296.47L576.73,302.68L555.72,306.58L521.08,361.23L554.33,380.65L573,368.01L602.17,396.8L612.54,386.69L651.14,367.12L628.07,317.87L601,305.9L639.07,223.51L608.39,223.05z" transform="translate(-1,0)" stroke-width="0.7942145152314125" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GQ-LI" role="menuitem" aria-label="Litoral  " countryId="GQ-LI"></path>
+                    <path cs="100,100" d="M798.85,284.13L797.46,223.49L669.81,223.5L675.65,257.6L684.87,258.6L732.82,256.47L746.06,251.88L755.01,284.08L798.85,284.13z" transform="translate(-1,0)" stroke-width="0.7942145152314125" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GQ-KN" role="menuitem" aria-label="Kié-Ntem  " countryId="GQ-KN"></path>
+                    <path cs="100,100" d="M675.65,257.6L669.81,223.5L639.07,223.51L601,305.9L628.07,317.87L651.14,367.12L612.54,386.69L747.34,386.6L720.99,343.1L749.73,306.46L692.92,304.47L684.87,258.6L675.65,257.6z" transform="translate(-1,0)" stroke-width="0.7942145152314125" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GQ-CS" role="menuitem" aria-label="Centro Sur  " countryId="GQ-CS" cursor="pointer"></path>
+                    <path cs="100,100" d="M0.92,733.06L1.5,724.68L0.54,730.34L0.92,733.06z" transform="translate(-1,0)" stroke-width="0.7942145152314125" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-GQ-AN" role="menuitem" aria-label="Annobón  " countryId="GQ-AN"></path>
+                </g>
+            </g>
+        </g>
+    </svg>
