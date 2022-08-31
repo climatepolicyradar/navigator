@@ -6,20 +6,18 @@ import Layout from "@components/layouts/Main";
 import Loader from "@components/Loader";
 import TextLink from "@components/nav/TextLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
+import { Timeline } from "@components/blocks/Timeline";
 import Event from "@components/blocks/Event";
-import RelatedDocument from "@components/blocks/RelatedDocument";
+import { Loading } from "@components/blocks/Loading";
+import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
 import { ExternalLinkIcon } from "@components/svg/Icons";
+import { CountryLink } from "@components/CountryLink";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
 import { truncateString } from "@helpers/index";
 
-type TEvent = {
-  name: string;
-  created_ts: string;
-  date: string;
-  description: string;
-};
+import { TEvent } from "@types";
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -81,21 +79,20 @@ const DocumentCoverPage = () => {
   return (
     <Layout title={`Climate Policy Radar | Document title`}>
       {isFetching || !page?.name ? (
-        <div className="w-full flex justify-center h-96">
-          <Loader />
-        </div>
+        <Loading />
       ) : (
         <section className="mb-8">
           <div className="bg-offwhite border-solid border-blue-200 border-b">
             <div className="container">
               <div className="flex flex-col md:flex-row">
                 <div className="flex-1 mt-6">
-                  <h1 className="text-3xl font-medium">{page.name}</h1>
+                  <h1 className="text-3xl lg:smaller">{page.name}</h1>
                   <div className="flex text-sm text-indigo-400 mt-3 items-center w-full mb-6">
-                    <div className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
-                    <span className="ml-2">
-                      {page.geography.display_value}, {year}
-                    </span>
+                    <CountryLink countryCode={page.geography.value}>
+                      <span className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
+                      <span className="ml-2">{page.geography.display_value}</span>
+                    </CountryLink>
+                    <span>, {year}</span>
                   </div>
                 </div>
                 <div className="my-6 md:w-2/5 lg:w-1/4 md:pl-16 flex-shrink-0">
@@ -126,25 +123,21 @@ const DocumentCoverPage = () => {
                 )}
 
                 {page.events.length > 0 && (
-                  <section>
-                    <h3 className="text-xl flex mt-8">Timeline</h3>
-                    <div className="mt-8">
-                      <div className="flex place-content-center bg-offwhite rounded border border-blue-200 drop-shadow-lg p-4">
-                        <div className="flex items-center overflow-x-auto px-[70px]">
-                          {page.events.map((event: TEvent, index: number) => (
-                            <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
-                          ))}
-                        </div>
-                      </div>
-                    </div>
+                  <section className="mt-12">
+                    <h3>Timeline</h3>
+                    <Timeline>
+                      {page.events.map((event: TEvent, index: number) => (
+                        <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
+                      ))}
+                    </Timeline>
                   </section>
                 )}
 
                 {page.related_documents.length ? (
-                  <section>
-                    <h3 className="text-xl flex mt-8">Associated Documents</h3>
+                  <section className="mt-12">
+                    <h3>Associated Documents</h3>
                     {page.related_documents.map((doc) => (
-                      <div key={doc.related_id} className="my-8">
+                      <div key={doc.related_id} className="my-4">
                         <RelatedDocument document={doc} />
                       </div>
                     ))}
@@ -153,7 +146,7 @@ const DocumentCoverPage = () => {
               </section>
               <section className="mt-6 md:w-2/5 lg:w-1/4 md:pl-12 flex-shrink-0">
                 <div className="md:pl-4 md:border-l md:border-blue-100">
-                  <h3 className="text-xl text-blue-700">About this document</h3>
+                  <h3 className="text-blue-700">About this document</h3>
                   <div className="grid grid-cols-2 gap-x-2">
                     <DocumentInfo id="category-tt" heading="Category" text={page.category.name} />
                     <DocumentInfo id="type-tt" heading="Type" text={page.type.name} />
@@ -166,7 +159,7 @@ const DocumentCoverPage = () => {
                   {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
                   {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} bulleted={true} />}
                   <div className="mt-8 border-t border-blue-100">
-                    <h3 className="text-xl text-blue-700 mt-4">Source</h3>
+                    <h3 className="text-blue-700 mt-4">Source</h3>
                     <div className="flex items-end mt-4">
                       {sourceLogo && (
                         <div className="relative flex-shrink max-w-[40px] mr-1">

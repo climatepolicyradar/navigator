@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no" ?>
+    <!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="1629" height="923" xml:space="preserve">
+        <style>
+          path { 
+            stroke-width: 0.5;
+            fill: #616161;
+            fill-opacity: 0.4;
+            stroke: #000000;
+            stroke-opacity: 0.75; 
+          }
+        </style>
+        <g>
+            <g transform="translate(565.998322344388,407.1462798754116) scale(1)">
+                <g transform="translate(0,0) scale(0.6216116208210021)">
+                    <path cs="100,100" d="M271.05,453.18L85.88,353.52L16.55,361.16L56.34,528.02L112.21,580.16L277.86,482.79L271.05,453.18z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-11" role="menuitem" aria-label="Saint Peter  " countryId="DM-11"></path>
+                    <path cs="100,100" d="M538.46,998.23L515.1,792.6L403.46,845.26L243.4,843.85L318.16,1108.79L538.46,998.23z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-10" role="menuitem" aria-label="Saint Paul  " countryId="DM-10"></path>
+                    <path cs="100,100" d="M475.69,1461.07L569.76,1351.47L706.47,1327.84L775.02,1206.39L783.71,1042.75L603.02,1098.07L441.56,1315.5L444.75,1350.08L475.69,1461.07z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-09" role="menuitem" aria-label="Saint Patrick  " countryId="DM-09"></path>
+                    <path cs="100,100" d="M383.23,1484.85L475.69,1461.07L444.75,1350.08L386.97,1377.45L383.23,1484.85z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-08" role="menuitem" aria-label="Saint Mark  " countryId="DM-08"></path>
+                    <path cs="100,100" d="M441.56,1315.5L386.29,1292.85L386.97,1377.45L444.75,1350.08L441.56,1315.5z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-07" role="menuitem" aria-label="Saint Luke  " countryId="DM-07"></path>
+                    <path cs="100,100" d="M572.51,654.44L503.29,566.61L277.86,482.79L112.21,580.16L243.4,843.85L403.46,845.26L515.1,792.6L572.51,654.44z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-06" role="menuitem" aria-label="Saint Joseph  " countryId="DM-06"></path>
+                    <path cs="100,100" d="M66.65,0L0.27,189.16L89.46,210.86L0.27,307.53L16.55,361.16L85.88,353.52L271.05,453.18L232.69,191.82L162.35,134.19L132.62,2.68L66.65,0z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-05" role="menuitem" aria-label="Saint John  " countryId="DM-05"></path>
+                    <path cs="100,100" d="M603.02,1098.07L538.46,998.23L318.16,1108.79L386.29,1292.85L441.56,1315.5L603.02,1098.07z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-04" role="menuitem" aria-label="Saint George  " countryId="DM-04"></path>
+                    <path cs="100,100" d="M783.71,1042.75L799.73,806.04L754.12,782.38L735.11,429.27L714.14,547.46L572.51,654.44L515.1,792.6L538.46,998.23L603.02,1098.07L783.71,1042.75z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-03" role="menuitem" aria-label="Saint David  " countryId="DM-03"></path>
+                    <path cs="100,100" d="M735.11,429.27L604.79,189.16L439.17,123.2L348.07,157.59L210.28,18.61L132.62,2.68L162.35,134.19L232.69,191.82L271.05,453.18L277.86,482.79L503.29,566.61L572.51,654.44L714.14,547.46L735.11,429.27z" transform="translate(0,-655)" stroke-width="1.6087215336792389" fill="#797979" fill-opacity="0.47" stroke="#505050" stroke-opacity="0.35" class="amcharts-map-area amcharts-map-area-DM-02" role="menuitem" aria-label="Saint Andrew  " countryId="DM-02"></path>
+                </g>
+            </g>
+        </g>
+    </svg>
