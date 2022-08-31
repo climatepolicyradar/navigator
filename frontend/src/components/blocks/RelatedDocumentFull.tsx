@@ -3,10 +3,11 @@ import { truncateString } from "../../helpers";
 import { convertDate } from "@utils/timedate";
 import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
 import { TDocument } from "@types";
+import { CountryLink } from "@components/CountryLink";
 
 type TProps = {
   document: TDocument;
-}
+};
 
 export const RelatedDocumentFull = ({ document }: TProps) => {
   const { document_country_code, document_country_english_shortname, document_id, document_date, document_description, document_name, document_category } = document;
@@ -21,9 +22,11 @@ export const RelatedDocumentFull = ({ document }: TProps) => {
         </h2>
       </div>
       <div className="flex text-sm text-indigo-400 mt-3">
-      {document_category && <div className="mr-3">{getCategoryIcon(document_category, "20")}</div>}
-        <div className={`rounded-sm border border-black flag-icon-background flag-icon-${document_country_code.toLowerCase()}`} />
-        <span className="ml-2">{document_country_english_shortname}</span>
+        {document_category && <div className="mr-3">{getCategoryIcon(document_category, "20")}</div>}
+        <CountryLink countryCode={document_country_code}>
+          <div className={`rounded-sm border border-black flag-icon-background flag-icon-${document_country_code.toLowerCase()}`} />
+          <span className="ml-2">{document_country_english_shortname}</span>
+        </CountryLink>
         <span className="ml-6">{year}</span>
       </div>
       <p className="text-indigo-400 mt-3">{truncateString(document_description.replace(/(<([^>]+)>)/gi, ""), 250)}</p>

@@ -3,6 +3,7 @@ import { truncateString } from "../../helpers";
 import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
 import { convertDate } from "@utils/timedate";
 import { TAssociatedDocument } from "@types";
+import { CountryLink } from "@components/CountryLink";
 
 interface RelatedDocumentProps {
   document: TAssociatedDocument;
@@ -22,8 +23,10 @@ export const RelatedDocument = ({ document }: RelatedDocumentProps) => {
       </div>
       <div className="flex text-sm text-indigo-400 mt-3">
         {category && <div className="mr-3">{getCategoryIcon(category, "20")}</div>}
-        <div className={`rounded-sm border border-black flag-icon-background flag-icon-${country_code.toLowerCase()}`} />
-        <span className="ml-2">{country_name}</span>
+        <CountryLink countryCode={country_code}>
+          <div className={`rounded-sm border border-black flag-icon-background flag-icon-${country_code.toLowerCase()}`} />
+          <span className="ml-2">{country_name}</span>
+        </CountryLink>
         <span className="ml-6">{year}</span>
       </div>
       <p className="text-indigo-400 mt-3">{truncateString(description.replace(/(<([^>]+)>)/gi, ""), 250)}</p>
