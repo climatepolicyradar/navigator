@@ -180,6 +180,7 @@ dmypy.json
 .DS_Store
 .vim
 backend/models
+**/.vscode
 
-# Pycharm
-.idea
+# PyCharm
+.idea/

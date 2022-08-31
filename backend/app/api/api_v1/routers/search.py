@@ -1,15 +1,23 @@
+"""Searches for documents.
+
+All endpoints should perform document searches using the SearchRequestBody as
+its input. The individual endpoints will return different responses tailored
+for the type of document search being performed.
+"""
 import json
 import logging
 
 from fastapi import APIRouter, Depends, Request
 
 from app.core.auth import get_current_active_db_user
+
+# from app.core.browse import BrowseArgs, browse_rds
 from app.core.search import (
     OpenSearchConnection,
     OpenSearchConfig,
     OpenSearchQueryConfig,
 )
-from app.db.schemas.search import SearchRequestBody, SearchResponseBody
+from app.api.api_v1.schemas.search import SearchRequestBody, SearchResponseBody
 
 logger = logging.getLogger(__name__)
 
@@ -21,23 +29,31 @@ _OPENSEARCH_CONNECTION = OpenSearchConnection(opensearch_config=_OPENSEARCH_CONF
 _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 
 
-@search_router.post(
-    "/searches",
-    response_model=SearchResponseBody,
-)
+@search_router.post("/searches", response_model=SearchResponseBody)
 def search_documents(
     request: Request,
     search_body: SearchRequestBody,
     current_user=Depends(get_current_active_db_user),
 ):
-    """Search for documents matching the search criteria."""
+    """Search for documents matching the search criteria.
+
+    TODO: Don't return documents with no source urls?
+    """
     logger.info(
         "Search request",
         extra={"props": {"search_request": json.loads(search_body.json())}},
     )
 
-    return _OPENSEARCH_CONNECTION.query(
-        search_request_body=search_body,
-        opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
-        preference=str(current_user.id),
-    )
+    if search_body.query_string:
+        """When a query string is given - hand off the complete search to OpenSearch"""
+        return _OPENSEARCH_CONNECTION.query(
+            search_request_body=search_body,
+            opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
+            preference=str(current_user.id),
+        )
+    else:
+        """When no query string - search using RDS"""
+        # FIXME: Implement and test this for browse
+        # db = SessionLocal()
+        # return browse_rds(db.begin_nested(), BrowseArgs())
+        return SearchResponseBody(hits=0, query_time_ms=0, documents=[])

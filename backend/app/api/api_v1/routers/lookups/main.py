@@ -10,7 +10,7 @@ from app.db.models import (
     DocumentType,
     Category,
 )
-from app.db.schemas.metadata import Config
+from app.api.api_v1.schemas.metadata import Config
 from app.db.session import get_db
 from .router import lookups_router
 from .utils import tree_table_to_json, table_to_json

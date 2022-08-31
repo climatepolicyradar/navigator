@@ -31,7 +31,7 @@ from app.core.config import (
     OPENSEARCH_SSL_WARNINGS,
 )
 from app.core.util import content_type_from_path, s3_to_cdn_url
-from app.db.schemas.search import (
+from app.api.api_v1.schemas.search import (
     FilterField,
     OpenSearchResponseDescriptionMatch,
     OpenSearchResponseNameMatch,
@@ -544,6 +544,7 @@ def create_search_response_document(
         document_id=opensearch_match.document_id,
         document_country_english_shortname=opensearch_match.document_country_english_shortname,
         document_type=opensearch_match.document_type,
+        document_category=opensearch_match.document_category,
         document_source_url=opensearch_match.document_source_url,
         document_url=s3_to_cdn_url(opensearch_match.document_url),
         document_content_type=content_type_from_path(opensearch_match.document_url),

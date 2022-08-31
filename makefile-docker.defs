@@ -42,9 +42,6 @@ migrations: migrations_docker_backend
 new_migration_backend:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
 
-new_migration_loader:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader alembic revision --autogenerate -m "$(filter-out $@,$(MAKECMDGOALS))"
-
 refresh_all_dbs:
 	docker-compose down -v
 	make start
@@ -58,10 +55,7 @@ build_backend:
 build_frontend:
 	docker-compose build --no-cache frontend
 
-build_loader:
-	docker-compose build --no-cache loader
-
-build: build_backend build_frontend build_loader
+build: build_backend build_frontend
 
 # ----------------------------------
 # testing
@@ -74,9 +68,9 @@ clear_test_search_index:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --insecure
 
 test_backend_search: clear_test_search_index
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_analyzer.dump --type=analyzer
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/test/data/test_opensearch_mapping.dump --type=mapping
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader sh -c "gzip -d /app/test/data/test_opensearch_data.dump.gz -c > /tmp/data && elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/tmp/data --type=data"
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/tests/data/test_opensearch_analyzer.dump --type=analyzer
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/app/tests/data/test_opensearch_mapping.dump --type=mapping
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader sh -c "gzip -d /app/tests/data/test_opensearch_data.dump.gz -c > /tmp/data && elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX}_test --input=/tmp/data --type=data"
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'search'
 
 test_backend:
@@ -85,31 +79,22 @@ test_backend:
 test_backend_unit:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -v tests/unit
 
-test_loader:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader pytest
-
-test: test_backend test_frontend test_loader
+test: test_backend test_frontend
 
 # ----------------------------------
 # tasks
 # ----------------------------------
 
-create_csv:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm -v ${PWD}/loader/data:/app/data loader python app/create_csv.py
-
-run_loader:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm loader python app/main.py
-
 # Check OpenSearch running on localhost
 check_opensearch_local:
 	curl -XGET http://localhost:9200 -u 'admin:admin' --insecure
 
-populate_opensearch_test: run_loader
+populate_opensearch_test:
 	docker-compose run \
-	-v ${PWD}/search-index/test/data/ids_msmarco-distilbert-dot-v5_20220407-1003.json:/text-ids-path \
-	-v ${PWD}/search-index/test/data/embeddings_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/embeddings-path \
-	-v ${PWD}/search-index/test/data/description_ids_msmarco-distilbert-dot-v5_20220407-1003.csv:/desc-ids-path \
-	-v ${PWD}/search-index/test/data/description_embs_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/desc-embeddings-path \
+	-v ${PWD}/backend/tests/data/ids_msmarco-distilbert-dot-v5_20220407-1003.json:/text-ids-path \
+	-v ${PWD}/backend/tests/data/embeddings_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/embeddings-path \
+	-v ${PWD}/backend/tests/data/description_ids_msmarco-distilbert-dot-v5_20220407-1003.csv:/desc-ids-path \
+	-v ${PWD}/backend/tests/data/description_embs_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/desc-embeddings-path \
 	search-index python /app/index_data.py --text-ids-path /text-ids-path --embeddings-path /embeddings-path --desc-ids-path /desc-ids-path --desc-embeddings-path /desc-embeddings-path -d 768
 
 postgres_dump:

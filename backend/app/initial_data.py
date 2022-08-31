@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 
+from http.client import OK
 import os
+from time import sleep
+import requests
 
 from sqlalchemy.exc import IntegrityError
 
@@ -78,8 +81,27 @@ def populate_initial_data(db):
     run_data_migrations(db)
 
 
+def wait_for_app():
+    url = os.getenv("API_HOST")
+    health = f"{url}/health"
+
+    # wait for health url
+    for i in range(100):
+        try:
+            response = requests.get(health)
+            if response.status_code == OK:
+                return
+        except requests.ConnectionError:
+            pass
+
+        sleep(1)
+    raise TimeoutError()
+
+
 if __name__ == "__main__":
     print("Creating initial data...")
+    wait_for_app()
+
     db = SessionLocal()
     populate_initial_data(db)
     db.commit()
