@@ -15,6 +15,7 @@ import ExactMatch from "@components/filters/ExactMatch";
 import LandingPageLinks from "@components/blocks/LandingPageLinks";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { emptySearchResults } from "@constants/search";
+import useConfig from "@hooks/useConfig";
 
 const IndexPage = () => {
   const { t, i18n, ready } = useTranslation(["searchStart", "searchResults"]);
@@ -28,8 +29,14 @@ const IndexPage = () => {
   (sets suggest list that appears when typing a jurisdiction)
   when returning to this page from a previous search
   */
-  const geosQuery: any = useNestedLookups("geographies", "", 2);
-  const { data: { data: { level1: regions = [], level2: countries = [] } = {} } = {} } = geosQuery;
+  const configQuery: any = useConfig("config");
+  const {
+            data: {
+                    geographies: geographies = [],
+                    regions: regions = [],
+                    countries: countries = [],
+                  } = {}
+        } = configQuery;
 
   const handleSearchInput = (e, term) => {
     e.preventDefault();

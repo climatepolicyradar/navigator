@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional
+from typing import Optional, Dict, List
 
 from pydantic import BaseModel
 
@@ -85,3 +85,24 @@ class Topic(BaseModel):  # noqa: D101
 
     name: str
     description: str
+
+
+class CCLWSourceCollection(BaseModel):
+    """Metadata sources from CCLW."""
+
+    geographies: List[Dict]
+    document_types: List[Dict]
+    sectors: List[Dict]
+    instruments: List[Dict]
+
+
+class SourceCollections(BaseModel):
+    """Definition of the CCLW source collection."""
+
+    CCLW: CCLWSourceCollection
+
+
+class Config(BaseModel):
+    """Definition of the metadata response object."""
+
+    metadata: SourceCollections

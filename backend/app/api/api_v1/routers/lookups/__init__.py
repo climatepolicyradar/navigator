@@ -1,11 +1,8 @@
-from .main import (  # noqa F401
-    lookup_geographies,
-    lookup_instruments,
-    lookup_languages,
-    lookup_sources,
-    lookup_document_categories,
-    lookup_document_types,
-    lookup_sectors,
+from .main import (  # noqa: F401
+    lookup_languages,  # noqa F401
+    lookup_sources,  # noqa F401
+    lookup_document_categories,  # noqa F401
+    lookup_config,  # noqa F401
 )
 
 from .geo_stats import lookup_geo_stats  # noqa F401
