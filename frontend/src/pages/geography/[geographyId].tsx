@@ -149,7 +149,7 @@ const CountryPage = () => {
                 {<KeyDetail detail="Litigation" extraDetail="court cases and tribunals" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
               </section>
               {hasEvents && (
-                <section className="mt-12">
+                <section className="mt-12 hidden">
                   <h3 className="mb-4">Events</h3>
                   <Timeline>
                     {summary.events.map((event: TEvent, index: number) => (
