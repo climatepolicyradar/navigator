@@ -34,6 +34,7 @@ def test_endpoint_returns_correct_data(client, user_token_headers, test_db):
     assert stats["id"] == 6
     assert stats["geography_id"] == TEST_ID
     assert stats["name"] == TEST_GEO_NAME
+    assert stats["federal"] is False
 
 
 def test_endpoint_returns_not_found(client, user_token_headers, test_db):
