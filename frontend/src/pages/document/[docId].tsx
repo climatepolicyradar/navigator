@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import useDocumentDetail from "@hooks/useDocumentDetail";
-import useSortAndStructure from "@hooks/useSortAndStructure";
 import Layout from "@components/layouts/Main";
 import Loader from "@components/Loader";
 import TextLink from "@components/nav/TextLink";
@@ -23,7 +22,6 @@ const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
   const [summary, setSummary] = useState("");
   const router = useRouter();
-  const structureData = useSortAndStructure();
 
   const documentQuery = useDocumentDetail(router.query.docId as string);
   const { data: { data: page } = {}, isFetching } = documentQuery;
@@ -157,7 +155,6 @@ const DocumentCoverPage = () => {
 
                   {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
                   {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
-                  {page.instruments.length > 0 && <DocumentInfo id="instruments-tt" heading="Instruments" list={structureData(page.instruments)} bulleted={true} />}
                   <div className="mt-8 border-t border-blue-100">
                     <h3 className="text-blue-700 mt-4">Source</h3>
                     <div className="flex items-end mt-4">

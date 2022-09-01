@@ -10,11 +10,8 @@ import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
 import useUpdateSearchFilters from "@hooks/useUpdateSearchFilters";
 import useUpdateCountries from "@hooks/useUpdateCountries";
 import useConfig from "@hooks/useConfig";
-import useNestedLookups from "@hooks/useNestedLookups";
-import useLookups from "@hooks/useLookups";
 import useFilteredCountries from "@hooks/useFilteredCountries";
 import useOutsideAlerter from "@hooks/useOutsideAlerter";
-import useSortAndStructure from "@hooks/useSortAndStructure";
 import Layout from "@components/layouts/Main";
 import LoaderOverlay from "@components/LoaderOverlay";
 import SearchForm from "@components/forms/SearchForm";
@@ -47,7 +44,6 @@ const Search = () => {
   const [noQuery, setNoQuery] = useState(true);
   const [categoryIndex, setCategoryIndex] = useState(0);
 
-  const structureData = useSortAndStructure();
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
@@ -65,16 +61,7 @@ const Search = () => {
 
   // get lookups/filters
   const configQuery: any = useConfig("config");
-  const {
-            data: {
-                    document_types: document_types = [],
-                    geographies: geographies = [],
-                    instruments: instruments = [],
-                    sectors: sectors = [],
-                    regions: regions = [],
-                    countries: countries = [],
-                  } = {}
-        } = configQuery;
+  const { data: { document_types: document_types = [], sectors: sectors = [], regions: regions = [], countries: countries = [] } = {} } = configQuery;
 
   const { data: filteredCountries } = useFilteredCountries(countries);
 
@@ -293,7 +280,7 @@ const Search = () => {
                     <div className="md:hidden absolute right-0 top-0">
                       <Close onClick={() => setShowFilters(false)} size="16" />
                     </div>
-                     {configQuery.isFetching ? (
+                    {configQuery.isFetching ? (
                       <p>Loading filters...</p>
                     ) : (
                       <SearchFilters
@@ -307,7 +294,6 @@ const Search = () => {
                         filteredCountries={filteredCountries}
                         sectors={sectors}
                         documentTypes={document_types}
-                        instruments={structureData(instruments)}
                       />
                     )}
                   </div>

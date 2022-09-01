@@ -1,6 +1,6 @@
 import { FC } from "react";
 import Link from "next/link";
-import useNestedLookups from "@hooks/useNestedLookups";
+import useConfig from "@hooks/useConfig";
 import { getCountryId } from "@helpers/getCountryId";
 
 type TCountryLink = {
@@ -8,8 +8,9 @@ type TCountryLink = {
 };
 
 export const CountryLink: FC<TCountryLink> = ({ countryCode, children }) => {
-  const geosQuery = useNestedLookups("geographies", "", 2);
-  const { data: { data: { level2: countries = [] } = {} } = {} } = geosQuery;
+  const configQuery: any = useConfig("config");
+  const { data: { countries = [] } = {} } = configQuery;
+
   const countryId = getCountryId(countryCode, countries);
   if (!countryId) return <>{children}</>;
   return (
