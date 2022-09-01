@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import TabbedNavItem from "./TabbedNavItem";
 
 interface TabbedNavProps {
-  handleTabClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>): void;
+  handleTabClick(e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number): void;
   items: string[];
   activeIndex: number;
   showBorder?: boolean;
@@ -18,7 +18,7 @@ const TabbedNav = ({ handleTabClick, items, activeIndex = 0, showBorder = true, 
 
   const onClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     setActiveTab(index);
-    handleTabClick(e);
+    handleTabClick(e, index);
   };
 
   return (
