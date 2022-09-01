@@ -40,7 +40,7 @@ def populate_geo_statistics(db: Session) -> None:
                     name=row["Name"],
                     geography_id=geography_id,
                     legislative_process=row["Legislative process"],
-                    federal=bool(row["Federal"]),
+                    federal=row["Federal"].lower() == "true",
                     federal_details=row["Federal details"],
                     political_groups=row["Political groups"],
                     global_emissions_percent=to_float(row["Percent global emissions"]),
