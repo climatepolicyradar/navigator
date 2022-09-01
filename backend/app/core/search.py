@@ -90,6 +90,11 @@ class QueryMode(Enum):
     SEARCH = "search"
 
 
+def _log(msg, *args, **kwargs):
+    pprint("#" * 10 + msg, *args, **kwargs)
+    _LOGGER.info(msg, *args, **kwargs)
+
+
 def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
     """Maps inner product to lucene threashold.
 
@@ -209,15 +214,16 @@ class OpenSearchConnection:
                 ssl_show_warn=self._opensearch_config.ssl_show_warnings,
             )
 
-        start = time.time()
+        start = time.time_ns()
         response = self._opensearch_connection.search(
             body=request_body,
             index=self._opensearch_config.index_name,
             request_timeout=self._opensearch_config.request_timeout,
             preference=preference,
         )
-        end = time.time()
-        search_request_time = round(1000 * (end - start))
+        end = time.time_ns()
+	search_request_time = round((end - start) / 1e6)
+        _log(f"query execution time: {search_request_time}ms")
 
         _LOGGER.info(
             "Search request completed",
@@ -228,6 +234,22 @@ class OpenSearchConnection:
                 },
             },
         )
+
+        # TODO: Log request time:
+        # f"query execution time: {round(end-start, 2)}s"
+
+        # TODO: Log response info:
+        # passage_hit_count = response['hits']['total']['value']
+        # # note: 'gte' values are returned when there are more than 10,000 results by default
+        # if response['hits']['total']['relation'] == "eq":
+        #     passage_hit_qualifier = "exactly"
+        # elif response['hits']['total']['relation'] == "gte":
+        #     passage_hit_qualifier = "at least"
+        # else:
+        #     passage_hit_qualifier = "unknown (unexpected)"
+        #
+        # doc_hit_count = response['aggregations']['no_unique_docs']['value']
+        # f"returned {passage_hit_qualifier} {passage_hit_count} passage(s) in {doc_hit_count} document(s)"
 
         return OpenSearchResponse(
             raw_response=response,
