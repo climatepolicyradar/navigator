@@ -6,6 +6,7 @@ for the type of document search being performed.
 """
 import json
 import logging
+from app.core.search_cache_wrapper import SearchCacheWrapper
 
 from fastapi import APIRouter, Depends, Request
 
@@ -28,6 +29,8 @@ _OPENSEARCH_CONFIG = OpenSearchConfig()
 _OPENSEARCH_CONNECTION = OpenSearchConnection(opensearch_config=_OPENSEARCH_CONFIG)
 _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 
+_OPENSEARCH_WRAPPER = SearchCacheWrapper(_OPENSEARCH_CONNECTION)
+
 
 @search_router.post("/searches", response_model=SearchResponseBody)
 def search_documents(
@@ -42,9 +45,25 @@ def search_documents(
         extra={"props": {"search_request": json.loads(search_body.json())}},
     )
 
+<<<<<<< HEAD
     """When a query string is given - hand off the complete search to OpenSearch"""
     return _OPENSEARCH_CONNECTION.query(
         search_request_body=search_body,
         opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
         preference=str(current_user.id),
     )
+=======
+    if search_body.query_string:
+        """When a query string is given - hand off the complete search to OpenSearch"""
+        return _OPENSEARCH_WRAPPER.query(
+            search_request_body=search_body,
+            opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
+            preference=str(current_user.id),
+        )
+    else:
+        """When no query string - search using RDS"""
+        # FIXME: Implement and test this for browse
+        # db = SessionLocal()
+        # return browse_rds(db.begin_nested(), BrowseArgs())
+        return SearchResponseBody(hits=0, query_time_ms=0, documents=[])
+>>>>>>> d6aa07a (add wrapper)
