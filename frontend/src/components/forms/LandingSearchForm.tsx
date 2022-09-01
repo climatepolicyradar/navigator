@@ -55,7 +55,7 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
   }, [formRef]);
 
   return (
-    <form data-cy="search-form" ref={formRef}>
+    <form data-cy="search-form" ref={formRef} onSubmit={(e) => e.preventDefault()}>
       <div className="max-w-screen-lg mx-auto text-white flex items-stretch relative">
         <input
           data-cy="search-input"
