@@ -20,7 +20,6 @@ interface SearchFiltersProps {
   filteredCountries: object[];
   sectors: TSector[];
   documentTypes: object[];
-  instruments: object[];
 }
 
 const SearchFilters: React.FC<SearchFiltersProps> = React.memo(

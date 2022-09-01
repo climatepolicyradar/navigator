@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import useSearchCriteria from "@hooks/useSearchCriteria";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
 import useUpdateSearch from "@hooks/useUpdateSearch";
-import useNestedLookups from "@hooks/useNestedLookups";
 import useUpdateCountries from "@hooks/useUpdateCountries";
 import Layout from "@components/layouts/LandingPage";
 import { Hero } from "@components/blocks/Hero";
@@ -30,13 +29,7 @@ const IndexPage = () => {
   when returning to this page from a previous search
   */
   const configQuery: any = useConfig("config");
-  const {
-            data: {
-                    geographies: geographies = [],
-                    regions: regions = [],
-                    countries: countries = [],
-                  } = {}
-        } = configQuery;
+  const { data: { geographies: geographies = [], regions: regions = [], countries: countries = [] } = {} } = configQuery;
 
   const handleSearchInput = (e, term) => {
     e.preventDefault();

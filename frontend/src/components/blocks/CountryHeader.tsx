@@ -1,5 +1,5 @@
 import { TGeographyStats, TGeography } from "@types";
-import useNestedLookups from "@hooks/useNestedLookups";
+import useConfig from "@hooks/useConfig";
 import Tooltip from "@components/tooltip";
 
 type TProps = {
@@ -7,8 +7,9 @@ type TProps = {
 };
 
 export const CountryHeader = ({ country }: TProps) => {
-  const geosQuery = useNestedLookups("geographies", "", 2);
-  const { data: { data: { level1: regions = [], level2: countries = [] } = {} } = {} } = geosQuery;
+  const configQuery: any = useConfig("config");
+  const { data: { regions = [], countries = [] } = {} } = configQuery;
+
   const countryGeography = countries.find((c: TGeography) => c.display_value === country.name);
 
   const getCountryRegion = () => {
