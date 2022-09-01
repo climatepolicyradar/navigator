@@ -144,9 +144,9 @@ const CountryPage = () => {
             <CountryHeader country={geography} />
             <SingleCol>
               <section className="grid grid-cols-2 md:grid-cols-3 gap-px rounded mb-8">
-                {<KeyDetail detail="Legislation" extraDetail="from legislative branch: laws, acts, constitutions" amount={summary.document_counts.Law} icon={<LawIcon />} />}
-                {<KeyDetail detail="Policies" extraDetail="from executive branch: policies, strategies, decrees, action plans" amount={summary.document_counts.Policy} icon={<PolicyIcon />} />}
-                {<KeyDetail detail="Litigation" extraDetail="court cases and tribunals" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
+                {<KeyDetail detail="Legislation" extraDetail="Laws, Acts, Constitutions (legislative branch)" amount={summary.document_counts.Law} icon={<LawIcon />} />}
+                {<KeyDetail detail="Policies" extraDetail="Policies, strategies, decrees, action plans (from executive branch)" amount={summary.document_counts.Policy} icon={<PolicyIcon />} />}
+                {<KeyDetail detail="Litigation" extraDetail="Court cases and tribunal proceedings" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
               </section>
               {hasEvents && (
                 <section className="mt-12 hidden">
