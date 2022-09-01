@@ -29,7 +29,7 @@ const IndexPage = () => {
   when returning to this page from a previous search
   */
   const configQuery: any = useConfig("config");
-  const { data: { geographies: geographies = [], regions: regions = [], countries: countries = [] } = {} } = configQuery;
+  const { data: { regions: regions = [], countries: countries = [] } = {} } = configQuery;
 
   const handleSearchInput = (term: string) => {
     updateSearchCriteria.mutate({ ["query_string"]: term });

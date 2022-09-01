@@ -1,7 +1,6 @@
-import Link from "next/link";
 import { useRouter } from "next/router";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
-import useNestedLookups from "@hooks/useNestedLookups";
+import useConfig from "@hooks/useConfig";
 import { TGeography } from "@types";
 import { SearchIcon } from "@components/svg/Icons";
 
@@ -14,8 +13,8 @@ type TProps = {
 export const SearchDropdown = ({ show = false, term, handleSearchClick }: TProps) => {
   const updateSearchCriteria = useUpdateSearchCriteria();
   const router = useRouter();
-  const geosQuery: any = useNestedLookups("geographies", "", 2);
-  const geographies: TGeography[] = geosQuery.data?.data?.level2 || [];
+  const configQuery: any = useConfig("config");
+  const geographies: TGeography[] = configQuery.data?.countries || [];
 
   const geographiesFiltered = geographies.filter(
     (geography: TGeography) => geography.display_value.toLowerCase().includes(term.toLocaleLowerCase()) || geography.value.toLowerCase().includes(term.toLowerCase())
