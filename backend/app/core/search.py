@@ -78,7 +78,7 @@ _FILTER_FIELD_MAP: Mapping[FilterField, str] = {
     FilterField.TOPIC: "document_response_name",
 }
 _REQUIRED_FIELDS = ["document_name"]
-_DEFAULT_SORT_FIELD = SortField.DATE
+_DEFAULT_BROWSE_SORT_FIELD = SortField.DATE
 _DEFAULT_SORT_ORDER = SortOrder.DESCENDING
 _JSON_SERIALIZER = jss()
 
@@ -313,9 +313,9 @@ class QueryBuilder:
                                     },
                                 },
                                 "top_hit": {"max": {"script": {"source": "_score"}}},
-                                _SORT_FIELD_MAP[_DEFAULT_SORT_FIELD]: {
+                                _SORT_FIELD_MAP[SortField.DATE]: {
                                     "stats": {
-                                        "field": _SORT_FIELD_MAP[_DEFAULT_SORT_FIELD],
+                                        "field": _SORT_FIELD_MAP[SortField.DATE],
                                     },
                                 },
                             },
@@ -337,7 +337,7 @@ class QueryBuilder:
                 "excludes": ["document_description_embedding"],
             },
             "sort": {
-                _SORT_FIELD_MAP[_DEFAULT_SORT_FIELD]: {
+                _SORT_FIELD_MAP[_DEFAULT_BROWSE_SORT_FIELD]: {
                     "order": _DEFAULT_SORT_ORDER.value,
                 },
             },
@@ -559,13 +559,9 @@ def build_opensearch_request_body(
         else:
             builder.with_semantic_query(search_request.query_string)
 
-        should_update_search_order = (
-            search_request.sort_field is not None
-            or search_request.sort_order is not None
-        )
-        if should_update_search_order:
+        if search_request.sort_field is not None:
             builder.with_search_order(
-                search_request.sort_field or _DEFAULT_SORT_FIELD,
+                search_request.sort_field,
                 search_request.sort_order or _DEFAULT_SORT_ORDER,
             )
     else:
@@ -577,7 +573,7 @@ def build_opensearch_request_body(
         )
         if should_update_browse_order:
             builder.with_browse_order(
-                search_request.sort_field or _DEFAULT_SORT_FIELD,
+                search_request.sort_field or _DEFAULT_BROWSE_SORT_FIELD,
                 search_request.sort_order or _DEFAULT_SORT_ORDER,
             )
 

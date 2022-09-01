@@ -195,6 +195,10 @@ def test_year_range_filters(
 
     assert response.status_code == 200
     assert query_spy.call_count == 1
+    # Check that search query default order is not modified unless requested
+    assert query_body["aggs"]["sample"]["aggs"]["top_docs"]["terms"]["order"] == {
+        "top_hit": "desc"
+    }
 
     if year_range[0] or year_range[1]:
         expected_range_check = {
