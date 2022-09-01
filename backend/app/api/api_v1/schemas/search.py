@@ -44,7 +44,7 @@ class SearchRequestBody(BaseModel):
     """The request body expected by the search API endpoint."""
 
     query_string: str
-    exact_match: bool
+    exact_match: bool = False
     max_passages_per_doc: int = 10  # TODO: decide on default
 
     # TODO: Improve filters to allow generics & use filter types
