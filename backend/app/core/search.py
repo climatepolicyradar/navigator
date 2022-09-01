@@ -1,3 +1,4 @@
+import json
 import time
 import logging
 import os
@@ -6,6 +7,7 @@ from enum import Enum
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
 
 from opensearchpy import OpenSearch
+from opensearchpy import JSONSerializer as jss
 from sentence_transformers import SentenceTransformer
 
 from app.core.config import (
@@ -78,6 +80,7 @@ _FILTER_FIELD_MAP: Mapping[FilterField, str] = {
 _REQUIRED_FIELDS = ["document_name"]
 _DEFAULT_SORT_FIELD = SortField.DATE
 _DEFAULT_SORT_ORDER = SortOrder.DESCENDING
+_JSON_SERIALIZER = jss()
 
 
 class QueryMode(Enum):
@@ -138,6 +141,14 @@ class OpenSearchResponse:
 
     raw_response: Mapping[str, Any]
     request_time_ms: int
+
+
+class OpenSearchEncoder(json.JSONEncoder):
+    """Special json encoder for OpenSearch types"""
+
+    def default(self, obj):
+        """Override"""
+        return _JSON_SERIALIZER.default(obj)
 
 
 class OpenSearchConnection:
@@ -212,7 +223,7 @@ class OpenSearchConnection:
             "Search request completed",
             extra={
                 "props": {
-                    "search_request": request_body,
+                    "search_request": json.dumps(request_body, cls=OpenSearchEncoder),
                     "search_request_time": search_request_time,
                 },
             },
