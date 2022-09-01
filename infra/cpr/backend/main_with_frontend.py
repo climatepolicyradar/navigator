@@ -12,12 +12,6 @@ from cpr.plumbing.main import Plumbing
 from cpr.storage.main import Storage
 
 # for logging, see https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_docker.container.console.html#docker-env-cfg.dc-customized-logging
-from cpr.util.bluegreen import (
-    get_app_domain_for_current_stack,
-    get_bluegreen_status_for_current_stack,
-    get_pdf_embed_key_for_current_stack,
-    get_self_registration_enabled_for_current_stack,
-)
 
 DOCKER_COMPOSE_TEMPLATE = """version: '3.7'
 
@@ -81,37 +75,43 @@ class Backend:
         plumbing: Plumbing,
         storage: Storage,
     ):
+        target_environment = pulumi.get_stack()
         # get all config
         config = pulumi.Config()
         backend_secret_key = config.require_secret("backend_secret_key")
-        opensearch_user = config.require("opensearch_user")
+        opensearch_user = config.require_secret("opensearch_user")
         opensearch_password = config.require_secret("opensearch_password")
-        opensearch_url = config.require("opensearch_url")
-        pulumi.export("opensearch_url", opensearch_url)
-        sendgrid_api_token = config.require("sendgrid_api_token")
-        sendgrid_from_email = config.require("sendgrid_from_email")
-        sendgrid_enabled = config.require("sendgrid_enabled")
-        target_environment = get_bluegreen_status_for_current_stack()
-        app_domain_for_current_stack = get_app_domain_for_current_stack()
-        pulumi.export("app_domain_for_current_stack", app_domain_for_current_stack)
-        self_registration_enabled = get_self_registration_enabled_for_current_stack()
-        pulumi.export("self_registration_enabled", self_registration_enabled)
-        public_app_url = f"https://{app_domain_for_current_stack}"
-        frontend_api_url = f"https://{app_domain_for_current_stack}/api/v1"
-        pulumi.export("frontend_api_url", frontend_api_url)
-        frontend_api_url_login = f"https://{app_domain_for_current_stack}/api/tokens"
-        pulumi.export("frontend_api_url_login", frontend_api_url_login)
-        frontend_pdf_embed_key = get_pdf_embed_key_for_current_stack()
+        opensearch_url = config.require_secret("opensearch_url")
+        sendgrid_api_token = config.require_secret("sendgrid_api_token")
+        sendgrid_from_email = config.require_secret("sendgrid_from_email")
+        sendgrid_enabled = config.require_secret("sendgrid_enabled")
+        frontend_pdf_embed_key = config.require_secret("pdf_embed_key")
 
-        # context has to be one level below 'backend' as backend Dockerfile references '../common'
-        backend_docker_context = (Path(os.getcwd()) / "..").resolve().as_posix()
+        app_domain = config.require("domain")
+        frontend_api_url = f"https://{app_domain}/api/v1"
+        frontend_api_url_login = f"https://{app_domain}/api/tokens"
+        public_app_url = f"https://{app_domain}"
+        self_registration_enabled = config.require("self_registration_enabled")
+
+        # pulumi.export("opensearch_url", opensearch_url)
+        pulumi.export("app_domain", app_domain)
+        pulumi.export("self_registration_enabled", self_registration_enabled)
+        pulumi.export("frontend_api_url", frontend_api_url)
+        pulumi.export("frontend_api_url_login", frontend_api_url_login)
+        pulumi.export("public_app_url", public_app_url)
+
+        # backend
+        backend_docker_context = (
+            (Path(os.getcwd()) / ".." / "backend").resolve().as_posix()
+        )
         backend_dockerfile = (
             (Path(os.getcwd()) / ".." / "backend" / "Dockerfile").resolve().as_posix()
         )
         backend_image = docker.Image(
             f"{target_environment}-backend-docker-image",
             build=docker.DockerBuild(
-                context=backend_docker_context, dockerfile=backend_dockerfile
+                context=backend_docker_context,
+                dockerfile=backend_dockerfile,
             ),
             image_name=deployment_resources.navigator_backend_repo.repository_url,
             skip_push=False,
@@ -119,26 +119,34 @@ class Backend:
         )
 
         # frontend
-        frontend_docker_context = (
-            (Path(os.getcwd()) / ".." / "frontend").resolve().as_posix()
-        )
-        frontend_dockerfile = (
-            (Path(os.getcwd()) / ".." / "frontend" / "Dockerfile").resolve().as_posix()
-        )
-        frontend_image = docker.Image(
-            f"{target_environment}-frontend-docker-image",
-            build=docker.DockerBuild(
-                context=frontend_docker_context,
-                dockerfile=frontend_dockerfile,
-                args={
-                    "NEXT_PUBLIC_API_URL": frontend_api_url,
-                    "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
-                    "NEXT_PUBLIC_ADOBE_API_KEY": frontend_pdf_embed_key,
-                },
-            ),
-            image_name=deployment_resources.navigator_frontend_repo.repository_url,
-            skip_push=False,
-            registry=deployment_resources.docker_registry,
+        def build_frontend_image(args):
+            pdf_embed_key = args[0]
+            frontend_docker_context = (
+                (Path(os.getcwd()) / ".." / "frontend").resolve().as_posix()
+            )
+            frontend_dockerfile = (
+                (Path(os.getcwd()) / ".." / "frontend" / "Dockerfile")
+                .resolve()
+                .as_posix()
+            )
+            return docker.Image(
+                f"{target_environment}-frontend-docker-image",
+                build=docker.DockerBuild(
+                    context=frontend_docker_context,
+                    dockerfile=frontend_dockerfile,
+                    args={
+                        "NEXT_PUBLIC_API_URL": frontend_api_url,
+                        "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
+                        "NEXT_PUBLIC_ADOBE_API_KEY": pdf_embed_key,
+                    },
+                ),
+                image_name=deployment_resources.navigator_frontend_repo.repository_url,
+                skip_push=False,
+                registry=deployment_resources.docker_registry,
+            )
+
+        frontend_image = pulumi.Output.all(frontend_pdf_embed_key).apply(
+            build_frontend_image
         )
 
         # nginx
@@ -149,7 +157,8 @@ class Backend:
         nginx_image = docker.Image(
             f"{target_environment}-nginx-docker-image",
             build=docker.DockerBuild(
-                context=nginx_docker_context, dockerfile=nginx_dockerfile
+                context=nginx_docker_context,
+                dockerfile=nginx_dockerfile,
             ),
             image_name=deployment_resources.navigator_nginx_repo.repository_url,
             skip_push=False,
@@ -228,7 +237,7 @@ class Backend:
             f"{target_environment}-backend-beanstalk-application"
         )
         backend_app_version = aws.elasticbeanstalk.ApplicationVersion(
-            f"{target_environment}-navigator-api-version",
+            f"{target_environment}-app-api-version",
             application=backend_eb_app,
             bucket=deployment_resources.deploy_bucket.id,
             key=deploy_resource.id,
@@ -245,7 +254,7 @@ class Backend:
         pulumi.export("solution_stack", solution_stack)
 
         backend_eb_env = aws.elasticbeanstalk.Environment(
-            f"{target_environment}-navigator-api-environment",
+            f"{target_environment}-app-api-environ",
             application=backend_eb_app.name,
             version=backend_app_version,
             solution_stack_name=solution_stack.name,

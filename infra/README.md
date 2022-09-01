@@ -27,7 +27,8 @@ The code is broken up into these conceptual parts:
 - deployment_resources: single-use components that facilitate deployment, e.g. container registry, and the bucket which
   holds the beanstalk deployment manifest
 - plumbing: all the invisible parts, like security groups, roles, VPCs, etc
-- tasks: lambda tasks that need to run on occasion, like database migrations
+
+We may want to run periodic tasks, an approach could be inspired by https://github.com/sevenwestmedia-labs/pulumi/tree/master/packages/run-fargate-task
 
 ### Bastion server
 
@@ -58,10 +59,7 @@ TODO: document AWS CLI requirements
 
 ### Deployment stacks
 
-We have two stacks: `ant` and `dev`, which due to a quirk of fate have the following mapping (these names will be updated in the future):
-
-- ant => dev.app.climatepolicyradar.org
-- dev => app.climatepolicyradar.org
+We have two stacks: `staging` and `production`.
 
 To see the available stacks:
 
@@ -89,13 +87,13 @@ pulumi stack select <stack name>
 Select the stack for the development environment
 
 ```shell
-pulumi stack select ant
+pulumi stack select staging
 ```
 
 Deploy the stack (make sure to inspect the console output to confirm that you are deploying to the expected environment).
 
 ```shell
-pulumi up
+AWS_PROFILE=dev pulumi up
 ```
 
 (pulumi up will often fail after building the required docker images, when this happens simply run `pulumi up` again).
@@ -112,17 +110,9 @@ When the testing is complete & everyone is happy, a deploy can be main against t
 TODO: instructions for 2 main scenarios (those with/without downtime).
 
 ```shell
-pulumi stack select dev
-pulumi up
+pulumi stack select production
+AWS_PROFILE=prod pulumi up
 ```
-
-### The deployment status
-
-TODO: revisit this file name & content
-
-The file [blue-green-status.json](./blue-green-status.json) contains a mapping from stack name to environment (currently "dev" or "prod").
-
-The Pulumi scripts look at this file to decide how to configure certain variables.
 
 ## Troubleshooting
 

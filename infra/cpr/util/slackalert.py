@@ -2,19 +2,16 @@ import requests
 import pulumi
 import os
 
-from cpr.util.bluegreen import get_bluegreen_status_for_current_stack
-
 
 def _post_message(webhook_url: str, msg: str):
     # from https://docs.github.com/en/actions/learn-github-actions/environment-variables#default-environment-variables
     user = os.environ.get("GITHUB_ACTOR", os.environ.get("USER", "Anon"))
     is_ci = bool(os.environ.get("CI", False))
 
-    is_ci_msg = "on CI" if is_ci else "outside of CI"
+    is_ci_msg = "through CI" if is_ci else "outside of CI"
     stack = pulumi.get_stack()
-    env_name = get_bluegreen_status_for_current_stack()
 
-    message = f"{env_name} environment (aka pulumi stack '{stack}') is being deployed by {user} {is_ci_msg}."
+    message = f"{stack} environment is being deployed by {user} {is_ci_msg}."
 
     if msg:
         message += f" {msg}"

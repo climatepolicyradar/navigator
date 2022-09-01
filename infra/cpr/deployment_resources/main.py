@@ -5,8 +5,6 @@ import pulumi
 import pulumi_aws as aws
 import pulumi_docker as docker
 
-from cpr.util.bluegreen import get_bluegreen_status_for_current_stack
-
 default_tag = {
     "CPR-Created-By": "pulumi",
     "CPR-Pulumi-Stack-Name": pulumi.get_stack(),
@@ -24,7 +22,7 @@ class DeploymentResources:
     deploy_bucket: aws.s3.Bucket
 
     def __init__(self):
-        target_environment = get_bluegreen_status_for_current_stack()
+        target_environment = pulumi.get_stack()
 
         self.navigator_frontend_repo = aws.ecr.Repository(
             f"navigator-frontend-{target_environment}",
@@ -134,7 +132,8 @@ class DeploymentResources:
             self.navigator_backend_repo.repository_url,
         )
         pulumi.export(
-            "navigator_nginx.repository_url", self.navigator_nginx_repo.repository_url
+            "navigator_nginx.repository_url",
+            self.navigator_nginx_repo.repository_url,
         )
 
         # a bucket which stores deployment resources, like Dockerrun.aws.json (for Elastic Beanstalk)
