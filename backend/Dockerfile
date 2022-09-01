@@ -11,7 +11,7 @@ RUN pip install --upgrade pip
 RUN pip install "poetry==1.1.8"
 
 # Create layer for dependencies
-COPY ./backend/poetry.lock ./backend/pyproject.toml ./
+COPY poetry.lock pyproject.toml ./
 
 # Install python dependencies using poetry
 RUN poetry config virtualenvs.create false
@@ -22,7 +22,7 @@ RUN mkdir /models
 RUN python -c "from sentence_transformers import SentenceTransformer; SentenceTransformer('sentence-transformers/msmarco-distilbert-dot-v5', cache_folder='/models')"
 
 # Copy files to image
-COPY ./backend .
+COPY . .
 
 ENV PYTHONPATH=/app
 CMD python app/main.py
