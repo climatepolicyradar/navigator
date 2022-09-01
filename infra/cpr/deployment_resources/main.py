@@ -22,11 +22,10 @@ class DeploymentResources:
     deploy_bucket: aws.s3.Bucket
 
     def __init__(self):
-        config = pulumi.Config()
-        resource_tag = pulumi.get_stack()
+        target_environment = pulumi.get_stack()
 
         self.navigator_frontend_repo = aws.ecr.Repository(
-            f"navigator-frontend-{resource_tag}",
+            f"navigator-frontend-{target_environment}",
             # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
             #     scan_on_push=True,
             # ),
@@ -34,7 +33,7 @@ class DeploymentResources:
             tags=({"key": "created-by", "value": "pulumi"}),
         )
         self.navigator_backend_repo = aws.ecr.Repository(
-            f"navigator-backend-{resource_tag}",
+            f"navigator-backend-{target_environment}",
             # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
             #     scan_on_push=True,
             # ),
@@ -42,7 +41,7 @@ class DeploymentResources:
             tags=({"key": "created-by", "value": "pulumi"}),
         )
         self.navigator_nginx_repo = aws.ecr.Repository(
-            f"navigator-nginx-{resource_tag}",
+            f"navigator-nginx-{target_environment}",
             # image_scanning_configuration=aws.ecr.RepositoryImageScanningConfigurationArgs(
             #     scan_on_push=True,
             # ),
@@ -52,7 +51,7 @@ class DeploymentResources:
 
         # keep the last 5 images
         frontend_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
-            f"navigator-frontend-{resource_tag}-repository-lifecycle-policy",
+            f"navigator-frontend-{target_environment}-repository-lifecycle-policy",
             repository=self.navigator_frontend_repo.name,
             policy="""{
                 "rules": [
@@ -72,7 +71,7 @@ class DeploymentResources:
             }""",
         )
         backend_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
-            f"navigator-backend-{resource_tag}-repository-lifecycle-policy",
+            f"navigator-backend-{target_environment}-repository-lifecycle-policy",
             repository=self.navigator_backend_repo.name,
             policy="""{
                 "rules": [
@@ -92,7 +91,7 @@ class DeploymentResources:
             }""",
         )
         nginx_lifecycle_policy = aws.ecr.LifecyclePolicy(  # noqa:F841
-            f"navigator-nginx-{resource_tag}-repository-lifecycle-policy",
+            f"navigator-nginx-{target_environment}-repository-lifecycle-policy",
             repository=self.navigator_nginx_repo.name,
             policy="""{
                 "rules": [
@@ -133,7 +132,8 @@ class DeploymentResources:
             self.navigator_backend_repo.repository_url,
         )
         pulumi.export(
-            "navigator_nginx.repository_url", self.navigator_nginx_repo.repository_url
+            "navigator_nginx.repository_url",
+            self.navigator_nginx_repo.repository_url,
         )
 
         # a bucket which stores deployment resources, like Dockerrun.aws.json (for Elastic Beanstalk)

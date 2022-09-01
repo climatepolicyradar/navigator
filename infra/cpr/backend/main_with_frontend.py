@@ -75,7 +75,7 @@ class Backend:
         plumbing: Plumbing,
         storage: Storage,
     ):
-        resource_tag = pulumi.get_stack()
+        target_environment = pulumi.get_stack()
         # get all config
         config = pulumi.Config()
         backend_secret_key = config.require_secret("backend_secret_key")
@@ -86,14 +86,14 @@ class Backend:
         sendgrid_from_email = config.require_secret("sendgrid_from_email")
         sendgrid_enabled = config.require_secret("sendgrid_enabled")
         frontend_pdf_embed_key = config.require_secret("pdf_embed_key")
-        
+
         app_domain = config.require("domain")
         frontend_api_url = f"https://{app_domain}/api/v1"
         frontend_api_url_login = f"https://{app_domain}/api/tokens"
         public_app_url = f"https://{app_domain}"
         self_registration_enabled = config.require("self_registration_enabled")
-       
-        #pulumi.export("opensearch_url", opensearch_url)
+
+        # pulumi.export("opensearch_url", opensearch_url)
         pulumi.export("app_domain", app_domain)
         pulumi.export("self_registration_enabled", self_registration_enabled)
         pulumi.export("frontend_api_url", frontend_api_url)
@@ -101,12 +101,14 @@ class Backend:
         pulumi.export("public_app_url", public_app_url)
 
         # backend
-        backend_docker_context = (Path(os.getcwd()) / ".." / "backend").resolve().as_posix()
+        backend_docker_context = (
+            (Path(os.getcwd()) / ".." / "backend").resolve().as_posix()
+        )
         backend_dockerfile = (
             (Path(os.getcwd()) / ".." / "backend" / "Dockerfile").resolve().as_posix()
         )
         backend_image = docker.Image(
-            f"{resource_tag}-backend-docker-image",
+            f"{target_environment}-backend-docker-image",
             build=docker.DockerBuild(
                 context=backend_docker_context,
                 dockerfile=backend_dockerfile,
@@ -117,26 +119,34 @@ class Backend:
         )
 
         # frontend
-        frontend_docker_context = (
-            (Path(os.getcwd()) / ".." / "frontend").resolve().as_posix()
-        )
-        frontend_dockerfile = (
-            (Path(os.getcwd()) / ".." / "frontend" / "Dockerfile").resolve().as_posix()
-        )
-        frontend_image = docker.Image(
-            f"{resource_tag}-frontend-docker-image",
-            build=docker.DockerBuild(
-                context=frontend_docker_context,
-                dockerfile=frontend_dockerfile,
-                args={
-                    "NEXT_PUBLIC_API_URL": frontend_api_url,
-                    "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
-                    "NEXT_PUBLIC_ADOBE_API_KEY": frontend_pdf_embed_key,
-                },
-            ),
-            image_name=deployment_resources.navigator_frontend_repo.repository_url,
-            skip_push=False,
-            registry=deployment_resources.docker_registry,
+        def build_frontend_image(args):
+            pdf_embed_key = args[0]
+            frontend_docker_context = (
+                (Path(os.getcwd()) / ".." / "frontend").resolve().as_posix()
+            )
+            frontend_dockerfile = (
+                (Path(os.getcwd()) / ".." / "frontend" / "Dockerfile")
+                .resolve()
+                .as_posix()
+            )
+            return docker.Image(
+                f"{target_environment}-frontend-docker-image",
+                build=docker.DockerBuild(
+                    context=frontend_docker_context,
+                    dockerfile=frontend_dockerfile,
+                    args={
+                        "NEXT_PUBLIC_API_URL": frontend_api_url,
+                        "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
+                        "NEXT_PUBLIC_ADOBE_API_KEY": pdf_embed_key,
+                    },
+                ),
+                image_name=deployment_resources.navigator_frontend_repo.repository_url,
+                skip_push=False,
+                registry=deployment_resources.docker_registry,
+            )
+
+        frontend_image = pulumi.Output.all(frontend_pdf_embed_key).apply(
+            build_frontend_image
         )
 
         # nginx
@@ -145,9 +155,10 @@ class Backend:
             (Path(os.getcwd()) / ".." / "nginx" / "Dockerfile").resolve().as_posix()
         )
         nginx_image = docker.Image(
-            f"{resource_tag}-nginx-docker-image",
+            f"{target_environment}-nginx-docker-image",
             build=docker.DockerBuild(
-                context=nginx_docker_context, dockerfile=nginx_dockerfile
+                context=nginx_docker_context,
+                dockerfile=nginx_dockerfile,
             ),
             image_name=deployment_resources.navigator_nginx_repo.repository_url,
             skip_push=False,
@@ -209,7 +220,7 @@ class Backend:
             # compose_path.chmod(0o444)
 
             deploy_resource = aws.s3.BucketObject(
-                f"{resource_tag}-backend-beanstalk-docker-manifest",
+                f"{target_environment}-backend-beanstalk-docker-manifest",
                 bucket=deployment_resources.deploy_bucket,
                 key=datetime.datetime.today().strftime(
                     "%Y/%m/%d/%H:%M:%S/docker-compose.yml"
@@ -223,10 +234,10 @@ class Backend:
 
         # create Elastic Beanstalk app
         backend_eb_app = aws.elasticbeanstalk.Application(
-            f"{resource_tag}-backend-beanstalk-application"
+            f"{target_environment}-backend-beanstalk-application"
         )
         backend_app_version = aws.elasticbeanstalk.ApplicationVersion(
-            f"{resource_tag}-app-api-version",
+            f"{target_environment}-app-api-version",
             application=backend_eb_app,
             bucket=deployment_resources.deploy_bucket.id,
             key=deploy_resource.id,
@@ -243,7 +254,7 @@ class Backend:
         pulumi.export("solution_stack", solution_stack)
 
         backend_eb_env = aws.elasticbeanstalk.Environment(
-            f"{resource_tag}-app-api-environ",
+            f"{target_environment}-app-api-environ",
             application=backend_eb_app.name,
             version=backend_app_version,
             solution_stack_name=solution_stack.name,

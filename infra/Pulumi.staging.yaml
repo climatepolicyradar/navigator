@@ -8,11 +8,11 @@ config:
     secure: AAABAPyX1rn9gbj9ch5L4Lgqc/82btrJuNAKtHEQqihE9j1EkPbyxTUP2/xrcqhUtA==
   infra:domain: dev.app.climatepolicyradar.org
   infra:opensearch_password:
-    secure: AAABAKELLGI2dutnlKwN+haqdv9+xRdPoNfVKuUL+86DlPLY/pNtBMJxciQ=
+    secure: AAABAPsD32wpPpzGnLLB2FHlylL+SqyyEs3aMZebHlpn+7XjYwPSo5G2PF4=
   infra:opensearch_url:
-    secure: AAABABvIN5U9oyhoBYZM4C3DF8cN+D7bxvsn2VwOtEARsP2FVEPhtkXxYJ0gIA3t+uhI7LqNgOPFf3rT4oEhEjbGvdWOljArt4MGxNv8j9kC/1UevxC3ZdKeH1G/1zwFn14tHQ3FU7XdEkSUXsHsn6RvsiEY0tzi
+    secure: AAABAKE+MR/HNjLtu7AMhKq1ztm6wK5bPIknwNkE8qskop2MSUmL7X35IwpWXriBTEXIvRk2JpTX88Mgh3AkQSyEuqkSosqVMoVfPJZDy19nlkObV/jNc2cZZQhJgQ7q/QZEnPpM7Uzy6g2+3P/4d01gjQ==
   infra:opensearch_user:
-    secure: AAABAJPqWR5PwwtfT5/hdsW/vDGICsFgnQwJajH/PJ9+KaLizBZeUg+Z
+    secure: AAABAHAi2fgQeXBocdVqETHkcSsPNKePXXZsSbfeyKshvxF3n7Fg
   infra:pdf_embed_key:
     secure: AAABANVQDVcdpCdPwTUPoScZ/wCQd7jaFlDRtoqwLy1dzaNAl7Nt3O4mthQEYJj1BWZwub63brBXnVCCli49Bg==
   infra:self_registration_enabled: "False"
