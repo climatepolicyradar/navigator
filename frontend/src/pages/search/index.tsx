@@ -131,10 +131,10 @@ const Search = () => {
     const val = e.currentTarget.textContent;
     let category = val;
     // map to values that the api knows
-    if (val === "Legislative") {
+    if (val === "Legislation") {
       category = "Law";
     }
-    if (val === "Executive") {
+    if (val === "Policies") {
       category = "Policy";
     }
     const action = val === "All" ? "delete" : "update";
@@ -203,10 +203,10 @@ const Search = () => {
     let index = documentCategories.indexOf(searchCriteria.keyword_filters?.categories[0]);
     // ['All', 'Executive', 'Legislative', 'Litigation']
     // hack to get correct previously selected category
-    if (searchCriteria.keyword_filters?.categories[0] === "Policy") {
+    if (searchCriteria.keyword_filters?.categories[0] === "Law") {
       index = 1;
     }
-    if (searchCriteria.keyword_filters?.categories[0] === "Law") {
+    if (searchCriteria.keyword_filters?.categories[0] === "Policy") {
       index = 2;
     }
     const catIndex = index === -1 ? 0 : index;

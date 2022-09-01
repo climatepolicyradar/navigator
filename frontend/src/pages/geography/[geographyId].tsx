@@ -58,19 +58,9 @@ const CountryPage = () => {
   const documentCategories = DOCUMENT_CATEGORIES;
   const TARGETS_SHOW = 5;
 
-  const handleDocumentCategoryClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const handleDocumentCategoryClick = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>, index: number) => {
     e.preventDefault();
-    const val = e.currentTarget.textContent;
-    if (val === "Executive") {
-      return setselectedCategoryIndex(1);
-    }
-    if (val === "Legislative") {
-      return setselectedCategoryIndex(2);
-    }
-    if (val === "Litigation") {
-      return setselectedCategoryIndex(3);
-    }
-    return setselectedCategoryIndex(0);
+    return setselectedCategoryIndex(index);
   };
 
   const handleDocumentSeeMoreClick = (event: React.FormEvent<HTMLButtonElement>) => {
@@ -96,21 +86,21 @@ const CountryPage = () => {
         </div>
       ));
     }
-    // Executive
+    // Legislative
     if (selectedCategoryIndex === 1) {
-      return summary.top_documents.Policy.length === 0
-        ? renderEmpty("Executive")
-        : summary.top_documents.Policy.map((doc) => (
+      return summary.top_documents.Law.length === 0
+        ? renderEmpty("Legislative")
+        : summary.top_documents.Law.map((doc) => (
             <div key={doc.document_id} className="mt-4 mb-10">
               <RelatedDocumentFull document={doc} />
             </div>
           ));
     }
-    // Legislative
+    // Executive
     if (selectedCategoryIndex === 2) {
-      return summary.top_documents.Law.length === 0
-        ? renderEmpty("Legislative")
-        : summary.top_documents.Law.map((doc) => (
+      return summary.top_documents.Policy.length === 0
+        ? renderEmpty("Executive")
+        : summary.top_documents.Policy.map((doc) => (
             <div key={doc.document_id} className="mt-4 mb-10">
               <RelatedDocumentFull document={doc} />
             </div>
@@ -154,9 +144,9 @@ const CountryPage = () => {
             <CountryHeader country={geography} />
             <SingleCol>
               <section className="grid grid-cols-2 md:grid-cols-3 gap-px rounded mb-8">
-                {<KeyDetail detail="Executive" extraDetail="Policies" amount={summary.document_counts.Policy} icon={<PolicyIcon />} />}
-                {<KeyDetail detail="Legislative" extraDetail="Laws, Decrees" amount={summary.document_counts.Law} icon={<LawIcon />} />}
-                {<KeyDetail detail="Litigation" extraDetail="Cases" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
+                {<KeyDetail detail="Legislation" extraDetail="from legislative branch: laws, acts, constitutions" amount={summary.document_counts.Law} icon={<LawIcon />} />}
+                {<KeyDetail detail="Policies" extraDetail="from executive branch: policies, strategies, decrees, action plans" amount={summary.document_counts.Policy} icon={<PolicyIcon />} />}
+                {<KeyDetail detail="Litigation" extraDetail="court cases and tribunals" amount={summary.document_counts.Case} icon={<CaseIcon />} />}
               </section>
               {hasEvents && (
                 <section className="mt-12">
