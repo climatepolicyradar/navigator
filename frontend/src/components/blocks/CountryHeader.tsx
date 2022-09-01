@@ -27,9 +27,9 @@ export const CountryHeader = ({ country }: TProps) => {
           <h1 className="mb-6">{name}</h1>
           <div className="grid grid-cols-2 gap-6 items-center">
             <div className="font-semibold text-blue-700 text-xl">{getCountryRegion()}</div>
-            {federal && (
-              <div className="font-semibold text-blue-700 text-xl">Federative {federal && federal_details && <span className="font-light text-lg">({federal_details})</span>}</div>
-            )}
+            <div className="font-semibold text-blue-700 text-xl">
+              {federal && <>Federative {federal && federal_details && <span className="font-light text-lg">({federal_details})</span>}</>}
+            </div>
             {political_groups !== "" && (
               <div>
                 <div className="text-blue-700 text-lg">Political Groups</div>
