@@ -97,6 +97,6 @@ export type TAssociatedDocument = {
   description: string;
   name: string;
   publication_ts: string;
-  related_id: number;
+  document_id: number;
   category?: TCategory;
 };
