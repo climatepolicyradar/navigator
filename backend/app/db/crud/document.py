@@ -1,7 +1,6 @@
 import logging
 from datetime import datetime
 from typing import Sequence, Union, cast
-from app.db.models.document import DocumentRelationship, Relationship
 
 from fastapi import (
     HTTPException,
@@ -41,6 +40,7 @@ from app.db.models import (
     DocumentInstrument,
     DocumentKeyword,
     DocumentLanguage,
+    DocumentRelationship,
     DocumentResponse,
     DocumentSector,
     Category,
@@ -51,6 +51,7 @@ from app.db.models import (
     Instrument,
     Keyword,
     Language,
+    Relationship,
     Response,
     Sector,
     Source,
@@ -316,65 +317,7 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
     ).all()
 
     # Get all associated documents
-    # start with all documents with a reference from this document_id
-    related_documents_to = set(
-        DocumentOverviewResponse(
-            document_id=d.id,
-            name=d.name,
-            description=d.description,
-            country_code=g.value,
-            country_name=g.display_value,
-            publication_ts=d.publication_ts,
-        )
-        for _, d, g in (
-            db.query(Association, Document, Geography)
-            .filter(Association.document_id_from == document_id)
-            .join(Document, Association.document_id_to == Document.id)
-            .join(Geography, Document.geography_id == Geography.id)
-        ).all()
-    )
-    # if the above query has results, it contains a "master doc" for a group,
-    # so collect all children
-    related_to_master_documents = set()
-    # for alpha this list should have at most one entry
-    for related_doc in related_documents_to:
-        related_to_master_documents |= set(
-            DocumentOverviewResponse(
-                document_id=d.id,
-                name=d.name,
-                description=d.description,
-                country_code=g.value,
-                country_name=g.display_value,
-                publication_ts=d.publication_ts,
-            )
-            for _, d, g in (
-                db.query(Association, Document, Geography)
-                .filter(Association.document_id_to == related_doc.document_id)
-                .filter(Association.document_id_from != document_id)
-                .join(Document, Association.document_id_from == Document.id)
-                .join(Geography, Document.geography_id == Geography.id)
-            ).all()
-        )
-    # finally find all (child) documents that refer to this document_id
-    related_documents_from = set(
-        DocumentOverviewResponse(
-            document_id=d.id,
-            name=d.name,
-            description=d.description,
-            country_code=g.value,
-            country_name=g.display_value,
-            publication_ts=d.publication_ts,
-        )
-        for _, d, g in (
-            db.query(Association, Document, Geography)
-            .filter(Association.document_id_to == document_id)
-            .join(Document, Association.document_id_from == Document.id)
-            .join(Geography, Document.geography_id == Geography.id)
-        ).all()
-    )
-    related_docs = (
-        related_documents_to | related_to_master_documents | related_documents_from
-    )
+    related_docs = get_related_documents(db, document_id)
 
     # Now build the required response object
     document, geography, doc_type, category, source = document_data.first()
@@ -595,6 +538,49 @@ def write_metadata(
         db.add(doc_keyword)
 
 
+def get_related_documents(db: Session, document_id: int):
+    """Gets all the other documents this document is related to.
+
+    TODO: return this as structured, as at the moment we return a flat list
+    """
+    print(f"### get_related_documents for: {document_id}")
+    query_all_relationships_of_document = db.query(
+        DocumentRelationship.relationship_id
+    ).filter(DocumentRelationship.document_id == document_id)
+
+    print(
+        f"### get_related_documents searching: {db.query(DocumentRelationship).count()}"
+    )
+    print(
+        f"### get_related_documents found relns: {query_all_relationships_of_document.count()}"
+    )
+
+    related_docs = set(
+        DocumentOverviewResponse(
+            document_id=d.id,
+            name=d.name,
+            description=d.description,
+            country_code=g.value,
+            country_name=g.display_value,
+            publication_ts=d.publication_ts,
+        )
+        for _, d, g in (
+            db.query(DocumentRelationship, Document, Geography)
+            .join(Geography, Document.geography_id == Geography.id)
+            .join(DocumentRelationship, DocumentRelationship.document_id == Document.id)
+            .filter(
+                DocumentRelationship.relationship_id.in_(
+                    query_all_relationships_of_document
+                )
+            )
+            .filter(Document.id != document_id)
+        ).all()
+    )
+    print(f"### get_related_documents found: {len(related_docs)}")
+
+    return related_docs
+
+
 def create_relationship(
     db: Session,
     name: str,
@@ -608,13 +594,43 @@ def create_relationship(
     return RelationshipEntityResponse.from_orm(new_rel)
 
 
-def get_relationships(
-    db: Session,
-) -> RelationshipGetResponse:
+def get_relationships(db: Session) -> RelationshipGetResponse:
     return RelationshipGetResponse(
         relationships=[
             RelationshipEntityResponse.from_orm(r) for r in db.query(Relationship).all()
         ]
+    )
+
+
+def get_relationship_by_id(
+    db: Session, relationship_id: int
+) -> RelationshipEntityResponse:
+    return RelationshipEntityResponse.from_orm(
+        db.query(Relationship).get(relationship_id)
+    )
+
+
+def get_documents_in_relationship(db: Session, relationship_id: int):
+    """Gets all the other documents this document is related to.
+
+    TODO: return this as structured, as at the moment we return a flat list
+    """
+
+    return list(
+        DocumentOverviewResponse(
+            document_id=d.id,
+            name=d.name,
+            description=d.description,
+            country_code=g.value,
+            country_name=g.display_value,
+            publication_ts=d.publication_ts,
+        )
+        for _, d, g in (
+            db.query(DocumentRelationship, Document, Geography)
+            .join(Geography, Document.geography_id == Geography.id)
+            .join(DocumentRelationship, DocumentRelationship.document_id == Document.id)
+            .filter(DocumentRelationship.relationship_id == relationship_id)
+        ).all()
     )
 
 
@@ -628,7 +644,20 @@ def create_document_relationship(
     db.commit()
 
 
-# TODO: remove this function
+def remove_document_relationship(
+    db: Session, document_id: int, relationship_id: int
+) -> None:
+    obj = (
+        db.query(DocumentRelationship)
+        .filter(DocumentRelationship.document_id == document_id)
+        .filter(DocumentRelationship.relationship_id == relationship_id)
+        .one()
+    )
+    db.delete(obj)
+    db.commit()
+
+
+# TODO: BAK-1137 remove this function
 def create_document_association(
     db: Session,
     document_id_from: int,

@@ -28,9 +28,12 @@ from app.db.crud.document import (
     UnknownMetadataError,
     create_document_association,
     create_document_relationship,
+    remove_document_relationship,
     create_relationship,
     get_document_detail,
     get_document_overviews,
+    get_documents_in_relationship,
+    get_relationship_by_id,
     get_relationships,
     persist_document_and_metadata,
 )
@@ -40,6 +43,7 @@ from app.api.api_v1.schemas.document import (
     DocumentAssociationCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
+    RelationshipAndDocumentsGetResponse,
     RelationshipCreateRequest,
     RelationshipEntityResponse,
     RelationshipGetResponse,
@@ -151,7 +155,7 @@ def document_upload(
     }
 
 
-# TODO: Remove this function
+# TODO: BAK-1137 Remove this function
 @documents_router.post(
     "/associations", response_model=DocumentAssociationCreateResponse
 )
@@ -195,7 +199,7 @@ async def get_relationship(
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
-    """Create a relationship"""
+    """Get all relationsgips"""
     return get_relationships(db)
 
 
@@ -214,4 +218,39 @@ async def post_document_relationship(
         db,
         document_id,
         relationship_id,
+    )
+
+
+@documents_router.delete(
+    "/document-relationship/{relationship_id}/document/{document_id}"
+)
+async def delete_document_relationship(
+    request: Request,
+    document_id: int,
+    relationship_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Removes a document-relationship link"""
+    remove_document_relationship(
+        db,
+        document_id,
+        relationship_id,
+    )
+
+
+@documents_router.get(
+    "/document-relationship/{relationship_id}",
+    response_model=RelationshipAndDocumentsGetResponse,
+)
+async def get_relationship_documents(
+    request: Request,
+    relationship_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Get a single relationship and all documents"""
+    return RelationshipAndDocumentsGetResponse(
+        documents=get_documents_in_relationship(db, relationship_id),
+        relationship=get_relationship_by_id(db, relationship_id),
     )
