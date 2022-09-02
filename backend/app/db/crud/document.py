@@ -317,7 +317,10 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
     ).all()
 
     # Get all associated documents
-    related_docs = get_related_documents(db, document_id)
+    related_docs = _get_associated_documents(db, document_id)
+
+    # TODO: BAK-1137 switch over to using this
+    # related_docs = get_related_documents(db, document_id)
 
     # Now build the required response object
     document, geography, doc_type, category, source = document_data.first()
@@ -538,7 +541,68 @@ def write_metadata(
         db.add(doc_keyword)
 
 
-def get_related_documents(db: Session, document_id: int):
+def _get_associated_documents(db: Session, document_id: int):
+    # Get all associated documents
+    # start with all documents with a reference from this document_id
+    related_documents_to = set(
+        DocumentOverviewResponse(
+            document_id=d.id,
+            name=d.name,
+            description=d.description,
+            country_code=g.value,
+            country_name=g.display_value,
+            publication_ts=d.publication_ts,
+        )
+        for _, d, g in (
+            db.query(Association, Document, Geography)
+            .filter(Association.document_id_from == document_id)
+            .join(Document, Association.document_id_to == Document.id)
+            .join(Geography, Document.geography_id == Geography.id)
+        ).all()
+    )
+    # if the above query has results, it contains a "master doc" for a group,
+    # so collect all children
+    related_to_master_documents = set()
+    # for alpha this list should have at most one entry
+    for related_doc in related_documents_to:
+        related_to_master_documents |= set(
+            DocumentOverviewResponse(
+                document_id=d.id,
+                name=d.name,
+                description=d.description,
+                country_code=g.value,
+                country_name=g.display_value,
+                publication_ts=d.publication_ts,
+            )
+            for _, d, g in (
+                db.query(Association, Document, Geography)
+                .filter(Association.document_id_to == related_doc.document_id)
+                .filter(Association.document_id_from != document_id)
+                .join(Document, Association.document_id_from == Document.id)
+                .join(Geography, Document.geography_id == Geography.id)
+            ).all()
+        )
+    # finally find all (child) documents that refer to this document_id
+    related_documents_from = set(
+        DocumentOverviewResponse(
+            document_id=d.id,
+            name=d.name,
+            description=d.description,
+            country_code=g.value,
+            country_name=g.display_value,
+            publication_ts=d.publication_ts,
+        )
+        for _, d, g in (
+            db.query(Association, Document, Geography)
+            .filter(Association.document_id_to == document_id)
+            .join(Document, Association.document_id_from == Document.id)
+            .join(Geography, Document.geography_id == Geography.id)
+        ).all()
+    )
+    return related_documents_to | related_to_master_documents | related_documents_from
+
+
+def _get_related_documents(db: Session, document_id: int):
     """Gets all the other documents this document is related to.
 
     TODO: return this as structured, as at the moment we return a flat list
