@@ -81,6 +81,7 @@ _REQUIRED_FIELDS = ["document_name"]
 _DEFAULT_SORT_FIELD = SortField.DATE
 _DEFAULT_SORT_ORDER = SortOrder.DESCENDING
 _JSON_SERIALIZER = jss()
+# _JSON_SERIALIZER = json.JSONEncoder()
 
 
 class QueryMode(Enum):
@@ -88,6 +89,20 @@ class QueryMode(Enum):
 
     BROWSE = "browse"
     SEARCH = "search"
+
+
+def log_search_info(time: float, body: Mapping[str, Any]):
+    """Wrapped so its testable"""
+    _LOGGER.info(
+        "Search request completed",
+        extra={
+            "props": {
+                # "search_request": json.dumps(body, cls=OpenSearchEncoder),
+                "search_request": body,
+                "search_request_time": time,
+            },
+        },
+    )
 
 
 def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
@@ -219,15 +234,7 @@ class OpenSearchConnection:
         end = time.time()
         search_request_time = round(1000 * (end - start))
 
-        _LOGGER.info(
-            "Search request completed",
-            extra={
-                "props": {
-                    "search_request": json.dumps(request_body, cls=OpenSearchEncoder),
-                    "search_request_time": search_request_time,
-                },
-            },
-        )
+        log_search_info(search_request_time, request_body)
 
         return OpenSearchResponse(
             raw_response=response,

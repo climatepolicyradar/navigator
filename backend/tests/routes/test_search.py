@@ -4,10 +4,35 @@ from datetime import datetime
 import pytest
 
 from app.api.api_v1.routers import search
-from app.api.api_v1.schemas.search import SortOrder, FilterField
-from app.core.search import _FILTER_FIELD_MAP
+from app.api.api_v1.schemas.search import SearchRequestBody, SortOrder, FilterField
+from app.core.search import (
+    _FILTER_FIELD_MAP,
+    log_search_info,
+    build_opensearch_request_body,
+)
 
 _TOTAL_DOCUMENT_COUNT = 7
+
+
+@pytest.mark.search
+def test_logging(test_opensearch, monkeypatch, client, user_token_headers):
+    body = SearchRequestBody(
+        query_string="cheese",
+        exact_match=False,
+        max_passages_per_doc=10,
+        keyword_filters=None,
+        year_range=None,
+        sort_field=None,
+        sort_order=SortOrder.DESCENDING,
+        limit=10,
+        offset=0,
+    )
+    with pytest.raises(TypeError) as e:
+        log_search_info(0.123, build_opensearch_request_body(body))
+        # assert str(e) == "My expected message for bad args"
+
+    print(e.typename)
+    print(e.value)
 
 
 @pytest.mark.search

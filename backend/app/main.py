@@ -1,3 +1,4 @@
+import json
 import logging
 import logging.config
 import os
@@ -23,6 +24,7 @@ from app.api.api_v1.routers.unauthenticated import unauthenticated_router
 from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.summaries import summary_router
 from app.core import config
+from app.core.search import OpenSearchEncoder
 from app.core.auth import get_current_active_user, get_current_active_superuser
 from app.core.health import is_database_online
 from app.core.ratelimit import limiter
@@ -66,8 +68,25 @@ ENABLE_API_DOCS = os.getenv("ENABLE_API_DOCS", "False").lower() == "true"
 _docs_url = "/api/docs" if ENABLE_API_DOCS else None
 _openapi_url = "/api" if ENABLE_API_DOCS else None
 
+
+class CustomJSONLog(json_logging.formatters.JSONLogFormatter):
+    """
+    Customized logger
+    """
+
+    def format(self, record):
+        print("/-\\" * 80)
+        json_customized_log_object = {
+            "customized_prop": "customized value",
+            "message": record.getMessage(),
+        }
+
+        return json.dumps(json_customized_log_object)
+
+
 app = FastAPI(title=config.PROJECT_NAME, docs_url=_docs_url, openapi_url=_openapi_url)
-json_logging.init_fastapi(enable_json=True)
+json_logging.JSON_SERIALIZER = lambda log: json.dumps(log, cls=OpenSearchEncoder)
+json_logging.init_fastapi(custom_formatter=CustomJSONLog, enable_json=True)
 json_logging.init_request_instrument(app)
 json_logging.config_root_logger()
 
