@@ -6,6 +6,7 @@ config:
     secure: AAABAIOgwzKhKiupZ2A3xljVNX7VZ2I/iBioWlqt66auYjiE3JkfsbMQzhOt6rp7L5RDwdwTLyGTUoRK
   infra:db_username:
     secure: AAABAF3gyGjSZ/cJ/CVJsVdYIygzoYGiWRJ171Ru+311kbUhsVV0XbL0iTSDAkFDmQ==
+  infra:domain: app.climatepolicyradar.org
   infra:opensearch_password:
     secure: AAABALq5E+uTV97AuqlVSULUdMYsX7h66Ui0bGTURcgd79k44K78tmpI7Eo=
   infra:opensearch_url:
@@ -14,7 +15,6 @@ config:
     secure: AAABAO2Q8F3BRfojR9S0eVB3Mk2+fc9EsQCRExLvrm7wDyINLWVTPidE
   infra:pdf_embed_key:
     secure: AAABAAVgYELm6oSYPJddBCuCtz5sgHP/8UnGJ6k+UAo5MgfTpTTZqKPi10EmXWevpjOz318I0nyUKpy1nHWr5Q==
-  infra:prod_domain: app.climatepolicyradar.org
   infra:self_registration_enabled: "True"
   infra:sendgrid_api_token:
     secure: AAABAM9Xv/4U8jQRGjZQNVWNJtAf8C71HMvJEYQNL28so773EqItQFVyjkwUs2FWgt/nExg7HRk3fbR2aW/lWV8ZX/7SLlZbIArMUZLLSuOe3SxExb6iD3a74WYhBck12RBcdfQ=
