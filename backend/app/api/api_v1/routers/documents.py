@@ -26,6 +26,7 @@ from app.core.aws import get_s3_client
 from app.core.util import CONTENT_TYPE_MAP
 from app.db.crud.document import (
     UnknownMetadataError,
+    create_document_association,
     create_document_relationship,
     create_relationship,
     get_document_detail,
@@ -35,6 +36,8 @@ from app.db.crud.document import (
 )
 from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
+    DocumentAssociationCreateResponse,
+    DocumentAssociationCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
     RelationshipCreateRequest,
@@ -148,21 +151,41 @@ def document_upload(
     }
 
 
+# TODO: Remove this function
+@documents_router.post(
+    "/associations", response_model=DocumentAssociationCreateResponse
+)
+async def post_association(
+    request: Request,
+    document_association: DocumentAssociationCreateRequest,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a document, with associated metadata."""
+    return create_document_association(
+        db,
+        document_association.document_id_from,
+        document_association.document_id_to,
+        document_association.name,
+        document_association.type,
+    )
+
+
 @documents_router.post(
     "/document-relationship", response_model=RelationshipEntityResponse, status_code=201
 )
 async def post_relationship(
     request: Request,
-    relatoionship: RelationshipCreateRequest,
+    relationship: RelationshipCreateRequest,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """Create a relationship"""
     return create_relationship(
         db,
-        relatoionship.name,
-        relatoionship.type,
-        relatoionship.description,
+        relationship.name,
+        relationship.type,
+        relationship.description,
     )
 
 

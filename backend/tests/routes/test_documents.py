@@ -17,7 +17,7 @@ from app.db.models import (
     Category,
     Keyword,
 )
-from app.api.api_v1.schemas.document import RelationshipCreateRequest
+from app.api.api_v1.schemas.document import DocumentAssociationCreateRequest
 
 
 def test_document_upload(
@@ -211,29 +211,6 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
     assert response.status_code == 422
     assert len(list(test_db.query(Document).all())) == 0
     assert test_db.query(Event).first() is None
-
-
-def test_get_relationships(
-    client,
-    superuser_token_headers,
-    user_token_headers,
-    test_db,
-):
-    # Set up relationship entities
-    for x in range(10):
-        response_rel = client.post(
-            "/api/v1/document-relationship",
-            headers=superuser_token_headers,
-            json=RelationshipCreateRequest(
-                name=f"Rel{x}", type="test", description=f"test relationship {x}"
-            ).dict(),
-        )
-        assert response_rel.status_code == 201
-    response_get = client.get(
-        "/api/v1/document-relationship", headers=superuser_token_headers
-    )
-    assert response_get.status_code == 200
-    assert len(response_get.json()["relationships"]) == 10
 
 
 def test_document_detail(
@@ -454,35 +431,32 @@ def test_document_detail(
     assert response4.status_code == 200
     response4_document = response4.json()
 
-    # Set up relationship entities
-    response_rel1 = client.post(
-        "/api/v1/document-relationship",
+    # Set up associations
+    doc_association_payload_1 = DocumentAssociationCreateRequest(
+        document_id_from=response2_document["id"],
+        document_id_to=response1_document["id"],
+        name="related",
+        type="related",
+    ).dict()
+    response_assoc_1 = client.post(
+        "/api/v1/associations",
         headers=superuser_token_headers,
-        json=RelationshipCreateRequest(
-            name="Rel1", type="test", description="test relationship 1"
-        ).dict(),
+        json=doc_association_payload_1,
     )
-    assert response_rel1.status_code == 201
-    rel1_id = response_rel1.json()["id"]
+    assert response_assoc_1.status_code == 200
 
-    # Set up document relationship
-    response_docrel1 = client.post(
-        f"/api/v1/document-relationship/{rel1_id}/document/{response1_document['id']}",
+    doc_association_payload_2 = DocumentAssociationCreateRequest(
+        document_id_from=response3_document["id"],
+        document_id_to=response1_document["id"],
+        name="related",
+        type="related",
+    ).dict()
+    response_assoc_2 = client.post(
+        "/api/v1/associations",
         headers=superuser_token_headers,
+        json=doc_association_payload_2,
     )
-    assert response_docrel1.status_code == 201
-
-    response_docrel2 = client.post(
-        f"/api/v1/document-relationship/{rel1_id}/document/{response2_document['id']}",
-        headers=superuser_token_headers,
-    )
-    assert response_docrel2.status_code == 201
-
-    response_docrel3 = client.post(
-        f"/api/v1/document-relationship/{rel1_id}/document/{response3_document['id']}",
-        headers=superuser_token_headers,
-    )
-    assert response_docrel3.status_code == 201
+    assert response_assoc_2.status_code == 200
 
     # Test properties
     get_detail_response_2 = client.get(
