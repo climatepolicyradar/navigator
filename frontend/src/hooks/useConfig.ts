@@ -1,8 +1,8 @@
-import { useQuery } from 'react-query';
-import { ApiClient } from '../api/http-common';
-import { removeDuplicates } from '../utils/removeDuplicates';
+import { useQuery } from "react-query";
+import { ApiClient } from "../api/http-common";
+import { removeDuplicates } from "../utils/removeDuplicates";
 
-export default function useConfig(path: string, filterProp: string = '') {
+export default function useConfig(path: string, filterProp: string = "") {
   const client = new ApiClient();
 
   const extractNestedData = (response, levels, filterProp) => {
@@ -35,11 +35,11 @@ export default function useConfig(path: string, filterProp: string = '') {
     async () => {
       const query_response = await client.get(`/${path}`, null);
       const response = query_response.data.metadata.CCLW;
-      const response_geo = extractNestedData(response.geographies, 2, '');
+      const response_geo = extractNestedData(response.geographies, 2, "");
       const document_types = response.document_types;
       const geographies = response.geographies;
       const instruments = response.instruments;
-      const sectors = response.sectors;
+      const sectors = extractNestedData(response.sectors, 1, "").level1;
       const regions = response_geo.level1;
       const countries = response_geo.level2;
 
@@ -50,13 +50,13 @@ export default function useConfig(path: string, filterProp: string = '') {
         sectors,
         regions,
         countries,
-      }
+      };
       return resp_end;
-      },
-      {
-        refetchOnWindowFocus: false,
-        refetchOnMount: false,
-        cacheTime: 1000 * 60 * 60 * 24,
-      }
+    },
+    {
+      refetchOnWindowFocus: false,
+      refetchOnMount: false,
+      cacheTime: 1000 * 60 * 60 * 24,
+    }
   );
 }
