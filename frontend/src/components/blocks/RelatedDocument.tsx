@@ -27,7 +27,7 @@ export const RelatedDocument = ({ document }: RelatedDocumentProps) => {
           <div className={`rounded-sm border border-black flag-icon-background flag-icon-${country_code.toLowerCase()}`} />
           <span className="ml-2">{country_name}</span>
         </CountryLink>
-        <span className="ml-6">{year}</span>
+        <span>, {year}</span>
       </div>
       <p className="text-indigo-400 mt-3">{truncateString(description.replace(/(<([^>]+)>)/gi, ""), 250)}</p>
     </div>
