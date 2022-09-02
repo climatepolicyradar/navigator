@@ -1,10 +1,32 @@
 # Releases
 
-## Future
+## v0.9.9-alpha
 
 * Squash migrations to remove data migrations (to be done with separate SQL scripts)
     Process to deploy should be to remove the single row in `alembic_version`.
     After the migrations are run this should become `0001`
+* Geography cover pages
+* Backend support for browsing documents
+* Updated config endpoint to replace individual lookups
+* Metadata fixes
+* UI Improvements
+* Bug fixes
+
+## v0.9.8-alpha
+
+* Interactive passage navigation within the PDF previewer
+* Sector filters now support multi-selection
+* Bug fixes
+* Standardisation of UI components and typings
+
+## v0.9.7-alpha
+
+* Interactive passage viewer when previewing the PDF for a document
+* Document cover page layout improvements
+* Document timeline new interface
+* Filters for published date updated to be 1 year, 5 years and custom
+* UI bugfixes
+* Improving frontend code robustness and typing
 
 ## v0.9.6-alpha
 
