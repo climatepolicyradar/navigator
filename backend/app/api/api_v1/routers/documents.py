@@ -203,6 +203,23 @@ async def get_relationship(
     return get_relationships(db)
 
 
+@documents_router.get(
+    "/document-relationship/{relationship_id}",
+    response_model=RelationshipAndDocumentsGetResponse,
+)
+async def get_relationship_documents(
+    request: Request,
+    relationship_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Get a single relationship and all documents"""
+    return RelationshipAndDocumentsGetResponse(
+        documents=get_documents_in_relationship(db, relationship_id),
+        relationship=get_relationship_by_id(db, relationship_id),
+    )
+
+
 @documents_router.post(
     "/document-relationship/{relationship_id}/document/{document_id}", status_code=201
 )
@@ -236,21 +253,4 @@ async def delete_document_relationship(
         db,
         document_id,
         relationship_id,
-    )
-
-
-@documents_router.get(
-    "/document-relationship/{relationship_id}",
-    response_model=RelationshipAndDocumentsGetResponse,
-)
-async def get_relationship_documents(
-    request: Request,
-    relationship_id: int,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
-):
-    """Get a single relationship and all documents"""
-    return RelationshipAndDocumentsGetResponse(
-        documents=get_documents_in_relationship(db, relationship_id),
-        relationship=get_relationship_by_id(db, relationship_id),
     )

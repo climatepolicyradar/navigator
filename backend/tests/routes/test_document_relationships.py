@@ -1,5 +1,5 @@
 from app.api.api_v1.schemas.document import RelationshipCreateRequest
-from app.db.models.document import Document, DocumentRelationship
+from app.db.models.document import Document, DocumentRelationship, Relationship
 
 from .test_documents import create_4_documents
 
@@ -183,8 +183,9 @@ def test_delete_document_from_relationship(
     assert len(rel_found) == 0
 
     docs_found = test_db.query(Document).count()
-
     assert docs_found == 4
+    rels_found = test_db.query(Relationship).count()
+    assert rels_found == 10
 
 
 def test_delete_document_from_relationship_security(
