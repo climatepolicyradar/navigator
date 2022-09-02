@@ -49,7 +49,18 @@ export const CountryHeader = ({ country }: TProps) => {
                   <div className="mr-1">{climate_risk_index}</div>{" "}
                   <Tooltip
                     id="country-gcri"
-                    tooltip="The annually published Global Climate Risk Index analyses to what extent countries have been affected by the impacts of weather-related loss events (storms, floods, heat waves etc.)."
+                    tooltip={
+                      <>
+                        <p className="mb-4">
+                          The annually published Global Climate Risk Index analyses to what extent countries have been affected by the impacts of weather-related loss events
+                          (storms, floods, heat waves etc.).
+                        </p>{" "}
+                        Published by German Watch{" "}
+                        <a href="" target="_blank" className="underline">
+                          https://www.germanwatch.org/en/cri
+                        </a>
+                      </>
+                    }
                     icon="i"
                   />
                 </div>
