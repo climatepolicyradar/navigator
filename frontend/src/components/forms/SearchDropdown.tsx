@@ -17,7 +17,7 @@ export const SearchDropdown = ({ show = false, term, handleSearchClick }: TProps
   const geographies: TGeography[] = configQuery.data?.countries || [];
 
   const geographiesFiltered = geographies.filter(
-    (geography: TGeography) => geography.display_value.toLowerCase().includes(term.toLocaleLowerCase()) || geography.value.toLowerCase().includes(term.toLowerCase())
+    (geography: TGeography) => geography.display_value.toLowerCase().includes(term.toLocaleLowerCase()) || term.toLocaleLowerCase().includes(geography.display_value.toLowerCase())
   );
 
   if (!term || !show) return null;
