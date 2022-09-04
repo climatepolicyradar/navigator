@@ -6,7 +6,7 @@ import { SearchDropdown } from "./SearchDropdown";
 
 interface SearchFormProps {
   placeholder: string;
-  handleSearchInput(term: string): void;
+  handleSearchInput(term: string, filter?: string, filterValue?: string): void;
   input?: string;
 }
 
@@ -74,7 +74,7 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
         <button className="absolute top-0 right-0 -mt-1" onClick={() => handleSearchInput(term)}>
           <SearchIcon height="40" width="80" />
         </button>
-        <SearchDropdown term={term} show={formFocus} handleSearchClick={() => handleSearchInput(term)} />
+        <SearchDropdown term={term} show={formFocus} handleSearchClick={handleSearchInput} />
       </div>
     </form>
   );

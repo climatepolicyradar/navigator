@@ -31,8 +31,15 @@ const IndexPage = () => {
   const configQuery: any = useConfig("config");
   const { data: { regions: regions = [], countries: countries = [] } = {} } = configQuery;
 
-  const handleSearchInput = (term: string) => {
-    updateSearchCriteria.mutate({ ["query_string"]: term });
+  const handleSearchInput = (term: string, filter?: string, filterValue?: string) => {
+    const newSearchCritera = {
+      ["query_string"]: term,
+    };
+    let additionalCritera = {};
+    if (filter && filterValue && filter.length && filterValue.length) {
+      additionalCritera = { ...additionalCritera, ["keyword_filters"]: { [filter]: [filterValue] } };
+    }
+    updateSearchCriteria.mutate({ ...newSearchCritera, ...additionalCritera });
     router.push("/search");
   };
   const handleSearchChange = (type: string, value: any) => {

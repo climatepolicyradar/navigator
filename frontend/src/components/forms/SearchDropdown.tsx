@@ -7,7 +7,7 @@ import { SearchIcon } from "@components/svg/Icons";
 type TProps = {
   show: boolean;
   term: string;
-  handleSearchClick: () => void;
+  handleSearchClick: (term: string, filter?: string, filterValue?: string) => void;
 };
 
 export const SearchDropdown = ({ show = false, term, handleSearchClick }: TProps) => {
@@ -20,11 +20,13 @@ export const SearchDropdown = ({ show = false, term, handleSearchClick }: TProps
     (geography: TGeography) => geography.display_value.toLowerCase().includes(term.toLocaleLowerCase()) || term.toLocaleLowerCase().includes(geography.display_value.toLowerCase())
   );
 
+  const termWithoutGeography = (geography: string) => term.toLowerCase().replace(geography.toLowerCase(), "").trim();
+
   if (!term || !show) return null;
 
   const handleClick = (e: any) => {
     e.preventDefault();
-    handleSearchClick();
+    handleSearchClick(term);
   };
 
   const handleCountryClick = (e: React.MouseEvent<HTMLAnchorElement>, url: string) => {
@@ -33,7 +35,29 @@ export const SearchDropdown = ({ show = false, term, handleSearchClick }: TProps
     router.push(url);
   };
 
+  const handleSuggestionClick = (e: React.MouseEvent<HTMLAnchorElement>, geography: string) => {
+    e.preventDefault();
+    handleSearchClick(termWithoutGeography(geography), "countries", geography);
+  };
+
   const anchorClasses = (last: boolean) => `flex items-center cursor-pointer py-2 px-4 block hover:bg-blue-200 focus:bg-blue-200 ${last ? "rounded-b-lg" : ""}`;
+
+  const renderSearchSuggestion = (geography: string) => {
+    if (!term.toLowerCase().includes(geography.toLowerCase())) return;
+    if (!termWithoutGeography(geography).trim().length) return;
+    return (
+      <>
+        <div className="py-2 px-4 text-sm mt-2">Did you want to search for...</div>
+        <ul>
+          <li key={geography}>
+            <a href="#" className={anchorClasses(false)} onClick={(e) => handleSuggestionClick(e, geography)}>
+              <span className="font-bold text-black">{term.toLowerCase().replace(geography.toLowerCase(), "")}</span> <span className="text-sm ml-4">in {geography}</span>
+            </a>
+          </li>
+        </ul>
+      </>
+    );
+  };
 
   return (
     <div className="absolute top-[50px] bg-blue-100 w-full text-indigo-400 rounded-b-lg max-h-[300px] overflow-y-auto">
@@ -43,6 +67,7 @@ export const SearchDropdown = ({ show = false, term, handleSearchClick }: TProps
         </span>
         Search <span className="font-bold text-black mx-1">{term}</span> in all documents
       </a>
+      {geographiesFiltered.length === 1 && renderSearchSuggestion(geographiesFiltered[0].display_value)}
       {!!geographiesFiltered.length && (
         <>
           <div className="py-2 px-4 text-sm mt-2">View countries and territories information</div>
