@@ -47,16 +47,14 @@ export const SearchDropdown = ({ show = false, term, handleSearchClick, largeSpa
     if (!term.toLowerCase().includes(geography.toLowerCase())) return;
     if (!termWithoutGeography(geography).trim().length) return;
     return (
-      <>
-        <div className="py-2 px-4 text-sm mt-2">Did you want to search for...</div>
-        <ul>
-          <li key={geography}>
-            <a href="#" className={anchorClasses(false)} onClick={(e) => handleSuggestionClick(e, geography)}>
-              <span className="font-bold text-black">{term.toLowerCase().replace(geography.toLowerCase(), "")}</span> <span className="text-sm ml-4">in {geography}</span>
-            </a>
-          </li>
-        </ul>
-      </>
+      <ul>
+        <li key={geography}>
+          <a href="#" className={anchorClasses(false)} onClick={(e) => handleSuggestionClick(e, geography)}>
+            Did you mean to search for <span className="font-bold text-black mx-2">{term.toLowerCase().replace(geography.toLowerCase(), "")}</span> in{" "}
+            <span className="font-bold text-black ml-2">{geography}</span>?
+          </a>
+        </li>
+      </ul>
     );
   };
 
