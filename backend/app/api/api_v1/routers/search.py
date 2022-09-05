@@ -8,7 +8,7 @@ import json
 import logging
 from app.core.search_cache_wrapper import SearchCacheWrapper
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, BackgroundTasks
 
 from app.core.auth import get_current_active_db_user
 
@@ -36,6 +36,7 @@ _OPENSEARCH_WRAPPER = SearchCacheWrapper(_OPENSEARCH_CONNECTION)
 def search_documents(
     request: Request,
     search_body: SearchRequestBody,
+    background_tasks: BackgroundTasks,
     current_user=Depends(get_current_active_db_user),
 ):
     """Search for documents matching the search criteria."""
@@ -47,6 +48,7 @@ def search_documents(
 
     """When a query string is given - hand off the complete search to OpenSearch"""
     return _OPENSEARCH_WRAPPER.query(
+        background_tasks=background_tasks,
         search_request_body=search_body,
         opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
         preference=str(current_user.id),

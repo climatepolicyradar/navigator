@@ -90,11 +90,6 @@ class QueryMode(Enum):
     SEARCH = "search"
 
 
-def _log(msg, *args, **kwargs):
-    print("#" * 10 + msg, *args, **kwargs)
-    _LOGGER.info(msg, *args, **kwargs)
-
-
 def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
     """Maps inner product to lucene threashold.
 
@@ -122,7 +117,9 @@ class OpenSearchQueryConfig:
     )  # TODO: tune me separately for descriptions?
     max_doc_count: int = OPENSEARCH_INDEX_MAX_DOC_COUNT
     max_passages_per_doc: int = OPENSEARCH_INDEX_MAX_PASSAGES_PER_DOC
-    n_passages_to_sample_per_shard = OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
+    n_passages_to_sample_per_shard: int = (
+        OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
+    )
     k = OPENSEARCH_INDEX_KNN_K_VALUE
 
 
@@ -156,6 +153,7 @@ class OpenSearchEncoder(json.JSONEncoder):
         return _JSON_SERIALIZER.default(obj)
 
 
+@dataclass
 class OpenSearchConnection:
     """OpenSearch connection helper, allows query based on config."""
 
@@ -178,8 +176,8 @@ class OpenSearchConnection:
             search_request=search_request_body,
             opensearch_internal_config=opensearch_internal_config,
         )
-        opensearch_response_body = self.raw_query(opensearch_request.query, preference)
 
+        opensearch_response_body = self.raw_query(opensearch_request.query, preference)
         if opensearch_request.mode == QueryMode.SEARCH:
             return process_search_response_body(
                 opensearch_response_body,
@@ -223,7 +221,6 @@ class OpenSearchConnection:
         )
         end = time.time_ns()
         search_request_time = round((end - start) / 1e6)
-        _log(f"query execution time: {search_request_time}ms")
 
         _LOGGER.info(
             "Search request completed",
@@ -554,6 +551,8 @@ def build_opensearch_request_body(
     opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
 ) -> QueryBuilder:
     """Build a complete OpenSearch request body."""
+
+    # BAK-1007 - Create with overrides
     search_config = opensearch_internal_config or OpenSearchQueryConfig(
         max_passages_per_doc=search_request.max_passages_per_doc,
     )
