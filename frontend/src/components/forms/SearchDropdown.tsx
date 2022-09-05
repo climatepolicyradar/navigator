@@ -41,7 +41,7 @@ export const SearchDropdown = ({ show = false, term, handleSearchClick, largeSpa
     handleSearchClick(termWithoutGeography(geography), "countries", geography);
   };
 
-  const anchorClasses = (last: boolean) => `flex items-center cursor-pointer py-2 px-4 block hover:bg-blue-200 focus:bg-blue-200 ${last ? "rounded-b-lg" : ""}`;
+  const anchorClasses = (last: boolean) => `flex flex-wrap items-center cursor-pointer py-2 px-4 block hover:bg-blue-200 focus:bg-blue-200 ${last ? "rounded-b-lg" : ""}`;
 
   const renderSearchSuggestion = (geography: string) => {
     if (!term.toLowerCase().includes(geography.toLowerCase())) return;
