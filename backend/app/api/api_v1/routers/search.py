@@ -45,25 +45,9 @@ def search_documents(
         extra={"props": {"search_request": json.loads(search_body.json())}},
     )
 
-<<<<<<< HEAD
     """When a query string is given - hand off the complete search to OpenSearch"""
-    return _OPENSEARCH_CONNECTION.query(
+    return _OPENSEARCH_WRAPPER.query(
         search_request_body=search_body,
         opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
         preference=str(current_user.id),
     )
-=======
-    if search_body.query_string:
-        """When a query string is given - hand off the complete search to OpenSearch"""
-        return _OPENSEARCH_WRAPPER.query(
-            search_request_body=search_body,
-            opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
-            preference=str(current_user.id),
-        )
-    else:
-        """When no query string - search using RDS"""
-        # FIXME: Implement and test this for browse
-        # db = SessionLocal()
-        # return browse_rds(db.begin_nested(), BrowseArgs())
-        return SearchResponseBody(hits=0, query_time_ms=0, documents=[])
->>>>>>> d6aa07a (add wrapper)
