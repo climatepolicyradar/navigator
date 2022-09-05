@@ -176,8 +176,8 @@ class OpenSearchConnection:
             search_request=search_request_body,
             opensearch_internal_config=opensearch_internal_config,
         )
-
         opensearch_response_body = self.raw_query(opensearch_request.query, preference)
+
         if opensearch_request.mode == QueryMode.SEARCH:
             return process_search_response_body(
                 opensearch_response_body,
@@ -552,7 +552,6 @@ def build_opensearch_request_body(
 ) -> QueryBuilder:
     """Build a complete OpenSearch request body."""
 
-    # BAK-1007 - Create with overrides
     search_config = opensearch_internal_config or OpenSearchQueryConfig(
         max_passages_per_doc=search_request.max_passages_per_doc,
     )
