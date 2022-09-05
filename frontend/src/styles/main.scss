@@ -358,6 +358,14 @@ ul li.selected {
   }
 }
 
+.search-dropdown {
+  top: 42px;
+
+  &.search-dropdown_large {
+    top: 50px;
+  }
+}
+
 @layer utilities {
   h1.smaller {
     font-size: 38px;

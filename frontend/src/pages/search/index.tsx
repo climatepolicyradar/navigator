@@ -97,6 +97,7 @@ const Search = () => {
       countries,
     });
   };
+
   const handlePageChange = (page: number) => {
     setPageNumber(page);
     setOffset((page - 1) * PER_PAGE);
@@ -107,13 +108,27 @@ const Search = () => {
     resetPaging();
     updateSearchFilters.mutate({ [type]: value, action });
   };
+
+  const handleSuggestion = (term: string, filter?: string, filterValue?: string) => {
+    const newSearchCritera = {
+      ["query_string"]: term,
+    };
+    let additionalCritera = {};
+    if (filter && filterValue && filter.length && filterValue.length) {
+      additionalCritera = { ...additionalCritera, ["keyword_filters"]: { [filter]: [filterValue] } };
+    }
+    updateSearchCriteria.mutate({ ...newSearchCritera, ...additionalCritera });
+  };
+
   const handleSearchChange = (type: string, value: any) => {
     if (type !== "offset") resetPaging();
     updateSearchCriteria.mutate({ [type]: value });
   };
+
   const handleSearchInput = (term: string) => {
     handleSearchChange("query_string", term);
   };
+
   const handleDocumentCategoryClick = (e) => {
     const val = e.currentTarget.textContent;
     let category = val;
@@ -127,6 +142,7 @@ const Search = () => {
     const action = val === "All" ? "delete" : "update";
     handleFilterChange("categories", category, action);
   };
+
   const handleSortClick = (e) => {
     const val = e.currentTarget.value;
     let field = null;
@@ -139,10 +155,12 @@ const Search = () => {
     handleSearchChange("sort_field", field);
     handleSearchChange("sort_order", order);
   };
+
   const handleYearChange = (values: number[]) => {
     const newVals = values.map((value: number) => Number(value).toFixed(0));
     handleSearchChange("year_range", newVals);
   };
+
   const handleClearSearch = () => {
     const { query_string, exact_match, sort_field, sort_order, ...initial } = initialSearchCriteria;
     updateSearchCriteria.mutate(initial);
@@ -154,9 +172,11 @@ const Search = () => {
       countries,
     });
   };
+
   const toggleFilters = () => {
     setShowFilters(!showFilters);
   };
+
   const handleDocumentClick = (e: any) => {
     // Check if we are clicking on the document matches button
     const id = e.target.dataset.docid;
@@ -174,6 +194,7 @@ const Search = () => {
 
     // setShowPDF(false);
   };
+
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
     const order = searchCriteria.sort_order;
@@ -182,6 +203,7 @@ const Search = () => {
     }
     return `${field}:${order}`;
   };
+
   const setCurrentCategoryIndex = () => {
     if (!searchCriteria?.keyword_filters?.categories) {
       setCategoryIndex(0);
@@ -199,6 +221,7 @@ const Search = () => {
     const catIndex = index === -1 ? 0 : index;
     setCategoryIndex(catIndex);
   };
+
   const getCurrentPage = () => {
     return searchCriteria?.offset / PER_PAGE + 1;
   };
@@ -207,11 +230,13 @@ const Search = () => {
     handleSearchChange("offset", offset);
     window.scrollTo(0, 0);
   }, [offset]);
+
   useEffect(() => {
     if (hits !== undefined) {
       setPageCount(calculatePageCount(hits));
     }
   }, [hits]);
+
   useDidUpdateEffect(() => {
     setOffset(searchCriteria?.offset);
     setCurrentCategoryIndex();
@@ -266,7 +291,7 @@ const Search = () => {
               <div className="px-4 container">
                 <div className="md:py-8 md:w-3/4 md:mx-auto">
                   <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
-                  <SearchForm placeholder={placeholder} handleSearchInput={handleSearchInput} input={searchCriteria.query_string} />
+                  <SearchForm placeholder={placeholder} handleSearchInput={handleSearchInput} input={searchCriteria.query_string} handleSuggestion={handleSuggestion} />
                 </div>
               </div>
               <div className="px-4 md:flex container border-b border-blue-200">

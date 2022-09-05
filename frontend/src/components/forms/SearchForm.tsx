@@ -1,16 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Close from "../buttons/Close";
 import SearchButton from "../buttons/SearchButton";
-import useWindowResize from "../../hooks/useWindowResize";
+import useWindowResize from "@hooks/useWindowResize";
+import { SearchDropdown } from "./SearchDropdown";
 
 interface SearchFormProps {
   placeholder: string;
   handleSearchInput(term: string): void;
+  handleSuggestion(term: string, filter?: string, filterValue?: string): void;
   input?: string;
 }
 
-const SearchForm = ({ input, placeholder, handleSearchInput }: SearchFormProps) => {
+const SearchForm = ({ input, placeholder, handleSearchInput, handleSuggestion }: SearchFormProps) => {
   const [term, setTerm] = useState("");
+  const [formFocus, setFormFocus] = useState(false);
+  const formRef = useRef(null);
   const windowSize = useWindowResize();
 
   const clearSearch = () => {
@@ -21,13 +25,31 @@ const SearchForm = ({ input, placeholder, handleSearchInput }: SearchFormProps) 
     setTerm(e.currentTarget.value);
   };
 
+  const handleSuggestionClick = (term: string, filter?: string, filterValue?: string) => {
+    setTerm(term);
+    handleSuggestion(term, filter, filterValue);
+  }
+
   useEffect(() => {
     if (input) setTerm(input);
   }, [input]);
 
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (formRef.current && !formRef.current.contains(event.target)) {
+        return setFormFocus(false);
+      }
+      setFormFocus(true);
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [formRef]);
+
   return (
-    <form data-cy="search-form">
-      <div className="relative shadow-md rounded-lg bg-white flex items-stretch z-0">
+    <form data-cy="search-form" ref={formRef} onSubmit={(e) => e.preventDefault()}>
+      <div className="relative shadow-md rounded-lg bg-white flex items-stretch z-50">
         <input
           data-cy="search-input"
           className="bg-transparent text-indigo-600 appearance-none py-2 pl-2 z-10 rounded-lg relative flex-grow mr-8 placeholder:text-indigo-400 border-transparent"
@@ -45,6 +67,7 @@ const SearchForm = ({ input, placeholder, handleSearchInput }: SearchFormProps) 
         <div className="flex items-center justify-end">
           <SearchButton onClick={() => handleSearchInput(term)} />
         </div>
+        <SearchDropdown term={term} show={formFocus} handleSearchClick={handleSuggestionClick} />
       </div>
     </form>
   );

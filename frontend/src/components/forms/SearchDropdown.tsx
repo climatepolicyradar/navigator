@@ -8,9 +8,10 @@ type TProps = {
   show: boolean;
   term: string;
   handleSearchClick: (term: string, filter?: string, filterValue?: string) => void;
+  largeSpacing?: boolean;
 };
 
-export const SearchDropdown = ({ show = false, term, handleSearchClick }: TProps) => {
+export const SearchDropdown = ({ show = false, term, handleSearchClick, largeSpacing }: TProps) => {
   const updateSearchCriteria = useUpdateSearchCriteria();
   const router = useRouter();
   const configQuery: any = useConfig("config");
@@ -60,7 +61,7 @@ export const SearchDropdown = ({ show = false, term, handleSearchClick }: TProps
   };
 
   return (
-    <div className="absolute top-[50px] bg-blue-100 w-full text-indigo-400 rounded-b-lg max-h-[300px] overflow-y-auto">
+    <div className={`absolute bg-blue-100 w-full text-indigo-400 rounded-b-lg max-h-[300px] overflow-y-auto search-dropdown ${largeSpacing ? "search-dropdown_large" : ""}`}>
       <a href="#" className={anchorClasses(!geographiesFiltered.length)} onClick={handleClick}>
         <span className="mr-2 w-[20px]">
           <SearchIcon />

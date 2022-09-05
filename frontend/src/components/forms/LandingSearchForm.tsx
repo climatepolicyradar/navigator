@@ -74,7 +74,7 @@ const LandingSearchForm = ({ input, handleSearchInput }: SearchFormProps) => {
         <button className="absolute top-0 right-0 -mt-1" onClick={() => handleSearchInput(term)}>
           <SearchIcon height="40" width="80" />
         </button>
-        <SearchDropdown term={term} show={formFocus} handleSearchClick={handleSearchInput} />
+        <SearchDropdown term={term} show={formFocus} handleSearchClick={handleSearchInput} largeSpacing />
       </div>
     </form>
   );
