@@ -110,11 +110,47 @@ def test_add_document_to_relationship(
     rel_ids = _create_10_relationships(client, superuser_token_headers)
 
     # Set up document relationship
-    response_docrel1 = client.post(
+    response_docrel1 = client.put(
         f"/api/v1/document-relationship/{rel_ids[0]}/document/{response1_document['id']}",
         headers=superuser_token_headers,
     )
     assert response_docrel1.status_code == 201
+
+    rels = test_db.query(DocumentRelationship).all()
+    assert len(rels) == 1
+    assert rels[0].relationship_id == rel_ids[0]
+    assert rels[0].document_id == response1_document["id"]
+
+
+def test_add_document_to_relationship_is_idempotent(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    rel_ids = _create_10_relationships(client, superuser_token_headers)
+
+    # Set up document relationship
+    client.put(
+        f"/api/v1/document-relationship/{rel_ids[0]}/document/{response1_document['id']}",
+        headers=superuser_token_headers,
+    )
+    response_docrel1 = client.put(
+        f"/api/v1/document-relationship/{rel_ids[0]}/document/{response1_document['id']}",
+        headers=superuser_token_headers,
+    )
+    assert response_docrel1.status_code == 200
 
     rels = test_db.query(DocumentRelationship).all()
     assert len(rels) == 1
@@ -128,7 +164,7 @@ def test_add_document_to_relationship_security(
 ):
 
     # Set up document relationship
-    response_docrel1 = client.post(
+    response_docrel1 = client.put(
         "/api/v1/document-relationship/1/document/1",
         headers=user_token_headers,
     )

@@ -194,7 +194,7 @@ async def post_relationship(
 
 
 @documents_router.get("/document-relationship", response_model=RelationshipGetResponse)
-async def get_relationship(
+async def get_all_relationships(
     request: Request,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
@@ -207,7 +207,7 @@ async def get_relationship(
     "/document-relationships/{relationship_id}",
     response_model=RelationshipAndDocumentsGetResponse,
 )
-async def get_relationship_documents(
+async def get_relationship(
     request: Request,
     relationship_id: int,
     db=Depends(get_db),
@@ -220,10 +220,10 @@ async def get_relationship_documents(
     )
 
 
-@documents_router.post(
+@documents_router.put(
     "/document-relationship/{relationship_id}/document/{document_id}", status_code=201
 )
-async def post_document_relationship(
+async def put_document_relationship(
     request: Request,
     document_id: int,
     relationship_id: int,

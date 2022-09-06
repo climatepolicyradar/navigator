@@ -704,8 +704,15 @@ def create_document_relationship(
     new_doc_rel = DocumentRelationship(
         document_id=document_id, relationship_id=relationship_id
     )
-    db.add(new_doc_rel)
-    db.commit()
+    with db.begin_nested():
+        db.add(new_doc_rel)
+        try:
+            db.commit()
+        except IntegrityError:
+            # ensure idemopotency
+            raise HTTPException(
+                200, detail="Document-Relationship already exists - Nothing to do"
+            )
 
 
 def remove_document_relationship(
