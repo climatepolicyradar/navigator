@@ -6,11 +6,11 @@ for the type of document search being performed.
 """
 import json
 import logging
-from app.core.search_cache_wrapper import SearchCacheWrapper
 
 from fastapi import APIRouter, Depends, Request, BackgroundTasks
 
 from app.core.auth import get_current_active_db_user
+from app.core.jit_query_wrapper import jit_query_wrapper
 
 # from app.core.browse import BrowseArgs, browse_rds
 from app.core.search import (
@@ -29,8 +29,6 @@ _OPENSEARCH_CONFIG = OpenSearchConfig()
 _OPENSEARCH_CONNECTION = OpenSearchConnection(opensearch_config=_OPENSEARCH_CONFIG)
 _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 
-_OPENSEARCH_WRAPPER = SearchCacheWrapper(_OPENSEARCH_CONNECTION)
-
 
 @search_router.post("/searches", response_model=SearchResponseBody)
 def search_documents(
@@ -46,10 +44,17 @@ def search_documents(
         extra={"props": {"search_request": json.loads(search_body.json())}},
     )
 
-    """When a query string is given - hand off the complete search to OpenSearch"""
-    return _OPENSEARCH_WRAPPER.query(
-        background_tasks=background_tasks,
-        search_request_body=search_body,
-        opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
-        preference=str(current_user.id),
-    )
+    if search_body.jit_query:
+        return jit_query_wrapper(
+            _OPENSEARCH_CONNECTION,
+            background_tasks=background_tasks,
+            search_request_body=search_body,
+            opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
+            preference=str(current_user.id),
+        )
+    else:
+        _OPENSEARCH_CONNECTION.query(
+            search_request_body=search_body,
+            opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
+            preference=str(current_user.id),
+        )

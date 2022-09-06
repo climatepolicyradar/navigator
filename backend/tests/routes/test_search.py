@@ -122,6 +122,42 @@ def test_search_body_valid(test_opensearch, monkeypatch, client, user_token_head
 
 
 @pytest.mark.search
+def test_with_jit(test_opensearch, monkeypatch, client, user_token_headers, mocker):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": True,
+            "jit_query": True,
+        },
+        headers=user_token_headers,
+    )
+    assert response.status_code == 200
+    assert query_spy.call_count == 2  # Called once as using jit search
+
+
+@pytest.mark.search
+def test_without_jit(test_opensearch, monkeypatch, client, user_token_headers, mocker):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": True,
+            "jit_query": False,
+        },
+        headers=user_token_headers,
+    )
+    assert response.status_code == 200
+    assert query_spy.call_count == 1  # Called once as not using jit search
+
+
+@pytest.mark.search
 def test_keyword_filters(
     test_opensearch, monkeypatch, client, user_token_headers, mocker
 ):
@@ -138,7 +174,7 @@ def test_keyword_filters(
         headers=user_token_headers,
     )
     assert response.status_code == 200
-    assert query_spy.call_count == 1
+    assert query_spy.call_count == 2  # Called twice as using jit search
     query_body = query_spy.mock_calls[0].args[0]
 
     assert {
@@ -194,7 +230,7 @@ def test_year_range_filters(
     query_body = query_spy.mock_calls[0].args[0]
 
     assert response.status_code == 200
-    assert query_spy.call_count == 1
+    assert query_spy.call_count == 2  # Called twice as using jit search
     # Check that search query default order is not modified unless requested
     assert query_body["aggs"]["sample"]["aggs"]["top_docs"]["terms"]["order"] == {
         "top_hit": "desc"
@@ -250,7 +286,7 @@ def test_multiple_filters(
         headers=user_token_headers,
     )
     assert response.status_code == 200
-    assert query_spy.call_count == 1
+    assert query_spy.call_count == 2  # # Called twice as using jit search
     query_body = query_spy.mock_calls[0].args[0]
 
     assert {
@@ -653,7 +689,7 @@ def test_browse_filters(
         headers=user_token_headers,
     )
     assert response.status_code == 200
-    assert query_spy.call_count == 1
+    assert query_spy.call_count == 2  # Called twice as using jit search
     query_body = query_spy.mock_calls[0].args[0]
 
     assert {

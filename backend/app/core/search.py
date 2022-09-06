@@ -33,6 +33,7 @@ from app.core.config import (
     OPENSEARCH_USE_SSL,
     OPENSEARCH_VERIFY_CERTS,
     OPENSEARCH_SSL_WARNINGS,
+    OPENSEARCH_JIT_MAX_DOC_COUNT,
 )
 from app.core.util import content_type_from_path, s3_to_cdn_url
 from app.api.api_v1.schemas.search import (
@@ -121,6 +122,7 @@ class OpenSearchQueryConfig:
         OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
     )
     k = OPENSEARCH_INDEX_KNN_K_VALUE
+    jit_max_doc_count: int = OPENSEARCH_JIT_MAX_DOC_COUNT
 
 
 @dataclass
@@ -153,7 +155,6 @@ class OpenSearchEncoder(json.JSONEncoder):
         return _JSON_SERIALIZER.default(obj)
 
 
-@dataclass
 class OpenSearchConnection:
     """OpenSearch connection helper, allows query based on config."""
 
