@@ -199,12 +199,12 @@ async def get_relationship(
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
-    """Get all relationsgips"""
+    """Get all relationships"""
     return get_relationships(db)
 
 
 @documents_router.get(
-    "/document-relationship/{relationship_id}",
+    "/document-relationships/{relationship_id}",
     response_model=RelationshipAndDocumentsGetResponse,
 )
 async def get_relationship_documents(

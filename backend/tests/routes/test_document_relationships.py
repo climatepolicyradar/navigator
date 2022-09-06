@@ -233,7 +233,7 @@ def test_get_relationship_documents(
     test_db.commit()
 
     response_get = client.get(
-        f"/api/v1/document-relationship/{rel_ids[0]}", headers=superuser_token_headers
+        f"/api/v1/document-relationships/{rel_ids[0]}", headers=superuser_token_headers
     )
     assert response_get.status_code == 200
     relationship = response_get.json()["relationship"]
