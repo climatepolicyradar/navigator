@@ -299,7 +299,7 @@ def test_document_detail(
         "geography": "not my favourite subject",
         "source": "may it be with you",
         "category": "a category",
-        "languages": ["afr"],
+        "languages": ["Afrikaans"],
         "events": [
             {
                 "name": "Publication",
