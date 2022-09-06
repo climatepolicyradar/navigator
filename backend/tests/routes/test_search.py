@@ -280,7 +280,6 @@ def test_keyword_filters(
     assert response.status_code == 200
     assert query_spy.call_count == 1
     query_body = query_spy.mock_calls[0].args[0]
-    print(query_body)
 
     assert {
         "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["Kenya"]}
