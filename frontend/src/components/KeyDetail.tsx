@@ -12,7 +12,7 @@ export const KeyDetail = ({ detail, amount, icon, extraDetail, onClick }: TProps
   };
 
   return (
-    <div className={`bg-blue-600 text-white flex p-3 ${onClick ? "cursor-pointer" : ""}`} onClick={handleOnClick}>
+    <div className={`key-detail bg-blue-600 text-white flex p-3 drop-shadow-md ${onClick ? "cursor-pointer" : ""}`} onClick={handleOnClick}>
       {icon && (
         <div className="flex items-center justify-center">
           <div className="p-1 bg-white text-blue-600 rounded-full w-[54px] h-[54px] flex items-center justify-center">{icon}</div>
