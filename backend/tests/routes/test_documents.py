@@ -101,7 +101,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "geography": "not my favourite subject",
         "source": "may it be with you",
         "category": "a category",
-        "languages": ["afr"],
+        "languages": ["Afrikaans"],
         "events": [
             {
                 "name": "Publication",

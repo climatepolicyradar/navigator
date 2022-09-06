@@ -420,12 +420,20 @@ def write_metadata(
 ) -> None:
     # doc languages
     for language in document_create_request.languages:
+        # Lookup language by language code as a preference
         existing_language_id = (
             db.query(Language.id).filter(Language.language_code == language)
         ).scalar()
         if existing_language_id is None:
+            # If the language code returned no results, attempt a lookup by name
+            existing_language_id = (
+                db.query(Language.id).filter(Language.name == language)
+            ).scalar()
+        if existing_language_id is None:
             raise UnknownLanguageError(language)
 
+        # TODO: Need to ensure uniqueness for metadata links, especially for future
+        #       update paths.
         doc_language = DocumentLanguage(
             language_id=existing_language_id,
             document_id=new_document.id,
