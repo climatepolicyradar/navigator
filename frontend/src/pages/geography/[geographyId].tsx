@@ -143,7 +143,7 @@ const CountryPage = () => {
           <section className="mb-8">
             <CountryHeader country={geography} />
             <SingleCol>
-              <section className="grid grid-cols-2 md:grid-cols-3 gap-px rounded mb-8">
+              <section className="grid grid-cols-1 md:grid-cols-3 gap-px rounded mb-8">
                 {<KeyDetail detail="Legislation" extraDetail="Laws, Acts, Constitutions (legislative branch)" amount={summary.document_counts.Law} icon={<LawIcon />} onClick={() => setselectedCategoryIndex(1)} />}
                 {<KeyDetail detail="Policies" extraDetail="Policies, strategies, decrees, action plans (from executive branch)" amount={summary.document_counts.Policy} icon={<PolicyIcon /> } onClick={() => setselectedCategoryIndex(2)} />}
                 {<KeyDetail detail="Litigation" extraDetail="Court cases and tribunal proceedings" amount={summary.document_counts.Case} icon={<CaseIcon />} onClick={() => setselectedCategoryIndex(3)} />}
