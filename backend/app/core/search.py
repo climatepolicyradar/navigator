@@ -196,7 +196,9 @@ class OpenSearchConnection:
         )
 
     def raw_query(
-        self, request_body: Mapping[str, Any], preference: Optional[str]
+        self,
+        request_body: Mapping[str, Any],
+        preference: Optional[str],
     ) -> OpenSearchResponse:
         """Query the configured OpenSearch instance with a JSON OpenSearch body."""
 

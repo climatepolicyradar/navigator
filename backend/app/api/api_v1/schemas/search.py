@@ -23,6 +23,13 @@ class SortField(str, Enum):
     TITLE = "title"
 
 
+class JitQuery(str, Enum):
+    """Flag used for determining if a jit query is to be used."""
+
+    ENABLED = "enabled"
+    DISABLED = "disabled"
+
+
 class FilterField(str, Enum):
     """Filter field for use building OpenSearch query body."""
 
@@ -54,7 +61,7 @@ class SearchRequestBody(BaseModel):
     sort_field: Optional[SortField] = None
     sort_order: SortOrder = SortOrder.DESCENDING
 
-    jit_query: Optional[bool] = True  # defaults to true as the main consumer is the UI
+    jit_query: Optional[JitQuery] = JitQuery.ENABLED
 
     limit: int = 10  # TODO: decide on default
     offset: int = 0

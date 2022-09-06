@@ -21,7 +21,6 @@ from app.core.search import (
 from app.api.api_v1.schemas.search import SearchRequestBody, SearchResponseBody
 
 _LOGGER = logging.getLogger(__name__)
-
 search_router = APIRouter()
 
 # Use configured environment for router
@@ -40,21 +39,18 @@ def search_documents(
     """Search for documents matching the search criteria."""
 
     _LOGGER.info(
-        "Search request",
-        extra={"props": {"search_request": json.loads(search_body.json())}},
+        f"Search request (jit={search_body.jit_query})",
+        extra={
+            "props": {
+                "search_request": json.loads(search_body.json()),
+            }
+        },
     )
 
-    if search_body.jit_query:
-        return jit_query_wrapper(
-            _OPENSEARCH_CONNECTION,
-            background_tasks=background_tasks,
-            search_request_body=search_body,
-            opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
-            preference=str(current_user.id),
-        )
-    else:
-        _OPENSEARCH_CONNECTION.query(
-            search_request_body=search_body,
-            opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
-            preference=str(current_user.id),
-        )
+    return jit_query_wrapper(
+        _OPENSEARCH_CONNECTION,
+        background_tasks=background_tasks,
+        search_request_body=search_body,
+        opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
+        preference=str(current_user.id),
+    )
