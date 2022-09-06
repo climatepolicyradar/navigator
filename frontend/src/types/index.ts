@@ -70,6 +70,12 @@ export type TGeographyStats = {
   climate_risk_index: number;
   worldbank_income_group: string;
   visibility_status: string;
+  laws?: number;
+  policies?: number;
+  cases?: number;
+  events?: TEvent[];
+  targets?: TTarget[];
+  documents?: TAssociatedDocument[];
 };
 
 export type TGeographySummary = {
