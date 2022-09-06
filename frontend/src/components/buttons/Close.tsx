@@ -1,15 +1,20 @@
-import { CloseIcon } from '../svg/Icons';
+import React from "react";
+import { CloseIcon } from "../svg/Icons";
 
 interface CloseProps {
-  onClick(event: React.FormEvent<HTMLButtonElement>): void;
+  onClick(): void;
   size?: string;
 }
 
-const Close = ({ onClick, size = '20' }: CloseProps) => {
+const Close = ({ onClick, size = "20" }: CloseProps) => {
+  
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    onClick();
+  };
   return (
     <button
       className="focus:outline-none pointer-events-auto"
-      onClick={onClick}
+      onClick={handleClick}
       type="button"
       style={{
         height: `${size}px`,
