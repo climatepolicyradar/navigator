@@ -70,7 +70,7 @@ def test_get_relationships(
         "/api/v1/document-relationship", headers=superuser_token_headers
     )
     assert response_get.status_code == 200
-    assert len(response_get.json()["relationships"]) == 10
+    assert len(response_get.json()) == 10
 
 
 def test_get_relationships_security(

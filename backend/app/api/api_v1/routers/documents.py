@@ -46,7 +46,6 @@ from app.api.api_v1.schemas.document import (
     RelationshipAndDocumentsGetResponse,
     RelationshipCreateRequest,
     RelationshipEntityResponse,
-    RelationshipGetResponse,
 )
 
 from app.db.session import get_db
@@ -193,14 +192,16 @@ async def post_relationship(
     )
 
 
-@documents_router.get("/document-relationship", response_model=RelationshipGetResponse)
+@documents_router.get(
+    "/document-relationship", response_model=List[RelationshipEntityResponse]
+)
 async def get_all_relationships(
     request: Request,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
     """Get all relationships"""
-    return get_relationships(db)
+    return get_relationships(db).relationships
 
 
 @documents_router.get(
