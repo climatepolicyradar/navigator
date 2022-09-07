@@ -1,6 +1,6 @@
 import logging
 from datetime import datetime
-from typing import Sequence, Union, cast
+from typing import Sequence, Set, Union, cast
 
 from fastapi import (
     HTTPException,
@@ -549,7 +549,9 @@ def write_metadata(
         db.add(doc_keyword)
 
 
-def _get_associated_documents(db: Session, document_id: int):
+def _get_associated_documents(
+    db: Session, document_id: int
+) -> Set[DocumentOverviewResponse]:
     # Get all associated documents
     # start with all documents with a reference from this document_id
     related_documents_to = set(
@@ -610,47 +612,48 @@ def _get_associated_documents(db: Session, document_id: int):
     return related_documents_to | related_to_master_documents | related_documents_from
 
 
-def _get_related_documents(db: Session, document_id: int):
-    """Gets all the other documents this document is related to.
+# TODO: BAK-1137 - Phase 2 start using this function for related documents
+# def _get_related_documents(db: Session, document_id: int) -> Set[DocumentOverviewResponse]:
+#     """Gets all the other documents this document is related to.
 
-    TODO: return this as structured, as at the moment we return a flat list
-    """
-    print(f"### get_related_documents for: {document_id}")
-    query_all_relationships_of_document = db.query(
-        DocumentRelationship.relationship_id
-    ).filter(DocumentRelationship.document_id == document_id)
+#     TODO: return this as structured, as at the moment we return a flat list
+#     """
+#     print(f"### get_related_documents for: {document_id}")
+#     query_all_relationships_of_document = db.query(
+#         DocumentRelationship.relationship_id
+#     ).filter(DocumentRelationship.document_id == document_id)
 
-    print(
-        f"### get_related_documents searching: {db.query(DocumentRelationship).count()}"
-    )
-    print(
-        f"### get_related_documents found relns: {query_all_relationships_of_document.count()}"
-    )
+#     print(
+#         f"### get_related_documents searching: {db.query(DocumentRelationship).count()}"
+#     )
+#     print(
+#         f"### get_related_documents found relns: {query_all_relationships_of_document.count()}"
+#     )
 
-    related_docs = set(
-        DocumentOverviewResponse(
-            document_id=d.id,
-            name=d.name,
-            description=d.description,
-            country_code=g.value,
-            country_name=g.display_value,
-            publication_ts=d.publication_ts,
-        )
-        for _, d, g in (
-            db.query(DocumentRelationship, Document, Geography)
-            .join(Geography, Document.geography_id == Geography.id)
-            .join(DocumentRelationship, DocumentRelationship.document_id == Document.id)
-            .filter(
-                DocumentRelationship.relationship_id.in_(
-                    query_all_relationships_of_document
-                )
-            )
-            .filter(Document.id != document_id)
-        ).all()
-    )
-    print(f"### get_related_documents found: {len(related_docs)}")
+#     related_docs = set(
+#         DocumentOverviewResponse(
+#             document_id=d.id,
+#             name=d.name,
+#             description=d.description,
+#             country_code=g.value,
+#             country_name=g.display_value,
+#             publication_ts=d.publication_ts,
+#         )
+#         for _, d, g in (
+#             db.query(DocumentRelationship, Document, Geography)
+#             .join(Geography, Document.geography_id == Geography.id)
+#             .join(DocumentRelationship, DocumentRelationship.document_id == Document.id)
+#             .filter(
+#                 DocumentRelationship.relationship_id.in_(
+#                     query_all_relationships_of_document
+#                 )
+#             )
+#             .filter(Document.id != document_id)
+#         ).all()
+#     )
+#     print(f"### get_related_documents found: {len(related_docs)}")
 
-    return related_docs
+#     return related_docs
 
 
 def create_relationship(
