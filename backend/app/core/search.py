@@ -33,6 +33,7 @@ from app.core.config import (
     OPENSEARCH_USE_SSL,
     OPENSEARCH_VERIFY_CERTS,
     OPENSEARCH_SSL_WARNINGS,
+    OPENSEARCH_JIT_MAX_DOC_COUNT,
 )
 from app.core.util import content_type_from_path, s3_to_cdn_url
 from app.api.api_v1.schemas.search import (
@@ -117,8 +118,11 @@ class OpenSearchQueryConfig:
     )  # TODO: tune me separately for descriptions?
     max_doc_count: int = OPENSEARCH_INDEX_MAX_DOC_COUNT
     max_passages_per_doc: int = OPENSEARCH_INDEX_MAX_PASSAGES_PER_DOC
-    n_passages_to_sample_per_shard = OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
+    n_passages_to_sample_per_shard: int = (
+        OPENSEARCH_INDEX_N_PASSAGES_TO_SAMPLE_PER_SHARD
+    )
     k = OPENSEARCH_INDEX_KNN_K_VALUE
+    jit_max_doc_count: int = OPENSEARCH_JIT_MAX_DOC_COUNT
 
 
 @dataclass
@@ -192,7 +196,9 @@ class OpenSearchConnection:
         )
 
     def raw_query(
-        self, request_body: Mapping[str, Any], preference: Optional[str]
+        self,
+        request_body: Mapping[str, Any],
+        preference: Optional[str],
     ) -> OpenSearchResponse:
         """Query the configured OpenSearch instance with a JSON OpenSearch body."""
 
@@ -209,15 +215,15 @@ class OpenSearchConnection:
                 ssl_show_warn=self._opensearch_config.ssl_show_warnings,
             )
 
-        start = time.time()
+        start = time.time_ns()
         response = self._opensearch_connection.search(
             body=request_body,
             index=self._opensearch_config.index_name,
             request_timeout=self._opensearch_config.request_timeout,
             preference=preference,
         )
-        end = time.time()
-        search_request_time = round(1000 * (end - start))
+        end = time.time_ns()
+        search_request_time = round((end - start) / 1e6)
 
         _LOGGER.info(
             "Search request completed",
@@ -548,6 +554,7 @@ def build_opensearch_request_body(
     opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
 ) -> QueryBuilder:
     """Build a complete OpenSearch request body."""
+
     search_config = opensearch_internal_config or OpenSearchQueryConfig(
         max_passages_per_doc=search_request.max_passages_per_doc,
     )

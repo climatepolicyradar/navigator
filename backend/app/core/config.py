@@ -64,3 +64,4 @@ OPENSEARCH_INDEX_TEXT_BLOCK_KEY: str = os.getenv(
 OPENSEARCH_INDEX_ENCODER: str = os.getenv(
     "OPENSEARCH_INDEX_ENCODER", "sentence-transformers/msmarco-distilbert-dot-v5"
 )
+OPENSEARCH_JIT_MAX_DOC_COUNT: int = int(os.getenv("OPENSEARCH_JIT_MAX_DOC_COUNT", "20"))

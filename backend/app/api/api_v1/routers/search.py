@@ -7,9 +7,10 @@ for the type of document search being performed.
 import json
 import logging
 
-from fastapi import APIRouter, Depends, Request
+from fastapi import APIRouter, Depends, Request, BackgroundTasks
 
 from app.core.auth import get_current_active_db_user
+from app.core.jit_query_wrapper import jit_query_wrapper
 
 # from app.core.browse import BrowseArgs, browse_rds
 from app.core.search import (
@@ -20,7 +21,6 @@ from app.core.search import (
 from app.api.api_v1.schemas.search import SearchRequestBody, SearchResponseBody
 
 _LOGGER = logging.getLogger(__name__)
-
 search_router = APIRouter()
 
 # Use configured environment for router
@@ -33,17 +33,23 @@ _OPENSEARCH_INDEX_CONFIG = OpenSearchQueryConfig()
 def search_documents(
     request: Request,
     search_body: SearchRequestBody,
+    background_tasks: BackgroundTasks,
     current_user=Depends(get_current_active_db_user),
 ):
     """Search for documents matching the search criteria."""
 
     _LOGGER.info(
-        "Search request",
-        extra={"props": {"search_request": json.loads(search_body.json())}},
+        f"Search request (jit={search_body.jit_query})",
+        extra={
+            "props": {
+                "search_request": json.loads(search_body.json()),
+            }
+        },
     )
 
-    """When a query string is given - hand off the complete search to OpenSearch"""
-    return _OPENSEARCH_CONNECTION.query(
+    return jit_query_wrapper(
+        _OPENSEARCH_CONNECTION,
+        background_tasks=background_tasks,
         search_request_body=search_body,
         opensearch_internal_config=_OPENSEARCH_INDEX_CONFIG,
         preference=str(current_user.id),
