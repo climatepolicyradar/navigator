@@ -2,7 +2,7 @@ import { useQuery } from 'react-query';
 import { ApiClient } from '../api/http-common';
 import { initialSearchCriteria } from '../constants/searchCriteria';
 
-export default function useSearch(id, obj = initialSearchCriteria) {
+export default function useSearch(id: string, obj = initialSearchCriteria) {
   const client = new ApiClient();
 
   const config = {
@@ -23,7 +23,6 @@ export default function useSearch(id, obj = initialSearchCriteria) {
       return getResults();
     },
     {
-      enabled: obj.query_string.length > 0,
       refetchOnWindowFocus: false,
       refetchOnMount: false,
       cacheTime: 1000 * 60 * 60 * 24,
