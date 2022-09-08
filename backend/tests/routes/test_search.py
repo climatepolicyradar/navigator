@@ -1,11 +1,18 @@
+import dataclasses
 import time
+import fastapi
 from datetime import datetime
 
 import pytest
-
+import app.core
 from app.api.api_v1.routers import search
-from app.api.api_v1.schemas.search import SortOrder, FilterField
-from app.core.search import _FILTER_FIELD_MAP
+from app.api.api_v1.schemas.search import (
+    JitQuery,
+    SearchRequestBody,
+    SortOrder,
+    FilterField,
+)
+from app.core.search import _FILTER_FIELD_MAP, OpenSearchQueryConfig
 
 _TOTAL_DOCUMENT_COUNT = 7
 
@@ -122,6 +129,138 @@ def test_search_body_valid(test_opensearch, monkeypatch, client, user_token_head
 
 
 @pytest.mark.search
+def test_jit_query_is_default(
+    test_opensearch, monkeypatch, client, user_token_headers, mocker
+):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+    jit_query_spy = mocker.spy(app.core.jit_query_wrapper, "jit_query")
+    background_task_spy = mocker.spy(fastapi.BackgroundTasks, "add_task")
+
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": True,
+        },
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 200
+
+    # Check the jit query called by checking the background task has been added
+    assert jit_query_spy.call_count == 1 or jit_query_spy.call_count == 2
+    assert background_task_spy.call_count == 1
+
+
+@pytest.mark.search
+def test_with_jit(test_opensearch, monkeypatch, client, user_token_headers, mocker):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+    jit_query_spy = mocker.spy(app.core.jit_query_wrapper, "jit_query")
+    background_task_spy = mocker.spy(fastapi.BackgroundTasks, "add_task")
+
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": True,
+        },
+        headers=user_token_headers,
+    )
+
+    assert response.status_code == 200
+
+    # Check the jit query call
+    assert jit_query_spy.call_count == 1 or jit_query_spy.call_count == 2
+    actual_search_body = jit_query_spy.mock_calls[0].args[1]
+    actual_config = jit_query_spy.mock_calls[0].args[2]
+
+    expected_search_body = SearchRequestBody(
+        query_string="climate",
+        exact_match=True,
+        max_passages_per_doc=10,
+        keyword_filters=None,
+        year_range=None,
+        sort_field=None,
+        sort_order=SortOrder.DESCENDING,
+        jit_query=JitQuery.ENABLED,
+        limit=10,
+        offset=0,
+    )
+    assert actual_search_body == expected_search_body
+
+    # Check the first call has overriden the default config
+    overrides = {
+        "max_doc_count": 20,
+    }
+    expected_config = dataclasses.replace(OpenSearchQueryConfig(), **overrides)
+    assert actual_config == expected_config
+
+    # Check the background query call
+    assert background_task_spy.call_count == 1
+    actual_bkg_search_body = background_task_spy.mock_calls[0].args[3]
+
+    expected_bkg_search_body = SearchRequestBody(
+        query_string="climate",
+        exact_match=True,
+        max_passages_per_doc=10,
+        keyword_filters=None,
+        year_range=None,
+        sort_field=None,
+        sort_order=SortOrder.DESCENDING,
+        jit_query=JitQuery.ENABLED,
+        limit=10,
+        offset=0,
+    )
+    assert actual_bkg_search_body == expected_bkg_search_body
+
+    # Check the background call is run with default config
+    actual_bkg_config = background_task_spy.mock_calls[0].args[4]
+    assert actual_bkg_config == OpenSearchQueryConfig()
+
+
+@pytest.mark.search
+def test_without_jit(test_opensearch, monkeypatch, client, user_token_headers, mocker):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "query")
+    background_task_spy = mocker.spy(fastapi.BackgroundTasks, "add_task")
+
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": True,
+            "jit_query": "disabled",
+        },
+        headers=user_token_headers,
+    )
+    assert response.status_code == 200
+    # Ensure nothing has/is going on in the background
+    assert background_task_spy.call_count == 0
+    assert query_spy.call_count == 1  # Called once as not using jit search
+
+    actual_search_body = query_spy.mock_calls[0].args[0]
+
+    expected_search_body = SearchRequestBody(
+        query_string="climate",
+        exact_match=True,
+        max_passages_per_doc=10,
+        keyword_filters=None,
+        year_range=None,
+        sort_field=None,
+        sort_order=SortOrder.DESCENDING,
+        jit_query=JitQuery.DISABLED,
+        limit=10,
+        offset=0,
+    )
+    assert actual_search_body == expected_search_body
+
+    # Check default config is used
+    actual_config = query_spy.mock_calls[0].args[1]
+    expected_config = OpenSearchQueryConfig()
+    assert actual_config == expected_config
+
+
+@pytest.mark.search
 def test_keyword_filters(
     test_opensearch, monkeypatch, client, user_token_headers, mocker
 ):
@@ -134,6 +273,7 @@ def test_keyword_filters(
             "query_string": "climate",
             "exact_match": False,
             "keyword_filters": {"countries": ["Kenya"]},
+            "jit_query": "disabled",
         },
         headers=user_token_headers,
     )
@@ -188,6 +328,7 @@ def test_year_range_filters(
             "query_string": "disaster",
             "exact_match": False,
             "year_range": year_range,
+            "jit_query": "disabled",
         },
         headers=user_token_headers,
     )
@@ -246,6 +387,7 @@ def test_multiple_filters(
                 "sources": ["CCLW"],
             },
             "year_range": (1900, 2020),
+            "jit_query": "disabled",
         },
         headers=user_token_headers,
     )
@@ -649,6 +791,7 @@ def test_browse_filters(
                 "sources": ["CCLW"],
             },
             "year_range": (1900, 2020),
+            "jit_query": "disabled",
         },
         headers=user_token_headers,
     )
