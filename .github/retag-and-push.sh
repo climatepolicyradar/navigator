@@ -25,13 +25,14 @@ DOCKER_REGISTRY="${DOCKER_REGISTRY:-}"
 aws ecr get-login-password --region eu-west-2 | \
     docker login --username AWS --password-stdin ${DOCKER_REGISTRY}
 
-name="${DOCKER_REGISTRY}/${project}"
+name="$(echo ${DOCKER_REGISTRY}/${project} | tr -d '\n')"
 input_image="${project}:${image_tag}"
 
 echo "Input:   ${project}:${image_tag}"
-echo "Output:  ${DOCKER_REGISTRY}/${project}"
+echo "Output:  ${name}"
 echo "GitRef:  $GITHUB_REF"
 echo "Branch:  ${GITHUB_REF/refs\/heads\//}"
+echo "Repo Tag ${name}"
 
 timestamp=$(date --utc +%Y%m%d.%H%M)
 short_sha=${GITHUB_SHA:0:8}
@@ -65,7 +66,7 @@ else
     echo "${GITHUB_REF} is neither a branch head or valid semver tag"
     #echo "No image tagging or pushing was performed because of this."
     #exit 1
-    echo "Performing test..."
+    echo "Performing test... for ${name}"
     branch="test"
     docker tag "$input_image" "${name}:${branch}-${short_sha}-${timestamp}"
     docker push "${name}:${branch}-${short_sha}-${timestamp}"
