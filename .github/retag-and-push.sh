@@ -28,23 +28,30 @@ aws ecr get-login-password --region eu-west-2 | \
 name="${DOCKER_REGISTRY}/${project}"
 input_image="${project}:${image_tag}"
 
-if [[ "$GITHUB_REF" == "refs/heads"* ]]; then
-    # push `branch-sha` tagged image
-    branch="${GITHUB_REF/refs\/heads\//}"
-    timestamp=$(date --utc +%Y%m%d.%H%M)
-    short_sha=${GITHUB_SHA:0:8}
-    docker tag "$input_image" "${name}:${branch}-${short_sha}-${timestamp}"
-    docker push "${name}:${branch}-${short_sha}-${timestamp}"
-    docker tag "$input_image" "${name}:${branch}-${short_sha}"
-    docker push "${name}:${branch}-${short_sha}"
+echo "Input:   ${project}:${image_tag}"
+echo "Output:  ${DOCKER_REGISTRY}/${project}"
+echo "GitRef:  $GITHUB_REF"
+echo "Branch:  ${GITHUB_REF/refs\/heads\//}"
 
-    if [[ "$branch" = "main" ]]; then
-        # push `latest` tag
-        docker tag "$input_image" "${name}:latest"
-        docker push "${name}:latest"
-    fi
+# if [[ "$GITHUB_REF" == "refs/heads"* ]]; then
+# push `branch-sha` tagged image
+branch="${GITHUB_REF/refs\/heads\//}"
+timestamp=$(date --utc +%Y%m%d.%H%M)
+short_sha=${GITHUB_SHA:0:8}
 
-elif [[ "$GITHUB_REF" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]]; then
+# Tag and push with timestamp
+docker tag "$input_image" "${name}:${branch}-${short_sha}-${timestamp}"
+docker push "${name}:${branch}-${short_sha}-${timestamp}"
+
+# If on main then tag as latest
+if [[ "$branch" = "main" ]]; then
+    # push `latest` tag
+    docker tag "$input_image" "${name}:latest"
+    docker push "${name}:latest"
+fi
+
+# Tag semver tags in git
+if [[ "$GITHUB_REF" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]]; then
     # push `semver` tagged image
     semver="${GITHUB_REF/refs\/tags\/v/}"
     major="$(echo "${semver}" | cut -d'.' -f1)"
@@ -57,8 +64,4 @@ elif [[ "$GITHUB_REF" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]];
     docker push "${name}:${major}.${minor}.${patch}"
     docker push "${name}:${major}.${minor}"
     docker push "${name}:${major}"
-else
-    echo "${GITHUB_REF} is neither a branch head or valid semver tag"
-    echo "No image tagging or pushing was performed because of this."
-    exit 1
-fi
+
