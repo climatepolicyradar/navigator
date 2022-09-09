@@ -95,6 +95,8 @@ jobs:
           docker load -i ${BACKEND_TAR}
           docker load -i ${FRONTEND_TAR}
 
+      - uses: actions/checkout@v2
+
       - name: Run Integration Tests
         run: echo TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO
 
@@ -102,6 +104,7 @@ jobs:
         run: |
           ls -laR
           find . -name -*.sh'
+          env
           .github/retag-and-push.sh navigator_backend ${IMAGE_TAG}
           .github/retag-and-push.sh navigator_frontend ${IMAGE_TAG}
         env:
