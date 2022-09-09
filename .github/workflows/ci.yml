@@ -25,6 +25,15 @@ jobs:
       - name: Use .env.example
         run:  cp .env.example .env 
 
+      - uses: actions/download-artifact@v1
+        with:
+          name: docker-image    
+
+      - name: Load Images
+        run: |
+          docker load -i ${BACKEND_TAR}
+          docker load -i ${FRONTEND_TAR}
+
       - name: Build 
         run: |
           docker-compose build
@@ -83,7 +92,7 @@ jobs:
 
 
   integration-tests-and-push:
-    needs: [test]
+    # needs: [test]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/download-artifact@v1
