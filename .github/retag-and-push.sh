@@ -69,6 +69,8 @@ else
     # After testing re-instate lines above and remove lines below if you don't want branch images pushed
     echo "Performing test... for ${name}"
     branch="test"
+    docker images
     docker tag "$input_image" "${name}:${branch}-${short_sha}-${timestamp}"
+    docker images
     docker push "${name}:${branch}-${short_sha}-${timestamp}"
 fi
