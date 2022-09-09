@@ -41,45 +41,45 @@ jobs:
           name: docker-image
           path: docker-image
 
-  test:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
+  # test:
+  #   needs: [build]
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #     - uses: actions/checkout@v2
 
-      - name: Use .env.example
-        run:  cp .env.example .env 
+  #     - name: Use .env.example
+  #       run:  cp .env.example .env 
 
-      - uses: actions/download-artifact@v1
-        with:
-          name: docker-image    
+  #     - uses: actions/download-artifact@v1
+  #       with:
+  #         name: docker-image    
 
-      - name: Load Images
-        run: |
-          docker load -i ${BACKEND_TAR}
-          docker load -i ${FRONTEND_TAR}
+  #     - name: Load Images
+  #       run: |
+  #         docker load -i ${BACKEND_TAR}
+  #         docker load -i ${FRONTEND_TAR}
 
-      - name: Build docker-compose stack
-        run:  make start
-      - name: verify backend is up
-        run:  curl http://localhost:8000/api/docs
-      - name: Run backend tests
-        run:  make test_backend && make test_backend_search
-      - name: docker
-        run: |
-          docker-compose logs
-          docker-compose ps
-          docker ps -a
-          ls -la
-      - name: verify frontend is up
-        run:  curl http://localhost:3000
-      - name: Configure frontend test env
-        run:  cp frontend/e2e/.env.example frontend/e2e/.env
-      - name: Run frontend tests
-        run:  make test_frontend
-      - name: Log Dump
-        if:   always()
-        run:  docker-compose logs
+  #     - name: Build docker-compose stack
+  #       run:  make start
+  #     - name: verify backend is up
+  #       run:  curl http://localhost:8000/api/docs
+  #     - name: Run backend tests
+  #       run:  make test_backend && make test_backend_search
+  #     - name: docker
+  #       run: |
+  #         docker-compose logs
+  #         docker-compose ps
+  #         docker ps -a
+  #         ls -la
+  #     - name: verify frontend is up
+  #       run:  curl http://localhost:3000
+  #     - name: Configure frontend test env
+  #       run:  cp frontend/e2e/.env.example frontend/e2e/.env
+  #     - name: Run frontend tests
+  #       run:  make test_frontend
+  #     - name: Log Dump
+  #       if:   always()
+  #       run:  docker-compose logs
 
 
   integration-tests-and-push:
@@ -102,8 +102,6 @@ jobs:
 
       - name: "Push Images if on dev/main if: github.ref == 'refs/heads/master'"
         run: |
-          ls -laR
-          find . -name -*.sh'
           env
           .github/retag-and-push.sh navigator_backend ${IMAGE_TAG}
           .github/retag-and-push.sh navigator_frontend ${IMAGE_TAG}
