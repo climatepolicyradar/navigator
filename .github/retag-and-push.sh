@@ -33,7 +33,59 @@ echo "Output:  ${DOCKER_REGISTRY}/${project}"
 echo "GitRef:  $GITHUB_REF"
 echo "Branch:  ${GITHUB_REF/refs\/heads\//}"
 
-# if [[ "$GITHUB_REF" == "refs/heads"* ]]; then
+timestamp=$(date --utc +%Y%m%d.%H%M)
+short_sha=${GITHUB_SHA:0:8}
+
+if [[ "$GITHUB_REF" == "refs/heads"* ]]; then
+    # push `branch-sha` tagged image
+    branch="${GITHUB_REF/refs\/heads\//}"
+    docker tag "$input_image" "${name}:${branch}-${short_sha}-${timestamp}"
+    docker push "${name}:${branch}-${short_sha}-${timestamp}"
+
+    if [[ "$branch" = "main" ]]; then
+        # push `latest` tag
+        docker tag "$input_image" "${name}:latest"
+        docker push "${name}:latest"
+    fi
+
+elif [[ "$GITHUB_REF" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]]; then
+    # push `semver` tagged image
+    semver="${GITHUB_REF/refs\/tags\/v/}"
+    major="$(echo "${semver}" | cut -d'.' -f1)"
+    minor="$(echo "${semver}" | cut -d'.' -f2)"
+    patch="$(echo "${semver}" | cut -d'.' -f3)"
+
+    docker tag "$input_image" "${name}:${major}.${minor}.${patch}"
+    docker tag "$input_image" "${name}:${major}.${minor}"
+    docker tag "$input_image" "${name}:${major}"
+    docker push "${name}:${major}.${minor}.${patch}"
+    docker push "${name}:${major}.${minor}"
+    docker push "${name}:${major}"
+else
+    echo "${GITHUB_REF} is neither a branch head or valid semver tag"
+    #echo "No image tagging or pushing was performed because of this."
+    #exit 1
+    echo "Performing test..."
+    branch="test"
+    docker tag "$input_image" "${name}:${branch}-${short_sha}-${timestamp}"
+    docker push "${name}:${branch}-${short_sha}-${timestamp}"
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # push `branch-sha` tagged image
 branch="${GITHUB_REF/refs\/heads\//}"
 timestamp=$(date --utc +%Y%m%d.%H%M)
@@ -42,6 +94,9 @@ short_sha=${GITHUB_SHA:0:8}
 # Tag and push with timestamp
 docker tag "$input_image" "${name}:${branch}-${short_sha}-${timestamp}"
 docker push "${name}:${branch}-${short_sha}-${timestamp}"
+
+
+
 
 # If on main then tag as latest
 if [[ "$branch" = "main" ]]; then
