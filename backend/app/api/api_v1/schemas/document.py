@@ -96,7 +96,7 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
         validate_assignment = True
 
 
-# TODO: replace doc-doc with proper association model
+# TODO: BAK-1137 remove association model
 class DocumentAssociationCreateRequest(BaseModel):
     """Schema for associations create request."""
 
@@ -106,6 +106,7 @@ class DocumentAssociationCreateRequest(BaseModel):
     type: str
 
 
+# TODO: BAK-1137 Remove
 class DocumentAssociationCreateResponse(DocumentAssociationCreateRequest):
     """Schema for associations create response."""
 
@@ -113,3 +114,36 @@ class DocumentAssociationCreateResponse(DocumentAssociationCreateRequest):
 
     class Config:  # noqa: D106
         orm_mode = True
+
+
+class RelationshipCreateRequest(BaseModel):
+    """Schema for Relationship create request."""
+
+    name: str
+    type: str
+    description: str
+
+
+class RelationshipEntityResponse(RelationshipCreateRequest):
+    """Response for Relationship create request."""
+
+    id: int
+
+    class Config:  # noqa: D106
+        orm_mode = True
+
+
+class RelationshipGetResponse(BaseModel):
+    """Response for Relationship get request."""
+
+    relationships: List[RelationshipEntityResponse]
+
+    class Config:  # noqa: D106
+        orm_mode = True
+
+
+class RelationshipAndDocumentsGetResponse(BaseModel):
+    """Response for Relationship get request."""
+
+    relationship: RelationshipEntityResponse
+    documents: Optional[List[DocumentOverviewResponse]] = None

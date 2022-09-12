@@ -20,205 +20,7 @@ from app.db.models import (
 from app.api.api_v1.schemas.document import DocumentAssociationCreateRequest
 
 
-def test_document_upload(
-    client, superuser_token_headers, test_s3_client, s3_document_bucket_names
-):
-
-    test_valid_filename = (
-        Path(__file__) / "../data/cclw-1618-884b7d6efcf448ff92d27f37ff22cb65.pdf"
-    ).resolve()
-
-    with open(test_valid_filename, "rb") as f:
-        response = client.post(
-            "/api/v1/document",
-            files={"file": (test_valid_filename.name, f, "application/pdf")},
-            headers=superuser_token_headers,
-        )
-
-    queue_bucket_contents = test_s3_client.client.list_objects(
-        Bucket=s3_document_bucket_names["queue"],
-    ).get("Contents")
-
-    assert response.status_code == 200
-    # There should be 2 documents in the mocked bucket: test_document.pdf, and the document just uploaded.
-    assert len(queue_bucket_contents) == 2
-
-    test_invalid_filename = (Path(__file__) / "../data/empty_img.png").resolve()
-
-    with open(test_invalid_filename, "rb") as f:
-        response = client.post(
-            "/api/v1/document",
-            files={"file": (test_invalid_filename.name, f, "application/pdf")},
-            headers=superuser_token_headers,
-        )
-
-    queue_bucket_contents = test_s3_client.client.list_objects(
-        Bucket=s3_document_bucket_names["queue"],
-    ).get("Contents")
-    assert response.status_code == 415
-    # No more documents should have been uploaded to the queue bucket.
-    assert len(queue_bucket_contents) == 2
-
-
-def test_post_documents(client, superuser_token_headers, test_db):
-
-    # ensure meta
-    test_db.add(Source(name="may it be with you"))
-    test_db.add(
-        Geography(
-            display_value="not my favourite subject", value="NMFS", type="country"
-        )
-    )
-    test_db.add(DocumentType(name="just my type", description="sigh"))
-    test_db.add(Language(language_code="afr", name="Afrikaans"))
-    test_db.add(Category(name="a category", description="a category description"))
-    test_db.add(Hazard(name="some hazard", description="Imported by CPR loader"))
-    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
-    test_db.add(Framework(name="some framework", description="Imported by CPR loader"))
-    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
-    test_db.commit()
-
-    test_db.add(
-        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
-    )
-    test_db.add(
-        Instrument(
-            name="some instrument", description="Imported by CPR loader", source_id=1
-        )
-    )
-    test_db.add(
-        Instrument(
-            name="another instrument", description="Imported by CPR loader", source_id=1
-        )
-    )
-    test_db.commit()
-
-    payload = {
-        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
-        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
-        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
-        "description": "the document description",
-        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
-        "md5_sum": "the md5 sum",
-        "type": "just my type",
-        "geography": "not my favourite subject",
-        "source": "may it be with you",
-        "category": "a category",
-        "languages": ["afr"],
-        "events": [
-            {
-                "name": "Publication",
-                "description": "The publication date",
-                "created_ts": "2008-12-25T00:00:00+00:00",
-            }
-        ],
-        "sectors": ["Energy"],
-        "instruments": ["some instrument", "another instrument"],
-        "frameworks": ["some framework"],
-        "topics": ["Mitigation"],
-        "hazards": ["some hazard"],
-        "keywords": ["some keyword"],
-    }
-
-    response = client.post(
-        "/api/v1/documents", headers=superuser_token_headers, json=payload
-    )
-
-    assert response.status_code == 200
-
-    doc: Document = test_db.query(Document).first()
-    assert doc.name == payload["name"]
-    assert doc.description == payload["description"]
-    assert doc.url == payload["url"]
-    assert doc.md5_sum == payload["md5_sum"]
-    assert doc.publication_ts == datetime(2000, 1, 1)
-
-    event = test_db.query(Event).first()
-    assert event.name == "Publication"
-    assert event.created_ts == datetime(2008, 12, 25, 0, 0, tzinfo=timezone.utc)
-    assert test_db.query(DocumentLanguage).first().document_id == 1
-
-
-def test_post_documents_fail(client, superuser_token_headers, test_db):
-    """Document creation should fail unless all referenced metadata already exists."""
-
-    # ensure meta
-    test_db.add(Source(name="may it be with you"))
-    test_db.add(
-        Geography(
-            display_value="not my favourite subject", value="NMFS", type="country"
-        )
-    )
-    test_db.add(DocumentType(name="just my type", description="sigh"))
-    test_db.add(Language(language_code="afr", name="Afrikaans"))
-    test_db.add(Category(name="a category", description="a category description"))
-    test_db.add(Hazard(name="some other hazard", description="Imported by CPR loader"))
-    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
-    test_db.add(
-        Framework(name="some other framework", description="Imported by CPR loader")
-    )
-    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
-    test_db.commit()
-
-    test_db.add(
-        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
-    )
-    test_db.add(
-        Instrument(
-            name="some instrument", description="Imported by CPR loader", source_id=1
-        )
-    )
-    test_db.add(
-        Instrument(
-            name="another instrument", description="Imported by CPR loader", source_id=1
-        )
-    )
-    test_db.commit()
-
-    payload = {
-        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
-        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
-        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
-        "description": "the document description",
-        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
-        "md5_sum": "the md5 sum",
-        "type": "just my type",
-        "geography": "not my favourite subject",
-        "source": "may it be with you",
-        "category": "a category",
-        "languages": ["afr"],
-        "events": [
-            {
-                "name": "Publication",
-                "description": "The publication date",
-                "created_ts": "2008-12-25T00:00:00+00:00",
-            }
-        ],
-        "sectors": ["Energy"],
-        "instruments": ["some instrument", "another instrument"],
-        "frameworks": ["some framework"],
-        "topics": ["Mitigation"],
-        "hazards": ["some hazard"],
-        "keywords": ["some keyword"],
-    }
-
-    response = client.post(
-        "/api/v1/documents", headers=superuser_token_headers, json=payload
-    )
-
-    assert response.status_code == 422
-    assert len(list(test_db.query(Document).all())) == 0
-    assert test_db.query(Event).first() is None
-
-
-def test_document_detail(
-    client,
-    superuser_token_headers,
-    user_token_headers,
-    test_db,
-):
+def create_4_documents(test_db, client, superuser_token_headers):
     # ensure meta
     test_db.add(Source(name="may it be with you"))
     test_db.add(
@@ -430,6 +232,228 @@ def test_document_detail(
     )
     assert response4.status_code == 200
     response4_document = response4.json()
+    return (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    )
+
+
+def test_document_upload(
+    client, superuser_token_headers, test_s3_client, s3_document_bucket_names
+):
+
+    test_valid_filename = (
+        Path(__file__) / "../data/cclw-1618-884b7d6efcf448ff92d27f37ff22cb65.pdf"
+    ).resolve()
+
+    with open(test_valid_filename, "rb") as f:
+        response = client.post(
+            "/api/v1/document",
+            files={"file": (test_valid_filename.name, f, "application/pdf")},
+            headers=superuser_token_headers,
+        )
+
+    queue_bucket_contents = test_s3_client.client.list_objects(
+        Bucket=s3_document_bucket_names["queue"],
+    ).get("Contents")
+
+    assert response.status_code == 200
+    # There should be 2 documents in the mocked bucket: test_document.pdf, and the document just uploaded.
+    assert len(queue_bucket_contents) == 2
+
+    test_invalid_filename = (Path(__file__) / "../data/empty_img.png").resolve()
+
+    with open(test_invalid_filename, "rb") as f:
+        response = client.post(
+            "/api/v1/document",
+            files={"file": (test_invalid_filename.name, f, "application/pdf")},
+            headers=superuser_token_headers,
+        )
+
+    queue_bucket_contents = test_s3_client.client.list_objects(
+        Bucket=s3_document_bucket_names["queue"],
+    ).get("Contents")
+    assert response.status_code == 415
+    # No more documents should have been uploaded to the queue bucket.
+    assert len(queue_bucket_contents) == 2
+
+
+def test_post_documents(client, superuser_token_headers, test_db):
+
+    # ensure meta
+    test_db.add(Source(name="may it be with you"))
+    test_db.add(
+        Geography(
+            display_value="not my favourite subject", value="NMFS", type="country"
+        )
+    )
+    test_db.add(DocumentType(name="just my type", description="sigh"))
+    test_db.add(Language(language_code="afr", name="Afrikaans"))
+    test_db.add(Category(name="a category", description="a category description"))
+    test_db.add(Hazard(name="some hazard", description="Imported by CPR loader"))
+    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
+    test_db.add(Framework(name="some framework", description="Imported by CPR loader"))
+    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
+    test_db.commit()
+
+    test_db.add(
+        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
+    )
+    test_db.add(
+        Instrument(
+            name="some instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.add(
+        Instrument(
+            name="another instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.commit()
+
+    payload = {
+        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
+        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
+        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+        "description": "the document description",
+        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
+        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
+        "md5_sum": "the md5 sum",
+        "type": "just my type",
+        "geography": "not my favourite subject",
+        "source": "may it be with you",
+        "category": "a category",
+        "languages": ["afr"],
+        "events": [
+            {
+                "name": "Publication",
+                "description": "The publication date",
+                "created_ts": "2008-12-25T00:00:00+00:00",
+            }
+        ],
+        "sectors": ["Energy"],
+        "instruments": ["some instrument", "another instrument"],
+        "frameworks": ["some framework"],
+        "topics": ["Mitigation"],
+        "hazards": ["some hazard"],
+        "keywords": ["some keyword"],
+    }
+
+    response = client.post(
+        "/api/v1/documents", headers=superuser_token_headers, json=payload
+    )
+
+    assert response.status_code == 200
+
+    doc: Document = test_db.query(Document).first()
+    assert doc.name == payload["name"]
+    assert doc.description == payload["description"]
+    assert doc.url == payload["url"]
+    assert doc.md5_sum == payload["md5_sum"]
+    assert doc.publication_ts == datetime(2000, 1, 1)
+
+    event = test_db.query(Event).first()
+    assert event.name == "Publication"
+    assert event.created_ts == datetime(2008, 12, 25, 0, 0, tzinfo=timezone.utc)
+    assert test_db.query(DocumentLanguage).first().document_id == 1
+
+
+def test_post_documents_fail(client, superuser_token_headers, test_db):
+    """Document creation should fail unless all referenced metadata already exists."""
+
+    # ensure meta
+    test_db.add(Source(name="may it be with you"))
+    test_db.add(
+        Geography(
+            display_value="not my favourite subject", value="NMFS", type="country"
+        )
+    )
+    test_db.add(DocumentType(name="just my type", description="sigh"))
+    test_db.add(Language(language_code="afr", name="Afrikaans"))
+    test_db.add(Category(name="a category", description="a category description"))
+    test_db.add(Hazard(name="some other hazard", description="Imported by CPR loader"))
+    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
+    test_db.add(
+        Framework(name="some other framework", description="Imported by CPR loader")
+    )
+    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
+    test_db.commit()
+
+    test_db.add(
+        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
+    )
+    test_db.add(
+        Instrument(
+            name="some instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.add(
+        Instrument(
+            name="another instrument", description="Imported by CPR loader", source_id=1
+        )
+    )
+    test_db.commit()
+
+    payload = {
+        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
+        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
+        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+        "description": "the document description",
+        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
+        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
+        "md5_sum": "the md5 sum",
+        "type": "just my type",
+        "geography": "not my favourite subject",
+        "source": "may it be with you",
+        "category": "a category",
+        "languages": ["afr"],
+        "events": [
+            {
+                "name": "Publication",
+                "description": "The publication date",
+                "created_ts": "2008-12-25T00:00:00+00:00",
+            }
+        ],
+        "sectors": ["Energy"],
+        "instruments": ["some instrument", "another instrument"],
+        "frameworks": ["some framework"],
+        "topics": ["Mitigation"],
+        "hazards": ["some hazard"],
+        "keywords": ["some keyword"],
+    }
+
+    response = client.post(
+        "/api/v1/documents", headers=superuser_token_headers, json=payload
+    )
+
+    assert response.status_code == 422
+    assert len(list(test_db.query(Document).all())) == 0
+    assert test_db.query(Event).first() is None
+
+
+def test_document_detail(
+    client,
+    superuser_token_headers,
+    user_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
 
     # Set up associations
     doc_association_payload_1 = DocumentAssociationCreateRequest(

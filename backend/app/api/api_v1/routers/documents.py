@@ -19,7 +19,6 @@ from fastapi import (
 
 from app.core.auth import (
     get_current_active_superuser,
-    get_current_active_user,
     get_current_active_db_superuser,
 )
 from app.core.aws import get_s3_client
@@ -27,16 +26,25 @@ from app.core.util import CONTENT_TYPE_MAP
 from app.db.crud.document import (
     UnknownMetadataError,
     create_document_association,
+    create_document_relationship,
+    remove_document_relationship,
+    create_relationship,
     get_document_detail,
     get_document_overviews,
+    get_documents_in_relationship,
+    get_relationship_by_id,
+    get_relationships,
     persist_document_and_metadata,
 )
 from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
+    DocumentAssociationCreateResponse,
+    DocumentAssociationCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
-    DocumentAssociationCreateRequest,
-    DocumentAssociationCreateResponse,
+    RelationshipAndDocumentsGetResponse,
+    RelationshipCreateRequest,
+    RelationshipEntityResponse,
 )
 
 from app.db.session import get_db
@@ -56,7 +64,6 @@ async def document_browse(
     start_year: Union[int, None] = None,
     end_year: Union[int, None] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get matching document overviews"""
     return get_document_overviews(db, country_code, start_year, end_year)
@@ -70,7 +77,6 @@ async def document_browse(
 async def document_detail(
     document_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get details of the document with the given ID."""
     return get_document_detail(db, document_id)
@@ -145,6 +151,7 @@ def document_upload(
     }
 
 
+# TODO: BAK-1137 Remove this function
 @documents_router.post(
     "/associations", response_model=DocumentAssociationCreateResponse
 )
@@ -161,4 +168,87 @@ async def post_association(
         document_association.document_id_to,
         document_association.name,
         document_association.type,
+    )
+
+
+@documents_router.post(
+    "/document-relationship", response_model=RelationshipEntityResponse, status_code=201
+)
+async def post_relationship(
+    request: Request,
+    relationship: RelationshipCreateRequest,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a relationship"""
+    return create_relationship(
+        db,
+        relationship.name,
+        relationship.type,
+        relationship.description,
+    )
+
+
+@documents_router.get(
+    "/document-relationship", response_model=List[RelationshipEntityResponse]
+)
+async def get_all_relationships(
+    request: Request,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Get all relationships"""
+    return get_relationships(db).relationships
+
+
+@documents_router.get(
+    "/document-relationships/{relationship_id}",
+    response_model=RelationshipAndDocumentsGetResponse,
+)
+async def get_relationship(
+    request: Request,
+    relationship_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Get a single relationship and all documents"""
+    return RelationshipAndDocumentsGetResponse(
+        documents=get_documents_in_relationship(db, relationship_id),
+        relationship=get_relationship_by_id(db, relationship_id),
+    )
+
+
+@documents_router.put(
+    "/document-relationship/{relationship_id}/document/{document_id}", status_code=201
+)
+async def put_document_relationship(
+    request: Request,
+    document_id: int,
+    relationship_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Create a document-relationship link"""
+    create_document_relationship(
+        db,
+        document_id,
+        relationship_id,
+    )
+
+
+@documents_router.delete(
+    "/document-relationship/{relationship_id}/document/{document_id}"
+)
+async def delete_document_relationship(
+    request: Request,
+    document_id: int,
+    relationship_id: int,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    """Removes a document-relationship link"""
+    remove_document_relationship(
+        db,
+        document_id,
+        relationship_id,
     )
