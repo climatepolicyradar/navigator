@@ -1,4 +1,4 @@
-from http.client import OK, UNAUTHORIZED
+from http.client import OK
 
 
 def test_endpoint_returns_correct_data(client, user_token_headers):
@@ -20,10 +20,3 @@ def test_endpoint_returns_correct_data(client, user_token_headers):
         "sectors",
         "instruments",
     ]
-
-
-def test_endpoint_returns_correct_data_unauth(client):
-    """Tests whether we get the correct error code when making an unauthenticated request."""
-    url_under_test = "/api/v1/config"
-    response = client.get(url_under_test)
-    assert response.status_code == UNAUTHORIZED

@@ -36,19 +36,6 @@ def test_get_lookups(client, user_token_headers, test_db, path, table):
         # TODO: test languages
 
 
-@pytest.mark.parametrize(
-    "path",
-    [
-        "languages",
-        "sources",
-        "categories",
-    ],
-)
-def test_get_lookups_unauth(client, path):
-    response = client.get(f"/api/v1/{path}")
-    assert response.status_code == 401
-
-
 class _MockColumn:
     def __init__(self, name):
         self.name = name
