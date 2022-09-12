@@ -33,16 +33,16 @@ echo "GitRef:  ${GITHUB_REF}"
 echo "Branch:  ${GITHUB_REF/refs\/heads\//}"
 echo "Repo Tag ${name}"
 
-timestamp=$(date --utc +%Y%m%d.%H%M)
+timestamp=$(date --utc +%Y%m%d.%H%M.%S%N)
 short_sha=${GITHUB_SHA:0:8}
 
 if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
     # push `branch-sha` tagged image
     branch="${GITHUB_REF/refs\/heads\//}"
-    docker tag "${input_image}" "${name}:${branch}-${short_sha}-${timestamp}"
-    docker push "${name}:${branch}-${short_sha}-${timestamp}"
-
     if [[ "${branch}" = "main" ]]; then
+        # push a `version` tag
+        docker tag "${input_image}" "${name}:${branch}-${timestamp}_${short_sha}"
+        docker push "${name}:${branch}-${timestamp}_${short_sha}"
         # push `latest` tag
         docker tag "${input_image}" "${name}:latest"
         docker push "${name}:latest"
@@ -62,13 +62,14 @@ elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]
     docker push "${name}:${major}"
 else
     echo "${GITHUB_REF} is neither a branch head or valid semver tag"
-    echo "No image tagging or pushing was performed because of this."
-    exit 1
-    # After testing re-instate lines above and remove lines below if you don't want branch images pushed
-    #echo "Performing test... for ${name}"
-    #branch="test"
-    #docker images
-    #docker tag "${input_image}" "${name}:${branch}-${short_sha}-${timestamp}"
-    #docker images
-    #docker push "${name}:${branch}-${short_sha}-${timestamp}"
+    if [[ ! -z "${GITHUB_HEAD_REF}" ]]; then
+        echo "Not yet publishing for branches, so not publishing."
+        branch="${GITHUB_HEAD_REF}"
+        # docker images
+        # docker tag "${input_image}" "${name}:${branch}-${timestamp}-${short_sha}"
+        # docker images
+        # docker push "${name}:${branch}-${short_sha}-${timestamp}"
+    else
+        echo "No branch found, not a PR so not publishing."
+    fi
 fi

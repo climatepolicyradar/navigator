@@ -23,9 +23,9 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Use .env.example
-        run:  cp .env.example .env 
+        run:  cp .env.example .env
 
-      - name: Build 
+      - name: Build
         run: |
           docker-compose build
           docker images
@@ -48,11 +48,11 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Use .env.example
-        run:  cp .env.example .env 
+        run:  cp .env.example .env
 
       - uses: actions/download-artifact@v1
         with:
-          name: docker-image    
+          name: docker-image
 
       - name: Load Images
         run: |
@@ -87,7 +87,7 @@ jobs:
     steps:
       - uses: actions/download-artifact@v1
         with:
-          name: docker-image    
+          name: docker-image
 
       - name: Load Images
         run: |
@@ -99,7 +99,7 @@ jobs:
       - name: Run Integration Tests
         run: echo TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO
 
-      - name: "Push Images if on dev/main if: github.ref == 'refs/heads/master'"
+      - name: Push Images to ECR
         run: |
           .github/retag-and-push.sh navigator_backend latest
           .github/retag-and-push.sh navigator_frontend latest
