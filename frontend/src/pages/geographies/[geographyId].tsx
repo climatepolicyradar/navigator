@@ -21,18 +21,6 @@ import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons
 import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 
-type TGeographySearchCriteria = {
-  query_string: string;
-  exact_match: boolean;
-  max_passages_per_doc: number;
-  keyword_filters: {};
-  year_range: number[];
-  sort_field: any;
-  sort_order: string;
-  limit: number;
-  offset: number;
-};
-
 type TTargets = {
   targets: TTarget[];
 };
