@@ -24,7 +24,6 @@ export default function useSearch(id: string, obj = initialSearchCriteria) {
     },
     {
       refetchOnWindowFocus: false,
-      refetchOnMount: false,
       cacheTime: 1000 * 60 * 60 * 24,
     }
   );
