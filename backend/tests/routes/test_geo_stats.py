@@ -1,4 +1,4 @@
-from http.client import NOT_FOUND, OK, UNAUTHORIZED
+from http.client import NOT_FOUND, OK
 from unittest.mock import Mock
 from app.initial_data import populate_initial_data
 
@@ -13,11 +13,6 @@ URL_UNDER_TEST = f"/api/v1/geo_stats/{TEST_ID}"
 
 TEST_ID_BAD = 123456
 URL_UNDER_TEST_BAD = f"/api/v1/geo_stats/{TEST_ID_BAD}"
-
-
-def test_endpoint_security(client):
-    response = client.get(URL_UNDER_TEST)
-    assert response.status_code == UNAUTHORIZED
 
 
 def test_endpoint_returns_correct_data(client, user_token_headers, test_db):
@@ -79,7 +74,7 @@ def test_queries_db():
         visibility_status="row.visibility_status",
     )
 
-    response = lookup_geo_stats(TEST_ID, db=db, current_user=None)
+    response = lookup_geo_stats(TEST_ID, db=db)
     db.query.assert_called_once()
     assert response.id == TEST_ID
     assert response.name == TEST_GEO_NAME

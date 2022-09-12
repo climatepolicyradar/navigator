@@ -1,6 +1,5 @@
 from fastapi import Depends, Request
 
-from app.core.auth import get_current_active_user
 from app.db.models import (
     Geography,
     Language,
@@ -22,7 +21,6 @@ from .utils import tree_table_to_json, table_to_json
 def lookup_languages(
     request: Request,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get list of languages and associated metadata."""
     return [
@@ -38,7 +36,6 @@ def lookup_languages(
 def lookup_sources(
     request: Request,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get list of sources and associated metadata."""
     return table_to_json(table=Source, db=db)
@@ -48,7 +45,6 @@ def lookup_sources(
 def lookup_document_categories(
     request: Request,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get tree of document types."""
     return table_to_json(table=Category, db=db)
@@ -58,7 +54,6 @@ def lookup_document_categories(
 def lookup_config(
     request: Request,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get the config for the metadata."""
     cclw_source_collection = {
