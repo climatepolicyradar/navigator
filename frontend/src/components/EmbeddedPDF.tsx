@@ -26,7 +26,7 @@ const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
 
   return (
     <>
-      <Script src="https://documentcloud.adobe.com/view-sdk/main.js" />
+      <Script src="https://documentcloud.adobe.com/view-sdk/viewer.js" />
       {!document ? (
         <div className="w-full flex justify-center flex-1">
           <Loader />
