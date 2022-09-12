@@ -62,9 +62,9 @@ elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]
     docker push "${name}:${major}"
 else
     echo "${GITHUB_REF} is neither a branch head or valid semver tag"
-    if [[ ! -z "${GITHUB_HEAD_REF}" ]]; then
-        echo "Not yet publishing for branches, so not publishing."
+    if [[ -n "${GITHUB_HEAD_REF}" ]]; then
         branch="${GITHUB_HEAD_REF}"
+        echo "Not yet publishing for branches, so not publishing for '${branch}'."
         # docker images
         # docker tag "${input_image}" "${name}:${branch}-${timestamp}-${short_sha}"
         # docker images
