@@ -19,7 +19,6 @@ from fastapi import (
 
 from app.core.auth import (
     get_current_active_superuser,
-    get_current_active_user,
     get_current_active_db_superuser,
 )
 from app.core.aws import get_s3_client
@@ -65,7 +64,6 @@ async def document_browse(
     start_year: Union[int, None] = None,
     end_year: Union[int, None] = None,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get matching document overviews"""
     return get_document_overviews(db, country_code, start_year, end_year)
@@ -79,7 +77,6 @@ async def document_browse(
 async def document_detail(
     document_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get details of the document with the given ID."""
     return get_document_detail(db, document_id)

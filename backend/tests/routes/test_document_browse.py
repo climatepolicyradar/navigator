@@ -1,12 +1,7 @@
 from dateutil import parser
-from http.client import OK, UNAUTHORIZED
+from http.client import OK
 
 URL_UNDER_TEST = "/api/v1/documents"
-
-
-def test_document_browse_security(client):
-    response = client.get(URL_UNDER_TEST)
-    assert response.status_code == UNAUTHORIZED
 
 
 def test_endpoint_returns_ok(client, user_token_headers, test_db):
