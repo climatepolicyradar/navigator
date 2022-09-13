@@ -172,7 +172,9 @@ async def post_association(
 
 
 @documents_router.post(
-    "/document-relationship", response_model=RelationshipEntityResponse, status_code=201
+    "/document-relationships",
+    response_model=RelationshipEntityResponse,
+    status_code=201,
 )
 async def post_relationship(
     request: Request,
@@ -190,7 +192,7 @@ async def post_relationship(
 
 
 @documents_router.get(
-    "/document-relationship", response_model=List[RelationshipEntityResponse]
+    "/document-relationships", response_model=List[RelationshipEntityResponse]
 )
 async def get_all_relationships(
     request: Request,
@@ -219,7 +221,7 @@ async def get_relationship(
 
 
 @documents_router.put(
-    "/document-relationship/{relationship_id}/document/{document_id}", status_code=201
+    "/document-relationships/{relationship_id}/documents/{document_id}", status_code=201
 )
 async def put_document_relationship(
     request: Request,
@@ -237,7 +239,7 @@ async def put_document_relationship(
 
 
 @documents_router.delete(
-    "/document-relationship/{relationship_id}/document/{document_id}"
+    "/document-relationships/{relationship_id}/documents/{document_id}"
 )
 async def delete_document_relationship(
     request: Request,

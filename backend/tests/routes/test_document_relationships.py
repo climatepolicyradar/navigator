@@ -8,7 +8,7 @@ def _create_10_relationships(client, superuser_token_headers):
     rel_ids = []
     for x in range(10):
         response_rel = client.post(
-            "/api/v1/document-relationship",
+            "/api/v1/document-relationships",
             headers=superuser_token_headers,
             json=RelationshipCreateRequest(
                 name=f"Rel{x}", type="test", description=f"test relationship {x}"
@@ -27,7 +27,7 @@ def test_create_relationship(
     superuser_token_headers,
 ):
     response_create = client.post(
-        "/api/v1/document-relationship",
+        "/api/v1/document-relationships",
         headers=superuser_token_headers,
         json=RelationshipCreateRequest(
             name="Rel", type="test", description="test relationship"
@@ -47,7 +47,7 @@ def test_create_relationship_security(
     user_token_headers,
 ):
     response_create = client.post(
-        "/api/v1/document-relationship",
+        "/api/v1/document-relationships",
         headers=user_token_headers,
         json=RelationshipCreateRequest(
             name="Rel", type="test", description="test relationship"
@@ -67,7 +67,7 @@ def test_get_relationships(
     _create_10_relationships(client, superuser_token_headers)
 
     response_get = client.get(
-        "/api/v1/document-relationship", headers=superuser_token_headers
+        "/api/v1/document-relationships", headers=superuser_token_headers
     )
     assert response_get.status_code == 200
     assert len(response_get.json()) == 10
@@ -81,13 +81,13 @@ def test_get_relationships_security(
     _create_10_relationships(client, superuser_token_headers)
 
     response_get = client.get(
-        "/api/v1/document-relationship", headers=user_token_headers
+        "/api/v1/document-relationships", headers=user_token_headers
     )
     assert response_get.status_code == 404
     assert response_get.json() == {"detail": "Not Found"}
 
 
-# --- tests for POST /api/v1/document-relationship/id/document/id
+# --- tests for POST /api/v1/document-relationships/id/documents/id
 
 
 def test_add_document_to_relationship(
@@ -111,7 +111,7 @@ def test_add_document_to_relationship(
 
     # Set up document relationship
     response_docrel1 = client.put(
-        f"/api/v1/document-relationship/{rel_ids[0]}/document/{response1_document['id']}",
+        f"/api/v1/document-relationships/{rel_ids[0]}/documents/{response1_document['id']}",
         headers=superuser_token_headers,
     )
     assert response_docrel1.status_code == 201
@@ -143,11 +143,11 @@ def test_add_document_to_relationship_is_idempotent(
 
     # Set up document relationship
     client.put(
-        f"/api/v1/document-relationship/{rel_ids[0]}/document/{response1_document['id']}",
+        f"/api/v1/document-relationships/{rel_ids[0]}/documents/{response1_document['id']}",
         headers=superuser_token_headers,
     )
     response_docrel1 = client.put(
-        f"/api/v1/document-relationship/{rel_ids[0]}/document/{response1_document['id']}",
+        f"/api/v1/document-relationships/{rel_ids[0]}/documents/{response1_document['id']}",
         headers=superuser_token_headers,
     )
     assert response_docrel1.status_code == 200
@@ -165,14 +165,14 @@ def test_add_document_to_relationship_security(
 
     # Set up document relationship
     response_docrel1 = client.put(
-        "/api/v1/document-relationship/1/document/1",
+        "/api/v1/document-relationships/1/documents/1",
         headers=user_token_headers,
     )
     assert response_docrel1.status_code == 404
     assert response_docrel1.json() == {"detail": "Not Found"}
 
 
-# --- tests for DELETE /api/v1/document-relationship/id/document/id
+# --- tests for DELETE /api/v1/document-relationships/id/documents/id
 
 
 def test_delete_document_from_relationship(
@@ -204,7 +204,7 @@ def test_delete_document_from_relationship(
 
     # Delete a document relationship
     response_reldel = client.delete(
-        f"/api/v1/document-relationship/{rel_ids[0]}/document/{response1_document['id']}",
+        f"/api/v1/document-relationships/{rel_ids[0]}/documents/{response1_document['id']}",
         headers=superuser_token_headers,
     )
     assert response_reldel.status_code == 200
@@ -231,14 +231,14 @@ def test_delete_document_from_relationship_security(
 
     # Delete a document relationship
     response_reldel = client.delete(
-        "/api/v1/document-relationship/1/document/1",
+        "/api/v1/document-relationships/1/documents/1",
         headers=user_token_headers,
     )
     assert response_reldel.status_code == 404
     assert response_reldel.json() == {"detail": "Not Found"}
 
 
-# --- tests for GET /api/v1/document-relationship/id
+# --- tests for GET /api/v1/document-relationships/id
 
 
 def test_get_relationship_documents(
@@ -291,7 +291,7 @@ def test_get_relationship_documents_security(
 ):
 
     response_get = client.get(
-        "/api/v1/document-relationship/1", headers=user_token_headers
+        "/api/v1/document-relationships/1", headers=user_token_headers
     )
 
     assert response_get.status_code == 404
@@ -320,7 +320,7 @@ def test_get_relationship_documents_security(
 #
 #     # Set up relationship entities
 #     response_rel1 = client.post(
-#         "/api/v1/document-relationship",
+#         "/api/v1/document-relationships",
 #         headers=superuser_token_headers,
 #         json=RelationshipCreateRequest(
 #             name="Rel1", type="test", description="test relationship 1"
@@ -331,19 +331,19 @@ def test_get_relationship_documents_security(
 #
 #     # Set up document relationship
 #     response_docrel1 = client.post(
-#         f"/api/v1/document-relationship/{rel1_id}/document/{response1_document['id']}",
+#         f"/api/v1/document-relationships/{rel1_id}/documents/{response1_document['id']}",
 #         headers=superuser_token_headers,
 #     )
 #     assert response_docrel1.status_code == 201
 #
 #     response_docrel2 = client.post(
-#         f"/api/v1/document-relationship/{rel1_id}/document/{response2_document['id']}",
+#         f"/api/v1/document-relationships/{rel1_id}/documents/{response2_document['id']}",
 #         headers=superuser_token_headers,
 #     )
 #     assert response_docrel2.status_code == 201
 #
 #     response_docrel3 = client.post(
-#         f"/api/v1/document-relationship/{rel1_id}/document/{response3_document['id']}",
+#         f"/api/v1/document-relationships/{rel1_id}/documents/{response3_document['id']}",
 #         headers=superuser_token_headers,
 #     )
 #     assert response_docrel3.status_code == 201
