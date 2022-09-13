@@ -60,6 +60,8 @@ export default function usePDFPreview(document: TDocument) {
     defaultViewMode: "FIT_PAGE",
   };
 
+  const annotationConfig = { showToolbar: false, showCommentsPanel: false, downloadWithAnnotations: true, printWithAnnotations: true };
+
   let viewSDKClient = null;
   let embedApi = null;
 
@@ -73,7 +75,7 @@ export default function usePDFPreview(document: TDocument) {
           passageIndexChangeHandler(passage);
         });
         adobeViewer.getAnnotationManager().then((annotationManager: any) => {
-          annotationManager.setConfig({ showToolbar: false, showCommentsPanel: false, downloadWithAnnotations: true, printWithAnnotations: true });
+          annotationManager.setConfig(annotationConfig);
           annotationManager.addAnnotations(generateHighlights(document));
         });
       });
