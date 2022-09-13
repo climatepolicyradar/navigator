@@ -5,11 +5,14 @@ on:
     branches:
       - main
 
-
 jobs:
   test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
-      - name: Check contains no FIXME comments
-        run: grep -r FIXME . && exit 1
+
+      - name: Check backend code contains no FIXME comments
+        run: grep -r FIXME ./backend && exit 1
+
+      - name: Check frontend code contains no FIXME comments
+        run: grep -r FIXME ./frontend/src && exit 1

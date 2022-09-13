@@ -14,7 +14,7 @@ export const CountryLink: FC<TCountryLink> = ({ countryCode, children }) => {
   const countryId = getCountryId(countryCode, countries);
   if (!countryId) return <>{children}</>;
   return (
-    <Link href={`/geography/${countryId}`}>
+    <Link href={`/geographies/${countryId}`}>
       <a className="flex underline text-blue-600">{children}</a>
     </Link>
   );
