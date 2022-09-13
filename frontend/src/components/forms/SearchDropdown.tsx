@@ -75,7 +75,7 @@ export const SearchDropdown = ({ show = false, term, handleSearchClick, largeSpa
               const last = i + 1 === geographiesFiltered.length;
               return (
                 <li key={geography.id}>
-                  <a href="#" className={anchorClasses(last)} onClick={(e) => handleCountryClick(e, `/geography/${geography.id}`)}>
+                  <a href="#" className={anchorClasses(last)} onClick={(e) => handleCountryClick(e, `/geographies/${geography.id}`)}>
                     <span className="font-bold text-black">{geography.display_value}</span> <span className="text-sm ml-4">Geography profile</span>
                   </a>
                 </li>

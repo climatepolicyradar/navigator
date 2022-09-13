@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import { TTarget, TEvent } from "@types";
+import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
 import useGeoStats from "@hooks/useGeoStats";
 import useGeoSummary from "@hooks/useGeoSummary";
 import Layout from "@components/layouts/Main";
@@ -18,6 +19,7 @@ import TabbedNav from "@components/nav/TabbedNav";
 import TextLink from "@components/nav/TextLink";
 import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
 import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
+import { initialSearchCriteria } from "@constants/searchCriteria";
 
 type TTargets = {
   targets: TTarget[];
@@ -44,6 +46,7 @@ const Targets = ({ targets }: TTargets) => {
 const CountryPage = () => {
   const router = useRouter();
   const { geographyId } = router.query;
+  const updateSearchCriteria = useUpdateSearchCriteria();
   const geographyQuery = useGeoStats(String(geographyId));
   const geographySummaryQuery = useGeoSummary(String(geographyId));
   const { refetch: refetchGeography, data: { data: geography } = {}, isFetching: isFetching, isError } = geographyQuery;
@@ -65,6 +68,13 @@ const CountryPage = () => {
 
   const handleDocumentSeeMoreClick = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
+    let newSearchCritera = { ["keyword_filters"]: { ["countries"]: [geography.name] } };
+    const documentCategory = selectedCategoryIndex === 1 ? "Law" : selectedCategoryIndex === 2 ? "Policy" : null;
+    let additionalCriteria = {};
+    if (documentCategory) {
+      additionalCriteria = { ["keyword_filters"]: { ["countries"]: [geography.name], ["categories"]: [documentCategory] } };
+    }
+    updateSearchCriteria.mutate({ ...initialSearchCriteria, ...newSearchCritera, ...additionalCriteria });
     router.push("/search");
   };
 
@@ -144,9 +154,33 @@ const CountryPage = () => {
             <CountryHeader country={geography} />
             <SingleCol>
               <section className="grid grid-cols-1 md:grid-cols-3 gap-px rounded mb-8">
-                {<KeyDetail detail="Legislation" extraDetail="Laws, Acts, Constitutions (legislative branch)" amount={summary.document_counts.Law} icon={<LawIcon />} onClick={() => setselectedCategoryIndex(1)} />}
-                {<KeyDetail detail="Policies" extraDetail="Policies, strategies, decrees, action plans (from executive branch)" amount={summary.document_counts.Policy} icon={<PolicyIcon /> } onClick={() => setselectedCategoryIndex(2)} />}
-                {<KeyDetail detail="Litigation" extraDetail="Court cases and tribunal proceedings" amount={summary.document_counts.Case} icon={<CaseIcon />} onClick={() => setselectedCategoryIndex(3)} />}
+                {
+                  <KeyDetail
+                    detail="Legislation"
+                    extraDetail="Laws, Acts, Constitutions (legislative branch)"
+                    amount={summary.document_counts.Law}
+                    icon={<LawIcon />}
+                    onClick={() => setselectedCategoryIndex(1)}
+                  />
+                }
+                {
+                  <KeyDetail
+                    detail="Policies"
+                    extraDetail="Policies, strategies, decrees, action plans (from executive branch)"
+                    amount={summary.document_counts.Policy}
+                    icon={<PolicyIcon />}
+                    onClick={() => setselectedCategoryIndex(2)}
+                  />
+                }
+                {
+                  <KeyDetail
+                    detail="Litigation"
+                    extraDetail="Court cases and tribunal proceedings"
+                    amount={summary.document_counts.Case}
+                    icon={<CaseIcon />}
+                    onClick={() => setselectedCategoryIndex(3)}
+                  />
+                }
               </section>
               {hasEvents && (
                 <section className="mt-12 hidden">
@@ -192,18 +226,20 @@ const CountryPage = () => {
                     </div>
                     {renderDocuments()}
                   </section>
-                  <div className="mt-12 hidden">
-                    <Divider>
-                      <Button color="secondary" extraClasses="flex items-center" onClick={handleDocumentSeeMoreClick}>
-                        <>
-                          See more
-                          <span className="ml-8">
-                            <RightArrowIcon height="20" width="20" />
-                          </span>
-                        </>
-                      </Button>
-                    </Divider>
-                  </div>
+                  {selectedCategoryIndex !== 3 && (
+                    <div className="mt-12">
+                      <Divider>
+                        <Button color="secondary" extraClasses="flex items-center" onClick={handleDocumentSeeMoreClick}>
+                          <>
+                            See more
+                            <span className="ml-8">
+                              <RightArrowIcon height="20" width="20" />
+                            </span>
+                          </>
+                        </Button>
+                      </Divider>
+                    </div>
+                  )}
                 </>
               )}
               {geography.legislative_process && (

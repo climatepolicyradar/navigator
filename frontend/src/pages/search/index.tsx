@@ -41,7 +41,6 @@ const Search = () => {
   const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(1);
   const [offset, setOffset] = useState(0);
-  const [noQuery, setNoQuery] = useState(true);
   const [categoryIndex, setCategoryIndex] = useState(0);
 
   const updateSearchCriteria = useUpdateSearchCriteria();
@@ -67,6 +66,7 @@ const Search = () => {
 
   // search criteria and filters
   const { isFetching: isFetchingSearchCriteria, isSuccess: isSearchCriteriaSuccess, data: searchCriteria }: any = useSearchCriteria();
+  const browsing = searchCriteria?.query_string.trim() === "";
 
   // search results
   const resultsQuery: any = useSearch("searches", searchCriteria);
@@ -184,21 +184,18 @@ const Search = () => {
 
     // keep panel open if clicking a different document
     if (document?.document_id != id) {
-      // setShowSlideout(true);
       resetSlideOut(true);
     } else {
-      // setShowSlideout(!showSlideout);
       resetSlideOut();
     }
     updateDocument.mutate(id);
-
-    // setShowPDF(false);
   };
 
   const getCurrentSortChoice = () => {
     const field = searchCriteria.sort_field;
     const order = searchCriteria.sort_order;
     if (field === null && order === "desc") {
+      if (browsing) return "date:desc";
       return "relevance";
     }
     return `${field}:${order}`;
@@ -240,12 +237,7 @@ const Search = () => {
   useDidUpdateEffect(() => {
     setOffset(searchCriteria?.offset);
     setCurrentCategoryIndex();
-    if (searchCriteria?.query_string.length) {
-      resultsQuery.refetch();
-      setNoQuery(false);
-    } else {
-      setNoQuery(true);
-    }
+    resultsQuery.refetch();
   }, [searchCriteria]);
 
   useEffect(() => {
@@ -256,12 +248,8 @@ const Search = () => {
     const currentPage = getCurrentPage();
     setPageNumber(currentPage);
 
-    // check for search query on initial load
-    if (searchCriteria?.query_string.length) {
-      setNoQuery(false);
-    }
-    // fetch search results if they are empty and search query exists
-    if (documents.length === 0 && searchCriteria?.query_string.length) {
+    // run a search on page load
+    if (documents.length === 0) {
       resultsQuery.refetch();
     }
   }, []);
@@ -328,7 +316,7 @@ const Search = () => {
                       <TabbedNav activeIndex={categoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} />
                     </div>
                     <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
-                      <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} />
+                      <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} browse={browsing} />
                     </div>
                   </div>
 
@@ -337,11 +325,6 @@ const Search = () => {
                       <div className="w-full flex justify-center h-96">
                         <Loader />
                       </div>
-                    ) : noQuery ? (
-                      <p className="mt-4 font-bold text-red-500 h-96">
-                        {/* TODO: make text translatable */}
-                        Please enter some search terms.
-                      </p>
                     ) : (
                       <SearchResultList searchCriteria={searchCriteria} documents={documents} />
                     )}
@@ -349,7 +332,7 @@ const Search = () => {
                 </div>
               </div>
             </section>
-            {pageCount > 1 && !noQuery && (
+            {pageCount > 1 && (
               <section>
                 <div className="mb-12">
                   <Pagination pageNumber={pageNumber} pageCount={pageCount} onChange={handlePageChange} />
