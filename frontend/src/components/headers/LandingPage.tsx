@@ -2,7 +2,8 @@ import ToggleAccountMenu from '../menus/ToggleAccountMenu';
 import { useAuth } from '../../api/auth';
 
 const LandingPageHeader = () => {
-  const { logout } = useAuth();
+  const { user, logout } = useAuth();
+  
   return (
     <header
       data-cy="header"
@@ -11,7 +12,7 @@ const LandingPageHeader = () => {
       <div className="container my-4">
         <div className="flex items-start justify-end">
           <div>
-            <ToggleAccountMenu logout={logout} />
+            <ToggleAccountMenu logout={logout} user={user} />
           </div>
         </div>
       </div>

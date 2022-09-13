@@ -3,7 +3,7 @@ import AccountMenu from '../menus/AccountMenu';
 import useOutsideAlerter from '../../hooks/useOutsideAlerter';
 import { MenuIcon } from '../svg/Icons';
 
-const ToggleAccountMenu = ({ logout }) => {
+const ToggleAccountMenu = ({ logout, user }) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   useOutsideAlerter(menuRef, () => setShowMenu(false));
@@ -18,7 +18,7 @@ const ToggleAccountMenu = ({ logout }) => {
       </button>
       {showMenu && (
         <div className="absolute right-0 z-50">
-          <AccountMenu setShowMenu={setShowMenu} logout={logout} />
+          <AccountMenu setShowMenu={setShowMenu} logout={logout} user={user} />
         </div>
       )}
     </div>
