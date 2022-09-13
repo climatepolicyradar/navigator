@@ -52,8 +52,8 @@ async function registerFn(data) {
 }
 
 async function logoutFn() {
-  await storage.clearToken();
-  Router.push("/auth/sign-in");
+  storage.clearToken();
+  return Router.push("/");
 }
 
 const loaderComponent = () => LoaderOverlay;
