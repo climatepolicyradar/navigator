@@ -1,12 +1,7 @@
-import { EyeIcon } from '../svg/Icons';
+import { EyeIcon } from "../svg/Icons";
 
 const LandingPageLinks = ({ handleLinkClick }) => {
-  const terms = [
-    'Adaptation strategy',
-    'Energy prices',
-    'Flood defence',
-    'Just transition',
-  ];
+  const terms = ["Adaptation strategy", "Energy prices", "Flood defence", "Just transition"];
   return (
     <section>
       <div className="md:flex text-white">
