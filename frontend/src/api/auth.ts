@@ -1,22 +1,12 @@
-import { initReactQueryAuth } from 'react-query-auth';
-import Router from 'next/router';
-import {
-  signIn,
-  getUserProfile,
-  registerWithEmailAndPassword,
-  User,
-  handleResetRequest
-} from '.';
-import { storage } from '../utils/storage';
-import LoaderOverlay from '@components/LoaderOverlay';
+import { initReactQueryAuth } from "react-query-auth";
+import Router from "next/router";
+import { signIn, getUserProfile, registerWithEmailAndPassword, User, handleResetRequest } from ".";
+import { storage } from "../utils/storage";
+import LoaderOverlay from "@components/LoaderOverlay";
 
-const unprotectedUrls = [
-  '/auth/sign-in',
-  '/auth/sign-up',
-  '/auth/activate-account',
-  '/auth/reset-password',
-  '/auth/reset-request',
-];
+const unprotectedUrls = ["/auth/sign-in", "/auth/sign-up", "/auth/activate-account", "/auth/reset-password", "/auth/reset-request"];
+
+const protectedUrls = ["/account"];
 
 export async function handleUserResponse(response) {
   const res = await response;
@@ -42,8 +32,8 @@ async function loadUser() {
     console.log(error);
   }
 
-  if (user === null && unprotectedUrls.indexOf(Router.router.pathname) === -1) {
-    Router.push('/auth/sign-in');
+  if (user === null && protectedUrls.indexOf(Router.router.pathname) !== -1) {
+    Router.push("/auth/sign-in");
   }
 
   return user;
@@ -63,7 +53,7 @@ async function registerFn(data) {
 
 async function logoutFn() {
   await storage.clearToken();
-  Router.push('/auth/sign-in');
+  Router.push("/auth/sign-in");
 }
 
 const loaderComponent = () => LoaderOverlay;
