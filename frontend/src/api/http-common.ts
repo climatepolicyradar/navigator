@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { storage } from '../utils/storage';
+import { storage } from '@utils/storage';
 
 class ApiClient {
   private baseUrl;
@@ -31,7 +31,7 @@ class ApiClient {
       .then((res: any) => res)
       .catch((err: any) => Promise.reject(err));
   }
-  post(url, values, config = {}) {
+  post(url: string, values, config = {}) {
     return this.axiosClient
       .post(`${this.baseUrl}${url}`, values, config)
       .then((res) => res)
@@ -40,7 +40,7 @@ class ApiClient {
         return Promise.reject(err);
       });
   }
-  put(url, values) {
+  put(url: string, values) {
     return this.axiosClient
       .put(`${this.baseUrl}${url}`, values)
       .then((res) => res)
