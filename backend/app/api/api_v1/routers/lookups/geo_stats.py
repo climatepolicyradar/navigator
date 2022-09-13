@@ -4,7 +4,6 @@ from typing import Any, Dict, Optional, Union
 from app.db.session import get_db
 from app.db.models.geography import GeoStatistics
 from fastapi import Depends, HTTPException
-from app.core.auth import get_current_active_user
 from pydantic import BaseModel
 from sqlalchemy import exc
 from .router import lookups_router
@@ -42,7 +41,6 @@ lookup_geo_stats_responses: Dict[Union[int, str], Dict[str, Any]] = {
 def lookup_geo_stats(
     geography_id: int,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_user),
 ):
     """Get climate statistics for a geography by id.
 
