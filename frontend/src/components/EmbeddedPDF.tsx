@@ -11,18 +11,20 @@ type TProps = {
 
 const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
   const containerRef = useRef();
-  // Ensure the instance of the PDF client is not reset on render
-  const { createPDFClient, passageIndexChangeHandler } = useMemo(() => usePDFPreview(document), [document]);
+  const pdfPreview = usePDFPreview(document);
+  // Ensure the instance of the PDF client is not reset on render 
+  // otherwise we lose the ability to interact with the pdf
+  const { createPDFClient, passageIndexChangeHandler } = useMemo(() => pdfPreview, [document]);
 
   useEffect(() => {
     if (containerRef?.current) {
-      createPDFClient(passageIndex);
+      createPDFClient();
     }
-  }, [containerRef, document]);
+  }, [containerRef, document, createPDFClient]);
 
   useEffect(() => {
     passageIndexChangeHandler(passageIndex);
-  }, [passageIndex]);
+  }, [passageIndexChangeHandler, passageIndex]);
 
   return (
     <>
