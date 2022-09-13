@@ -624,16 +624,6 @@ def test_accents_ignored(test_opensearch, monkeypatch, client, user_token_header
 
 
 @pytest.mark.search
-def test_unauthenticated(client):
-    """Make sure that unauthenticated requests are denied correctly."""
-    response = client.post(
-        "/api/v1/searches",
-        json={"query_string": "a", "exact_match": True},
-    )
-    assert response.status_code == 401
-
-
-@pytest.mark.search
 def test_time_taken(test_opensearch, monkeypatch, client, user_token_headers):
     """Make sure that query time taken is sensible."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -642,7 +632,6 @@ def test_time_taken(test_opensearch, monkeypatch, client, user_token_headers):
     response = client.post(
         "/api/v1/searches",
         json={"query_string": "disaster", "exact_match": False},
-        headers=user_token_headers,
     )
     end = time.time()
 
