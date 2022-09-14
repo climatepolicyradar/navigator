@@ -1,9 +1,10 @@
 import { useState, useRef } from "react";
 import useOutsideAlerter from "@hooks/useOutsideAlerter";
-import AccountMenu from "../menus/AccountMenu";
 import { MenuIcon } from "../svg/Icons";
+import DropdownMenuItem from "./DropdownMenuItem";
+import DropdownMenuWrapper from "./DropdownMenuWrapper";
 
-const ToggleAccountMenu = () => {
+const MainMenu = () => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   useOutsideAlerter(menuRef, () => setShowMenu(false));
@@ -20,10 +21,13 @@ const ToggleAccountMenu = () => {
       </button>
       {showMenu && (
         <div className="absolute right-0 z-50">
-          <AccountMenu setShowMenu={setShowMenu} />
+          <DropdownMenuWrapper>
+            <DropdownMenuItem href="https://climatepolicyradar.org" title="About us" target="_blank" first={true} setShowMenu={setShowMenu} />
+            <DropdownMenuItem href="/methodology" title="Methodology" setShowMenu={setShowMenu} />
+          </DropdownMenuWrapper>
         </div>
       )}
     </div>
   );
 };
-export default ToggleAccountMenu;
+export default MainMenu;

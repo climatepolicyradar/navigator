@@ -1,4 +1,4 @@
-import ToggleAccountMenu from "../menus/ToggleAccountMenu";
+import MainMenu from "../menus/MainMenu";
 
 const LandingPageHeader = () => {
   return (
@@ -6,7 +6,7 @@ const LandingPageHeader = () => {
       <div className="container my-4">
         <div className="flex items-start justify-end">
           <div>
-            <ToggleAccountMenu />
+            <MainMenu />
           </div>
         </div>
       </div>

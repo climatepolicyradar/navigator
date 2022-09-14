@@ -1,4 +1,4 @@
-import ToggleAccountMenu from "../menus/ToggleAccountMenu";
+import MainMenu from "../menus/MainMenu";
 import AlphaLogoSmall from "../logo/AlphaLogoSmall";
 
 const Header = () => {
@@ -7,9 +7,8 @@ const Header = () => {
       <div className="container my-4">
         <div className="flex items-center justify-between">
           <AlphaLogoSmall />
-
           <div>
-            <ToggleAccountMenu />
+            <MainMenu />
           </div>
         </div>
       </div>
