@@ -5,7 +5,6 @@ import { storage } from "../utils/storage";
 import LoaderOverlay from "@components/LoaderOverlay";
 
 const unprotectedUrls = ["/auth/sign-in", "/auth/sign-up", "/auth/activate-account", "/auth/reset-password", "/auth/reset-request"];
-
 const protectedUrls = ["/account"];
 
 export async function handleUserResponse(response) {

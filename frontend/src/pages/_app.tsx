@@ -4,7 +4,6 @@ import Head from "next/head";
 import { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import { AuthProvider } from "@api/auth";
 import "../styles/main.scss";
 import "../styles/flag-icon.css";
 
@@ -27,13 +26,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Head>
-          <title>Climate Policy Radar</title>
-          <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-        </Head>
-        <Component {...pageProps} />
-      </AuthProvider>
+      <Head>
+        <title>Climate Policy Radar</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <Component {...pageProps} />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
