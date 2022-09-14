@@ -20,3 +20,5 @@ jobs:
           else
             exit 0
           fi
+        shell: bash {0}
+
