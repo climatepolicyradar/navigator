@@ -8,17 +8,15 @@ type TProps = {
 };
 
 const DocumentMenu = ({ document, setShowMenu }: TProps) => {
+  if (!document) return null;
+  
   return (
-    <>
-      {/* TODO: translate titles */}
-      {document ? (
-        <DropdownMenuWrapper setShowMenu={setShowMenu}>
-          <DropdownMenuItem href={`/pdf/${document.document_id}`} title="View PDF in full window" first />
-          <DropdownMenuItem href={document.document_url} title="Download PDF" />
-          <DropdownMenuItem href={`/document/${document.document_id}`} title="View document details" />
-        </DropdownMenuWrapper>
-      ) : null}
-    </>
+    <DropdownMenuWrapper>
+      <DropdownMenuItem href={`/pdf/${document.document_id}`} title="View PDF in full window" first setShowMenu={setShowMenu} />
+      <DropdownMenuItem href={document.document_url} title="Download PDF" setShowMenu={setShowMenu} />
+      <DropdownMenuItem href={`/document/${document.document_id}`} title="View document details" setShowMenu={setShowMenu} />
+    </DropdownMenuWrapper>
   );
 };
+
 export default DocumentMenu;
