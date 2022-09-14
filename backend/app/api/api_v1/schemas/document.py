@@ -37,13 +37,15 @@ class DocumentDetailResponse(BaseModel):
     """A response containing detailed information about a document."""
 
     id: int
-    loaded_ts: Optional[datetime.datetime]
     name: str
     description: str
     publication_ts: datetime.datetime
-    source_url: str
-    url: str
-    content_type: str
+    source_url: Optional[str]
+    url: Optional[str]
+    content_type: Optional[str]
+
+    slug: Optional[str]
+    import_id: Optional[str]
 
     type: DocumentType
     source: Source
@@ -68,7 +70,6 @@ class DocumentDetailResponse(BaseModel):
 class DocumentCreateRequest(BaseModel):  # noqa: D106
     """Details of a document to create - metadata will be validated & looked up."""
 
-    loaded_ts: Optional[datetime.datetime]
     publication_ts: Optional[datetime.datetime]
     name: str
     description: str
@@ -78,6 +79,7 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
 
     type: str
     source: str
+    import_id: str
     category: str
 
     frameworks: List[str]

@@ -92,9 +92,7 @@ async def post_document(
     """Create a document, with associated metadata."""
 
     try:
-        new_document = persist_document_and_metadata(
-            db, document_with_metadata, current_user.id
-        )
+        new_document = persist_document_and_metadata(db, document_with_metadata)
     except UnknownMetadataError as e:
         _LOGGER.exception(f"Could not create document for {document_with_metadata}")
         raise HTTPException(

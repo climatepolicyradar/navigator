@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 from typing import Sequence, Set, Union, cast
 
 from fastapi import (
@@ -159,7 +158,6 @@ class UnknownCategoryError(UnknownMetadataError):
 def create_document(
     db: Session,
     document_create_request: DocumentCreateRequest,
-    creator_id: int,
 ) -> Document:
     existing_geography_id = (
         db.query(Geography.id).filter(
@@ -193,9 +191,9 @@ def create_document(
         name=document_create_request.name,
         description=document_create_request.description,
         source_url=document_create_request.source_url,
-        created_by=creator_id,
-        loaded_ts=document_create_request.loaded_ts,
         source_id=existing_source_id,
+        slug=None,  # TODO: create slug after agreeing slug spec
+        import_id=document_create_request.import_id,
         url=document_create_request.url,
         md5_sum=document_create_request.md5_sum,
         geography_id=existing_geography_id,
@@ -326,12 +324,13 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
     document, geography, doc_type, category, source = document_data.first()
     return DocumentDetailResponse(
         id=document_id,
-        loaded_ts=cast(datetime, document.loaded_ts),
         name=cast(str, document.name),
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
         source_url=cast(str, document.source_url),
         url=s3_to_cdn_url(document.url),
+        slug=document.slug,
+        import_id=document.import_id,
         # TODO: replace with proper content type handling
         content_type=content_type_from_path(document.url),
         geography=GeographySchema(
@@ -397,12 +396,11 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
 def persist_document_and_metadata(
     db: Session,
     document_create_request: DocumentCreateRequest,
-    creator_id: int,
 ) -> DocumentDetailResponse:
     try:
         # Create a savepoint & start a transaction if necessary
         with db.begin_nested():
-            new_document = create_document(db, document_create_request, creator_id)
+            new_document = create_document(db, document_create_request)
             write_metadata(db, new_document, document_create_request)
 
         return get_document_detail(db, new_document.id)

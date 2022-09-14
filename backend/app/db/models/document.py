@@ -1,9 +1,7 @@
 import sqlalchemy as sa
-from sqlalchemy.sql import func
 from sqlalchemy import UniqueConstraint
 
 from .auditable import Auditable
-from .user import User
 from .source import Source
 from .geography import Geography
 from app.db.session import Base
@@ -38,23 +36,34 @@ class Category(Base):
 class Document(Base, Auditable):
     """A document.
 
+    id: Internal database ID
+    publication_ts: Publication timestamp, or date of first event
+    name: Document title
+    description: DOcument description
     source_url: Reference url to document on third party aggregator
+    source_id: Foreign key to original Source table entry
     url: URL to document in CPR cloud storage
+    md5_sum: Checksum of the document content
+    slug: [TDB] Human readable identifier to be used in URLs
+    import_id: [TBD] Unique identifier from the input source
+    geography_id: Foreign key to Geography table entry
+    type_id: Foreign key to DocumentType table entry
+    category_id: Foreign key to Category table entry
     """
 
     __tablename__ = "document"
 
     id = sa.Column(sa.Integer, primary_key=True)
-    created_by = sa.Column(sa.Integer, sa.ForeignKey(User.id))
-    updated_by = sa.Column(sa.Integer, sa.ForeignKey(User.id))
-    loaded_ts = sa.Column(sa.DateTime(timezone=True), onupdate=func.now())
     publication_ts = sa.Column(sa.DateTime, nullable=False)
     name = sa.Column(sa.Text, nullable=False)
     description = sa.Column(sa.Text, nullable=False)
-    source_url = sa.Column(sa.Text, nullable=False)
+    source_url = sa.Column(sa.Text, nullable=True)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
-    url = sa.Column(sa.Text, nullable=False)
+    url = sa.Column(sa.Text, nullable=True)
     md5_sum = sa.Column(sa.Text, nullable=False)
+
+    slug = sa.Column(sa.Text, nullable=True)  # TODO: nullable=False, unique=True
+    import_id = sa.Column(sa.Text, nullable=True)  # TODO: nullable=False
 
     geography_id = sa.Column(
         sa.SmallInteger,
@@ -67,7 +76,7 @@ class Document(Base, Auditable):
         nullable=False,
     )
     category_id = sa.Column(sa.Integer, sa.ForeignKey(Category.id), nullable=False)
-    UniqueConstraint(name, geography_id, type_id, source_id, source_url)
+    UniqueConstraint(source_id, import_id)
 
 
 class Association(Base):  # noqa: D101
