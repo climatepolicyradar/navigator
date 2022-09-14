@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useRouter } from "next/router";
 
-export default function Custom404() {
+export default function AuthRedirect() {
   const router = useRouter();
 
   useEffect(() => {
