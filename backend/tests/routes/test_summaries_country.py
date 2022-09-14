@@ -1,13 +1,8 @@
-from http.client import OK, UNAUTHORIZED
+from http.client import OK
 
 
 def URL_UNDER_TEST(id: int) -> str:
     return f"/api/v1/summaries/country/{id}"
-
-
-def test_endpoint_security(client):
-    response = client.get(URL_UNDER_TEST(99))
-    assert response.status_code == UNAUTHORIZED
 
 
 def test_endpoint_returns_ok(client, user_token_headers):
@@ -53,14 +48,11 @@ def test_geography_with_documents(client, user_token_headers, summary_country_da
     assert len(resp["targets"]) == 0
 
 
-def test_geography_with_documents_ordered(
-    client, user_token_headers, summary_country_data
-):
+def test_geography_with_documents_ordered(client, summary_country_data):
     """Test that all the data is returned ordered by published date"""
     geography_id = summary_country_data["geos"][0].id
     response = client.get(
         URL_UNDER_TEST(geography_id),
-        headers=user_token_headers,
     )
     assert response.status_code == OK
     resp = response.json()
