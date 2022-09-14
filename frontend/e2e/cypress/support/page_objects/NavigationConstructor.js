@@ -4,7 +4,7 @@ const footerSelector = '[data-cy="footer-nav"]';
 
 const openMenu = () => {
   /* First check if menu is already open */
-  cy.get('body').then((body) => {
+  cy.get("body").then((body) => {
     if (body.find(menuSelector).length === 0) {
       cy.get(menuIconSelector).click();
     }
@@ -17,13 +17,13 @@ const navigateDropdownMenuItem = (el, title, pathname) => {
   openMenu();
   cy.contains(`${menuSelector} ${el}`, title).click();
   // timeout will not 'wait' but it should account for any lag
-  cy.location('pathname', { timeout: 10000 }).should('eq', pathname);
+  cy.location("pathname", { timeout: 10000 }).should("eq", pathname);
 };
 
 const handleExternalLink = (title, url) => {
   openMenu();
   cy.contains(`${menuSelector} a`, title)
-    .invoke('attr', 'href')
+    .invoke("attr", "href")
     .then((href) => {
       expect(href).to.equal(url);
     });
@@ -31,52 +31,44 @@ const handleExternalLink = (title, url) => {
 
 const handleFooterTextLink = (title) => {
   cy.contains(`${footerSelector} a`, title)
-    .invoke('attr', 'href')
+    .invoke("attr", "href")
     .then((href) => {
       cy.contains(`${footerSelector} a`, title).click();
-      cy.location('pathname').should('eq', href);
+      cy.location("pathname").should("eq", href);
     });
 };
 
-export class NavigationPage {
+export class NavigationConstructor {
   logoLink() {
     // visit any other page first, then make sure logo links back to home page
-    cy.visit('/terms');
-    cy.get('[data-cy="cpr-logo"]').find('a').click();
-    cy.location('pathname').should('eq', '/');
+    cy.visit("/terms");
+    cy.get('[data-cy="cpr-logo"]').find("a").click();
+    cy.location("pathname").should("eq", "/");
     return this;
   }
   aboutUsPage() {
-    handleExternalLink('About us', 'https://climatepolicyradar.org');
+    handleExternalLink("About us", "https://climatepolicyradar.org");
     return this;
   }
   methodologyPage() {
-    navigateDropdownMenuItem('a', 'Methodology', '/methodology');
-    return this;
-  }
-  accountPage() {
-    navigateDropdownMenuItem('a', 'My account', '/account');
-    return this;
-  }
-  signOutPage() {
-    navigateDropdownMenuItem('button', 'Sign out', '/auth/sign-in');
+    navigateDropdownMenuItem("a", "Methodology", "/methodology");
     return this;
   }
   footerLinkMethodology() {
-    handleFooterTextLink('Methodology');
+    handleFooterTextLink("Methodology");
     return this;
   }
   footerLinkTerms() {
-    handleFooterTextLink('Terms & conditions');
+    handleFooterTextLink("Terms & conditions");
     return this;
   }
   footerLinkPrivacy() {
-    handleFooterTextLink('Privacy policy');
+    handleFooterTextLink("Privacy policy");
     return this;
   }
   footerLinkCookies() {
-    handleFooterTextLink('Cookies policy');
+    handleFooterTextLink("Cookies policy");
     return this;
   }
 }
-export const navigateTo = new NavigationPage();
+export const Navigation = new NavigationConstructor();

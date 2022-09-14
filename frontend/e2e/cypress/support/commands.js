@@ -27,27 +27,6 @@
 import 'cypress-file-upload';
 import 'cypress-pseudo-localization';
 
-Cypress.Commands.add('login', () => {
-  cy.request({
-    method: 'POST',
-    url: `${Cypress.env('API_HOST')}/api/tokens`,
-    headers: {
-      'Content-Type': 'application/x-www-form-urlencoded',
-    },
-    body: {
-      grant_type: '',
-      username: Cypress.env('LOGIN_NAME'),
-      password: Cypress.env('LOGIN_PW'),
-      scope: '',
-      client_id: '',
-      client_secret: '',
-    },
-  }).then((resp) => {
-    window.localStorage.setItem('jwt', JSON.stringify(resp.body.access_token));
-    cy.visit('/');
-  });
-});
-
 Cypress.Commands.add('clickTextLink', (text) => {
   cy.contains('a', text)
     .invoke('attr', 'href')
