@@ -12,10 +12,12 @@ const ToggleDocumentMenu = ({ document }: TProps) => {
   const [showMenu, setShowMenu] = useState(false);
   const menuRef = useRef(null);
   useOutsideAlerter(menuRef, () => setShowMenu(false));
+  
   const toggleMenu = (e) => {
     e.preventDefault();
     setShowMenu(!showMenu);
   };
+
   return (
     <div ref={menuRef} className="flex-shrink-0 mr-4">
       <Kebab onClick={toggleMenu} />
