@@ -1,5 +1,4 @@
 import axios, { AxiosInstance } from "axios";
-import { storage } from "@utils/storage";
 
 class ApiClient {
   private baseUrl: string;
@@ -11,15 +10,7 @@ class ApiClient {
     } else {
       this.baseUrl = process.env.NEXT_PUBLIC_API_URL;
     }
-    this.axiosClient = axios.create({ withCredentials: true });
-    this.axiosClient.interceptors.request.use((config) => {
-      const token = storage.getToken();
-      if (token) {
-        // eslint-disable-next-line no-param-reassign
-        config.headers.common["Authorization"] = `Bearer ${token}`;
-      }
-      return config;
-    });
+    this.axiosClient = axios.create();
   }
 
   /**
@@ -51,13 +42,4 @@ class ApiClient {
   }
 }
 
-const AuthClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_LOGIN_API_URL,
-  responseType: "json",
-  headers: {
-    accept: "application/json",
-    "Content-Type": "application/x-www-form-urlencoded",
-  },
-});
-
-export { ApiClient, AuthClient };
+export { ApiClient };
