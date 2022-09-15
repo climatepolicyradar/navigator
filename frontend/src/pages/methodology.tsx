@@ -181,6 +181,20 @@ const Methodology = () => {
             We currently rely on data labelled manually by domain experts; this limits the pace at which it is possible for new data to be incorporated into our dataset. We are
             developing the capacity to automatically label data using machine learning models, to increase the efficiency, sophistication and thoroughness of our data labelling.
           </p>
+          <h2>Natural language search</h2>
+          <p>
+          Natural language search allows you to find what you’re looking for without having to type out precise keywords. This is useful because often certain concepts are described in lots of different ways - like internal combustion engines, internal combustion engine vehicle, ICEV, fossil fuel car, and gasoline car all describe most of the cars you’ll find on today’s roads. With natural language search, you can use the terms you use and hear everyday because the tool will recognise them as related and relevant terms, meaning you get a much richer search experience as a result.
+          </p>
+          <p>
+          We use a machine learning method called dense retrieval alongside a fuzzy string search to perform natural language search. You can find more details <a href="!!!FIXME: add link to blog post">in our blog post</a>.
+          </p>
+          <h3>Biases &amp; limitations</h3>
+          <p>
+          The <a href="https://huggingface.co/sentence-transformers/msmarco-distilbert-dot-v5">model</a> we use for dense retrieval inherits biases from both its base model, <a href="https://huggingface.co/distilbert-base-uncased#limitations-and-bias">DistilBERT</a>, and the search query dataset it was trained on, <a href="https://github.com/microsoft/MSMARCO-Passage-Ranking/">MSMARCO</a>. It’s trained on relatively short passages of text (average 60 words in length), so may struggle with longer queries. 
+          </p>
+          <p>
+          At the moment we use a general purpose model that has been trained on English Wikipedia and <a href="https://arxiv.org/abs/1506.06724v1">BookCorpus</a>. This means it may misinterpret some climate- or policy-specific concepts, and is something that we look to improve in future.
+          </p>
           <h2>Additions? Contributions?</h2>
           <p>
             We work collaboratively with our users to keep our database at a high standard. Should you encounter any errors or inaccuracies in the data, we encourage you to get in
