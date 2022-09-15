@@ -75,6 +75,9 @@ module.exports = {
         h5: '18px',
         h6: '16px',
       },
+      flex: {
+        '60': '0 1 60%'
+      }
     },
   },
   plugins: [require('@tailwindcss/forms'), require('tailwind-scrollbar')],
