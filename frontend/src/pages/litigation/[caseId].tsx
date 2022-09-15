@@ -57,7 +57,7 @@ const LitigationCoverPage = () => {
                   <span className="font-bold mr-2">Reference</span> 12345678910
                 </div>
               </div>
-              <div className="my-6 md:w-2/5 lg:w-1/4 md:pl-16 flex-shrink-0">&nbsp;</div>
+              <div className="hidden lg:block my-6 md:w-2/5 lg:w-1/4 md:pl-16 flex-shrink-0">&nbsp;</div>
             </div>
           </div>
         </div>
