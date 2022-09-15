@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { TDocument } from "@types";
-import ToggleDocumentMenu from "../menus/ToggleDocumentMenu";
+import DocumentMenu from "../menus/DocumentMenu";
 import TextLink from "../nav/TextLink";
 
 type TProps = {
@@ -38,7 +38,7 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
                 Document {`match${document.document_passage_matches.length === 1 ? "" : "es"}`} ({document.document_passage_matches.length}) for "{searchTerm}"
               </h3>
             </div>
-            <ToggleDocumentMenu document={document} />
+            <DocumentMenu document={document} />
           </div>
           {showPDF && (
             // TODO: translate below text

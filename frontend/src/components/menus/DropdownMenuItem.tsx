@@ -1,4 +1,4 @@
-import Link from 'next/link';
+import Link from "next/link";
 
 interface DropdownMenuItemProps {
   first?: boolean;
@@ -8,17 +8,8 @@ interface DropdownMenuItemProps {
   onClick?(): void;
   setShowMenu?(value: boolean): void;
 }
-const DropdownMenuItem = ({
-  first = false,
-  title,
-  href,
-  target = '',
-  onClick = () => {},
-  setShowMenu,
-}: DropdownMenuItemProps) => {
-  const cssClass = `${
-    !first ? 'border-t border-indigo-200 pt-3' : 'pt-2'
-  } px-6 pt-2 block w-full text-left text-sm pb-3 hover:text-blue-500 transition duration-300`;
+const DropdownMenuItem = ({ first = false, title, href, target = "", onClick = () => {}, setShowMenu }: DropdownMenuItemProps) => {
+  const cssClass = `${!first ? "border-t border-indigo-200 pt-3" : "pt-2"} px-6 pt-2 block w-full text-left text-sm pb-3 hover:text-blue-500 transition duration-300`;
   const handleClick = () => {
     onClick();
     setShowMenu(false);
