@@ -1,0 +1,194 @@
+[
+  {
+    "node": {
+      "name": "Energy",
+      "description": "Energy",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "LULUCF",
+      "description": "LULUCF",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Social development",
+      "description": "Social development",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Transportation",
+      "description": "Transportation",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Urban",
+      "description": "Urban",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Waste",
+      "description": "Waste",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Coastal zones",
+      "description": "Coastal zones",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Environment",
+      "description": "Environment",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Industry",
+      "description": "Industry",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Residential and Commercial",
+      "description": "Residential and Commercial",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Water",
+      "description": "Water",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Agriculture",
+      "description": "Agriculture",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Health",
+      "description": "Health",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Economy-wide",
+      "description": "Economy-wide",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Disaster Risk Management (Drm)",
+      "description": "Disaster Risk Management (Drm)",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Transport",
+      "description": "Transport",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Tourism",
+      "description": "Tourism",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Rural",
+      "description": "Rural",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Adaptation",
+      "description": "Adaptation",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Other",
+      "description": "Other",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Finance",
+      "description": "Finance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Public Sector",
+      "description": "Public Sector",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Cross Cutting Area",
+      "description": "Cross Cutting Area",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Buildings",
+      "description": "Buildings",
+      "source_id": 1
+    },
+    "children": []
+  }
+]

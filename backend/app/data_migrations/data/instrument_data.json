@@ -1,0 +1,186 @@
+[
+  {
+    "node": {
+      "name": "Processes, plans and strategies|Governance",
+      "description": "Processes, plans and strategies|Governance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Subsidies|Economic",
+      "description": "Subsidies|Economic",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "International cooperation|Governance",
+      "description": "International cooperation|Governance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Education, training and knowledge dissemination|Information",
+      "description": "Education, training and knowledge dissemination|Information",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Research & Development, knowledge generation|Information",
+      "description": "Research & Development, knowledge generation|Information",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Standards, obligations and norms|Regulation",
+      "description": "Standards, obligations and norms|Regulation",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Capacity building|Governance",
+      "description": "Capacity building|Governance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Institutional mandates|Governance",
+      "description": "Institutional mandates|Governance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "MRV|Governance",
+      "description": "MRV|Governance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Tax incentives|Economic",
+      "description": "Tax incentives|Economic",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Provision of climate funds|Direct Investment",
+      "description": "Provision of climate funds|Direct Investment",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Other|Direct Investment",
+      "description": "Other|Direct Investment",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Early warning systems|Direct Investment",
+      "description": "Early warning systems|Direct Investment",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Subnational and citizen participation|Governance",
+      "description": "Subnational and citizen participation|Governance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Insurance|Economic",
+      "description": "Insurance|Economic",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Climate finance tools|Economic",
+      "description": "Climate finance tools|Economic",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Zoning & Spatial Planning|Regulation",
+      "description": "Zoning & Spatial Planning|Regulation",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Nature based solutions and ecosystem restoration|Direct Investment",
+      "description": "Nature based solutions and ecosystem restoration|Direct Investment",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Disclosure obligations|Regulation",
+      "description": "Disclosure obligations|Regulation",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Other|Governance",
+      "description": "Other|Governance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Planning|Governance",
+      "description": "Planning|Governance",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Green procurement|Direct Investment",
+      "description": "Green procurement|Direct Investment",
+      "source_id": 1
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Moratoria & bans|Regulation",
+      "description": "Moratoria & bans|Regulation",
+      "source_id": 1
+    },
+    "children": []
+  }
+]
