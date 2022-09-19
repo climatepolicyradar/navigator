@@ -1,62 +1,62 @@
 import pulumi_aws as aws
 import mimetypes
 import os
+from pathlib import Path
 
+import pulumi
+import pulumi_docker as docker
 from pulumi import export, FileAsset, ResourceOptions, Output
+
+from cpr.deployment_resources.main import DeploymentResources, default_tag
+from cpr.plumbing.main import Plumbing
+from cpr.storage.main import Storage
 
 
 class Frontend:
-    """The frontend.
+    def __init__(
+        self,
+        deployment_resources: DeploymentResources,
+        plumbing: Plumbing,
+        storage: Storage,
+    ):
 
-    Inspired by https://github.com/pulumi/examples/tree/master/aws-py-static-website
-    """
+        # frontend
+        target_environment = pulumi.get_stack()
+        # get all config
+        config = pulumi.Config()
+        app_domain = config.require("domain")
+        frontend_api_url = f"https://{app_domain}/api/v1"
+        frontend_pdf_embed_key = config.require_secret("pdf_embed_key")
+        frontend_api_url_login = f"https://{app_domain}/api/tokens"
+        public_app_url = f"https://{app_domain}"
+        self_registration_enabled = config.require("self_registration_enabled")
 
-    def __init__(self):
-        target_domain = "www.climatepolicyradar.org"
-        web_contents_path = "todo"
+        def build_frontend_image(args):
+            pdf_embed_key = args[0]
+            frontend_docker_context = (
+                (Path(os.getcwd()) / ".." / "frontend").resolve().as_posix()
+            )
+            frontend_dockerfile = (
+                (Path(os.getcwd()) / ".." / "frontend" / "Dockerfile")
+                .resolve()
+                .as_posix()
+            )
+            return docker.Image(
+                f"{target_environment}-frontend-docker-image",
+                build=docker.DockerBuild(
+                    context=frontend_docker_context,
+                    dockerfile=frontend_dockerfile,
+                    args={
+                        "NEXT_PUBLIC_API_URL": frontend_api_url,
+                        "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
+                        "NEXT_PUBLIC_ADOBE_API_KEY": pdf_embed_key,
+                    },
+                ),
+                image_name=deployment_resources.navigator_frontend_repo.repository_url,
+                skip_push=False,
+                registry=deployment_resources.docker_registry,
+            )
 
-        # Create an S3 bucket configured as a website bucket.
-        content_bucket = aws.s3.Bucket(
-            "contentBucket",
-            bucket=target_domain,
-            acl="public-read",
-            website=aws.s3.BucketWebsiteArgs(
-                index_document="index.html", error_document="404.html"
-            ),
+        frontend_image = pulumi.Output.all(frontend_pdf_embed_key).apply(
+            build_frontend_image
         )
-
-        # create the bucket objects
-        crawl_directory(web_contents_path, bucket_object_converter, content_bucket)
-
-        # Create a logs bucket for the CloudFront logs
-        # logs_bucket = aws.s3.Bucket('requestLogs', bucket=f'{target_domain}-logs', acl='private')
-
-        export("content_bucket_url", Output.concat("s3://", content_bucket.bucket))
-        export("content_bucket_website_endpoint", content_bucket.website_endpoint)
-
-
-def bucket_object_converter(filepath, content_bucket, web_contents_path):
-    """Takes a file path and returns a bucket object managed by Pulumi"""
-    relative_path = filepath.replace(web_contents_path + "/", "")
-    # Determine the mimetype using the `mimetypes` module.
-    mime_type, _ = mimetypes.guess_type(filepath)
-    content_file = aws.s3.BucketObject(
-        relative_path,
-        key=relative_path,
-        acl="public-read",
-        bucket=content_bucket.id,
-        content_type=mime_type,
-        source=FileAsset(filepath),
-        opts=ResourceOptions(parent=content_bucket),
-    )
-
-
-def crawl_directory(content_dir, bucket_object_converter_fn, content_bucket):
-    """Crawl `content_dir` (including subdirectories) and apply the function to each file."""
-    for file in os.listdir(content_dir):
-        filepath = os.path.join(content_dir, file)
-
-        if os.path.isdir(filepath):
-            crawl_directory(filepath, bucket_object_converter_fn, content_bucket)
-        elif os.path.isfile(filepath):
-            bucket_object_converter_fn(filepath, content_bucket, content_dir)
