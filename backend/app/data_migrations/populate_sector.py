@@ -1,9 +1,9 @@
-import csv
+import json
 
 from sqlalchemy.orm import Session
 
 from app.db.models import Sector
-from .utils import has_rows
+from .utils import has_rows, load_tree
 
 
 def populate_sector(db: Session) -> None:
@@ -11,21 +11,6 @@ def populate_sector(db: Session) -> None:
     if has_rows(db, Sector):
         return
 
-    with open("app/data_migrations/data/sector.csv", mode="r") as file:
-        # reading the CSV file
-        csvFile = csv.DictReader(file)
-
-        for row in csvFile:
-
-            if row["parent_id"] == "null":
-                row["parent_id"] = None
-
-            # Add the Sector details
-            sector = Sector(
-                id=row["id"],
-                parent_id=row["parent_id"],
-                name=row["name"],
-                description=row["description"],
-                source_id=row["source_id"],
-            )
-            db.add(sector)
+    with open("app/data_migrations/data/sector_data.json", mode="r") as sector_file:
+        sector_data = json.load(sector_file)
+        load_tree(db, Sector, sector_data)
