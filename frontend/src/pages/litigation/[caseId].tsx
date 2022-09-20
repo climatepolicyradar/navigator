@@ -258,7 +258,7 @@ const LitigationCoverPage = () => {
               <div className="md:pl-4 md:border-l md:border-blue-100">
                 <section>
                   <h3 className="text-blue-700">About this case</h3>
-                  <DocumentInfo id="court-tt" heading="Court / tribunal" text="Name of Court, Case field before" />
+                  <DocumentInfo id="court-tt" heading="Court / tribunal" text="Name of Court, Case filed before" />
                   <DocumentInfo id="filed-tt" heading="Filed" text="File by, Party Type" />
                   <DocumentInfo id="responding-tt" heading="Responding" text="Responding party, Type" />
                   <DocumentInfo id="intervenor-tt" heading="Intervenor" text="Intervenor, Type" />
