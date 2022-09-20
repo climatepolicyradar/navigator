@@ -226,8 +226,7 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 /* Tooltips styles to override the default */
 .customTooltip {
-  max-width: 300px !important;
-  @apply bg-white text-indigo-600 border-indigo-200 leading-5 #{!important};
+  @apply bg-white text-indigo-600 border-indigo-200 leading-5 max-w-[300px] #{!important};
   &.show {
     opacity: 0.98 !important;
   }
