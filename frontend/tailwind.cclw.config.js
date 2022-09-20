@@ -1,3 +1,4 @@
+/** @type {import('tailwindcss').Config} */
 const colors = require('tailwindcss/colors');
 
 module.exports = {
@@ -16,26 +17,26 @@ module.exports = {
       green: colors.green,
       semiTransWhite: 'rgba(255, 255, 255, 0.85)',
       overlayWhite: 'rgba(217, 217, 217, 0.25)',
-      lightgray: '#F9FAFB',
-      offwhite: '#EFF3FB',
+      lightgray: '#000000',
+      offwhite: '#fff',
       indigo: {
-        100: '#f2f2f5',
-        200: '#e4e6ea',
-        300: '#c7ccd5',
-        400: '#6E6E6E',
-        500: '#616c85',
-        600: '#071e4a',
-        700: '#0A1C40',
+        100: '#000000',
+        200: '#000000',
+        300: '#000000',
+        400: '#000000',
+        500: '#000000',
+        600: '#000000',
+        700: '#000000',
       },
-      sky: '#ebf2ff',
+      sky: '#000000',
       blue: {
-        100: '#e8f3fe',
-        200: '#d0e5fd',
-        300: '#a4cdfb',
-        400: '#7cb4fa',
-        500: '#1f93ff',
-        600: '#006FD6',
-        700: '#0A1C40',
+        100: '#000000',
+        200: '#000000',
+        300: '#000000',
+        400: '#000000',
+        500: '#000000',
+        600: '#000000',
+        700: '#000000',
       },
       bluegreen: {
         100: '#127D9D',
