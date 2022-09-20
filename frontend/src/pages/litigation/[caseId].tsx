@@ -4,6 +4,7 @@ import Link from "next/link";
 import Layout from "@components/layouts/Main";
 import { CountryLink } from "@components/CountryLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
+import { AccordianItem } from "@components/accordian/AccordianItem";
 
 const LitigationCoverPage = () => {
   const router = useRouter();
@@ -73,7 +74,7 @@ const LitigationCoverPage = () => {
                   }}
                 />
               </section>
-              <section className="mt-6 text-content">
+              <section className="mt-12 text-content">
                 <h3 className="text-blue-700">Summary</h3>
                 <div
                   dangerouslySetInnerHTML={{
@@ -81,6 +82,52 @@ const LitigationCoverPage = () => {
                       "Maecenas ac lectus eu justo accumsan placerat id vitae massa. Curabitur consectetur eget felis non viverra. Morbi ac nunc augue. Nullam sit amet purus sapien. Sed turpis arcu, ultricies eu pellentesque sed, eleifend et ex. Nullam vulputate eleifend sem. Fusce id maximus orci. Interdum et malesuada fames ac ante ipsum primis in faucibus. Nullam et massa dapibus, mattis erat eget, sodales arcu. Vivamus eleifend quis mauris a iaculis. Sed interdum vulputate augue, in egestas enim vehicula eget. In eu luctus nisi. Aenean elementum nisi et enim posuere ultrices. Vivamus id turpis pulvinar, dictum massa vitae, interdum quam. Ut eleifend urna efficitur mauris commodo iaculis. Vestibulum varius leo eget elit lacinia, a hendrerit velit sodales.",
                   }}
                 />
+              </section>
+              <section className="mt-12">
+                <h3 className="text-blue-700">Events</h3>
+                <div className="mt-2">
+                  <span className="py-1 px-3 bg-blue-600 text-sm font-bold text-white rounded-t">2022</span>
+                  <AccordianItem
+                    headerContent={
+                      <>
+                        <div className="flex-40">Summary of rejection</div>
+                        <div>
+                          by Court <span className="ml-4">12/09/2022</span>
+                        </div>
+                      </>
+                    }
+                  >
+                    <div className="mt-4">
+                      <p>
+                        Maecenas ac lectus eu justo accumsan placerat id vitae massa. Curabitur consectetur eget felis non viverra. Morbi ac nunc augue. Nullam sit amet purus
+                        sapien. Sed turpis arcu, ultricies eu pellentesque sed, eleifend et ex. Nullam vulputate eleifend sem. Fusce id maximus orci. Interdum et malesuada fames ac
+                        ante ipsum primis in faucibus.
+                      </p>
+                      <p>
+                        Nullam et massa dapibus, mattis erat eget, sodales arcu. Vivamus eleifend quis mauris a iaculis. Sed interdum vulputate augue, in egestas enim vehicula
+                        eget. In eu luctus nisi. Aenean elementum nisi et enim posuere ultrices. Vivamus id turpis pulvinar, dictum massa vitae, interdum quam. Ut eleifend urna
+                        efficitur mauris commodo iaculis. Vestibulum varius leo eget elit lacinia, a hendrerit velit sodales.
+                      </p>
+                      <ul>
+                        <li>
+                          <Link href="#">
+                            <a className="underline text-blue-600">Document title often with long names</a>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="#">
+                            <a className="underline text-blue-600">Document title often with long names</a>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="#">
+                            <a className="underline text-blue-600">Document title often with long names</a>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                  </AccordianItem>
+                </div>
               </section>
             </div>
             {/* Side */}

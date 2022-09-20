@@ -226,8 +226,8 @@ input[type="search"]::-webkit-search-results-decoration {
 }
 /* Tooltips styles to override the default */
 .customTooltip {
-  @apply bg-white text-indigo-600 border-indigo-200 leading-5 #{!important};
   max-width: 300px !important;
+  @apply bg-white text-indigo-600 border-indigo-200 leading-5 #{!important};
   &.show {
     opacity: 0.98 !important;
   }
@@ -400,5 +400,12 @@ ul li.selected {
 @layer utilities {
   h1.smaller {
     font-size: 38px;
+  }
+}
+
+// Accordian
+.accordian__content {
+  p {
+    @apply mb-2;
   }
 }
