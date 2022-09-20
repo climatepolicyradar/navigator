@@ -1,3 +1,4 @@
+# Pre-populate all fixed metadata tables
 from .populate_category import populate_category
 from .populate_document_type import populate_document_type
 from .populate_framework import populate_framework
