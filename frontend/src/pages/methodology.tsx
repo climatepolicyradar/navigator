@@ -186,7 +186,7 @@ const Methodology = () => {
           Natural language search allows you to find what you’re looking for without having to type out precise keywords. This is useful because often certain concepts are described in lots of different ways - like internal combustion engines, internal combustion engine vehicle, ICEV, fossil fuel car, and gasoline car all describe most of the cars you’ll find on today’s roads. With natural language search, you can use the terms you use and hear everyday because the tool will recognise them as related and relevant terms, meaning you get a much richer search experience as a result.
           </p>
           <p>
-          We use a machine learning method called dense retrieval alongside a fuzzy string search to perform natural language search. You can find more details <a href="!!!FIXME: add link to blog post">in our blog post</a>.
+          We use a machine learning method called dense retrieval alongside a fuzzy string search to perform natural language search. You can find more details <a href="https://climatepolicyradar.org/latest/building-natural-language-search-for-climate-change-laws-and-policies">in our blog post</a>.
           </p>
           <h3>Biases &amp; limitations</h3>
           <p>
