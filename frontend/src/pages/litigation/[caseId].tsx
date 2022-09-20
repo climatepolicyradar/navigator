@@ -54,7 +54,7 @@ const LitigationCoverPage = () => {
                   </div>
                   <div className="ml-8">Open</div>
                 </div>
-                <div className="flex text-sm text-blue-700 mt-3 items-center w-full mb-6">
+                <div className="flex text-base text-blue-700 mt-3 items-center w-full mb-6">
                   <span className="font-bold mr-2">Reference</span> 12345678910
                 </div>
               </div>
@@ -301,11 +301,23 @@ const LitigationCoverPage = () => {
 
                 <div className="mt-8 border-t border-blue-100">
                   <h3 className="text-blue-700 mt-4">Source</h3>
-                  <div className="flex items-end mt-4">
-                    <div className="relative flex-shrink max-w-[40px] mr-2">
-                      <img src={`/images/partners/lse-logo.png`} alt="LSE logo" />
+                  <div>
+                    <div className="flex items-end mt-4">
+                      <div className="relative flex-shrink max-w-[40px] mr-2">
+                        <img src={`/images/partners/lse-logo.png`} alt="LSE logo" />
+                      </div>
+                      <p className="text-sm">Climate Change Laws of the World</p>
                     </div>
-                    <p className="text-sm">Climate Change Laws of the World</p>
+                    <p className="text-sm mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ullamcorper lacinia felis ut tincidunt.</p>
+                  </div>
+                  <div>
+                    <div className="flex items-end mt-4">
+                      <div className="relative flex-shrink max-w-[40px] mr-2">
+                        <img src={`/images/partners/sabin-logo.jpg`} alt="Sabin Center logo" />
+                      </div>
+                      <p className="text-sm">Sabin Center for Climate Change Law</p>
+                    </div>
+                    <p className="text-sm mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ullamcorper lacinia felis ut tincidunt.</p>
                   </div>
                 </div>
               </div>
