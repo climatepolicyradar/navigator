@@ -12,20 +12,37 @@ from app.db.models import User
 from app.db.session import SessionLocal
 
 from app.data_migrations import (
+    populate_category,
     populate_document_type,
-    populate_geography,
-    populate_language,
-    populate_source,
+    populate_framework,
     populate_geo_statistics,
+    populate_geography,
+    populate_hazard,
+    populate_instrument,
+    populate_keyword,
+    populate_language,
+    populate_sector,
+    populate_source,
+    populate_topic,
 )
 
 
 def run_data_migrations(db):
     """Populate lookup tables with standard values"""
     populate_source(db)
-    populate_language(db)
+
+    db.flush()  # Source is used by some metadata values
+
+    populate_category(db)
     populate_document_type(db)
+    populate_framework(db)
     populate_geography(db)
+    populate_hazard(db)
+    populate_instrument(db)
+    populate_keyword(db)
+    populate_language(db)
+    populate_sector(db)
+    populate_topic(db)
 
     db.flush()  # Geography data is used by geo-stats so flush
 

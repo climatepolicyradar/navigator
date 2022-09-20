@@ -83,6 +83,7 @@ D400,D401,D406,D407,D413,D415
 [tool.flake8]
 max-line-length = 88
 extend-ignore = "E203"
+per-file-ignores = "__init__.py:F401"
 
 [tool.black]
 line-length = 88

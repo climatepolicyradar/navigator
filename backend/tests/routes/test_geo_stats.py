@@ -7,7 +7,7 @@ from app.api.api_v1.routers.lookups.geo_stats import (
     lookup_geo_stats,
 )
 
-TEST_ID = 11
+TEST_ID = 139
 TEST_GEO_NAME = "Antigua and Barbuda"
 URL_UNDER_TEST = f"/api/v1/geo_stats/{TEST_ID}"
 

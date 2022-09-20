@@ -1,0 +1,326 @@
+[
+  {
+    "name": "Flood",
+    "description": "Flood"
+  },
+  {
+    "name": "Drought",
+    "description": "Drought"
+  },
+  {
+    "name": "Storm",
+    "description": "Storm"
+  },
+  {
+    "name": "Erosion",
+    "description": "Erosion"
+  },
+  {
+    "name": "Floods",
+    "description": "Floods"
+  },
+  {
+    "name": "Droughts",
+    "description": "Droughts"
+  },
+  {
+    "name": "Cyclones",
+    "description": "Cyclones"
+  },
+  {
+    "name": "Tsunamis",
+    "description": "Tsunamis"
+  },
+  {
+    "name": "Storms",
+    "description": "Storms"
+  },
+  {
+    "name": "Hurricanes",
+    "description": "Hurricanes"
+  },
+  {
+    "name": "Changes In Air Quality",
+    "description": "Changes In Air Quality"
+  },
+  {
+    "name": "Heat Waves And Heat Stress",
+    "description": "Heat Waves And Heat Stress"
+  },
+  {
+    "name": "Soil Erosion",
+    "description": "Soil Erosion"
+  },
+  {
+    "name": "Changes In Average Precipitation",
+    "description": "Changes In Average Precipitation"
+  },
+  {
+    "name": "Sea Level Change",
+    "description": "Sea Level Change"
+  },
+  {
+    "name": "Change In Air Quality",
+    "description": "Change In Air Quality"
+  },
+  {
+    "name": "Heat Waves",
+    "description": "Heat Waves"
+  },
+  {
+    "name": "Change In Surface Water",
+    "description": "Change In Surface Water"
+  },
+  {
+    "name": "Surface Water Change",
+    "description": "Surface Water Change"
+  },
+  {
+    "name": "Changes In Average Temperature",
+    "description": "Changes In Average Temperature"
+  },
+  {
+    "name": "Groundwater Change",
+    "description": "Groundwater Change"
+  },
+  {
+    "name": "Earthquake",
+    "description": "Earthquake"
+  },
+  {
+    "name": "Glacial Melt",
+    "description": "Glacial Melt"
+  },
+  {
+    "name": "Wildfire",
+    "description": "Wildfire"
+  },
+  {
+    "name": "Earthquakes",
+    "description": "Earthquakes"
+  },
+  {
+    "name": "Mudslides",
+    "description": "Mudslides"
+  },
+  {
+    "name": "Wildfires",
+    "description": "Wildfires"
+  },
+  {
+    "name": "Changes In Soil Quality",
+    "description": "Changes In Soil Quality"
+  },
+  {
+    "name": "Changes In Surface Water",
+    "description": "Changes In Surface Water"
+  },
+  {
+    "name": "Glacial Melting",
+    "description": "Glacial Melting"
+  },
+  {
+    "name": "Snow Melt",
+    "description": "Snow Melt"
+  },
+  {
+    "name": "Change In Soil Quality",
+    "description": "Change In Soil Quality"
+  },
+  {
+    "name": "Storms, Hurricanes, Tsunamis, Cyclones",
+    "description": "Storms, Hurricanes, Tsunamis, Cyclones"
+  },
+  {
+    "name": "Ocean Acidification",
+    "description": "Ocean Acidification"
+  },
+  {
+    "name": "Sea Level Rise",
+    "description": "Sea Level Rise"
+  },
+  {
+    "name": "Landslides",
+    "description": "Landslides"
+  },
+  {
+    "name": "Heat Stress",
+    "description": "Heat Stress"
+  },
+  {
+    "name": "Glacial",
+    "description": "Glacial"
+  },
+  {
+    "name": "Heatwaves",
+    "description": "Heatwaves"
+  },
+  {
+    "name": "Changes In Precipitation",
+    "description": "Changes In Precipitation"
+  },
+  {
+    "name": "Change In Average Temperature",
+    "description": "Change In Average Temperature"
+  },
+  {
+    "name": "Fires",
+    "description": "Fires"
+  },
+  {
+    "name": "Desertification",
+    "description": "Desertification"
+  },
+  {
+    "name": "Cold Waves",
+    "description": "Cold Waves"
+  },
+  {
+    "name": "Loss Of Sea Ice",
+    "description": "Loss Of Sea Ice"
+  },
+  {
+    "name": "Avalanches",
+    "description": "Avalanches"
+  },
+  {
+    "name": "Changes In Groundwater",
+    "description": "Changes In Groundwater"
+  },
+  {
+    "name": "Loss Of Ice Mass",
+    "description": "Loss Of Ice Mass"
+  },
+  {
+    "name": "Earhquakes",
+    "description": "Earhquakes"
+  },
+  {
+    "name": "Biodiversity Loss",
+    "description": "Biodiversity Loss"
+  },
+  {
+    "name": "Windstorms",
+    "description": "Windstorms"
+  },
+  {
+    "name": "Forest Wildfires",
+    "description": "Forest Wildfires"
+  },
+  {
+    "name": "Coastal Erosion",
+    "description": "Coastal Erosion"
+  },
+  {
+    "name": "Lightning",
+    "description": "Lightning"
+  },
+  {
+    "name": "Windstorm",
+    "description": "Windstorm"
+  },
+  {
+    "name": "Heat Wave",
+    "description": "Heat Wave"
+  },
+  {
+    "name": "Cold Wave",
+    "description": "Cold Wave"
+  },
+  {
+    "name": "Wild Fire",
+    "description": "Wild Fire"
+  },
+  {
+    "name": "Fire",
+    "description": "Fire"
+  },
+  {
+    "name": "Epidemic",
+    "description": "Epidemic"
+  },
+  {
+    "name": "Landslide",
+    "description": "Landslide"
+  },
+  {
+    "name": "Land Erosion",
+    "description": "Land Erosion"
+  },
+  {
+    "name": "Hail",
+    "description": "Hail"
+  },
+  {
+    "name": "Flooding",
+    "description": "Flooding"
+  },
+  {
+    "name": "Hail/Frost",
+    "description": "Hail/Frost"
+  },
+  {
+    "name": "Loss Of Snow Cover",
+    "description": "Loss Of Snow Cover"
+  },
+  {
+    "name": "Hurricane",
+    "description": "Hurricane"
+  },
+  {
+    "name": "Tropical Cyclones",
+    "description": "Tropical Cyclones"
+  },
+  {
+    "name": "High Tides",
+    "description": "High Tides"
+  },
+  {
+    "name": "Diseases",
+    "description": "Diseases"
+  },
+  {
+    "name": "Volcano Eruptions",
+    "description": "Volcano Eruptions"
+  },
+  {
+    "name": "Heat",
+    "description": "Heat"
+  },
+  {
+    "name": "Sea Level Rise Soil Erosion",
+    "description": "Sea Level Rise Soil Erosion"
+  },
+  {
+    "name": "Sea Water Intrusion",
+    "description": "Sea Water Intrusion"
+  },
+  {
+    "name": "Forest",
+    "description": "Forest"
+  },
+  {
+    "name": "Typhoons",
+    "description": "Typhoons"
+  },
+  {
+    "name": "Melting Glacial Ice",
+    "description": "Melting Glacial Ice"
+  },
+  {
+    "name": "Soil Soil Erosion",
+    "description": "Soil Soil Erosion"
+  },
+  {
+    "name": "Thawing Permafrost",
+    "description": "Thawing Permafrost"
+  },
+  {
+    "name": "Increases In Heat Waves",
+    "description": "Increases In Heat Waves"
+  },
+  {
+    "name": "Permafrost Thawing",
+    "description": "Permafrost Thawing"
+  }
+]
