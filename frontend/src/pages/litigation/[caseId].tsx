@@ -97,7 +97,7 @@ const LitigationCoverPage = () => {
                       </>
                     }
                   >
-                    <div className="mt-4">
+                    <div className="mt-4 text-base">
                       <p>
                         Maecenas ac lectus eu justo accumsan placerat id vitae massa. Curabitur consectetur eget felis non viverra. Morbi ac nunc augue. Nullam sit amet purus
                         sapien. Sed turpis arcu, ultricies eu pellentesque sed, eleifend et ex. Nullam vulputate eleifend sem. Fusce id maximus orci. Interdum et malesuada fames ac
@@ -137,7 +137,7 @@ const LitigationCoverPage = () => {
                       </>
                     }
                   >
-                    <div className="mt-4">
+                    <div className="mt-4 text-base">
                       <p>
                         Maecenas ac lectus eu justo accumsan placerat id vitae massa. Curabitur consectetur eget felis non viverra. Morbi ac nunc augue. Nullam sit amet purus
                         sapien. Sed turpis arcu, ultricies eu pellentesque sed, eleifend et ex. Nullam vulputate eleifend sem. Fusce id maximus orci. Interdum et malesuada fames ac
@@ -180,7 +180,7 @@ const LitigationCoverPage = () => {
                       </>
                     }
                   >
-                    <div className="mt-4">
+                    <div className="mt-4 text-base">
                       <p>
                         Maecenas ac lectus eu justo accumsan placerat id vitae massa. Curabitur consectetur eget felis non viverra. Morbi ac nunc augue. Nullam sit amet purus
                         sapien. Sed turpis arcu, ultricies eu pellentesque sed, eleifend et ex. Nullam vulputate eleifend sem. Fusce id maximus orci. Interdum et malesuada fames ac
@@ -220,7 +220,7 @@ const LitigationCoverPage = () => {
                       </>
                     }
                   >
-                    <div className="mt-4">
+                    <div className="mt-4 text-base">
                       <p>
                         Maecenas ac lectus eu justo accumsan placerat id vitae massa. Curabitur consectetur eget felis non viverra. Morbi ac nunc augue. Nullam sit amet purus
                         sapien. Sed turpis arcu, ultricies eu pellentesque sed, eleifend et ex. Nullam vulputate eleifend sem. Fusce id maximus orci. Interdum et malesuada fames ac
@@ -306,7 +306,7 @@ const LitigationCoverPage = () => {
                       <div className="relative flex-shrink max-w-[40px] mr-2">
                         <img src={`/images/partners/lse-logo.png`} alt="LSE logo" />
                       </div>
-                      <p className="text-sm">Climate Change Laws of the World</p>
+                      <p className="text-base">Climate Change Laws of the World</p>
                     </div>
                     <p className="text-sm mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ullamcorper lacinia felis ut tincidunt.</p>
                   </div>
@@ -315,7 +315,7 @@ const LitigationCoverPage = () => {
                       <div className="relative flex-shrink max-w-[40px] mr-2">
                         <img src={`/images/partners/sabin-logo.jpg`} alt="Sabin Center logo" />
                       </div>
-                      <p className="text-sm">Sabin Center for Climate Change Law</p>
+                      <p className="text-base">Sabin Center for Climate Change Law</p>
                     </div>
                     <p className="text-sm mt-2">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut ullamcorper lacinia felis ut tincidunt.</p>
                   </div>
