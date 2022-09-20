@@ -13,7 +13,7 @@ export const AccordianItem: FC<TProps> = ({ headerContent, isOpen = false, child
   }, [isOpen, setOpen]);
 
   return (
-    <div className="p-4 border border-blue-400 rounded-md mx-[-4px] text-lg">
+    <div className="p-4 border border-blue-400 rounded-md mx-[-4px] text-lg mb-3 shadow-md">
       <div className="flex flex-nowrap text-blue-700 cursor-pointer" onClick={() => setOpen(!open)} role="button">
         {headerContent}
 
