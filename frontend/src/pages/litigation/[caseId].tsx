@@ -44,7 +44,7 @@ const LitigationCoverPage = () => {
             <div className="flex flex-col md:flex-row">
               <div className="flex-1 mt-6">
                 <h1 className="text-3xl lg:smaller">Case title goes here vs. the opponent with a long title goes here</h1>
-                <div className="flex text-sm text-blue-700 mt-3 items-center w-full mb-2">
+                <div className="flex text-base text-blue-700 mt-3 items-center w-full mb-2">
                   <CountryLink countryCode={"NLD"}>
                     <span className={`rounded-sm border border-black flag-icon-background flag-icon-nld`} />
                     <span className="ml-2">Netherlands</span>
@@ -85,7 +85,7 @@ const LitigationCoverPage = () => {
               </section>
               <section className="mt-12">
                 <h3 className="text-blue-700">Events</h3>
-                <div className="mt-2">
+                <div className="mt-2 mb-8">
                   <span className="py-1 px-3 bg-blue-600 text-sm font-bold text-white rounded-t">2022</span>
                   <AccordianItem
                     headerContent={
@@ -127,6 +127,49 @@ const LitigationCoverPage = () => {
                       </ul>
                     </div>
                   </AccordianItem>
+                  <AccordianItem
+                    headerContent={
+                      <>
+                        <div className="flex-40">Summary of rejection</div>
+                        <div>
+                          by Court Name <span className="ml-4">12/09/2022</span>
+                        </div>
+                      </>
+                    }
+                  >
+                    <div className="mt-4">
+                      <p>
+                        Maecenas ac lectus eu justo accumsan placerat id vitae massa. Curabitur consectetur eget felis non viverra. Morbi ac nunc augue. Nullam sit amet purus
+                        sapien. Sed turpis arcu, ultricies eu pellentesque sed, eleifend et ex. Nullam vulputate eleifend sem. Fusce id maximus orci. Interdum et malesuada fames ac
+                        ante ipsum primis in faucibus.
+                      </p>
+                      <p>
+                        Nullam et massa dapibus, mattis erat eget, sodales arcu. Vivamus eleifend quis mauris a iaculis. Sed interdum vulputate augue, in egestas enim vehicula
+                        eget. In eu luctus nisi. Aenean elementum nisi et enim posuere ultrices. Vivamus id turpis pulvinar, dictum massa vitae, interdum quam. Ut eleifend urna
+                        efficitur mauris commodo iaculis. Vestibulum varius leo eget elit lacinia, a hendrerit velit sodales.
+                      </p>
+                      <ul>
+                        <li>
+                          <Link href="#">
+                            <a className="underline text-blue-600">Document title often with long names</a>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="#">
+                            <a className="underline text-blue-600">Document title often with long names</a>
+                          </Link>
+                        </li>
+                        <li>
+                          <Link href="#">
+                            <a className="underline text-blue-600">Document title often with long names</a>
+                          </Link>
+                        </li>
+                      </ul>
+                    </div>
+                  </AccordianItem>
+                </div>
+                <div className="mt-2">
+                  <span className="py-1 px-3 bg-blue-600 text-sm font-bold text-white rounded-t">2021</span>
                   <AccordianItem
                     headerContent={
                       <>
