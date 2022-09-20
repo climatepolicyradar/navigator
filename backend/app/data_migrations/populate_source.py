@@ -7,7 +7,7 @@ from .utils import has_rows, load_list
 
 
 def populate_source(db: Session) -> None:
-    """Add the source data."""
+    """Populates the source table with pre-defined data."""
 
     if has_rows(db, Source):
         return

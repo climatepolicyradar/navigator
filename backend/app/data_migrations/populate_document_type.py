@@ -7,7 +7,7 @@ from .utils import has_rows, load_list
 
 
 def populate_document_type(db: Session) -> None:
-    """Add the known document types"""
+    """Populates the document_type table with pre-defined data."""
 
     if has_rows(db, DocumentType):
         return

@@ -18,7 +18,7 @@ def to_float(value: str) -> Union[float, None]:
 
 
 def populate_geo_statistics(db: Session) -> None:
-    """Populates the geography table with data in the CSV."""
+    """Populates the geo_statistics table with pre-defined data."""
 
     if has_rows(db, GeoStatistics):
         return

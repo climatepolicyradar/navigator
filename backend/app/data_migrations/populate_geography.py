@@ -7,7 +7,8 @@ from .utils import has_rows, load_tree
 
 
 def populate_geography(db: Session) -> None:
-    """Populates the geography table with data in the CSV."""
+    """Populates the geography table with pre-defined data."""
+
     if has_rows(db, Geography):
         return
 

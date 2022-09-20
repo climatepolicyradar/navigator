@@ -7,7 +7,7 @@ from .utils import has_rows, load_list
 
 
 def populate_framework(db: Session) -> None:
-    """Populate frameworks from CSV file."""
+    """Populates the framework table with pre-defined data."""
 
     if has_rows(db, Framework):
         return

@@ -7,7 +7,7 @@ from .utils import has_rows, load_list
 
 
 def populate_category(db: Session) -> None:
-    """Populate categorys from CSV file."""
+    """Populates the category table with pre-defined data."""
 
     if has_rows(db, Category):
         return

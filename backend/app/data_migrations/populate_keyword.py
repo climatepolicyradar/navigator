@@ -7,7 +7,7 @@ from .utils import has_rows, load_list
 
 
 def populate_keyword(db: Session) -> None:
-    """Populate keywords from CSV file."""
+    """Populates the keyword table with pre-defined data."""
 
     if has_rows(db, Keyword):
         return

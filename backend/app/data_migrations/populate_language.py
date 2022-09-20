@@ -7,7 +7,7 @@ from .utils import has_rows, load_list
 
 
 def populate_language(db: Session) -> None:
-    """Populate languages from CSV file."""
+    """Populates the langauge table with pre-defined data."""
 
     if has_rows(db, Language):
         return

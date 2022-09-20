@@ -7,7 +7,7 @@ from .utils import has_rows, load_list
 
 
 def populate_hazard(db: Session) -> None:
-    """Populate hazards from CSV file."""
+    """Populates the hazard table with pre-defined data."""
 
     if has_rows(db, Hazard):
         return
