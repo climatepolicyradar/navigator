@@ -90,7 +90,6 @@ def create_4_documents(test_db, client, superuser_token_headers):
     test_db.commit()
 
     document1_payload = {
-        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
         "publication_ts": "2000-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
         "description": "the document description",
@@ -100,6 +99,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
+        "import_id": "doc1",
         "category": "a category",
         "languages": ["Afrikaans"],
         "events": [
@@ -125,7 +125,6 @@ def create_4_documents(test_db, client, superuser_token_headers):
     # Document 2 payload also checks that we correctly associate new documents with
     # existing metadata values.
     document2_payload = {
-        "loaded_ts": "2022-04-26T15:34:40.470413+00:00",
         "publication_ts": "1999-01-01T00:00:00.000000+00:00",
         "name": "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)",
         "description": "the document description",
@@ -135,6 +134,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
+        "import_id": "doc2",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -167,7 +167,6 @@ def create_4_documents(test_db, client, superuser_token_headers):
 
     # Document 3 payload checks we find related documents across the master doc.
     document3_payload = {
-        "loaded_ts": "2022-04-26T15:35:40.470413+00:00",
         "publication_ts": "1998-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
         "description": "the document description",
@@ -177,6 +176,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my fav subject again",
         "source": "may it be with you",
+        "import_id": "doc3",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -201,7 +201,6 @@ def create_4_documents(test_db, client, superuser_token_headers):
 
     # Document 4 payload checks we do not find unrelated docs.
     document4_payload = {
-        "loaded_ts": "2022-04-26T15:36:40.470413+00:00",
         "publication_ts": "1997-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2010/8-2015/3)",
         "description": "the document description",
@@ -211,6 +210,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
+        "import_id": "doc4",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -318,7 +318,6 @@ def test_post_documents(client, superuser_token_headers, test_db):
     test_db.commit()
 
     payload = {
-        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
         "publication_ts": "2000-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
         "description": "the document description",
@@ -328,6 +327,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
+        "import_id": "doc01",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -356,6 +356,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
     assert doc.description == payload["description"]
     assert doc.url == payload["url"]
     assert doc.md5_sum == payload["md5_sum"]
+    assert doc.import_id == payload["import_id"]
     assert doc.publication_ts == datetime(2000, 1, 1)
 
     event = test_db.query(Event).first()
@@ -401,7 +402,6 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
     test_db.commit()
 
     payload = {
-        "loaded_ts": "2022-04-26T15:33:40.470413+00:00",
         "publication_ts": "2000-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
         "description": "the document description",
@@ -411,6 +411,7 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
+        "import_id": "doc001",
         "category": "a category",
         "languages": ["afr"],
         "events": [
