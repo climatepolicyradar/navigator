@@ -11,7 +11,7 @@ def _convert_associations_to_relationship(db: Session, id: int):
     new_relationship = Relationship(
         type="related",
         name="related",
-        description=f"Migrated from CCLW document group",
+        description="Migrated from CCLW document group",
     )
     db.add(new_relationship)
     db.commit()
@@ -25,11 +25,11 @@ def _convert_associations_to_relationship(db: Session, id: int):
         )
 
     # add the parent to this new relationship (the "to" part of the association)
-    add_doc(id)
+    add_doc_relationship(id)
 
     # add the child documents (any "from" document id with a matching "to")
     [
-        add_doc(to_id)
+        add_doc_relationship(to_id)
         for to_id, in db.query(Association.document_id_from).filter(
             Association.document_id_to == id
         )
@@ -53,6 +53,8 @@ if __name__ == "__main__":
         _convert_associations_to_relationship(db, doc_id)
 
     # validation
-    n_actual_relationships = db.query(DocumentRelationship).count()
+    n_actual_document_relationships = db.query(DocumentRelationship).count()
 
-    sys.exit(0 if n_actual_relationships == n_expected_relationships else 1)
+    sys.exit(
+        0 if n_actual_document_relationships == n_expected_document_relationships else 1
+    )
