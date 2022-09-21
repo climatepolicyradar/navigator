@@ -47,7 +47,7 @@ if __name__ == "__main__":
     # Get all distinct document ids in the "to" part of the relationship
     to_docs = db.query(Association.document_id_to).distinct().all()
     print(f"...found {len(to_docs)} documents with associations...")
-    n_expected_relationships = len(all_associations) + len(to_docs)
+    n_expected_document_relationships = len(all_associations) + len(to_docs)
 
     for (doc_id,) in to_docs:
         _convert_associations_to_relationship(db, doc_id)
