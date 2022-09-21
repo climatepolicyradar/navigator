@@ -70,6 +70,24 @@ class Document(Base, Auditable):
     UniqueConstraint(name, geography_id, type_id, source_id, source_url)
 
 
+class Association(Base):  # noqa: D101
+    __tablename__ = "association"
+
+    id = sa.Column(sa.Integer, primary_key=True)
+    document_id_from = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+    )
+    document_id_to = sa.Column(
+        sa.Integer,
+        sa.ForeignKey(Document.id, ondelete="CASCADE"),
+        nullable=False,
+    )
+    type = sa.Column(sa.Text, nullable=False)
+    name = sa.Column(sa.Text, nullable=False)
+
+
 class Sector(Base):  # noqa: D101
     __tablename__ = "sector"
 
