@@ -478,32 +478,6 @@ def test_document_detail(
         )
         assert response.status_code == 201
 
-    # doc_association_payload_1 = DocumentAssociationCreateRequest(
-    #     document_id_from=response2_document["id"],
-    #     document_id_to=response1_document["id"],
-    #     name="related",
-    #     type="related",
-    # ).dict()
-    # response_assoc_1 = client.post(
-    #     "/api/v1/associations",
-    #     headers=superuser_token_headers,
-    #     json=doc_association_payload_1,
-    # )
-    # assert response_assoc_1.status_code == 200
-
-    # doc_association_payload_2 = DocumentAssociationCreateRequest(
-    #     document_id_from=response3_document["id"],
-    #     document_id_to=response1_document["id"],
-    #     name="related",
-    #     type="related",
-    # ).dict()
-    # response_assoc_2 = client.post(
-    #     "/api/v1/associations",
-    #     headers=superuser_token_headers,
-    #     json=doc_association_payload_2,
-    # )
-    # assert response_assoc_2.status_code == 200
-
     # Test properties
     get_detail_response_2 = client.get(
         f"/api/v1/documents/{response2_document['id']}",
