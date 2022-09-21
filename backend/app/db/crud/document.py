@@ -543,24 +543,15 @@ def write_metadata(
         db.add(doc_keyword)
 
 
-def _get_related_documents(db: Session, document_id: int) -> Set[DocumentOverviewResponse]:
-    """Gets all the other documents this document is related to.
-
-    TODO: return this as structured, as at the moment we return a flat list
-    """
-    print(f"### get_related_documents for: {document_id}")
+def _get_related_documents(
+    db: Session, document_id: int
+) -> Set[DocumentOverviewResponse]:
+    """Gets all the other documents this document is related to."""
     query_all_relationships_of_document = db.query(
         DocumentRelationship.relationship_id
     ).filter(DocumentRelationship.document_id == document_id)
 
-    print(
-        f"### get_related_documents searching: {db.query(DocumentRelationship).count()}"
-    )
-    print(
-        f"### get_related_documents found relns: {query_all_relationships_of_document.count()}"
-    )
-
-    related_docs = set(
+    return set(
         DocumentOverviewResponse(
             document_id=d.id,
             name=d.name,
@@ -581,9 +572,6 @@ def _get_related_documents(db: Session, document_id: int) -> Set[DocumentOvervie
             .filter(Document.id != document_id)
         ).all()
     )
-    print(f"### get_related_documents found: {len(related_docs)}")
-
-    return related_docs
 
 
 def create_relationship(
