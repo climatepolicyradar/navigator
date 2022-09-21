@@ -11,7 +11,7 @@ def _convert_associations_to_relationship(db: Session, id: int):
     new_relationship = Relationship(
         type="related",
         name="related",
-        description=f"migrated from association for document id {id}",
+        description=f"Migrated from CCLW document group",
     )
     db.add(new_relationship)
     db.commit()
