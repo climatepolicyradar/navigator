@@ -2,7 +2,6 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import useDocumentDetail from "@hooks/useDocumentDetail";
 import Layout from "@components/layouts/Main";
-import Loader from "@components/Loader";
 import TextLink from "@components/nav/TextLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
 import { Timeline } from "@components/blocks/Timeline";
@@ -15,6 +14,7 @@ import { CountryLink } from "@components/CountryLink";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
 import { truncateString } from "@helpers/index";
+import getPageTitle from "@utils/getPageTitle";
 
 import { TEvent } from "@types";
 
@@ -75,7 +75,7 @@ const DocumentCoverPage = () => {
   const sourceLogo = page?.source?.name === "CCLW" ? "lse-logo.png" : null;
 
   return (
-    <Layout title={`Climate Policy Radar | Document title`}>
+    <Layout title={`${getPageTitle()} | ${page?.name}`}>
       {isFetching || !page?.name ? (
         <Loading />
       ) : (

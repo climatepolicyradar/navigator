@@ -1,11 +1,14 @@
 import Document, { Html, Head, Main, NextScript } from "next/document";
+import getSite from "@utils/getSite";
 
 class MyDocument extends Document {
+  favicon = getSite() === "cclw" ? "/cclw/images/favicon.png" : "/favicon.png";
+
   render() {
     return (
       <Html lang="en">
         <Head>
-          <link rel="icon" href="/favicon.png" />
+          <link rel="icon" href={this.favicon} />
         </Head>
         <body>
           <Main />
