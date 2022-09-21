@@ -95,27 +95,6 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
         orm_mode = True
         validate_assignment = True
 
-
-# TODO: BAK-1137 remove association model
-class DocumentAssociationCreateRequest(BaseModel):
-    """Schema for associations create request."""
-
-    document_id_from: int
-    document_id_to: int
-    name: str
-    type: str
-
-
-# TODO: BAK-1137 Remove
-class DocumentAssociationCreateResponse(DocumentAssociationCreateRequest):
-    """Schema for associations create response."""
-
-    id: int
-
-    class Config:  # noqa: D106
-        orm_mode = True
-
-
 class RelationshipCreateRequest(BaseModel):
     """Schema for Relationship create request."""
 
