@@ -369,6 +369,7 @@ class QueryBuilder:
                             "match": {
                                 OPENSEARCH_INDEX_NAME_KEY: {
                                     "query": query_string,
+                                    "operator": "or",
                                 }
                             }
                         },
@@ -391,7 +392,8 @@ class QueryBuilder:
                             "match": {
                                 OPENSEARCH_INDEX_DESCRIPTION_KEY: {
                                     "query": query_string,
-                                    "boost": 3,  # TODO: configure?
+                                    "boost": 3,
+                                    "operator": "and",
                                 }
                             }
                         },
@@ -420,6 +422,7 @@ class QueryBuilder:
                             "match": {
                                 "text": {
                                     "query": query_string,
+                                    "operator": "and",
                                 },
                             }
                         },
