@@ -17,7 +17,7 @@ def _convert_associations_to_relationship(db: Session, id: int):
     db.commit()
     db.refresh(new_relationship)
 
-    def add_doc(doc_id: int):
+    def add_doc_relationship(doc_id: int):
         db.add(
             DocumentRelationship(
                 document_id=doc_id, relationship_id=new_relationship.id
