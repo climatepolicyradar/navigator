@@ -62,8 +62,18 @@ class Document(Base, Auditable):
     url = sa.Column(sa.Text, nullable=True)
     md5_sum = sa.Column(sa.Text, nullable=False)
 
-    slug = sa.Column(sa.Text, nullable=True)  # TODO: nullable=False, unique=True
-    import_id = sa.Column(sa.Text, nullable=True)  # TODO: nullable=False
+    slug = sa.Column(
+        sa.Text,
+        nullable=True,
+        unique=True,
+        index=True,
+        # TODO: nullable=False,
+    )
+    import_id = sa.Column(
+        sa.Text,
+        nullable=True,
+        # TODO: nullable=False,
+    )
 
     geography_id = sa.Column(
         sa.SmallInteger,
