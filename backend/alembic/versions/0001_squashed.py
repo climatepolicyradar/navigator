@@ -157,9 +157,6 @@ def upgrade():
             name=op.f("fk_document__category_id__category"),
         ),
         sa.ForeignKeyConstraint(
-            ["created_by"], ["user.id"], name=op.f("fk_document__created_by__user")
-        ),
-        sa.ForeignKeyConstraint(
             ["geography_id"],
             ["geography.id"],
             name=op.f("fk_document__geography_id__geography"),

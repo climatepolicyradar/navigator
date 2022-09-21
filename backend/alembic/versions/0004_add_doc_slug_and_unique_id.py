@@ -28,7 +28,6 @@ def upgrade():
         op.f("uq_document__source_id"), "document", ["source_id", "import_id"]
     )
     op.drop_constraint("fk_document__updated_by__user", "document", type_="foreignkey")
-    op.drop_constraint("fk_document__created_by__user", "document", type_="foreignkey")
     op.drop_column("document", "loaded_ts")
     op.drop_column("document", "updated_by")
     op.drop_column("document", "created_by")
