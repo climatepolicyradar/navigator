@@ -17,7 +17,7 @@ from app.db.models import (
     Category,
     Keyword,
 )
-from app.api.api_v1.schemas.document import DocumentAssociationCreateRequest
+from app.api.api_v1.schemas.document import RelationshipCreateRequest
 
 
 def create_4_documents(test_db, client, superuser_token_headers):
@@ -456,32 +456,28 @@ def test_document_detail(
         document4_payload,
     ) = create_4_documents(test_db, client, superuser_token_headers)
 
-    # Set up associations
-    doc_association_payload_1 = DocumentAssociationCreateRequest(
-        document_id_from=response2_document["id"],
-        document_id_to=response1_document["id"],
-        name="related",
-        type="related",
-    ).dict()
-    response_assoc_1 = client.post(
-        "/api/v1/associations",
+    # Set up doc relationships
+    response_create = client.post(
+        "/api/v1/document-relationships",
         headers=superuser_token_headers,
-        json=doc_association_payload_1,
+        json=RelationshipCreateRequest(
+            name="Rel", type="test", description="test relationship"
+        ).dict(),
     )
-    assert response_assoc_1.status_code == 200
+    assert response_create.status_code == 201
+    rel_id = response_create.json()["id"]
+    doc_ids = [
+        response1_document["id"],
+        response2_document["id"],
+        response3_document["id"],
+    ]
 
-    doc_association_payload_2 = DocumentAssociationCreateRequest(
-        document_id_from=response3_document["id"],
-        document_id_to=response1_document["id"],
-        name="related",
-        type="related",
-    ).dict()
-    response_assoc_2 = client.post(
-        "/api/v1/associations",
-        headers=superuser_token_headers,
-        json=doc_association_payload_2,
-    )
-    assert response_assoc_2.status_code == 200
+    for doc_id in doc_ids:
+        response = client.put(
+            f"/api/v1/document-relationships/{rel_id}/documents/{doc_id}",
+            headers=superuser_token_headers,
+        )
+        assert response.status_code == 201
 
     # Test properties
     get_detail_response_2 = client.get(
