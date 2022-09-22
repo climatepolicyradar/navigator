@@ -369,7 +369,7 @@ class QueryBuilder:
                             "match": {
                                 OPENSEARCH_INDEX_NAME_KEY: {
                                     "query": query_string,
-                                    "operator": "or",
+                                    "operator": "and",
                                 }
                             }
                         },
