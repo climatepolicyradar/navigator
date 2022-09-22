@@ -369,6 +369,8 @@ class QueryBuilder:
                             "match": {
                                 OPENSEARCH_INDEX_NAME_KEY: {
                                     "query": query_string,
+                                    "operator": "and",
+                                    "minimum_should_match": "2<66%",  # all terms if there are 2 or less, otherwise 66% of terms (rounded down)
                                 }
                             }
                         },
@@ -391,7 +393,9 @@ class QueryBuilder:
                             "match": {
                                 OPENSEARCH_INDEX_DESCRIPTION_KEY: {
                                     "query": query_string,
-                                    "boost": 3,  # TODO: configure?
+                                    "boost": 3,
+                                    "operator": "and",
+                                    "minimum_should_match": "2<66%",  # all terms if there are 2 or less, otherwise 66% of terms (rounded down)
                                 }
                             }
                         },
@@ -420,6 +424,8 @@ class QueryBuilder:
                             "match": {
                                 "text": {
                                     "query": query_string,
+                                    "operator": "and",
+                                    "minimum_should_match": "2<66%",  # all terms if there are 2 or less, otherwise 66% of terms (rounded down)
                                 },
                             }
                         },
