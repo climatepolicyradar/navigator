@@ -1,6 +1,5 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
-import { useAuth } from "@api/auth";
 import { useDidUpdateEffect } from "@hooks/useDidUpdateEffect";
 import useSearch from "@hooks/useSearch";
 import useSearchCriteria from "@hooks/useSearchCriteria";
@@ -47,8 +46,8 @@ const Search = () => {
   const updateSearchFilters = useUpdateSearchFilters();
   const updateDocument = useUpdateDocument();
   const updateCountries = useUpdateCountries();
-  const { user } = useAuth();
   const slideoutRef = useRef(null);
+  const { t, ready } = useTranslation(["searchStart", "searchResults"]);
 
   // close slideout panel when clicking outside of it
   useOutsideAlerter(slideoutRef, (e) => {
@@ -65,18 +64,16 @@ const Search = () => {
   const { data: filteredCountries } = useFilteredCountries(countries);
 
   // search criteria and filters
-  const { isFetching: isFetchingSearchCriteria, isSuccess: isSearchCriteriaSuccess, data: searchCriteria }: any = useSearchCriteria();
+  const { isFetching: isFetchingSearchCriteria, data: searchCriteria }: any = useSearchCriteria();
   const browsing = searchCriteria?.query_string.trim() === "";
 
   // search results
   const resultsQuery: any = useSearch("searches", searchCriteria);
-  const { data: { data: { documents = [] } = [] } = [], data: { data: { hits } = 0 } = 0, isSuccess } = resultsQuery;
+  const { data: { data: { documents = [] } = [] } = [], data: { data: { hits } = 0 } = 0 } = resultsQuery;
 
   const { data: document }: { data: TDocument } = ({} = useDocument());
-  const { t, ready } = useTranslation(["searchStart", "searchResults"]);
-  const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
-  const documentCategories = DOCUMENT_CATEGORIES;
+  const placeholder = t("Search for something, e.g. 'carbon taxes'");
 
   const resetPaging = () => {
     setOffset(0);
@@ -89,7 +86,7 @@ const Search = () => {
     setShowSlideout(slideOut ?? !showSlideout);
   };
 
-  const handleRegionChange = (type, regionName) => {
+  const handleRegionChange = (type: string, regionName: string) => {
     handleFilterChange(type, regionName);
     updateCountries.mutate({
       regionName,
@@ -164,8 +161,7 @@ const Search = () => {
   const handleClearSearch = () => {
     const { query_string, exact_match, sort_field, sort_order, ...initial } = initialSearchCriteria;
     updateSearchCriteria.mutate(initial);
-    // reset filtered countries which show in suggest list
-    // when typing in a jurisdiction/country
+    // reset filtered countries
     updateCountries.mutate({
       regionName: "",
       regions,
@@ -206,7 +202,7 @@ const Search = () => {
       setCategoryIndex(0);
       return;
     }
-    let index = documentCategories.indexOf(searchCriteria.keyword_filters?.categories[0]);
+    let index = DOCUMENT_CATEGORIES.indexOf(searchCriteria.keyword_filters?.categories[0]);
     // ['All', 'Executive', 'Legislative', 'Litigation']
     // hack to get correct previously selected category
     if (searchCriteria.keyword_filters?.categories[0] === "Law") {
@@ -256,7 +252,7 @@ const Search = () => {
 
   return (
     <>
-      {isFetchingSearchCriteria || !ready || !user ? (
+      {isFetchingSearchCriteria || !ready ? (
         <LoaderOverlay />
       ) : (
         <Layout title={`Climate Policy Radar | ${t("Law and Policy Search")}`} heading={t("Law and Policy Search")}>
@@ -313,7 +309,7 @@ const Search = () => {
                 <div className="md:w-3/4">
                   <div className="mt-4 md:flex">
                     <div className="flex-grow">
-                      <TabbedNav activeIndex={categoryIndex} items={documentCategories} handleTabClick={handleDocumentCategoryClick} />
+                      <TabbedNav activeIndex={categoryIndex} items={DOCUMENT_CATEGORIES} handleTabClick={handleDocumentCategoryClick} />
                     </div>
                     <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
                       <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} browse={browsing} />

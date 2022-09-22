@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import useSearchCriteria from "@hooks/useSearchCriteria";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
@@ -17,19 +17,15 @@ import { emptySearchResults } from "@constants/search";
 import useConfig from "@hooks/useConfig";
 
 const IndexPage = () => {
-  const { t, i18n, ready } = useTranslation(["searchStart", "searchResults"]);
+  const { t, ready } = useTranslation(["searchStart", "searchResults"]);
   const router = useRouter();
   const { data: searchCriteria }: any = useSearchCriteria();
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateCountries = useUpdateCountries();
   const updateSearch = useUpdateSearch();
 
-  /* need this lookup to be able to reset filtered countries
-  (sets suggest list that appears when typing a jurisdiction)
-  when returning to this page from a previous search
-  */
   const configQuery: any = useConfig("config");
-  const { data: { regions: regions = [], countries: countries = [] } = {} } = configQuery;
+  const { data: { regions = [], countries = [] } = {} } = configQuery;
 
   const handleSearchInput = (term: string, filter?: string, filterValue?: string) => {
     const newSearchCritera = {
@@ -42,14 +38,17 @@ const IndexPage = () => {
     updateSearchCriteria.mutate({ ...newSearchCritera, ...additionalCritera });
     router.push("/search");
   };
+
   const handleSearchChange = (type: string, value: any) => {
     updateSearchCriteria.mutate({ [type]: value });
   };
-  const handleLinkClick = (e) => {
+
+  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault();
     const term = e.currentTarget.textContent;
     handleSearchInput(term);
   };
+
   const clearAllFilters = () => {
     /*
     clear all previously set filters if returning from
@@ -65,9 +64,11 @@ const IndexPage = () => {
       countries,
     });
   };
+
   const clearSearch = () => {
     updateSearch.mutate({ data: emptySearchResults });
   };
+
   useEffect(() => {
     clearAllFilters();
     clearSearch();

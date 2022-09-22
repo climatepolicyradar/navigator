@@ -1,0 +1,846 @@
+[
+  {
+    "name": "Energy Supply",
+    "description": "Energy Supply"
+  },
+  {
+    "name": "Adaptation",
+    "description": "Adaptation"
+  },
+  {
+    "name": "Energy Demand",
+    "description": "Energy Demand"
+  },
+  {
+    "name": "Research And Development",
+    "description": "Research And Development"
+  },
+  {
+    "name": "Institutions / Administrative Arrangements",
+    "description": "Institutions / Administrative Arrangements"
+  },
+  {
+    "name": "Carbon Pricing",
+    "description": "Carbon Pricing"
+  },
+  {
+    "name": "Biofuels",
+    "description": "Biofuels"
+  },
+  {
+    "name": "Hydrogen",
+    "description": "Hydrogen"
+  },
+  {
+    "name": "Debt For Nature",
+    "description": "Debt For Nature"
+  },
+  {
+    "name": "Renewables",
+    "description": "Renewables"
+  },
+  {
+    "name": "Trees",
+    "description": "Trees"
+  },
+  {
+    "name": "Reforestation",
+    "description": "Reforestation"
+  },
+  {
+    "name": "Spatial Planning",
+    "description": "Spatial Planning"
+  },
+  {
+    "name": "Mangroves",
+    "description": "Mangroves"
+  },
+  {
+    "name": "Forests",
+    "description": "Forests"
+  },
+  {
+    "name": "Afforestation",
+    "description": "Afforestation"
+  },
+  {
+    "name": "Finance",
+    "description": "Finance"
+  },
+  {
+    "name": "Carbon Budget",
+    "description": "Carbon Budget"
+  },
+  {
+    "name": "Agriculture",
+    "description": "Agriculture"
+  },
+  {
+    "name": "Carbon Sink",
+    "description": "Carbon Sink"
+  },
+  {
+    "name": "Wetlands",
+    "description": "Wetlands"
+  },
+  {
+    "name": "Gender",
+    "description": "Gender"
+  },
+  {
+    "name": "Health",
+    "description": "Health"
+  },
+  {
+    "name": "Planning",
+    "description": "Planning"
+  },
+  {
+    "name": "Public Transport",
+    "description": "Public Transport"
+  },
+  {
+    "name": "Freight",
+    "description": "Freight"
+  },
+  {
+    "name": "Modal Shift",
+    "description": "Modal Shift"
+  },
+  {
+    "name": "Active Travel",
+    "description": "Active Travel"
+  },
+  {
+    "name": "Net Zero",
+    "description": "Net Zero"
+  },
+  {
+    "name": "Youth",
+    "description": "Youth"
+  },
+  {
+    "name": "Disaster Risk Management",
+    "description": "Disaster Risk Management"
+  },
+  {
+    "name": "Mitigation",
+    "description": "Mitigation"
+  },
+  {
+    "name": "Stimulus Plan",
+    "description": "Stimulus Plan"
+  },
+  {
+    "name": "Electricity",
+    "description": "Electricity"
+  },
+  {
+    "name": "Energy Efficiency",
+    "description": "Energy Efficiency"
+  },
+  {
+    "name": "Buildings",
+    "description": "Buildings"
+  },
+  {
+    "name": "Disease Prevention",
+    "description": "Disease Prevention"
+  },
+  {
+    "name": "Biodiversity",
+    "description": "Biodiversity"
+  },
+  {
+    "name": "Aviation",
+    "description": "Aviation"
+  },
+  {
+    "name": "Transport",
+    "description": "Transport"
+  },
+  {
+    "name": "Shipping",
+    "description": "Shipping"
+  },
+  {
+    "name": "Industry",
+    "description": "Industry"
+  },
+  {
+    "name": "Biogas",
+    "description": "Biogas"
+  },
+  {
+    "name": "Energy",
+    "description": "Energy"
+  },
+  {
+    "name": "Waste",
+    "description": "Waste"
+  },
+  {
+    "name": "Water Management",
+    "description": "Water Management"
+  },
+  {
+    "name": "Tax Incentives",
+    "description": "Tax Incentives"
+  },
+  {
+    "name": "Heat",
+    "description": "Heat"
+  },
+  {
+    "name": "Climate Change",
+    "description": "Climate Change"
+  },
+  {
+    "name": "Germany",
+    "description": "Germany"
+  },
+  {
+    "name": "Citizens' Assembly",
+    "description": "Citizens' Assembly"
+  },
+  {
+    "name": "Deforestation",
+    "description": "Deforestation"
+  },
+  {
+    "name": "Subsidies",
+    "description": "Subsidies"
+  },
+  {
+    "name": "Tax",
+    "description": "Tax"
+  },
+  {
+    "name": "Cycling",
+    "description": "Cycling"
+  },
+  {
+    "name": "Walking",
+    "description": "Walking"
+  },
+  {
+    "name": "Climate Fund",
+    "description": "Climate Fund"
+  },
+  {
+    "name": "National Energy And Climate Plans",
+    "description": "National Energy And Climate Plans"
+  },
+  {
+    "name": "Infrastructure",
+    "description": "Infrastructure"
+  },
+  {
+    "name": "Car Manufacturing",
+    "description": "Car Manufacturing"
+  },
+  {
+    "name": "Gas",
+    "description": "Gas"
+  },
+  {
+    "name": "Nuclear",
+    "description": "Nuclear"
+  },
+  {
+    "name": "Green Bonds",
+    "description": "Green Bonds"
+  },
+  {
+    "name": "Maritime Planning",
+    "description": "Maritime Planning"
+  },
+  {
+    "name": "Land Use",
+    "description": "Land Use"
+  },
+  {
+    "name": "Insurance",
+    "description": "Insurance"
+  },
+  {
+    "name": "Reinsurance",
+    "description": "Reinsurance"
+  },
+  {
+    "name": "Public Private",
+    "description": "Public Private"
+  },
+  {
+    "name": "Just Transition",
+    "description": "Just Transition"
+  },
+  {
+    "name": "Hydro",
+    "description": "Hydro"
+  },
+  {
+    "name": "Food Waste",
+    "description": "Food Waste"
+  },
+  {
+    "name": "Mountain",
+    "description": "Mountain"
+  },
+  {
+    "name": "Offshore",
+    "description": "Offshore"
+  },
+  {
+    "name": "Paris Agreement",
+    "description": "Paris Agreement"
+  },
+  {
+    "name": "Joe Biden",
+    "description": "Joe Biden"
+  },
+  {
+    "name": "Jobs",
+    "description": "Jobs"
+  },
+  {
+    "name": "National Security",
+    "description": "National Security"
+  },
+  {
+    "name": "Fossil Fuels Subsidies",
+    "description": "Fossil Fuels Subsidies"
+  },
+  {
+    "name": "Moratorium",
+    "description": "Moratorium"
+  },
+  {
+    "name": "Fossil Fuels Curbing Measures",
+    "description": "Fossil Fuels Curbing Measures"
+  },
+  {
+    "name": "Disclosure",
+    "description": "Disclosure"
+  },
+  {
+    "name": "Climate Neutrality",
+    "description": "Climate Neutrality"
+  },
+  {
+    "name": "Ban",
+    "description": "Ban"
+  },
+  {
+    "name": "Limits On Fossil Fuels",
+    "description": "Limits On Fossil Fuels"
+  },
+  {
+    "name": "Coal Phase Out",
+    "description": "Coal Phase Out"
+  },
+  {
+    "name": "Meat",
+    "description": "Meat"
+  },
+  {
+    "name": "Banking",
+    "description": "Banking"
+  },
+  {
+    "name": "Central Bank",
+    "description": "Central Bank"
+  },
+  {
+    "name": "Food Security",
+    "description": "Food Security"
+  },
+  {
+    "name": "Air Pollution",
+    "description": "Air Pollution"
+  },
+  {
+    "name": "Fuels",
+    "description": "Fuels"
+  },
+  {
+    "name": "Road",
+    "description": "Road"
+  },
+  {
+    "name": "Oil",
+    "description": "Oil"
+  },
+  {
+    "name": "Methane",
+    "description": "Methane"
+  },
+  {
+    "name": "Permit",
+    "description": "Permit"
+  },
+  {
+    "name": "Coastal Erosion",
+    "description": "Coastal Erosion"
+  },
+  {
+    "name": "Biomass",
+    "description": "Biomass"
+  },
+  {
+    "name": "Truck",
+    "description": "Truck"
+  },
+  {
+    "name": "Oceans",
+    "description": "Oceans"
+  },
+  {
+    "name": "Technology",
+    "description": "Technology"
+  },
+  {
+    "name": "Mining",
+    "description": "Mining"
+  },
+  {
+    "name": "Space",
+    "description": "Space"
+  },
+  {
+    "name": "Education",
+    "description": "Education"
+  },
+  {
+    "name": "Fisheries",
+    "description": "Fisheries"
+  },
+  {
+    "name": "Culture",
+    "description": "Culture"
+  },
+  {
+    "name": "Livestock",
+    "description": "Livestock"
+  },
+  {
+    "name": "Carbon Accounting",
+    "description": "Carbon Accounting"
+  },
+  {
+    "name": "Circular Economy",
+    "description": "Circular Economy"
+  },
+  {
+    "name": "Carbon Credits",
+    "description": "Carbon Credits"
+  },
+  {
+    "name": "Development",
+    "description": "Development"
+  },
+  {
+    "name": "Ozone",
+    "description": "Ozone"
+  },
+  {
+    "name": "Flaring",
+    "description": "Flaring"
+  },
+  {
+    "name": "Intergenerational",
+    "description": "Intergenerational"
+  },
+  {
+    "name": "Digital Transition",
+    "description": "Digital Transition"
+  },
+  {
+    "name": "Advertising",
+    "description": "Advertising"
+  },
+  {
+    "name": "Electromobility",
+    "description": "Electromobility"
+  },
+  {
+    "name": "Migration",
+    "description": "Migration"
+  },
+  {
+    "name": "Climate Finance",
+    "description": "Climate Finance"
+  },
+  {
+    "name": "Coal Mining",
+    "description": "Coal Mining"
+  },
+  {
+    "name": "Social Justice",
+    "description": "Social Justice"
+  },
+  {
+    "name": "Water",
+    "description": "Water"
+  },
+  {
+    "name": "Investment",
+    "description": "Investment"
+  },
+  {
+    "name": "Natural Resources",
+    "description": "Natural Resources"
+  },
+  {
+    "name": "Environmental Degradation",
+    "description": "Environmental Degradation"
+  },
+  {
+    "name": "Equity",
+    "description": "Equity"
+  },
+  {
+    "name": "Rivers",
+    "description": "Rivers"
+  },
+  {
+    "name": "No Adequate Category",
+    "description": "No Adequate Category"
+  },
+  {
+    "name": "Peat",
+    "description": "Peat"
+  },
+  {
+    "name": "Coal",
+    "description": "Coal"
+  },
+  {
+    "name": "Fossil Fuels",
+    "description": "Fossil Fuels"
+  },
+  {
+    "name": "Green New Deal",
+    "description": "Green New Deal"
+  },
+  {
+    "name": "Governance",
+    "description": "Governance"
+  },
+  {
+    "name": "Climate Change Risks",
+    "description": "Climate Change Risks"
+  },
+  {
+    "name": "Glaciers",
+    "description": "Glaciers"
+  },
+  {
+    "name": "Greenwashing",
+    "description": "Greenwashing"
+  },
+  {
+    "name": "Desertification",
+    "description": "Desertification"
+  },
+  {
+    "name": "Solar Panels",
+    "description": "Solar Panels"
+  },
+  {
+    "name": "Meteorology",
+    "description": "Meteorology"
+  },
+  {
+    "name": "Climate Justice",
+    "description": "Climate Justice"
+  },
+  {
+    "name": "Black Carbon",
+    "description": "Black Carbon"
+  },
+  {
+    "name": "Rail",
+    "description": "Rail"
+  },
+  {
+    "name": "Human Rights",
+    "description": "Human Rights"
+  },
+  {
+    "name": "Tourism",
+    "description": "Tourism"
+  },
+  {
+    "name": "Trading Scheme",
+    "description": "Trading Scheme"
+  },
+  {
+    "name": "Physical Activity",
+    "description": "Physical Activity"
+  },
+  {
+    "name": "Geothermal",
+    "description": "Geothermal"
+  },
+  {
+    "name": "Food",
+    "description": "Food"
+  },
+  {
+    "name": "Climate Emergency",
+    "description": "Climate Emergency"
+  },
+  {
+    "name": "TCFD",
+    "description": "TCFD"
+  },
+  {
+    "name": "Housing",
+    "description": "Housing"
+  },
+  {
+    "name": "Artificialisation",
+    "description": "Artificialisation"
+  },
+  {
+    "name": "Energy Conservation",
+    "description": "Energy Conservation"
+  },
+  {
+    "name": "Wind",
+    "description": "Wind"
+  },
+  {
+    "name": "Off Grid",
+    "description": "Off Grid"
+  },
+  {
+    "name": "Power Plant",
+    "description": "Power Plant"
+  },
+  {
+    "name": "Fossil Fuel Phase Out",
+    "description": "Fossil Fuel Phase Out"
+  },
+  {
+    "name": "Amazon Forest",
+    "description": "Amazon Forest"
+  },
+  {
+    "name": "European Green Deal",
+    "description": "European Green Deal"
+  },
+  {
+    "name": "Keystone",
+    "description": "Keystone"
+  },
+  {
+    "name": "Arctic",
+    "description": "Arctic"
+  },
+  {
+    "name": "Licensing",
+    "description": "Licensing"
+  },
+  {
+    "name": "Train",
+    "description": "Train"
+  },
+  {
+    "name": "Oil And Gas",
+    "description": "Oil And Gas"
+  },
+  {
+    "name": "Nuclear Fusion",
+    "description": "Nuclear Fusion"
+  },
+  {
+    "name": "Soil Erosion",
+    "description": "Soil Erosion"
+  },
+  {
+    "name": "Indigenous People",
+    "description": "Indigenous People"
+  },
+  {
+    "name": "Argentina",
+    "description": "Argentina"
+  },
+  {
+    "name": "Skills",
+    "description": "Skills"
+  },
+  {
+    "name": "Environmental Permit",
+    "description": "Environmental Permit"
+  },
+  {
+    "name": "Climate Protection",
+    "description": "Climate Protection"
+  },
+  {
+    "name": "Healthy Environment",
+    "description": "Healthy Environment"
+  },
+  {
+    "name": "Procurement",
+    "description": "Procurement"
+  },
+  {
+    "name": "Innovation",
+    "description": "Innovation"
+  },
+  {
+    "name": "Buses",
+    "description": "Buses"
+  },
+  {
+    "name": "Energy Storage",
+    "description": "Energy Storage"
+  },
+  {
+    "name": "Hydrofluorocarbons",
+    "description": "Hydrofluorocarbons"
+  },
+  {
+    "name": "Nitrous Oxide",
+    "description": "Nitrous Oxide"
+  },
+  {
+    "name": "Delta",
+    "description": "Delta"
+  },
+  {
+    "name": "Divestment",
+    "description": "Divestment"
+  },
+  {
+    "name": "Co-generation",
+    "description": "Co-generation"
+  },
+  {
+    "name": "BRT",
+    "description": "BRT"
+  },
+  {
+    "name": "E-Buses",
+    "description": "E-Buses"
+  },
+  {
+    "name": "CCS",
+    "description": "CCS"
+  },
+  {
+    "name": "Co-benefits",
+    "description": "Co-benefits"
+  },
+  {
+    "name": "DRR",
+    "description": "DRR"
+  },
+  {
+    "name": "LULUCF",
+    "description": "LULUCF"
+  },
+  {
+    "name": "PV",
+    "description": "PV"
+  },
+  {
+    "name": "SLCPs",
+    "description": "SLCPs"
+  },
+  {
+    "name": "Multi-Modal Transport",
+    "description": "Multi-Modal Transport"
+  },
+  {
+    "name": "ETS",
+    "description": "ETS"
+  },
+  {
+    "name": "REDD+ And LULUCF",
+    "description": "REDD+ And LULUCF"
+  },
+  {
+    "name": "Taxonomy",
+    "description": "Taxonomy"
+  },
+  {
+    "name": "SDGs",
+    "description": "SDGs"
+  },
+  {
+    "name": "COVID-19",
+    "description": "COVID-19"
+  },
+  {
+    "name": "Climate Security",
+    "description": "Climate Security"
+  },
+  {
+    "name": "GHG",
+    "description": "GHG"
+  },
+  {
+    "name": "CDM",
+    "description": "CDM"
+  },
+  {
+    "name": "EVs",
+    "description": "EVs"
+  },
+  {
+    "name": "Solar",
+    "description": "Solar"
+  },
+  {
+    "name": "MRV",
+    "description": "MRV"
+  },
+  {
+    "name": "Clothing",
+    "description": "Clothing"
+  },
+  {
+    "name": "NAP",
+    "description": "NAP"
+  },
+  {
+    "name": "CCGAP",
+    "description": "CCGAP"
+  },
+  {
+    "name": "UNFCCC",
+    "description": "UNFCCC"
+  },
+  {
+    "name": "Cap and Trade",
+    "description": "Cap and Trade"
+  },
+  {
+    "name": "Travel",
+    "description": "Travel"
+  },
+  {
+    "name": "FIT",
+    "description": "FIT"
+  },
+  {
+    "name": "5G",
+    "description": "5G"
+  },
+  {
+    "name": "Carbon Capture and Storage",
+    "description": "Carbon Capture and Storage"
+  },
+  {
+    "name": "K-ETS",
+    "description": "K-ETS"
+  },
+  {
+    "name": "CBDR",
+    "description": "CBDR"
+  }
+]

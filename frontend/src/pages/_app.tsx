@@ -1,18 +1,19 @@
 import "./i18n";
-import { useEffect } from 'react';
-import Head from 'next/head';
-import { AppProps } from 'next/app';
-import '../styles/main.scss';
-import '../styles/flag-icon.css';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
-import { AuthProvider } from '../api/auth';
+import { useEffect } from "react";
+import Head from "next/head";
+import { AppProps } from "next/app";
+import { QueryClient, QueryClientProvider } from "react-query";
+import { ReactQueryDevtools } from "react-query/devtools";
+import "../styles/main.scss";
+import "../styles/flag-icon.css";
 
-// Create a client
 const queryClient = new QueryClient();
 
 declare global {
-  interface Window { Cypress: any; queryClient: any }
+  interface Window {
+    Cypress: any;
+    queryClient: any;
+  }
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
@@ -25,16 +26,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>
-        <Head>
-          <title>Policy Search</title>
-          <meta
-            name="viewport"
-            content="initial-scale=1.0, width=device-width"
-          />
-        </Head>
-        <Component {...pageProps} />
-      </AuthProvider>
+      <Head>
+        <title>Climate Policy Radar</title>
+        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
+      </Head>
+      <Component {...pageProps} />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );

@@ -1,4 +1,4 @@
-import csv
+import json
 from typing import Union
 
 from sqlalchemy.orm import Session
@@ -18,34 +18,21 @@ def to_float(value: str) -> Union[float, None]:
 
 
 def populate_geo_statistics(db: Session) -> None:
-    """Populates the geography table with data in the CSV."""
+    """Populates the geo_statistics table with pre-defined data."""
 
     if has_rows(db, GeoStatistics):
         return
 
-    # Get iso-3166 country codes. This file contains the standard iso-3166 codes + additional country codes for
-    # regions that are missing - e.g. sub-saharan africa
-    with open("app/data_migrations/data/geo-stats-Aug2022.csv", mode="r") as file:
-        # reading the CSV file
-        csvFile = csv.DictReader(file)
-
-        for row in csvFile:
+    # Load geo_stats data from structured data file
+    with open("app/data_migrations/data/geo_stats_data.json") as geo_stats_file:
+        geo_stats_data = json.load(geo_stats_file)
+        for geo_stat in geo_stats_data:
             geography_id = (
                 db.query(Geography.id)
-                .filter_by(value=row["Iso"], display_value=row["Name"])
+                .filter_by(value=geo_stat["iso"], display_value=geo_stat["name"])
                 .scalar()
             )
-            db.add(
-                GeoStatistics(
-                    name=row["Name"],
-                    geography_id=geography_id,
-                    legislative_process=row["Legislative process"],
-                    federal=row["Federal"].lower() == "true",
-                    federal_details=row["Federal details"],
-                    political_groups=row["Political groups"],
-                    global_emissions_percent=to_float(row["Percent global emissions"]),
-                    climate_risk_index=to_float(row["Climate risk index"]),
-                    worldbank_income_group=row["Wb income group"],
-                    visibility_status=row["Visibility status"],
-                )
-            )
+            args = {**geo_stat}
+            args["geography_id"] = geography_id
+            del args["iso"]
+            db.add(GeoStatistics(**args))

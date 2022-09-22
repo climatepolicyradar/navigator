@@ -10,7 +10,6 @@ export default function useOutsideAlerter(ref, cb = (event) => {}) {
      */
     function handleClickOutside(event) {
       if (ref.current && !ref.current.contains(event.target)) {
-        // alert('You clicked outside of me!');
         cb(event);
       }
     }

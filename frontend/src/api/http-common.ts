@@ -1,25 +1,16 @@
-import axios from 'axios';
-import { storage } from '../utils/storage';
+import axios, { AxiosInstance } from "axios";
 
 class ApiClient {
-  private baseUrl;
-  private axiosClient;
+  private baseUrl: string;
+  private axiosClient: AxiosInstance;
 
-  constructor(baseUrl = '') {
+  constructor(baseUrl = "") {
     if (baseUrl) {
       this.baseUrl = baseUrl;
     } else {
       this.baseUrl = process.env.NEXT_PUBLIC_API_URL;
     }
-    this.axiosClient = axios.create({ withCredentials: true });
-    this.axiosClient.interceptors.request.use((config) => {
-      const token = storage.getToken();
-      if (token) {
-        // eslint-disable-next-line no-param-reassign
-        config.headers.common.Authorization = `Bearer ${token}`;
-      }
-      return config;
-    });
+    this.axiosClient = axios.create();
   }
 
   /**
@@ -31,7 +22,7 @@ class ApiClient {
       .then((res: any) => res)
       .catch((err: any) => Promise.reject(err));
   }
-  post(url, values, config = {}) {
+  post(url: string, values: any, config = {}) {
     return this.axiosClient
       .post(`${this.baseUrl}${url}`, values, config)
       .then((res) => res)
@@ -40,7 +31,7 @@ class ApiClient {
         return Promise.reject(err);
       });
   }
-  put(url, values) {
+  put(url: string, values: any) {
     return this.axiosClient
       .put(`${this.baseUrl}${url}`, values)
       .then((res) => res)
@@ -51,13 +42,4 @@ class ApiClient {
   }
 }
 
-const AuthClient = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_LOGIN_API_URL,
-  responseType: 'json',
-  headers: {
-    accept: 'application/json',
-    'Content-Type': 'application/x-www-form-urlencoded',
-  },
-});
-
-export { ApiClient, AuthClient };
+export { ApiClient };
