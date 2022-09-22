@@ -120,10 +120,11 @@ const CountryPage = () => {
     if (selectedCategoryIndex === 3) {
       return (
         <div className="mt-4">
-          Climate litigation case documents are coming soon to Climate Policy Radar. In the meantime, head to{" "}
-          <a className="text-blue-500 transition duration-300 hover:text-indigo-600" href="https://climate-laws.org/litigation_cases" target="_blank" rel="noreferrer">
-            climate-laws.org/litigation_cases
+          Climate litigation case documents are coming soon to Climate Policy Radar. In the meantime,
+          <a className="text-blue-500 transition duration-300 hover:text-indigo-600" href="https://climate-laws.org/litigation_cases" target="_blank" rel="noopener noreferrer nofollow">
+            visit the Climate Change Laws of the World website
           </a>
+          .
         </div>
       );
     }

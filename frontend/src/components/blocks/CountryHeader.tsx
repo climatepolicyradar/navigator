@@ -56,7 +56,7 @@ export const CountryHeader = ({ country }: TProps) => {
                           (storms, floods, heat waves etc.).
                         </p>{" "}
                         Published by German Watch{" "}
-                        <a href="" target="_blank" className="underline">
+                        <a href="" target="_blank" className="underline" rel="noopener noreferrer nofollow">
                           https://www.germanwatch.org/en/cri
                         </a>
                       </>
