@@ -14,7 +14,6 @@ import { CountryLink } from "@components/CountryLink";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
 import { truncateString } from "@helpers/index";
-import getPageTitle from "@utils/getPageTitle";
 
 import { TEvent } from "@types";
 
@@ -75,7 +74,7 @@ const DocumentCoverPage = () => {
   const sourceLogo = page?.source?.name === "CCLW" ? "lse-logo.png" : null;
 
   return (
-    <Layout title={`${getPageTitle()} | ${page?.name}`}>
+    <Layout title={page?.name}>
       {isFetching || !page?.name ? (
         <Loading />
       ) : (
