@@ -14,6 +14,7 @@ const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
   const pdfPreview = usePDFPreview(document);
   // Ensure the instance of the PDF client is not reset on render 
   // otherwise we lose the ability to interact with the pdf
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const { createPDFClient, passageIndexChangeHandler } = useMemo(() => pdfPreview, [document]);
 
   useEffect(() => {

@@ -76,6 +76,7 @@ export const CountryHeader = ({ country }: TProps) => {
         </div>
         {countryGeography?.value && (
           <div className="hidden place-items-center lg:flex overflow-hidden svg-country">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img className="w-full max-h-[280px]" src={`/images/countries/${countryGeography?.value}.svg`} alt={`${country.name} map`} />
           </div>
         )}
