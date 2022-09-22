@@ -1,11 +1,12 @@
+import React, { FC } from "react";
 import Main from "../layouts/main";
-import LandingSearchForm from "@components/forms/LandingSearchForm";
+import Banner from "@components/banner/FullHeight";
 
-const LandingPage = () => {
+const LandingPage: FC = ({ children }) => {
   return (
     <Main>
-      <h2>CCLW Landing Page</h2>
-      <LandingSearchForm placeholder="CCLW search placeholder" handleSearchInput={() => {}} />
+      <Banner />
+      {children}
     </Main>
   );
 };

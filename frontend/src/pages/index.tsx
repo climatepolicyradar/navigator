@@ -17,6 +17,7 @@ import { initialSearchCriteria } from "@constants/searchCriteria";
 import { emptySearchResults } from "@constants/search";
 import useConfig from "@hooks/useConfig";
 
+import CPRLandingPage from "@cpr/pages/landing-page";
 import CCLWLandingPage from "@cclw/pages/landing-page";
 import getSite from "@utils/getSite";
 
@@ -80,11 +81,9 @@ const IndexPage = () => {
 
   if (!ready || !searchCriteria) return <LoaderOverlay />;
 
-  if(getSite() === "cclw") return <CCLWLandingPage />
-
   return (
     <>
-      <Layout title={`Climate Policy Radar | ${t("Law and Policy Search")}`}>
+      <Layout title={t("Law and Policy Search")}>
         <Hero>
           <AlphaLogo />
           <div className="container mt-24 md:mt-48 max-w-screen-lg mx-auto">
