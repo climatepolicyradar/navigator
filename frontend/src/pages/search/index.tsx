@@ -37,10 +37,8 @@ const Search = () => {
   const [showSlideout, setShowSlideout] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
   const [passageIndex, setPassageIndex] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(1);
-  const [offset, setOffset] = useState(0);
-  const [categoryIndex, setCategoryIndex] = useState(0);
+  const [offset, setOffset] = useState(null);
 
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
@@ -77,7 +75,6 @@ const Search = () => {
 
   const resetPaging = () => {
     setOffset(0);
-    setPageNumber(1);
   };
 
   const resetSlideOut = (slideOut?: boolean) => {
@@ -96,7 +93,6 @@ const Search = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setPageNumber(page);
     setOffset((page - 1) * PER_PAGE);
     setShowSlideout(false);
   };
@@ -197,10 +193,9 @@ const Search = () => {
     return `${field}:${order}`;
   };
 
-  const setCurrentCategoryIndex = () => {
+  const getCategoryIndex = () => {
     if (!searchCriteria?.keyword_filters?.categories) {
-      setCategoryIndex(0);
-      return;
+      return 0;
     }
     let index = DOCUMENT_CATEGORIES.indexOf(searchCriteria.keyword_filters?.categories[0]);
     // ['All', 'Executive', 'Legislative', 'Litigation']
@@ -211,17 +206,18 @@ const Search = () => {
     if (searchCriteria.keyword_filters?.categories[0] === "Policy") {
       index = 2;
     }
-    const catIndex = index === -1 ? 0 : index;
-    setCategoryIndex(catIndex);
+    return index === -1 ? 0 : index;
   };
 
   const getCurrentPage = () => {
     return searchCriteria?.offset / PER_PAGE + 1;
   };
 
-  useDidUpdateEffect(() => {
+  useEffect(() => {
+    if(offset === null) return;
     handleSearchChange("offset", offset);
     window.scrollTo(0, 0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset]);
 
   useEffect(() => {
@@ -231,15 +227,10 @@ const Search = () => {
   }, [hits]);
 
   useDidUpdateEffect(() => {
-    setOffset(searchCriteria?.offset);
-    setCurrentCategoryIndex();
+    window.scrollTo(0, 0);
+    // setOffset(searchCriteria?.offset);
     resultsQuery.refetch();
   }, [searchCriteria]);
-
-  useEffect(() => {
-    // get selected category if one previously selected
-    setCurrentCategoryIndex();
-  }, []);
 
   return (
     <>
@@ -300,7 +291,7 @@ const Search = () => {
                 <div className="md:w-3/4">
                   <div className="mt-4 md:flex">
                     <div className="flex-grow">
-                      <TabbedNav activeIndex={categoryIndex} items={DOCUMENT_CATEGORIES} handleTabClick={handleDocumentCategoryClick} />
+                      <TabbedNav activeIndex={getCategoryIndex()} items={DOCUMENT_CATEGORIES} handleTabClick={handleDocumentCategoryClick} />
                     </div>
                     <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
                       <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} isBrowsing={isBrowsing} />
