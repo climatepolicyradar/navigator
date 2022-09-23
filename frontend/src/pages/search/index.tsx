@@ -239,10 +239,6 @@ const Search = () => {
   useEffect(() => {
     // get selected category if one previously selected
     setCurrentCategoryIndex();
-    // get page number if returning from another page
-    // gets page number based on the last offset set in the search criteria
-    const currentPage = getCurrentPage();
-    setPageNumber(currentPage);
   }, []);
 
   return (
@@ -326,7 +322,7 @@ const Search = () => {
             {pageCount > 1 && (
               <section>
                 <div className="mb-12">
-                  <Pagination pageNumber={pageNumber} pageCount={pageCount} onChange={handlePageChange} />
+                  <Pagination pageNumber={getCurrentPage()} pageCount={pageCount} onChange={handlePageChange} />
                 </div>
               </section>
             )}
