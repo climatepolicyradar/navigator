@@ -65,7 +65,7 @@ const Search = () => {
 
   // search criteria and filters
   const { isFetching: isFetchingSearchCriteria, data: searchCriteria }: any = useSearchCriteria();
-  const browsing = searchCriteria?.query_string.trim() === "";
+  const isBrowsing = searchCriteria?.query_string.trim() === "";
 
   // search results
   const resultsQuery: any = useSearch("searches", searchCriteria);
@@ -191,7 +191,7 @@ const Search = () => {
     const field = searchCriteria.sort_field;
     const order = searchCriteria.sort_order;
     if (field === null && order === "desc") {
-      if (browsing) return "date:desc";
+      if (isBrowsing) return "date:desc";
       return "relevance";
     }
     return `${field}:${order}`;
@@ -243,11 +243,6 @@ const Search = () => {
     // gets page number based on the last offset set in the search criteria
     const currentPage = getCurrentPage();
     setPageNumber(currentPage);
-
-    // run a search on page load
-    if (documents.length === 0) {
-      resultsQuery.refetch();
-    }
   }, []);
 
   return (
@@ -312,7 +307,7 @@ const Search = () => {
                       <TabbedNav activeIndex={categoryIndex} items={DOCUMENT_CATEGORIES} handleTabClick={handleDocumentCategoryClick} />
                     </div>
                     <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
-                      <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} browse={browsing} />
+                      <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} isBrowsing={isBrowsing} />
                     </div>
                   </div>
 

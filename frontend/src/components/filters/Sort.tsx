@@ -4,16 +4,16 @@ import { sortOptions, sortOptionsBrowse } from "@constants/sortOptions";
 type TProps = {
   updateSort: (e: any) => void;
   defaultValue: string;
-  browse?: boolean;
+  isBrowsing?: boolean;
 };
 
-const Sort = ({ updateSort, defaultValue, browse = false }: TProps) => {
+const Sort = ({ updateSort, defaultValue, isBrowsing = false }: TProps) => {
   const [options, setOptions] = useState(sortOptions);
   const [defaultV, setDefault] = useState("");
 
   useEffect(() => {
-    setOptions(browse ? sortOptionsBrowse : sortOptions);
-  }, [browse]);
+    setOptions(isBrowsing ? sortOptionsBrowse : sortOptions);
+  }, [isBrowsing]);
 
   useEffect(() => {
     setDefault(defaultValue);
