@@ -66,6 +66,8 @@ const IndexPage = () => {
 
   if (!ready || !searchCriteria) return <LoaderOverlay />;
 
+  if(getSite() === "cclw") return <CCLWLandingPage />;
+
   return (
     <>
       <Layout title={t("Law and Policy Search")}>
