@@ -7,7 +7,7 @@ interface SlideoutProps {
   setShowSlideout(value: boolean): void;
 }
 
-const Slideout = forwardRef(({ children, show, setShowSlideout }: SlideoutProps, ref: React.RefObject<HTMLDivElement>) => {
+const Slideout = forwardRef(function Slideout({ children, show, setShowSlideout }: SlideoutProps, ref: React.RefObject<HTMLDivElement>) {
   return (
     <div
       ref={ref}

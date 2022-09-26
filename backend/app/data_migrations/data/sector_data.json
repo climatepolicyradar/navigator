@@ -1,0 +1,194 @@
+[
+  {
+    "node": {
+      "name": "Energy",
+      "description": "Energy",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "LULUCF",
+      "description": "LULUCF",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Social development",
+      "description": "Social development",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Transportation",
+      "description": "Transportation",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Urban",
+      "description": "Urban",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Waste",
+      "description": "Waste",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Coastal zones",
+      "description": "Coastal zones",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Environment",
+      "description": "Environment",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Industry",
+      "description": "Industry",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Residential and Commercial",
+      "description": "Residential and Commercial",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Water",
+      "description": "Water",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Agriculture",
+      "description": "Agriculture",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Health",
+      "description": "Health",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Economy-wide",
+      "description": "Economy-wide",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Disaster Risk Management (Drm)",
+      "description": "Disaster Risk Management (Drm)",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Transport",
+      "description": "Transport",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Tourism",
+      "description": "Tourism",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Rural",
+      "description": "Rural",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Adaptation",
+      "description": "Adaptation",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Other",
+      "description": "Other",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Finance",
+      "description": "Finance",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Public Sector",
+      "description": "Public Sector",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Cross Cutting Area",
+      "description": "Cross Cutting Area",
+      "source": "CCLW"
+    },
+    "children": []
+  },
+  {
+    "node": {
+      "name": "Buildings",
+      "description": "Buildings",
+      "source": "CCLW"
+    },
+    "children": []
+  }
+]

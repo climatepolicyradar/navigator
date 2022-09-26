@@ -24,7 +24,7 @@ const BySelect = ({ onChange, list, title, keyField, keyFieldDisplay = null, fil
 
   useEffect(() => {
     setSortedList(sortData(list, keyField));
-  }, [list]);
+  }, [list, keyField]);
 
   return (
     <div>

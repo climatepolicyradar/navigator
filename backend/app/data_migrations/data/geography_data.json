@@ -1,0 +1,1689 @@
+[
+  {
+    "node": {
+      "display_value": "South Asia",
+      "value": "South Asia",
+      "type": "World Bank Region"
+    },
+    "children": [
+      {
+        "node": {
+          "display_value": "Afghanistan",
+          "value": "AFG",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Bangladesh",
+          "value": "BGD",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Bhutan",
+          "value": "BTN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "India",
+          "value": "IND",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Maldives",
+          "value": "MDV",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Nepal",
+          "value": "NPL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Pakistan",
+          "value": "PAK",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Sri Lanka",
+          "value": "LKA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "node": {
+      "display_value": "Europe & Central Asia",
+      "value": "Europe & Central Asia",
+      "type": "World Bank Region"
+    },
+    "children": [
+      {
+        "node": {
+          "display_value": "Albania",
+          "value": "ALB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Andorra",
+          "value": "AND",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Armenia",
+          "value": "ARM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Austria",
+          "value": "AUT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Azerbaijan",
+          "value": "AZE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Belarus",
+          "value": "BLR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Belgium",
+          "value": "BEL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Bosnia and Herzegovina",
+          "value": "BIH",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Bulgaria",
+          "value": "BGR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Croatia",
+          "value": "HRV",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Cyprus",
+          "value": "CYP",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Czechia",
+          "value": "CZE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Denmark",
+          "value": "DNK",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Estonia",
+          "value": "EST",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "European Union",
+          "value": "EUR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Finland",
+          "value": "FIN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "France",
+          "value": "FRA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Georgia",
+          "value": "GEO",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Germany",
+          "value": "DEU",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Greece",
+          "value": "GRC",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Hungary",
+          "value": "HUN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Iceland",
+          "value": "ISL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Ireland",
+          "value": "IRL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Italy",
+          "value": "ITA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Kazakhstan",
+          "value": "KAZ",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Kosovo",
+          "value": "XKX",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Kyrgyzstan",
+          "value": "KGZ",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Latvia",
+          "value": "LVA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Liechtenstein",
+          "value": "LIE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Lithuania",
+          "value": "LTU",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Luxembourg",
+          "value": "LUX",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Malta",
+          "value": "MLT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Moldova",
+          "value": "MDA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Monaco",
+          "value": "MCO",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Montenegro",
+          "value": "MNE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Netherlands",
+          "value": "NLD",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "North Macedonia (Republic of North Macedonia)",
+          "value": "MKD",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Norway",
+          "value": "NOR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Poland",
+          "value": "POL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Portugal",
+          "value": "PRT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Romania",
+          "value": "ROU",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Russia",
+          "value": "RUS",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "San Marino",
+          "value": "SMR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Serbia",
+          "value": "SRB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Slovakia",
+          "value": "SVK",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Slovenia",
+          "value": "SVN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Spain",
+          "value": "ESP",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Sweden",
+          "value": "SWE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Switzerland",
+          "value": "CHE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Tajikistan",
+          "value": "TJK",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Turkey",
+          "value": "TUR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Turkmenistan",
+          "value": "TKM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Ukraine",
+          "value": "UKR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "United Kingdom",
+          "value": "GBR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Uzbekistan",
+          "value": "UZB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "node": {
+      "display_value": "Middle East & North Africa",
+      "value": "Middle East & North Africa",
+      "type": "World Bank Region"
+    },
+    "children": [
+      {
+        "node": {
+          "display_value": "Algeria",
+          "value": "DZA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Bahrain",
+          "value": "BHR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Djibouti",
+          "value": "DJI",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Egypt",
+          "value": "EGY",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Iran",
+          "value": "IRN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Iraq",
+          "value": "IRQ",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Israel",
+          "value": "ISR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Jordan",
+          "value": "JOR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Kuwait",
+          "value": "KWT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Lebanon",
+          "value": "LBN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Libya",
+          "value": "LBY",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Morocco",
+          "value": "MAR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Oman",
+          "value": "OMN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Palestine",
+          "value": "PSE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Qatar",
+          "value": "QAT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Sahrawi Republic",
+          "value": "ESH",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Saudi Arabia",
+          "value": "SAU",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Syria",
+          "value": "SYR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Tunisia",
+          "value": "TUN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "United Arab Emirates",
+          "value": "ARE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Western Sahara",
+          "value": "ESH",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Yemen",
+          "value": "YEM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "node": {
+      "display_value": "Sub-Saharan Africa",
+      "value": "Sub-Saharan Africa",
+      "type": "World Bank Region"
+    },
+    "children": [
+      {
+        "node": {
+          "display_value": "Angola",
+          "value": "AGO",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Benin",
+          "value": "BEN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Botswana",
+          "value": "BWA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Burkina Faso",
+          "value": "BFA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Burundi",
+          "value": "BDI",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Cabo Verde",
+          "value": "CPV",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Cameroon",
+          "value": "CMR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Central African Republic",
+          "value": "CAF",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Chad",
+          "value": "TCD",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Comoros",
+          "value": "COM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Congo",
+          "value": "COG",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "C\u00f4te d'Ivoire",
+          "value": "CIV",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Democratic Republic of Congo",
+          "value": "COD",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Equatorial Guinea",
+          "value": "GNQ",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Eritrea",
+          "value": "ERI",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Eswatini",
+          "value": "SWZ",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Ethiopia",
+          "value": "ETH",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Gabon",
+          "value": "GAB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Gambia",
+          "value": "GMB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Ghana",
+          "value": "GHA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Guinea",
+          "value": "GIN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Guinea-Bissau",
+          "value": "GNB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Kenya",
+          "value": "KEN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Lesotho",
+          "value": "LSO",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Liberia",
+          "value": "LBR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Madagascar",
+          "value": "MDG",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Malawi",
+          "value": "MWI",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Mali",
+          "value": "MLI",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Mauritania",
+          "value": "MRT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Mauritius",
+          "value": "MUS",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Mozambique",
+          "value": "MOZ",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Namibia",
+          "value": "NAM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Niger",
+          "value": "NER",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Nigeria",
+          "value": "NGA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Rwanda",
+          "value": "RWA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Sao Tome and Principe",
+          "value": "STP",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Senegal",
+          "value": "SEN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Seychelles",
+          "value": "SYC",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Sierra Leone",
+          "value": "SLE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Somalia",
+          "value": "SOM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "South Africa",
+          "value": "ZAF",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "South Sudan",
+          "value": "SSD",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Sudan",
+          "value": "SDN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Tanzania",
+          "value": "TZA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Togo",
+          "value": "TGO",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Uganda",
+          "value": "UGA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Zambia",
+          "value": "ZMB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Zimbabwe",
+          "value": "ZWE",
+          "type": "ISO-3166"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "node": {
+      "display_value": "Latin America & Caribbean",
+      "value": "Latin America & Caribbean",
+      "type": "World Bank Region"
+    },
+    "children": [
+      {
+        "node": {
+          "display_value": "Antigua and Barbuda",
+          "value": "ATG",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Argentina",
+          "value": "ARG",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Bahamas, The",
+          "value": "BHS",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Barbados",
+          "value": "BRB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Belize",
+          "value": "BLZ",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Bolivia",
+          "value": "BOL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Brazil",
+          "value": "BRA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Chile",
+          "value": "CHL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Colombia",
+          "value": "COL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Costa Rica",
+          "value": "CRI",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Cuba",
+          "value": "CUB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Dominica",
+          "value": "DMA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Dominican Republic",
+          "value": "DOM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Ecuador",
+          "value": "ECU",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "El Salvador",
+          "value": "SLV",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Grenada",
+          "value": "GRD",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Guatemala",
+          "value": "GTM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Guyana",
+          "value": "GUY",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Haiti",
+          "value": "HTI",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Honduras",
+          "value": "HND",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Jamaica",
+          "value": "JAM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Mexico",
+          "value": "MEX",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Nicaragua",
+          "value": "NIC",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Panama",
+          "value": "PAN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Paraguay",
+          "value": "PRY",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Peru",
+          "value": "PER",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Saint Kitts and Nevis",
+          "value": "KNA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Saint Lucia",
+          "value": "LCA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Saint Vincent and the Grenadines",
+          "value": "VCT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Suriname",
+          "value": "SUR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Trinidad and Tobago",
+          "value": "TTO",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Uruguay",
+          "value": "URY",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Venezuela",
+          "value": "VEN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "node": {
+      "display_value": "East Asia & Pacific",
+      "value": "East Asia & Pacific",
+      "type": "World Bank Region"
+    },
+    "children": [
+      {
+        "node": {
+          "display_value": "Australia",
+          "value": "AUS",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Brunei Darussalam",
+          "value": "BRN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Cambodia",
+          "value": "KHM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "China",
+          "value": "CHN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Cook Islands",
+          "value": "COK",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Fiji",
+          "value": "FJI",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Hong Kong",
+          "value": "HKG",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Indonesia",
+          "value": "IDN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "International",
+          "value": "INT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Japan",
+          "value": "JPN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Kiribati",
+          "value": "KIR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Korea, North",
+          "value": "PRK",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Lao People's Democratic Republic",
+          "value": "LAO",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Malaysia",
+          "value": "MYS",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Marshall Islands",
+          "value": "MHL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Micronesia",
+          "value": "FSM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Mongolia",
+          "value": "MNG",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Myanmar",
+          "value": "MMR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Nauru",
+          "value": "NRU",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "New Zealand",
+          "value": "NZL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Niue",
+          "value": "NIU",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Palau",
+          "value": "PLW",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Papua New Guinea",
+          "value": "PNG",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Philippines",
+          "value": "PHL",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Samoa",
+          "value": "WSM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Singapore",
+          "value": "SGP",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Solomon Islands",
+          "value": "SLB",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "South Korea",
+          "value": "KOR",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Taiwan",
+          "value": "TWN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Thailand",
+          "value": "THA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Timor-Leste",
+          "value": "TLS",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Tonga",
+          "value": "TON",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Tuvalu",
+          "value": "TUV",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Vanuatu",
+          "value": "VUT",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "Vietnam",
+          "value": "VNM",
+          "type": "ISO-3166"
+        },
+        "children": []
+      }
+    ]
+  },
+  {
+    "node": {
+      "display_value": "North America",
+      "value": "North America",
+      "type": "World Bank Region"
+    },
+    "children": [
+      {
+        "node": {
+          "display_value": "Canada",
+          "value": "CAN",
+          "type": "ISO-3166"
+        },
+        "children": []
+      },
+      {
+        "node": {
+          "display_value": "United States of America",
+          "value": "USA",
+          "type": "ISO-3166"
+        },
+        "children": []
+      }
+    ]
+  }
+]

@@ -25,7 +25,6 @@ from app.core.aws import get_s3_client
 from app.core.util import CONTENT_TYPE_MAP
 from app.db.crud.document import (
     UnknownMetadataError,
-    create_document_association,
     create_document_relationship,
     remove_document_relationship,
     create_relationship,
@@ -38,8 +37,6 @@ from app.db.crud.document import (
 )
 from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
-    DocumentAssociationCreateResponse,
-    DocumentAssociationCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
     RelationshipAndDocumentsGetResponse,
@@ -92,9 +89,7 @@ async def post_document(
     """Create a document, with associated metadata."""
 
     try:
-        new_document = persist_document_and_metadata(
-            db, document_with_metadata, current_user.id
-        )
+        new_document = persist_document_and_metadata(db, document_with_metadata)
     except UnknownMetadataError as e:
         _LOGGER.exception(f"Could not create document for {document_with_metadata}")
         raise HTTPException(
@@ -149,26 +144,6 @@ def document_upload(
     return {
         "url": s3_document.url,
     }
-
-
-# TODO: BAK-1137 Remove this function
-@documents_router.post(
-    "/associations", response_model=DocumentAssociationCreateResponse
-)
-async def post_association(
-    request: Request,
-    document_association: DocumentAssociationCreateRequest,
-    db=Depends(get_db),
-    current_user=Depends(get_current_active_superuser),
-):
-    """Create a document, with associated metadata."""
-    return create_document_association(
-        db,
-        document_association.document_id_from,
-        document_association.document_id_to,
-        document_association.name,
-        document_association.type,
-    )
 
 
 @documents_router.post(

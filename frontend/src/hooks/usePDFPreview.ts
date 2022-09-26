@@ -65,14 +65,13 @@ export default function usePDFPreview(document: TDocument) {
   let viewSDKClient = null;
   let embedApi = null;
 
-  const createPDFClient = (passage: number) => {
+  const createPDFClient = () => {
     viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
       const previewFilePromise = viewSDKClient.previewFile(document, "pdf-div", viewerConfig);
       previewFilePromise.then((adobeViewer) => {
         adobeViewer.getAPIs().then((api: any) => {
           embedApi = api;
-          passageIndexChangeHandler(passage);
         });
         adobeViewer.getAnnotationManager().then((annotationManager: any) => {
           annotationManager.setConfig(annotationConfig);

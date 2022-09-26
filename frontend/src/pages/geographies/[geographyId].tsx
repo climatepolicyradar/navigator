@@ -20,6 +20,7 @@ import TextLink from "@components/nav/TextLink";
 import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons";
 import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
 import { initialSearchCriteria } from "@constants/searchCriteria";
+import { ExternalLink } from "@components/ExternalLink";
 
 type TTargets = {
   targets: TTarget[];
@@ -120,10 +121,11 @@ const CountryPage = () => {
     if (selectedCategoryIndex === 3) {
       return (
         <div className="mt-4">
-          Climate litigation case documents are coming soon to Climate Policy Radar. In the meantime, head to{" "}
-          <a className="text-blue-500 transition duration-300 hover:text-indigo-600" href="https://climate-laws.org/litigation_cases" target={"_blank"}>
-            climate-laws.org/litigation_cases
-          </a>
+          Climate litigation case documents are coming soon to Climate Policy Radar. In the meantime,{" "}
+          <ExternalLink className="text-blue-500 transition duration-300 hover:text-indigo-600" url="https://climate-laws.org/litigation_cases">
+            visit the Climate Change Laws of the World website
+          </ExternalLink>
+          .
         </div>
       );
     }

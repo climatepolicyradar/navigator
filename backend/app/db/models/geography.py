@@ -25,7 +25,7 @@ class GeoStatistics(Base):
     __tablename__ = "geo_statistics"
 
     id = sa.Column(sa.SmallInteger(), primary_key=True)
-    name = sa.Column(sa.Text(), unique=True)
+    name = sa.Column(sa.Text(), nullable=False, unique=True)
     geography_id = sa.Column(
         sa.Integer(), sa.ForeignKey("geography.id"), nullable=False
     )
