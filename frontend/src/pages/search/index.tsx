@@ -228,7 +228,6 @@ const Search = () => {
 
   useDidUpdateEffect(() => {
     window.scrollTo(0, 0);
-    // setOffset(searchCriteria?.offset);
     resultsQuery.refetch();
   }, [searchCriteria]);
 
