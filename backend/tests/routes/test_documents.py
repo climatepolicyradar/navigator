@@ -232,6 +232,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
     )
     assert response4.status_code == 200
     response4_document = response4.json()
+
     return (
         response1_document,
         document1_payload,

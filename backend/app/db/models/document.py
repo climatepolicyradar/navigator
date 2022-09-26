@@ -39,7 +39,7 @@ class Document(Base, Auditable):
     id: Internal database ID
     publication_ts: Publication timestamp, or date of first event
     name: Document title
-    description: DOcument description
+    description: Document description
     source_url: Reference url to document on third party aggregator
     source_id: Foreign key to original Source table entry
     url: URL to document in CPR cloud storage

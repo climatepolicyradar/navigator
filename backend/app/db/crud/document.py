@@ -163,7 +163,13 @@ def create_document(
         )
     ).scalar()
     if existing_geography_id is None:
-        raise UnknownGeographyError(document_create_request.geography)
+        existing_geography_id = (
+            db.query(Geography.id).filter(
+                Geography.value == document_create_request.geography
+            )
+        ).scalar()
+        if existing_geography_id is None:
+            raise UnknownGeographyError(document_create_request.geography)
 
     existing_source_id = (
         db.query(Source.id).filter(Source.name == document_create_request.source)
@@ -397,6 +403,8 @@ def persist_document_and_metadata(
             new_document = create_document(db, document_create_request)
             write_metadata(db, new_document, document_create_request)
 
+        # This commit is necessary after completing the nested transaction
+        db.commit()
         return get_document_detail(db, new_document.id)
     except Exception as e:
         _LOGGER.exception(f"Error saving document {document_create_request}")
@@ -631,15 +639,17 @@ def create_document_relationship(
     new_doc_rel = DocumentRelationship(
         document_id=document_id, relationship_id=relationship_id
     )
-    with db.begin_nested():
-        db.add(new_doc_rel)
-        try:
-            db.commit()
-        except IntegrityError:
-            # ensure idemopotency
-            raise HTTPException(
-                200, detail="Document-Relationship already exists - Nothing to do"
-            )
+    try:
+        with db.begin_nested():
+            db.add(new_doc_rel)
+
+        # The call to db.commit() must exist outside the nested transaction
+        db.commit()
+    except IntegrityError:
+        # ensure idemopotency
+        raise HTTPException(
+            200, detail="Document-Relationship already exists - Nothing to do"
+        )
 
 
 def remove_document_relationship(

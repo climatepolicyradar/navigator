@@ -6,5 +6,9 @@
   {
     "name": "Policy",
     "description": "Policy"
+  },
+  {
+    "name": "Litigation",
+    "description": "Litigation"
   }
 ]
