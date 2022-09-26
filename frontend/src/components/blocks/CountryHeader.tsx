@@ -1,6 +1,7 @@
 import { TGeographyStats, TGeography } from "@types";
 import useConfig from "@hooks/useConfig";
 import Tooltip from "@components/tooltip";
+import { ExternalLink } from "@components/ExternalLink";
 
 type TProps = {
   country: TGeographyStats;
@@ -54,11 +55,11 @@ export const CountryHeader = ({ country }: TProps) => {
                         <p className="mb-4">
                           The annually published Global Climate Risk Index analyses to what extent countries have been affected by the impacts of weather-related loss events
                           (storms, floods, heat waves etc.).
-                        </p>{" "}
+                        </p>
                         Published by German Watch{" "}
-                        <a href="" target="_blank" className="underline" rel="noopener noreferrer nofollow">
+                        <ExternalLink url="https://www.germanwatch.org/en/cri" className="underline">
                           https://www.germanwatch.org/en/cri
-                        </a>
+                        </ExternalLink>
                       </>
                     }
                     icon="i"

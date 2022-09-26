@@ -16,6 +16,7 @@ import { initialSummaryLength } from "@constants/document";
 import { truncateString } from "@helpers/index";
 
 import { TEvent } from "@types";
+import { ExternalLink } from "@components/ExternalLink";
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -56,12 +57,12 @@ const DocumentCoverPage = () => {
 
     return (
       <p className="mt-4">
-        <a href={link} target="_blank" rel="noopener noreferrer nofollow" className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300">
+        <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300">
           <span className="mr-1">Link to source document</span>
           <span className="inline-block">
             <ExternalLinkIcon height="16" width="16" />
           </span>
-        </a>
+        </ExternalLink>
       </p>
     );
   };

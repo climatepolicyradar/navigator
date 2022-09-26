@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
-import Layout from "../components/layouts/Main";
+import Layout from "@components/layouts/Main";
+import { ExternalLink } from "@components/ExternalLink";
 
 const Methodology = () => {
   const { t } = useTranslation(["common"]);
@@ -12,8 +13,8 @@ const Methodology = () => {
 
           <h2>About this page </h2>
           <p>
-            Welcome to the methodology page for the <a href="https://climatepolicyradar.org" target="_blank" rel="noopener noreferrer nofollow">Climate Policy Radar</a> search tool, which makes it possible to find information from
-            within the full text of a large corpus of climate law and policy documents using semantic search.{" "}
+            Welcome to the methodology page for the <ExternalLink url="https://climatepolicyradar.org">Climate Policy Radar</ExternalLink> search tool, which makes it possible to
+            find information from within the full text of a large corpus of climate law and policy documents using semantic search.
           </p>
           <p>
             This page provides information about the scope and structure of our database, our data collection methods and terminology, updates to the database and planned future
@@ -25,11 +26,11 @@ const Methodology = () => {
           </p>
           <p>
             Currently (May 2022), the single source for the documents, summaries and data in this corpus is the{" "}
-            <a href="https://climate-laws.org/" target="_blank" rel="noopener noreferrer nofollow">Climate Change Laws of the World database</a> (CCLW) maintained by the{" "}
-            <a href="https://www.lse.ac.uk/granthaminstitute/" target="_blank" rel="noopener noreferrer nofollow">Grantham Research Institute on Climate Change and the Environment</a> at the{" "}
-            <a href="https://www.lse.ac.uk/" target="_blank" rel="noopener noreferrer nofollow">London School of Economics and Political Science</a>. For this reason, this methodology page is substantially influenced by the
-            methodology for the <a href="https://climate-laws.org/methodology-legislation" target="_blank" rel="noopener noreferrer nofollow">CCLW database</a>; please refer to that document for a full account of the scope of this
-            database, and the terminology used.
+            <ExternalLink url="https://climate-laws.org/">Climate Change Laws of the World database</ExternalLink> (CCLW) maintained by the{" "}
+            <ExternalLink url="https://www.lse.ac.uk/granthaminstitute/">Grantham Research Institute on Climate Change and the Environment</ExternalLink>
+            at the <ExternalLink url="https://www.lse.ac.uk/">London School of Economics and Political Science</ExternalLink>. For this reason, this methodology page is
+            substantially influenced by the methodology for the <ExternalLink url="https://climate-laws.org/methodology-legislation">CCLW database</ExternalLink>; please refer to
+            that document for a full account of the scope of this database, and the terminology used.
           </p>
           <h2>Scope</h2>
           <p>
@@ -50,7 +51,7 @@ const Methodology = () => {
           </ul>
           <p>
             For more information about the scope of the documents currently included in our dataset, please refer to the 'Scope of documents included' section of the{" "}
-            <a href="https://climate-laws.org/methodology-legislation" target="_blank" rel="noopener noreferrer nofollow">CCLW methodology</a>.
+            <ExternalLink url="https://climate-laws.org/methodology-legislation">CCLW methodology</ExternalLink>.
           </p>
           <h2>Language</h2>
           <p>Our dataset contains documents published in many different languages. Non-English documents are assigned English titles, summaries and attributes. </p>
@@ -96,7 +97,7 @@ const Methodology = () => {
           </ul>
           <p>
             For a full list of attribute types and values, please see{" "}
-            <a href="https://docs.google.com/spreadsheets/d/1e5b5PqBPoQx_XhLV9z8SQ0VJQ2HCt87esLnw7S6OrtM/edit#gid=0" target="_blank" rel="noopener noreferrer nofollow">our codebook</a>.
+            <ExternalLink url="https://docs.google.com/spreadsheets/d/1e5b5PqBPoQx_XhLV9z8SQ0VJQ2HCt87esLnw7S6OrtM/edit#gid=0">our codebook</ExternalLink>.
           </p>
           <div className="m-table">
             <div className="row heading">
@@ -113,7 +114,8 @@ const Methodology = () => {
             <div className="row">
               <div className="term">Region</div>
               <div className="def">
-                Jurisdictions are grouped into regions of the world, as defined by the <a href="https://datahelpdesk.worldbank.org/knowledgebase/articles/906519" target="_blank" rel="noopener noreferrer nofollow">World Bank</a>.{" "}
+                Jurisdictions are grouped into regions of the world, as defined by the{" "}
+                <ExternalLink url="https://datahelpdesk.worldbank.org/knowledgebase/articles/906519">World Bank</ExternalLink>.
               </div>
             </div>
             <div className="row">
@@ -145,15 +147,18 @@ const Methodology = () => {
               <div className="def">
                 Documents are labelled based on how their content relates to the broad aspects of climate action defined as Mitigation, Adaptation, Disaster Risk Management and
                 Loss &amp; Damage. For more information about these terms, please see the 'Responses' section of the{" "}
-                <a href="https://climate-laws.org/methodology-legislation" target="_blank" rel="noopener noreferrer nofollow">CCLW methodology</a>.
+                <ExternalLink url="https://climate-laws.org/methodology-legislation">CCLW methodology</ExternalLink>.
               </div>
             </div>
             <div className="row">
               <div className="term">Instruments</div>
               <div className="def">
                 Instruments indicate the specific interventions or measures - such as regulations and taxes - set out in documents. The taxonomy of instruments was developed by the{" "}
-                <a href="https://climate-laws.org/" target="_blank" rel="noopener noreferrer nofollow">LSE Grantham Research Institute</a> (see{" "}
-                <a href="https://www.lse.ac.uk/granthaminstitute/publication/national-laws-and-policies-on-climate-change-adaptation-a-global-review/" target="_blank" rel="noopener noreferrer nofollow">Nachmany et al. 2019</a>
+                <ExternalLink url="https://climate-laws.org/">LSE Grantham Research Institute</ExternalLink>
+                (see{" "}
+                <ExternalLink url="https://www.lse.ac.uk/granthaminstitute/publication/national-laws-and-policies-on-climate-change-adaptation-a-global-review/">
+                  Nachmany et al. 2019
+                </ExternalLink>
                 ).
               </div>
             </div>
@@ -161,8 +166,8 @@ const Methodology = () => {
               <div className="term">Sectors</div>
               <div className="def">
                 Sectors indicate the broad areas of economic activity - such as transport or agriculture - to which the content of documents relates. The list of sectors was
-                synthesised by the <a href="https://climate-laws.org/" target="_blank" rel="noopener noreferrer nofollow">LSE Grantham Research Institute</a> — for more information, please see the 'Sectors' section of the{" "}
-                <a href="https://climate-laws.org/methodology-legislation" target="_blank" rel="noopener noreferrer nofollow">CCLW methodology</a>.
+                synthesised by the <ExternalLink url="https://climate-laws.org/">LSE Grantham Research Institute</ExternalLink> — for more information, please see the 'Sectors'
+                section of the <ExternalLink url="https://climate-laws.org/methodology-legislation">CCLW methodology</ExternalLink>.
               </div>
             </div>
             <div className="row">
@@ -183,17 +188,26 @@ const Methodology = () => {
           </p>
           <h2>Natural language search</h2>
           <p>
-          Natural language search allows you to find what you’re looking for without having to type out precise keywords. This is useful because often certain concepts are described in lots of different ways - like internal combustion engines, internal combustion engine vehicle, ICEV, fossil fuel car, and gasoline car all describe most of the cars you’ll find on today’s roads. With natural language search, you can use the terms you use and hear everyday because the tool will recognise them as related and relevant terms, meaning you get a much richer search experience as a result.
+            Natural language search allows you to find what you’re looking for without having to type out precise keywords. This is useful because often certain concepts are
+            described in lots of different ways - like internal combustion engines, internal combustion engine vehicle, ICEV, fossil fuel car, and gasoline car all describe most of
+            the cars you’ll find on today’s roads. With natural language search, you can use the terms you use and hear everyday because the tool will recognise them as related and
+            relevant terms, meaning you get a much richer search experience as a result.
           </p>
           <p>
-          We use a machine learning method called dense retrieval alongside a fuzzy string search to perform natural language search. You can find more details <a href="https://climatepolicyradar.org/latest/building-natural-language-search-for-climate-change-laws-and-policies" target="_blank" rel="noopener noreferrer nofollow" >in our blog post</a>.
+            We use a machine learning method called dense retrieval alongside a fuzzy string search to perform natural language search. You can find more details{" "}
+            <ExternalLink url="https://climatepolicyradar.org/latest/building-natural-language-search-for-climate-change-laws-and-policies">in our blog post</ExternalLink>.
           </p>
           <h3>Biases &amp; limitations</h3>
           <p>
-          The <a href="https://huggingface.co/sentence-transformers/msmarco-distilbert-dot-v5" target="_blank" rel="noopener noreferrer nofollow">model</a> we use for dense retrieval inherits biases from both its base model, <a href="https://huggingface.co/distilbert-base-uncased#limitations-and-bias" target="_blank" rel="noopener noreferrer nofollow">DistilBERT</a>, and the search query dataset it was trained on, <a href="https://github.com/microsoft/MSMARCO-Passage-Ranking/" target="_blank" rel="noopener noreferrer nofollow">MSMARCO</a>. It’s trained on relatively short passages of text (average 60 words in length), so may struggle with longer queries. 
+            The <ExternalLink url="https://huggingface.co/sentence-transformers/msmarco-distilbert-dot-v5">model</ExternalLink> we use for dense retrieval inherits biases from both
+            its base model, <ExternalLink url="https://huggingface.co/distilbert-base-uncased#limitations-and-bias">DistilBERT</ExternalLink>, and the search query dataset it was
+            trained on, <ExternalLink url="https://github.com/microsoft/MSMARCO-Passage-Ranking/">MSMARCO</ExternalLink>. It’s trained on relatively short passages of text (average
+            60 words in length), so may struggle with longer queries.
           </p>
           <p>
-          At the moment we use a general purpose model that has been trained on English Wikipedia and <a href="https://arxiv.org/abs/1506.06724v1" target="_blank" rel="noopener noreferrer nofollow">BookCorpus</a>. This means it may misinterpret some climate- or policy-specific concepts, and is something that we look to improve in future.
+            At the moment we use a general purpose model that has been trained on English Wikipedia and{" "}
+            <ExternalLink url="https://arxiv.org/abs/1506.06724v1">BookCorpus</ExternalLink>. This means it may misinterpret some climate- or policy-specific concepts, and is
+            something that we look to improve in future.
           </p>
           <h2>Additions? Contributions?</h2>
           <p>
