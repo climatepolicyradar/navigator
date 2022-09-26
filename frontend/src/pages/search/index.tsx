@@ -37,10 +37,8 @@ const Search = () => {
   const [showSlideout, setShowSlideout] = useState(false);
   const [showPDF, setShowPDF] = useState(false);
   const [passageIndex, setPassageIndex] = useState(null);
-  const [pageNumber, setPageNumber] = useState(1);
   const [pageCount, setPageCount] = useState(1);
-  const [offset, setOffset] = useState(0);
-  const [categoryIndex, setCategoryIndex] = useState(0);
+  const [offset, setOffset] = useState(null);
 
   const updateSearchCriteria = useUpdateSearchCriteria();
   const updateSearchFilters = useUpdateSearchFilters();
@@ -65,7 +63,7 @@ const Search = () => {
 
   // search criteria and filters
   const { isFetching: isFetchingSearchCriteria, data: searchCriteria }: any = useSearchCriteria();
-  const browsing = searchCriteria?.query_string.trim() === "";
+  const isBrowsing = searchCriteria?.query_string.trim() === "";
 
   // search results
   const resultsQuery: any = useSearch("searches", searchCriteria);
@@ -77,7 +75,6 @@ const Search = () => {
 
   const resetPaging = () => {
     setOffset(0);
-    setPageNumber(1);
   };
 
   const resetSlideOut = (slideOut?: boolean) => {
@@ -96,7 +93,6 @@ const Search = () => {
   };
 
   const handlePageChange = (page: number) => {
-    setPageNumber(page);
     setOffset((page - 1) * PER_PAGE);
     setShowSlideout(false);
   };
@@ -191,16 +187,15 @@ const Search = () => {
     const field = searchCriteria.sort_field;
     const order = searchCriteria.sort_order;
     if (field === null && order === "desc") {
-      if (browsing) return "date:desc";
+      if (isBrowsing) return "date:desc";
       return "relevance";
     }
     return `${field}:${order}`;
   };
 
-  const setCurrentCategoryIndex = () => {
+  const getCategoryIndex = () => {
     if (!searchCriteria?.keyword_filters?.categories) {
-      setCategoryIndex(0);
-      return;
+      return 0;
     }
     let index = DOCUMENT_CATEGORIES.indexOf(searchCriteria.keyword_filters?.categories[0]);
     // ['All', 'Executive', 'Legislative', 'Litigation']
@@ -211,17 +206,18 @@ const Search = () => {
     if (searchCriteria.keyword_filters?.categories[0] === "Policy") {
       index = 2;
     }
-    const catIndex = index === -1 ? 0 : index;
-    setCategoryIndex(catIndex);
+    return index === -1 ? 0 : index;
   };
 
   const getCurrentPage = () => {
     return searchCriteria?.offset / PER_PAGE + 1;
   };
 
-  useDidUpdateEffect(() => {
+  useEffect(() => {
+    if(offset === null) return;
     handleSearchChange("offset", offset);
     window.scrollTo(0, 0);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset]);
 
   useEffect(() => {
@@ -231,24 +227,9 @@ const Search = () => {
   }, [hits]);
 
   useDidUpdateEffect(() => {
-    setOffset(searchCriteria?.offset);
-    setCurrentCategoryIndex();
+    window.scrollTo(0, 0);
     resultsQuery.refetch();
   }, [searchCriteria]);
-
-  useEffect(() => {
-    // get selected category if one previously selected
-    setCurrentCategoryIndex();
-    // get page number if returning from another page
-    // gets page number based on the last offset set in the search criteria
-    const currentPage = getCurrentPage();
-    setPageNumber(currentPage);
-
-    // run a search on page load
-    if (documents.length === 0) {
-      resultsQuery.refetch();
-    }
-  }, []);
 
   return (
     <>
@@ -309,10 +290,10 @@ const Search = () => {
                 <div className="md:w-3/4">
                   <div className="mt-4 md:flex">
                     <div className="flex-grow">
-                      <TabbedNav activeIndex={categoryIndex} items={DOCUMENT_CATEGORIES} handleTabClick={handleDocumentCategoryClick} />
+                      <TabbedNav activeIndex={getCategoryIndex()} items={DOCUMENT_CATEGORIES} handleTabClick={handleDocumentCategoryClick} />
                     </div>
                     <div className="mt-4 md:-mt-2 md:ml-2 lg:ml-8 md:mb-2 flex items-center">
-                      <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} browse={browsing} />
+                      <Sort defaultValue={getCurrentSortChoice()} updateSort={handleSortClick} isBrowsing={isBrowsing} />
                     </div>
                   </div>
 
@@ -331,7 +312,7 @@ const Search = () => {
             {pageCount > 1 && (
               <section>
                 <div className="mb-12">
-                  <Pagination pageNumber={pageNumber} pageCount={pageCount} onChange={handlePageChange} />
+                  <Pagination pageNumber={getCurrentPage()} pageCount={pageCount} onChange={handlePageChange} />
                 </div>
               </section>
             )}

@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useRouter } from "next/router";
 import useDocumentDetail from "@hooks/useDocumentDetail";
 import Layout from "@components/layouts/Main";
-import Loader from "@components/Loader";
 import TextLink from "@components/nav/TextLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
 import { Timeline } from "@components/blocks/Timeline";
@@ -17,6 +16,7 @@ import { initialSummaryLength } from "@constants/document";
 import { truncateString } from "@helpers/index";
 
 import { TEvent } from "@types";
+import { ExternalLink } from "@components/ExternalLink";
 
 const DocumentCoverPage = () => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -24,30 +24,26 @@ const DocumentCoverPage = () => {
   const router = useRouter();
 
   const documentQuery = useDocumentDetail(router.query.docId as string);
-  const { data: { data: page } = {}, isFetching } = documentQuery;
+  const { data: { data: page } = {}, isFetching, refetch: refetchDocument } = documentQuery;
 
   const [year] = convertDate(page?.publication_ts);
 
   useEffect(() => {
     if (page?.description) {
-      toggleSummary();
+      const text = page?.description;
+      if (showFullSummary) {
+        setSummary(text);
+      } else {
+        setSummary(truncateString(text, initialSummaryLength));
+      }
     }
   }, [page, showFullSummary]);
 
   useEffect(() => {
     if (router?.query.docId) {
-      documentQuery.refetch();
+      refetchDocument();
     }
-  }, [router.query]);
-
-  const toggleSummary = () => {
-    const text = page?.description;
-    if (showFullSummary) {
-      setSummary(text);
-    } else {
-      setSummary(truncateString(text, initialSummaryLength));
-    }
-  };
+  }, [router?.query, refetchDocument]);
 
   const renderSourceLink = () => {
     let link: string;
@@ -61,12 +57,12 @@ const DocumentCoverPage = () => {
 
     return (
       <p className="mt-4">
-        <a href={link} target="_blank" rel="noopener noreferrer nofollow" className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300">
+        <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300">
           <span className="mr-1">Link to source document</span>
           <span className="inline-block">
             <ExternalLinkIcon height="16" width="16" />
           </span>
-        </a>
+        </ExternalLink>
       </p>
     );
   };
@@ -125,7 +121,9 @@ const DocumentCoverPage = () => {
                     <h3>Timeline</h3>
                     <Timeline>
                       {page.events.map((event: TEvent, index: number) => (
-                        <Event event={event} key={`event-${index}`} index={index} last={index === page.events.length - 1 ? true : false} />
+                        <React.Fragment key={`event-${index}`}>
+                          <Event event={event} index={index} last={index === page.events.length - 1 ? true : false} />
+                        </React.Fragment>
                       ))}
                     </Timeline>
                   </section>
@@ -160,6 +158,7 @@ const DocumentCoverPage = () => {
                     <div className="flex items-end mt-4">
                       {sourceLogo && (
                         <div className="relative flex-shrink max-w-[40px] mr-1">
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
                           <img src={`/images/partners/${sourceLogo}`} alt={page.source.name} />
                         </div>
                       )}

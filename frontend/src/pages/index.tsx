@@ -21,8 +21,8 @@ const IndexPage = () => {
   const router = useRouter();
   const { data: searchCriteria }: any = useSearchCriteria();
   const updateSearchCriteria = useUpdateSearchCriteria();
-  const updateCountries = useUpdateCountries();
-  const updateSearch = useUpdateSearch();
+  const { mutate: updateCountries } = useUpdateCountries();
+  const { mutate: updateSearch } = useUpdateSearch();
 
   const configQuery: any = useConfig("config");
   const { data: { regions = [], countries = [] } = {} } = configQuery;
@@ -35,7 +35,7 @@ const IndexPage = () => {
     if (filter && filterValue && filter.length && filterValue.length) {
       additionalCritera = { ...additionalCritera, ["keyword_filters"]: { [filter]: [filterValue] } };
     }
-    updateSearchCriteria.mutate({ ...newSearchCritera, ...additionalCritera });
+    updateSearchCriteria.mutate({ ...initialSearchCriteria, ...newSearchCritera, ...additionalCritera });
     router.push("/search");
   };
 
@@ -48,31 +48,16 @@ const IndexPage = () => {
     const term = e.currentTarget.textContent;
     handleSearchInput(term);
   };
-
-  const clearAllFilters = () => {
-    /*
-    clear all previously set filters if returning from
-    a previous search
-    */
-    const { query_string, ...initial } = initialSearchCriteria;
-    updateSearchCriteria.mutate(initial);
-    // reset filtered countries which show in suggest list
-    // when typing in a jurisdiction/country
-    updateCountries.mutate({
+  
+  useEffect(() => {
+    updateCountries({
       regionName: "",
       regions,
       countries,
     });
-  };
-
-  const clearSearch = () => {
-    updateSearch.mutate({ data: emptySearchResults });
-  };
-
-  useEffect(() => {
-    clearAllFilters();
-    clearSearch();
-  }, []);
+    updateSearch({ data: emptySearchResults });
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [updateCountries, updateSearch]);
 
   return (
     <>
