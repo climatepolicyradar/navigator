@@ -72,7 +72,6 @@ export default function usePDFPreview(document: TDocument) {
       previewFilePromise.then((adobeViewer) => {
         adobeViewer.getAPIs().then((api: any) => {
           embedApi = api;
-          // passageIndexChangeHandler(passage);
         });
         adobeViewer.getAnnotationManager().then((annotationManager: any) => {
           annotationManager.setConfig(annotationConfig);
