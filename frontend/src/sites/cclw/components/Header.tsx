@@ -5,12 +5,12 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header data-cy="header" className="bg-blue-500 w-full">
+    <header data-cy="header" className="bg-indigo-400 w-full">
       <div className="container">
         <div className="flex justify-between">
           <div className="my-6 mr-6">
             <Link href={`/`}>
-              <a className="flex">
+              <a className="flex text-blue-400">
                 <Image src="/cclw/CCLW_logo.jpg" alt="Climate Change Laws of the World logo" width={200} height={100} layout={"fixed"} />
               </a>
             </Link>
@@ -34,7 +34,7 @@ const Header = () => {
                     <a className="h-full block">About</a>
                   </Link>
                 </li>
-                <li className="mr-8">
+                <li className="mr-8 border-b-4 border-blue-400 text-blue-400">
                   <Link href="/">
                     <a className="h-full block">Methodology</a>
                   </Link>
