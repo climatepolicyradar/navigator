@@ -19,7 +19,7 @@ module.exports = {
       semiTransWhite: 'rgba(255, 255, 255, 0.85)',
       overlayWhite: 'rgba(217, 217, 217, 0.25)',
       lightgray: '#F9FAFB',
-      offwhite: '#fff',
+      offwhite: '#EFF3FB',
       indigo: {
         100: '#f2f2f5',
         200: '#e4e6ea',
