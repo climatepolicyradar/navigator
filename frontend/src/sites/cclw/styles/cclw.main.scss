@@ -27,5 +27,20 @@
 }
 
 body {
-  font-family: 'LL Brown';
+  font-family: "LL Brown";
+}
+
+nav {
+  li {
+    @apply mr-8;
+  }
+  a {
+    @apply h-full block;
+    &:hover {
+      @apply text-blue-400;
+    }
+    &.active {
+      @apply border-b-4 border-blue-400 text-blue-400;
+    }
+  }
 }

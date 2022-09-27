@@ -247,7 +247,7 @@ const CountryPage = () => {
               {geography.legislative_process && (
                 <section className="mt-12">
                   <h3 className="mb-4">Legislative Process</h3>
-                  <div dangerouslySetInnerHTML={{ __html: geography.legislative_process }} />
+                  <div className="text-content" dangerouslySetInnerHTML={{ __html: geography.legislative_process }} />
                 </section>
               )}
             </SingleCol>

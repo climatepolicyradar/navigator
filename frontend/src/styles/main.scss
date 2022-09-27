@@ -291,11 +291,12 @@ ul li.selected {
 /* text content on text pages such as 'methodology' and search results */
 .text-content,
 .search-results {
+  @apply font-light;
   a {
     @apply text-blue-600 transition duration-300 hover:underline visited:text-bluegreen-100 active:bg-bluegreen-200 active:text-white;
   }
   p {
-    @apply my-6;
+    @apply my-6 font-light;
   }
   ul {
     @apply list-disc my-2;

@@ -21,7 +21,7 @@ export const RelatedDocument = ({ document }: RelatedDocumentProps) => {
           </Link>
         </h2>
       </div>
-      <div className="flex text-sm text-indigo-400 mt-3">
+      <div className="flex text-sm text-indigo-400 mt-3 font-medium">
         {category && <div className="mr-3">{getCategoryIcon(category, "20")}</div>}
         <CountryLink countryCode={country_code}>
           <div className={`rounded-sm border border-black flag-icon-background flag-icon-${country_code.toLowerCase()}`} />
@@ -29,7 +29,7 @@ export const RelatedDocument = ({ document }: RelatedDocumentProps) => {
         </CountryLink>
         <span>, {year}</span>
       </div>
-      <p className="text-indigo-400 mt-3">{truncateString(description.replace(/(<([^>]+)>)/gi, ""), 250)}</p>
+      <p className="text-indigo-400 mt-3 text-content">{truncateString(description.replace(/(<([^>]+)>)/gi, ""), 250)}</p>
     </div>
   );
 };

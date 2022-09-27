@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header data-cy="header" className="bg-indigo-400 w-full">
+    <header data-cy="header" className="bg-indigo-400 w-full border-b-2 border-lightgray">
       <div className="container">
         <div className="flex justify-between">
           <div className="my-6 mr-6">
@@ -15,39 +15,40 @@ const Header = () => {
               </a>
             </Link>
           </div>
-          <div className="flex-1 flex flex-col text-white mt-6">
-            {/* Title and nav */}
+          <div className="flex-1 flex flex-col mt-8 text-blue-400">
             <div className="font-bold text-3xl">
               <Link href={`/`}>
                 <a className="">Climate Change Laws of the World</a>
               </Link>
             </div>
-            <nav className="mt-5 flex-1">
+            <nav className="mt-8 flex-1 text-white">
               <ul className="flex h-full">
-                <li className="mr-8">
+                <li>
                   <Link href="/">
-                    <a className="h-full block">Home</a>
+                    <a>Home</a>
                   </Link>
                 </li>
-                <li className="mr-8">
+                <li>
                   <Link href="/">
-                    <a className="h-full block">About</a>
+                    <a>About</a>
                   </Link>
                 </li>
-                <li className="mr-8 border-b-4 border-blue-400 text-blue-400">
+                <li>
                   <Link href="/">
-                    <a className="h-full block">Methodology</a>
+                    <a className="active">Methodology</a>
                   </Link>
                 </li>
-                <li className="mr-8">
+                <li>
                   <Link href="/">
-                    <a className="h-full block">Acknowledgements</a>
+                    <a>Acknowledgements</a>
                   </Link>
                 </li>
               </ul>
             </nav>
           </div>
-          <div>{/* Partners */}</div>
+          <div>
+            <p>A project of... </p>
+          </div>
         </div>
       </div>
     </header>

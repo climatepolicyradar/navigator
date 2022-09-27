@@ -29,7 +29,7 @@ export const RelatedDocumentFull = ({ document }: TProps) => {
         </CountryLink>
         <span>, {year}</span>
       </div>
-      <p className="text-indigo-400 mt-3">{truncateString(document_description.replace(/(<([^>]+)>)/gi, ""), 250)}</p>
+      <p className="text-indigo-400 mt-3 text-content">{truncateString(document_description.replace(/(<([^>]+)>)/gi, ""), 250)}</p>
     </div>
   );
 };

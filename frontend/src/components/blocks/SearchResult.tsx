@@ -52,7 +52,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
         </h2>
       </div>
 
-      <div className="flex flex-wrap text-sm text-indigo-400 mt-4 items-center space-y-1.5">
+      <div className="flex flex-wrap text-sm text-indigo-400 mt-4 items-center space-y-1.5 font-medium">
         {document.document_category && (
           <div className="mr-3" title={document.document_category}>
             {getCategoryIcon(document.document_category, "20")}
