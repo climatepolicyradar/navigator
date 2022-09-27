@@ -23,7 +23,10 @@ class DocumentType(Base):
 class Category(Base):
     """A document category
 
-    E.g. Policy, Law (executive, legislative as per CCLW)
+    Currently:
+        Policy, (executive)
+        Law, (legislative)
+        Case, (litigation)
     """
 
     __tablename__ = "category"
