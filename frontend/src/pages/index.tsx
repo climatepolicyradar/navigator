@@ -17,10 +17,6 @@ import { initialSearchCriteria } from "@constants/searchCriteria";
 import { emptySearchResults } from "@constants/search";
 import useConfig from "@hooks/useConfig";
 
-import CPRLandingPage from "@cpr/pages/landing-page";
-import CCLWLandingPage from "@cclw/pages/landing-page";
-import getSite from "@utils/getSite";
-
 const IndexPage = () => {
   const { t, ready } = useTranslation(["searchStart", "searchResults"]);
   const router = useRouter();
@@ -66,8 +62,7 @@ const IndexPage = () => {
 
   if (!ready || !searchCriteria) return <LoaderOverlay />;
 
-  if(getSite() === "cclw") return <CCLWLandingPage />;
-
+  // TODO: load the relevant landing page content dynamically
   return (
     <>
       <Layout title={t("Law and Policy Search")}>

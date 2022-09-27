@@ -5,6 +5,8 @@ import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "../styles/main.scss";
 import "../styles/flag-icon.css";
+
+// TODO: load this dynamically from the .env var
 import "@cclw/styles/cclw.main.scss";
 
 const queryClient = new QueryClient();
