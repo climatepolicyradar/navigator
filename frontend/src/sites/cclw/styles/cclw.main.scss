@@ -35,12 +35,12 @@ nav {
     @apply mr-8;
   }
   a {
-    @apply h-full block;
+    @apply h-full block pb-6 border-b-4 border-transparent;
     &:hover {
       @apply text-blue-400;
     }
     &.active {
-      @apply border-b-4 border-blue-400 text-blue-400;
+      @apply border-blue-400 text-blue-400;
     }
   }
 }

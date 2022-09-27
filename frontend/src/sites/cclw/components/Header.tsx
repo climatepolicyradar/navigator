@@ -15,14 +15,14 @@ const Header = () => {
               </a>
             </Link>
           </div>
-          <div className="flex-1 flex flex-col mt-8 text-blue-400">
+          <div className="flex-1 flex flex-col mt-6 text-blue-400">
             <div className="font-bold text-3xl">
               <Link href={`/`}>
                 <a className="">Climate Change Laws of the World</a>
               </Link>
             </div>
             <nav className="mt-8 flex-1 text-white">
-              <ul className="flex h-full">
+              <ul className="flex items-end h-full">
                 <li>
                   <Link href="/">
                     <a>Home</a>
