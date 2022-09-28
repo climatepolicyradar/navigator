@@ -18,8 +18,8 @@ module.exports = {
       green: colors.green,
       semiTransWhite: 'rgba(255, 255, 255, 0.85)',
       overlayWhite: 'rgba(217, 217, 217, 0.25)',
-      lightgray: '#F9FAFB',
       offwhite: '#EFF3FB',
+      lineBorder: '#2B2F49',
       grey: {
         200: '#F9FAFB',
         400: '#E7E7EA',

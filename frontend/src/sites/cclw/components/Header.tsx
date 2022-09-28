@@ -1,3 +1,5 @@
+import { ExternalLink } from "@components/ExternalLink";
+import Logo from "@components/svg/Logo";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -22,7 +24,7 @@ const Header = () => {
               </Link>
             </div>
             <nav className="mt-8 flex-1 text-white">
-              <ul className="flex items-end h-full">
+              <ul className="flex items-end gap-8 h-full">
                 <li>
                   <Link href="/">
                     <a>Home</a>
@@ -46,8 +48,22 @@ const Header = () => {
               </ul>
             </nav>
           </div>
-          <div className="text-white">
-            <p>A project of... </p>
+          <div className="text-white flex items-end mb-6">
+            <div>
+              <p>A project of... </p>
+              <div className="flex gap-4">
+                {/* Logos */}
+                <ExternalLink className="flex" url="https://www.lse.ac.uk/">
+                  <Image src="/images/partners/lse-logo.png" alt="LSE logo" width={60} height={60} layout={"fixed"} />
+                </ExternalLink>
+                <ExternalLink className="flex" url="https://www.lse.ac.uk/granthaminstitute/">
+                  <Image src="/images/partners/grantham-logo.png" alt="GRI logo" width={232} height={60} layout={"fixed"} />
+                </ExternalLink>
+                <ExternalLink className="flex" url="https://www.climatepolicyradar.org">
+                  <Logo />
+                </ExternalLink>
+              </div>
+            </div>
           </div>
         </div>
       </div>

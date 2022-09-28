@@ -31,9 +31,6 @@ body {
 }
 
 nav {
-  li {
-    @apply mr-8;
-  }
   a {
     @apply h-full block pb-6 border-b-4 border-transparent;
     &:hover {

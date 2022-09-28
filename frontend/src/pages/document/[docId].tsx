@@ -76,7 +76,7 @@ const DocumentCoverPage = () => {
         <Loading />
       ) : (
         <section className="mb-8">
-          <div className="bg-offwhite border-solid border-blue-200 border-b">
+          <div className="bg-offwhite border-solid border-lineBorder border-b">
             <div className="container">
               <div className="flex flex-col md:flex-row">
                 <div className="flex-1 mt-6">
@@ -141,7 +141,7 @@ const DocumentCoverPage = () => {
                 ) : null}
               </section>
               <section className="mt-6 md:w-2/5 lg:w-1/4 md:pl-12 flex-shrink-0">
-                <div className="md:pl-4 md:border-l md:border-blue-100">
+                <div className="md:pl-4 md:border-l md:border-lineBorder">
                   <h3 className="text-blue-700">About this document</h3>
                   <div className="grid grid-cols-2 gap-x-2">
                     <DocumentInfo id="category-tt" heading="Category" text={page.category.name} />
@@ -153,7 +153,7 @@ const DocumentCoverPage = () => {
 
                   {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
                   {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
-                  <div className="mt-8 border-t border-blue-100">
+                  <div className="mt-8 border-t border-lineBorder">
                     <h3 className="text-blue-700 mt-4">Source</h3>
                     <div className="flex items-end mt-4">
                       {sourceLogo && (

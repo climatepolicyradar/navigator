@@ -22,7 +22,7 @@ export const CountryHeader = ({ country }: TProps) => {
   const { name, political_groups, federal, federal_details, worldbank_income_group, climate_risk_index, global_emissions_percent } = country;
 
   return (
-    <div className="bg-offwhite border-solid border-blue-200 border-b py-6">
+    <div className="bg-offwhite border-solid border-lineBorder border-b py-6">
       <div className="container flex items-end justify-between overflow-hidden">
         <div className="md:max-w-lg lg:max-w-5xl md:flex-shrink-0">
           <h1 className="mb-6">{name}</h1>

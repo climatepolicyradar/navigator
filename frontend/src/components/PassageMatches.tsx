@@ -20,7 +20,7 @@ const PassageMatches = ({ document, setShowPDF, setPassageIndex, activeIndex }: 
           {document.document_passage_matches.map((item, index: number) => (
             <div
               key={item.text_block_id}
-              className={`p-4 cursor-pointer border hover:bg-offwhite ${activeIndex === index ? "border-blue-200 bg-grey-200" : "border-transparent"}`}
+              className={`p-4 cursor-pointer border hover:bg-offwhite ${activeIndex === index ? "border-lineBorder bg-grey-200" : "border-transparent"}`}
               onClick={() => {
                 setShowPDF(true);
                 setPassageIndex(index);
