@@ -413,6 +413,21 @@ def persist_document_and_metadata(
         raise e
 
 
+def _get_language_id_by_code_or_name(db: Session, code_or_name: str) -> int:
+    # Lookup language by language code as a preference
+    existing_language_id = (
+        db.query(Language.id).filter(Language.language_code == code_or_name)
+    ).scalar()
+    if existing_language_id is None:
+        # If the language code returned no results, attempt a lookup by name
+        existing_language_id = (
+            db.query(Language.id).filter(Language.name == code_or_name)
+        ).scalar()
+    if existing_language_id is None:
+        raise UnknownLanguageError(code_or_name)
+    return existing_language_id
+
+
 def write_metadata(
     db: Session,
     new_document: Document,
@@ -420,17 +435,7 @@ def write_metadata(
 ) -> None:
     # doc languages
     for language in document_create_request.languages:
-        # Lookup language by language code as a preference
-        existing_language_id = (
-            db.query(Language.id).filter(Language.language_code == language)
-        ).scalar()
-        if existing_language_id is None:
-            # If the language code returned no results, attempt a lookup by name
-            existing_language_id = (
-                db.query(Language.id).filter(Language.name == language)
-            ).scalar()
-        if existing_language_id is None:
-            raise UnknownLanguageError(language)
+        existing_language_id = _get_language_id_by_code_or_name(db, language)
 
         # TODO: Need to ensure uniqueness for metadata links, especially for future
         #       update paths.
