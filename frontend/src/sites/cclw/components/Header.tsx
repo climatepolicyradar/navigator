@@ -46,7 +46,7 @@ const Header = () => {
               </ul>
             </nav>
           </div>
-          <div>
+          <div className="text-white">
             <p>A project of... </p>
           </div>
         </div>
