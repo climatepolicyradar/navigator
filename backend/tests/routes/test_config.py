@@ -13,8 +13,8 @@ def test_endpoint_returns_correct_keys(client, user_token_headers):
     response_json = response.json()
 
     assert response.status_code == OK
-    assert list(response_json["metadata"].keys()) == ["CCLW"]
-    assert list(response_json["metadata"]["CCLW"].keys()) == [
+    assert set(response_json["metadata"].keys()) == {"CCLW"}
+    assert set(response_json["metadata"]["CCLW"].keys()) == {
         "categories",
         "document_types",
         "frameworks",
@@ -26,4 +26,4 @@ def test_endpoint_returns_correct_keys(client, user_token_headers):
         "sectors",
         "sources",
         "topics",
-    ]
+    }
