@@ -5,7 +5,7 @@ import Link from "next/link";
 
 const Header = () => {
   return (
-    <header data-cy="header" className="bg-indigo-400 w-full border-b-2 border-lightgray">
+    <header data-cy="header" className="bg-indigo-400 w-full border-b-2 border-grey-200">
       <div className="container">
         <div className="flex justify-between">
           <div className="my-6 mr-6">

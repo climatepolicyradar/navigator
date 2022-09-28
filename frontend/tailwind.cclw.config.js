@@ -20,6 +20,11 @@ module.exports = {
       overlayWhite: 'rgba(217, 217, 217, 0.25)',
       lightgray: '#F9FAFB',
       offwhite: '#EFF3FB',
+      grey: {
+        200: '#F9FAFB',
+        400: '#E7E7EA',
+        500: '#CFD0D7',
+      },
       indigo: {
         100: '#f2f2f5',
         200: '#e4e6ea',
