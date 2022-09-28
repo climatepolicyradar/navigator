@@ -1,17 +1,20 @@
 from fastapi import Depends, Request
 
 from app.db.models import (
-    Geography,
-    Language,
-    Source,
-    Instrument,
-    Sector,
-    DocumentType,
     Category,
+    DocumentType,
+    Framework,
+    Geography,
+    Hazard,
+    Instrument,
+    Keyword,
+    Language,
+    Response,
+    Sector,
+    Source,
 )
 from app.api.api_v1.schemas.metadata import Config
 from app.db.session import get_db
-from backend.app.db.models.document import Framework, Hazard, Keyword, Response
 from .router import lookups_router
 from .utils import tree_table_to_json, table_to_json
 
