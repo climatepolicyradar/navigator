@@ -157,19 +157,10 @@ def create_document(
     db: Session,
     document_create_request: DocumentCreateRequest,
 ) -> Document:
-    existing_geography_id = (
-        db.query(Geography.id).filter(
-            Geography.display_value == document_create_request.geography
-        )
-    ).scalar()
-    if existing_geography_id is None:
-        existing_geography_id = (
-            db.query(Geography.id).filter(
-                Geography.value == document_create_request.geography
-            )
-        ).scalar()
-        if existing_geography_id is None:
-            raise UnknownGeographyError(document_create_request.geography)
+    existing_geography_id = _get_geography_id_by_display_or_value(
+        db,
+        document_create_request.geography,
+    )
 
     existing_source_id = (
         db.query(Source.id).filter(Source.name == document_create_request.source)
@@ -411,6 +402,21 @@ def persist_document_and_metadata(
         if isinstance(e, IntegrityError):
             raise HTTPException(409, detail="Document already exists")
         raise e
+
+
+def _get_geography_id_by_display_or_value(db: Session, display_or_value: str) -> int:
+    # Lookup geography by display_value or value
+    existing_geography_id = (
+        db.query(Geography.id).filter(Geography.display_value == display_or_value)
+    ).scalar()
+    if existing_geography_id is None:
+        # If the display value returned no results, attempt a lookup by value
+        existing_geography_id = (
+            db.query(Geography.id).filter(Geography.value == display_or_value)
+        ).scalar()
+    if existing_geography_id is None:
+        raise UnknownGeographyError(display_or_value)
+    return existing_geography_id
 
 
 def _get_language_id_by_code_or_name(db: Session, code_or_name: str) -> int:
