@@ -103,7 +103,7 @@ async def post_document(
 
 @documents_router.post(
     "/document-uploads",
-    response_model=DocumentUploadRequest,
+    response_model=DocumentUploadResponse,
     status_code=201,
 )
 def create_upload_url(
@@ -136,10 +136,7 @@ def create_upload_url(
         )
     try:
         return DocumentUploadResponse(
-            presigned_upload_url=s3_client.generate_pre_signed_url(
-                s3_document,
-                document_upload_request.content_type,
-            ),
+            presigned_upload_url=s3_client.generate_pre_signed_url(s3_document),
             cdn_url=s3_to_cdn_url(s3_document.url),
         )
     except Exception:

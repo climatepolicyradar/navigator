@@ -71,7 +71,6 @@ class DocumentUploadRequest(BaseModel):
     """Details of a file we wish to upload."""
 
     filename: str
-    content_type: str
     overwrite: Optional[bool] = False
 
 

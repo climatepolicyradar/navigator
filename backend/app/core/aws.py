@@ -236,7 +236,8 @@ class S3Client:
             raise
 
     def generate_pre_signed_url(
-        self, s3_document: S3Document, content_type: t.Optional[str]
+        self,
+        s3_document: S3Document,
     ) -> str:
         """
         Generate a pre-signed URL to an object for file uploads
@@ -250,7 +251,6 @@ class S3Client:
                 Params={
                     "Bucket": s3_document.bucket_name,
                     "Key": s3_document.key,
-                    "ContentType": content_type,
                 },
             )
             return url
@@ -270,7 +270,7 @@ class S3Client:
         try:
             self.client.head_object(Bucket=s3_document.bucket_name, Key=s3_document.key)
             return True
-        except self.client.exceptions.NoSuchKey:
+        except ClientError:
             return False
 
 
