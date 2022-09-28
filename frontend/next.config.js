@@ -17,6 +17,11 @@ module.exports = {
         permanent: true,
       },
       {
+        source: '/users/:id*',
+        destination: '/',
+        permanent: true,
+      },
+      {
         source: '/litigation/:id*',
         destination: '/',
         permanent: true,
