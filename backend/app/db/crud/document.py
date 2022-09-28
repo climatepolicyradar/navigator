@@ -410,7 +410,7 @@ def _get_geography_id_by_display_or_value(db: Session, display_or_value: str) ->
         db.query(Geography.id).filter(Geography.display_value == display_or_value)
     ).scalar()
     if existing_geography_id is None:
-        # If the display value returned no results, attempt a lookup by value
+        # If the display_value returned no results, attempt a lookup by value
         existing_geography_id = (
             db.query(Geography.id).filter(Geography.value == display_or_value)
         ).scalar()
@@ -420,12 +420,12 @@ def _get_geography_id_by_display_or_value(db: Session, display_or_value: str) ->
 
 
 def _get_language_id_by_code_or_name(db: Session, code_or_name: str) -> int:
-    # Lookup language by language code as a preference
+    # Lookup language by language_code as a preference
     existing_language_id = (
         db.query(Language.id).filter(Language.language_code == code_or_name)
     ).scalar()
     if existing_language_id is None:
-        # If the language code returned no results, attempt a lookup by name
+        # If the language_code returned no results, attempt a lookup by name
         existing_language_id = (
             db.query(Language.id).filter(Language.name == code_or_name)
         ).scalar()
