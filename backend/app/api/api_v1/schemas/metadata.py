@@ -90,10 +90,17 @@ class Topic(BaseModel):  # noqa: D101
 class CCLWSourceCollection(BaseModel):
     """Metadata sources from CCLW."""
 
-    geographies: List[Dict]
+    categories: List[Dict]
     document_types: List[Dict]
-    sectors: List[Dict]
+    frameworks: List[Dict]
+    geographies: List[Dict]
+    hazards: List[Dict]
     instruments: List[Dict]
+    keywords: List[Dict]
+    languages: List[Dict]
+    sectors: List[Dict]
+    sources: List[Dict]
+    topics: List[Dict]
 
 
 class SourceCollections(BaseModel):
