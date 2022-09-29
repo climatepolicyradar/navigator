@@ -8,7 +8,7 @@ class Geography(Base):  # noqa: D101
 
     __tablename__ = "geography"
 
-    id = sa.Column(sa.SmallInteger, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     # to display to end-users
     display_value = sa.Column(sa.Text, unique=True)
     # e.g. ISO code, World Bank, etc - not necessarily for display
@@ -24,7 +24,7 @@ class GeoStatistics(Base):
 
     __tablename__ = "geo_statistics"
 
-    id = sa.Column(sa.SmallInteger(), primary_key=True)
+    id = sa.Column(sa.Integer(), primary_key=True)
     name = sa.Column(sa.Text(), nullable=False, unique=True)
     geography_id = sa.Column(
         sa.Integer(), sa.ForeignKey("geography.id"), nullable=False

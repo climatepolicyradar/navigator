@@ -285,6 +285,28 @@ def upgrade():
             "event_id", "document_id", name=op.f("pk_lit_event_documents")
         ),
     )
+
+    # Now get rid of smallintegers
+    op.alter_column(
+        "geography", "id", type_=sa.Integer(), existing_type=sa.SmallInteger
+    )
+    op.alter_column("language", "id", type_=sa.Integer(), existing_type=sa.SmallInteger)
+    op.alter_column(
+        "geo_statistics", "id", type_=sa.Integer(), existing_type=sa.SmallInteger
+    )
+
+    op.alter_column(
+        "document", "geography_id", type_=sa.Integer(), existing_type=sa.SmallInteger
+    )
+    op.alter_column(
+        "passage", "language_id", type_=sa.Integer(), existing_type=sa.SmallInteger
+    )
+
+    # and for the seq too
+    op.execute("ALTER SEQUENCE geo_statistics_id_seq AS INTEGER")
+    op.execute("ALTER SEQUENCE geography_id_seq AS INTEGER")
+    op.execute("ALTER SEQUENCE language_id_seq AS INTEGER")
+
     # ### end Alembic commands ###
 
 
@@ -301,4 +323,8 @@ def downgrade():
     op.drop_table("lit_party")
     op.drop_table("lit_external_law")
     op.drop_table("lit_body")
+
+    # NOTE:
+    #   Note handcrafted the downgrade as downgrads are not maintained.
+
     # ### end Alembic commands ###
