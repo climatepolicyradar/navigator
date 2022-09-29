@@ -1,11 +1,13 @@
-from http.client import NOT_FOUND
 import logging
+from http.client import NOT_FOUND
 from typing import Any, Dict, Optional, Union
-from app.db.session import get_db
-from app.db.models.geography import GeoStatistics
+
 from fastapi import Depends, HTTPException
 from pydantic import BaseModel
 from sqlalchemy import exc
+
+from app.db.session import get_db
+from app.db.models.geography import GeoStatistics
 from .router import lookups_router
 
 _LOGGER = logging.getLogger(__name__)
@@ -42,12 +44,12 @@ def lookup_geo_stats(
     geography_id: int,
     db=Depends(get_db),
 ):
-    """Get climate statistics for a geography by id.
+    """
+    Get climate statistics for a geography by id.
 
     **NOTE**: This requires the geography_id to refer to a geography of
-    type ISO-3166
+              type ISO-3166
     """
-
     _LOGGER.info(f"Getting geo stats for {geography_id}")
     try:
         row = db.query(GeoStatistics).filter_by(geography_id=geography_id).first()
