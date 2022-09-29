@@ -171,7 +171,6 @@ class LitEvent(Base):  # noqa: D101
 
     type = Column(Enum(EventType))
     date = Column(Date, nullable=False)
-    lit_document_id = Column(Integer, ForeignKey(LitDocument.id))
     case_id = Column(Integer, ForeignKey(Case.id))
 
 
@@ -179,9 +178,6 @@ class LitEventDocuments(Base):  # noqa: D101
     """Database model for the link table between Litigation event and documents."""
 
     __tablename__ = "lit_event_documents"
-
-    # NB: Ideally we need to check that the event->case is the same as the
-    # document->case. This is being kicked down the road till the Admin Interface
 
     event_id = Column(Integer, ForeignKey(LitEvent.id), primary_key=True)
     document_id = Column(Integer, ForeignKey(LitDocument.id), primary_key=True)
