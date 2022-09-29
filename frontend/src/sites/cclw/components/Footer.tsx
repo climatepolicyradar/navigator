@@ -104,7 +104,7 @@ const Footer = () => {
         <div className="container">
           <p className="font-bold text-lg mb-2">Climate Change Laws of the World</p>
           <p className="mb-10">In partnership with the Sabin Center for Climate Change Law, Columbia Law School</p>
-          <div className="grid grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
             {navLinks.map((item) => (
               <div key={item.title} className="footer__section">
                 <div>{item.title}</div>
@@ -117,15 +117,15 @@ const Footer = () => {
                 </ul>
               </div>
             ))}
+            <div className="footer__section">
+              <div>Power by CPR</div>
+            </div>
             <div>
               <div className="mb-10 footer__section">
                 <div>Follow us</div>
                 <div className="flex items-start gap-6 footer__social-links">
                   <ExternalLink url="https://twitter.com/GRI_LSE">
                     <img src="/images/social/twitter.svg" alt="Twitter Logo" />
-                  </ExternalLink>
-                  <ExternalLink url="https://www.facebook.com/granthamLSE">
-                    <img src="/images/social/facebook.svg" alt="Facebook Logo" />
                   </ExternalLink>
                   <ExternalLink url="https://www.youtube.com/user/GranthamResearch">
                     <img src="/images/social/youtube.svg" alt="YouTube Logo" />
@@ -144,9 +144,6 @@ const Footer = () => {
                 <div>Tel: +44 (0)20 7107 5027</div>
                 <ExternalLink url="/">Full contact details</ExternalLink>
               </div>
-            </div>
-            <div className="footer__section">
-              <div>Power by CPR</div>
             </div>
           </div>
         </div>

@@ -51,6 +51,7 @@ footer {
   }
 
   .footer__section {
+    @apply text-sm lg:text-base;
     > * {
       @apply mb-2;
     }

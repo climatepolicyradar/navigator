@@ -18,13 +18,13 @@ const Header = () => {
             </Link>
           </div>
           <div className="flex-1 flex flex-col mt-6 text-blue-400">
-            <div className="font-bold text-3xl">
+            <div className="font-bold md:text-xl lg:text-3xl">
               <Link href={`/`}>
                 <a className="">Climate Change Laws of the World</a>
               </Link>
             </div>
-            <nav className="mt-8 flex-1 text-white">
-              <ul className="flex items-end gap-8 h-full">
+            <nav className="mt-8 flex-1 text-white hidden md:block">
+              <ul className="flex items-end gap-8 h-full text-sm lg:text-base">
                 <li>
                   <Link href="/">
                     <a>Home</a>
@@ -48,7 +48,7 @@ const Header = () => {
               </ul>
             </nav>
           </div>
-          <div className="text-white flex items-end mb-6">
+          <div className="text-white items-end mb-6 hidden xl:flex">
             <div>
               <p>A project of... </p>
               <div className="flex gap-4">
