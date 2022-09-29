@@ -23,10 +23,11 @@ def main(cclw_newer_path: Path, exported_document_table: Path):
             url = r["Documents"].split("|")[0].strip().replace("http://", "https://")
             action_id = int(float(r["Id"].strip()))
             doc_id = int(r["Document Id"].strip() or 0)
+            category = r["Category"].strip().lower()
             if (name, url) in current_name_urls:
                 doc_id_to_import[
                     current_name_urls[(name, url)]
-                ] = f"CCLW:{action_id}:{doc_id}"
+                ] = f"CCLW:{category}:{action_id}:{doc_id}"
             else:
                 print(f"Not found: {action_id}:{doc_id} - {name} {url}")
 
