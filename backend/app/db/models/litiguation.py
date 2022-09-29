@@ -2,7 +2,6 @@ import enum
 from sqlalchemy import (
     Column,
     Enum,
-    SmallInteger,
     Integer,
     Text,
     ForeignKey,
@@ -49,7 +48,7 @@ class LitCaseInternalLaws(Base):  # noqa: D101
 class LitExternalLaw(Base):  # noqa: D101
     __tablename__ = "lit_external_law"
 
-    id = Column(SmallInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
 
     name = Column(Text, nullable=False)
     url = Column(Text, nullable=False)
@@ -103,7 +102,7 @@ class LitParty(Base):  # noqa: D101
 
     __tablename__ = "lit_party"
 
-    id = Column(SmallInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(Text, unique=True, nullable=False)
     party_type = Column(Enum(PartyType))
     side_type = Column(Enum(SideType))
@@ -114,7 +113,7 @@ class LitCaseParties(Base):  # noqa: D101
 
     __tablename__ = "lit_case_parties"
 
-    id = Column(SmallInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
     case_id = Column(Integer, ForeignKey(Case.id))
     party_id = Column(Integer, ForeignKey(LitParty.id))
 
@@ -129,7 +128,7 @@ class LitDocument(Base):  # noqa: D101
 
     __tablename__ = "lit_document"
 
-    id = Column(SmallInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
     url = Column(Text, nullable=False)
     case_id = Column(
@@ -165,7 +164,7 @@ class LitEvent(Base):  # noqa: D101
 
     __tablename__ = "lit_event"
 
-    id = Column(SmallInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(Text, nullable=False)
     description = Column(Text)
 

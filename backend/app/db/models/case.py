@@ -2,7 +2,6 @@ import enum
 from sqlalchemy import (
     Column,
     Enum,
-    SmallInteger,
     Integer,
     Text,
     ForeignKey,
@@ -18,7 +17,7 @@ class LitBody(Base):  # noqa: D101
 
     __tablename__ = "lit_body"
 
-    id = Column(SmallInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(Text, unique=True, nullable=False)
     description = Column(Text)
 
@@ -81,9 +80,9 @@ class Case(Base):  # noqa: D101
 
     __tablename__ = "lit_case"
 
-    id = Column(SmallInteger, primary_key=True)
+    id = Column(Integer, primary_key=True)
     name = Column(Text, unique=True, nullable=False)
-    year = Column(SmallInteger)
+    year = Column(Integer)
     status = Column(Enum(CaseStatus))
     outcome = Column(Enum(CaseOutcome))
     objective = Column(Text)
