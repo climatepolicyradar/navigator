@@ -50,13 +50,21 @@ footer {
     }
   }
 
-  .footer-section {
+  .footer__section {
     > * {
       @apply mb-2;
     }
   }
 
-  .footer-base {
+  .footer__social-links {
+    a {
+      display: block;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .footer__base {
     background-image: url("/cclw/angles.svg");
     height: 234px;
     background-position: center;

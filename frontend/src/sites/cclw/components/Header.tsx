@@ -13,7 +13,7 @@ const Header = () => {
           <div className="my-6 mr-6">
             <Link href={`/`}>
               <a className="flex text-blue-400">
-                <Image src="/cclw/CCLW_logo.jpg" alt="Climate Change Laws of the World logo" width={200} height={100} layout={"fixed"} />
+                <Image src="/cclw/CCLW_logo.jpg" alt="Climate Change Laws of the World logo" width={200} height={100} layout={"fixed"} priority />
               </a>
             </Link>
           </div>

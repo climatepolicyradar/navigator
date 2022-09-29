@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ExternalLink } from "@components/ExternalLink";
 
@@ -105,11 +106,11 @@ const Footer = () => {
           <p className="mb-10">In partnership with the Sabin Center for Climate Change Law, Columbia Law School</p>
           <div className="grid grid-cols-4 gap-4">
             {navLinks.map((item) => (
-              <div key={item.title} className="footer-section">
+              <div key={item.title} className="footer__section">
                 <div>{item.title}</div>
                 <ul>
                   {item.links.map((link) => (
-                    <li key={link.text} className="mb-1 footer-link">
+                    <li key={link.text} className="mb-1">
                       {renderLink(link)}
                     </li>
                   ))}
@@ -117,30 +118,40 @@ const Footer = () => {
               </div>
             ))}
             <div>
-              <div className="mb-10 footer-section">
+              <div className="mb-10 footer__section">
                 <div>Follow us</div>
-                <div className="flex items-start gap-6">
-                  <span>Tw</span>
-                  <span>Fb</span>
-                  <span>Yt</span>
-                  <span>Ln</span>
+                <div className="flex items-start gap-6 footer__social-links">
+                  <ExternalLink url="https://twitter.com/GRI_LSE">
+                    <img src="/images/social/twitter.svg" alt="Twitter Logo" />
+                  </ExternalLink>
+                  <ExternalLink url="https://www.facebook.com/granthamLSE">
+                    <img src="/images/social/facebook.svg" alt="Facebook Logo" />
+                  </ExternalLink>
+                  <ExternalLink url="https://www.youtube.com/user/GranthamResearch">
+                    <img src="/images/social/youtube.svg" alt="YouTube Logo" />
+                  </ExternalLink>
+                  <ExternalLink url="https://www.linkedin.com/company/grantham-research-institute-lse/">
+                    <img src="/images/social/linkedIn.svg" alt="LinkedIn Logo" />
+                  </ExternalLink>
                 </div>
               </div>
-              <div className="footer-section">
+              <div className="footer__section">
                 <div>Contact</div>
                 <div>Email:</div>
-                <ExternalLink url="mailto:gri.cgl@lse.co.uk" className="block">gri.cgl@lse.co.uk</ExternalLink>
+                <ExternalLink url="mailto:gri.cgl@lse.co.uk" className="block">
+                  gri.cgl@lse.co.uk
+                </ExternalLink>
                 <div>Tel: +44 (0)20 7107 5027</div>
                 <ExternalLink url="/">Full contact details</ExternalLink>
               </div>
             </div>
-            <div className="footer-section">
+            <div className="footer__section">
               <div>Power by CPR</div>
             </div>
           </div>
         </div>
       </div>
-      <div className="footer-base">
+      <div className="footer__base">
         <div className="container flex flex-1 items-end h-full">
           <p className=" mb-6">Copyright © LSE 2022</p>
         </div>
