@@ -41,3 +41,25 @@ nav {
     }
   }
 }
+
+footer {
+  a {
+    @apply text-primary-400;
+    &:hover {
+      @apply underline;
+    }
+  }
+
+  .footer-section {
+    > * {
+      @apply mb-2;
+    }
+  }
+
+  .footer-base {
+    background-image: url("/cclw/angles.svg");
+    height: 234px;
+    background-position: center;
+    width: 100%;
+  }
+}

@@ -35,6 +35,9 @@ module.exports = {
         700: '#0A1C40',
       },
       sky: '#ED3D48',
+      primary: {
+        400: '#ED3D48',
+      },
       blue: {
         100: '#ED3D48',
         200: '#ED3D48',
