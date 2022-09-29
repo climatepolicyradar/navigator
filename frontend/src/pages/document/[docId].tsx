@@ -81,7 +81,7 @@ const DocumentCoverPage = () => {
               <div className="flex flex-col md:flex-row">
                 <div className="flex-1 mt-6">
                   <h1 className="text-3xl lg:smaller">{page.name}</h1>
-                  <div className="flex text-sm text-indigo-400 mt-3 items-center w-full mb-6">
+                  <div className="flex text-base text-indigo-400 mt-3 items-center w-full mb-6">
                     <CountryLink countryCode={page.geography.value}>
                       <span className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
                       <span className="ml-2">{page.geography.display_value}</span>

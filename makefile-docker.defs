@@ -34,6 +34,10 @@ cleanup_tables:
 	# Cleanup duplicate data
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 scripts/cleanup_lookups/cleanup_lookups.py
 
+add_unique_ids:
+	# Cleanup duplicate data
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend python3 scripts/add_unique_ids/add_unique_ids.py
+
 migrations: migrations_docker_backend
 
 %:

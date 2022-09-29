@@ -23,7 +23,10 @@ class DocumentType(Base):
 class Category(Base):
     """A document category
 
-    E.g. Policy, Law (executive, legislative as per CCLW)
+    Currently:
+        Policy, (executive)
+        Law, (legislative)
+        Case, (litigation)
     """
 
     __tablename__ = "category"
@@ -39,7 +42,7 @@ class Document(Base, Auditable):
     id: Internal database ID
     publication_ts: Publication timestamp, or date of first event
     name: Document title
-    description: DOcument description
+    description: Document description
     source_url: Reference url to document on third party aggregator
     source_id: Foreign key to original Source table entry
     url: URL to document in CPR cloud storage
@@ -60,7 +63,7 @@ class Document(Base, Auditable):
     source_url = sa.Column(sa.Text, nullable=True)
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
     url = sa.Column(sa.Text, nullable=True)
-    md5_sum = sa.Column(sa.Text, nullable=False)
+    md5_sum = sa.Column(sa.Text, nullable=True)
 
     slug = sa.Column(
         sa.Text,

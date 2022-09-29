@@ -174,7 +174,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2010-12-25-Energy Sector Strategy 1387-1391 (2009/8-2014/3)-1.docx",
         "md5_sum": "the md5 sum",
         "type": "just my type",
-        "geography": "not my fav subject again",
+        "geography": "NMFSA",
         "source": "may it be with you",
         "import_id": "doc3",
         "category": "a category",
@@ -232,6 +232,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
     )
     assert response4.status_code == 200
     response4_document = response4.json()
+
     return (
         response1_document,
         document1_payload,

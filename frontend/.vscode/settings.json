@@ -9,4 +9,5 @@
     "titleBar.activeBackground": "#006FD6",
     "titleBar.activeForeground": "#ffffff"
   },
+  "scss.lint.unknownAtRules": "ignore"
 }
