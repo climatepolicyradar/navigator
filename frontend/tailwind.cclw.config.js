@@ -20,6 +20,10 @@ module.exports = {
       overlayWhite: 'rgba(217, 217, 217, 0.25)',
       offwhite: '#EFF3FB',
       lineBorder: '#2B2F49',
+      search: {
+        dropdownBg: "#f2f2f5",
+        itemHover: "#e4e6ea"
+      },
       grey: {
         200: '#F9FAFB',
         400: '#E7E7EA',

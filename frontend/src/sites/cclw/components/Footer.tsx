@@ -121,9 +121,10 @@ const Footer = () => {
             <div className="footer__section">
               <div>Power by CPR</div>
               <div>
-                <ExternalLink className="flex text-indigo-600" url="https://www.climatepolicyradar.org">
+                <ExternalLink className="flex text-indigo-600 mb-4" url="https://www.climatepolicyradar.org">
                   <Logo />
                 </ExternalLink>
+                <ExternalLink url="https://www.climatepolicyradar.org">Visit Climate Policy Radar</ExternalLink>
               </div>
             </div>
             <div>
