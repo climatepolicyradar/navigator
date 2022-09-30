@@ -51,17 +51,20 @@ const Header = () => {
           <div className="text-white items-end mb-6 hidden xl:flex">
             <div>
               <p>A project of... </p>
-              <div className="flex gap-4">
-                {/* Logos */}
-                <ExternalLink className="flex" url="https://www.lse.ac.uk/">
-                  <Image src="/images/partners/lse-logo.png" alt="LSE logo" width={60} height={60} layout={"fixed"} />
-                </ExternalLink>
-                <ExternalLink className="flex" url="https://www.lse.ac.uk/granthaminstitute/">
-                  <Image src="/images/partners/grantham-logo.png" alt="GRI logo" width={232} height={60} layout={"fixed"} />
-                </ExternalLink>
-                <ExternalLink className="flex" url="https://www.climatepolicyradar.org">
-                  <Logo />
-                </ExternalLink>
+              <div className="flex xflex-col gap-4 mt-2">
+                {/* <div className="flex gap-4"> */}
+                  <ExternalLink className="flex" url="https://www.lse.ac.uk/">
+                    <Image src="/images/partners/lse-logo.png" alt="LSE logo" width={40} height={40} layout={"fixed"} />
+                  </ExternalLink>
+                  <ExternalLink className="flex" url="https://www.lse.ac.uk/granthaminstitute/">
+                    <Image src="/cclw/partners/gri_white_logo.svg" alt="GRI logo" width={180} height={40} layout={"fixed"} />
+                  </ExternalLink>
+                {/* </div> */}
+                {/* <div> */}
+                  <ExternalLink className="flex" url="https://www.climatepolicyradar.org">
+                    <Logo fixed />
+                  </ExternalLink>
+                {/* </div> */}
               </div>
             </div>
           </div>

@@ -1,6 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ExternalLink } from "@components/ExternalLink";
+import Logo from "@components/svg/Logo";
 
 type TFooterItem = {
   title: string;
@@ -119,6 +120,11 @@ const Footer = () => {
             ))}
             <div className="footer__section">
               <div>Power by CPR</div>
+              <div>
+                <ExternalLink className="flex text-indigo-600" url="https://www.climatepolicyradar.org">
+                  <Logo />
+                </ExternalLink>
+              </div>
             </div>
             <div>
               <div className="mb-10 footer__section">
