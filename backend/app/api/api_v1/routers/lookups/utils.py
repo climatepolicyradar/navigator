@@ -1,10 +1,13 @@
 from typing import Any, Dict, List
-from app.db.session import Base, SessionLocal
+
+from sqlalchemy.orm import Session
+
+from app.db.session import Base
 
 
 def table_to_json(
     table: Base,
-    db: SessionLocal,  # type: ignore
+    db: Session,
 ) -> List[Dict]:
     json_out = []
 
@@ -17,7 +20,7 @@ def table_to_json(
 
 def tree_table_to_json(
     table: Base,
-    db: SessionLocal,  # type: ignore
+    db: Session,
 ) -> List[Dict]:
     json_out = []
     child_list_map: Dict[int, Any] = {}
