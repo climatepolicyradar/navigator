@@ -99,7 +99,7 @@ const Footer = () => {
   };
 
   return (
-    <footer className="flex flex-col bg-grey-400">
+    <footer className="flex flex-col bg-grey-400 mt-12">
       <div className="py-12">
         <div className="container">
           <p className="font-bold text-lg mb-2">Climate Change Laws of the World</p>
