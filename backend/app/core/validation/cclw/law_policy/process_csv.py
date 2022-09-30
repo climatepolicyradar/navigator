@@ -1,0 +1,391 @@
+import logging
+from csv import DictReader
+from datetime import datetime
+from enum import Enum
+from html.parser import HTMLParser
+from io import StringIO
+from typing import (
+    Any,
+    Collection,
+    Dict,
+    Generator,
+    Mapping,
+    Optional,
+    Sequence,
+    Tuple,
+    TypeVar,
+)
+
+import requests
+
+from app.core.validation.util import get_valid_metadata
+from app.api.api_v1.schemas.document import DocumentCreateRequest, Event
+
+_LOGGER = logging.getLogger(__file__)
+
+ACTION_ID_FIELD = "Id"
+CATEGORY_FIELD = "Category"
+COUNTRY_CODE_FIELD = "Geography ISO"
+DESCRIPTION_FIELD = "Description"
+DOCUMENT_FIELD = "Documents"
+DOCUMENT_ID_FIELD = "Document Id"
+DOCUMENT_TYPE_FIELD = "Document Type"
+EVENTS_FIELD = "Events"
+FRAMEWORKS_FIELD = "Frameworks"
+GEOGRAPHY_FIELD = "Geography"
+HAZARDS_FIELD = "Natural Hazards"
+INSTRUMENTS_FIELD = "Instruments"
+KEYWORDS_FIELD = "Keywords"
+LANGUAGES_FIELD = "Language"
+PARENT_LEGISLATION_FIELD = "Parent Legislation"
+SECTORS_FIELD = "Sectors"
+TITLE_FIELD = "Title"
+TOPICS_FIELD = "Responses"
+YEAR_FIELD = "Year"
+
+CCLW_SOURCE = "CCLW"
+META_CATEGORY_KEY = "categories"
+META_DOC_TYPE_KEY = "document_types"
+META_FRAMEWORK_KEY = "frameworks"
+META_GEOGRAPHY_KEY = "geographies"
+META_HAZARD_KEY = "hazards"
+META_INSTRUMENT_KEY = "instruments"
+META_KEYWORD_KEY = "keywords"
+META_LANGUAGE_KEY = "languages"
+META_SECTOR_KEY = "sectors"
+META_SOURCE_KEY = "sources"
+META_TOPIC_KEY = "topics"
+
+# TODO: Remove cleanup when a validated form exists for adding keywords to documents.
+#    This code exists only to clean up known issues with legacy data.
+CLEANUP_KEYWORDS_MAP = {
+    "5 G": "5G",
+    "Brt": "BRT",
+    "Bus": "Buses",
+    "Cap And Trade": "Cap and Trade",
+    "Carbon Capture And Storage": "Carbon Capture and Storage",
+    "Cbdr": "CBDR",
+    "Cc Gap": "CCGAP",
+    "Ccs": "CCS",
+    "Cdm": "CDM",
+    "Co Benefits": "Co-benefits",
+    "Cogeneration": "Co-generation",
+    "Covid 19": "COVID-19",
+    "Covid-19": "COVID-19",
+    "Covid19": "COVID-19",
+    "Drr": "DRR",
+    "E Buses": "E-Buses",
+    "E Vs": "EVs",
+    "EV": "EVs",
+    "Energy storage": "Energy Storage",
+    "Ets": "ETS",
+    "Ev": "EVs",
+    "Fit": "FIT",
+    "Forest": "Forests",
+    "Ghg": "GHG",
+    "Hf Cs": "Hydrofluorocarbons",
+    "Human rights": "Human Rights",
+    "K Ets": "K-ETS",
+    "Lulucf": "LULUCF",
+    "Mrv": "MRV",
+    "Multi Modal Transport": "Multi-Modal Transport",
+    "Nap": "NAP",
+    "Pv": "PV",
+    "Redd+ And Lulucf": "REDD+ And LULUCF",
+    "S Olar": "Solar",
+    "Sd Gs": "SDGs",
+    "Slc Ps": "SLCPs",
+    "Taxes": "Tax",
+    "Transportation": "Transport",
+    "Unfccc": "UNFCCC",
+    "air pollution": "Air Pollution",
+    "carbon sink": "Carbon Sink",
+    "climate justice": "Climate Justice",
+    "climate security": "Climate Security",
+    "clothing": "Clothing",
+    "coal": "Coal",
+    "covid19": "COVID-19",
+    "food waste": "Food Waste",
+    "fossil fuels curbing measures": "Fossil Fuels Curbing Measures",
+    "housing": "Housing",
+    "taxonomy": "Taxonomy",
+    "travel": "Travel",
+    "wetlands": "Wetlands",
+}
+
+DEFAULT_DESCRIPTION = "Imported by CPR loader"
+DEFAULT_POLICY_DATE = datetime(1900, 1, 1)
+PUBLICATION_EVENT_NAME = "Publication"
+
+CONTENT_TYPE_PDF = "application/pdf"
+CONTENT_TYPE_DOCX = (
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+)
+CONTENT_TYPE_HTML = "text/html"
+
+SINGLE_FILE_CONTENT_TYPES = {
+    CONTENT_TYPE_PDF,
+    CONTENT_TYPE_DOCX,
+}
+MULTI_FILE_CONTENT_TYPES = {CONTENT_TYPE_HTML}
+SUPPORTED_CONTENT_TYPES = SINGLE_FILE_CONTENT_TYPES | MULTI_FILE_CONTENT_TYPES
+
+
+class _LawPolicyDocumentType(str, Enum):
+    """Document types supported by the backend API."""
+
+    LAW = "Law"
+    POLICY = "Policy"
+
+
+CATEGORY_MAPPING = {
+    "executive": _LawPolicyDocumentType.POLICY,
+    "legislative": _LawPolicyDocumentType.LAW,
+}
+
+
+def _split_not_null(input_string: str, split_char: str) -> Sequence[str]:
+    return [s.strip() for s in input_string.strip().split(split_char) if s]
+
+
+def _extract_events(events_str: str) -> Sequence[Event]:
+    events = []
+    for event_string in _split_not_null(events_str, ";"):
+        event_parts = event_string.split("|")
+        date_str = event_parts[0]
+        event_date = datetime.strptime(date_str, "%d/%m/%Y")
+        event_name = event_parts[1]
+        events.append(Event(name=event_name, description="", created_ts=event_date))
+    return events
+
+
+DocumentResult = Tuple[DocumentCreateRequest, Mapping[str, Any]]
+
+
+def extract_documents(
+    csv_reader: DictReader,
+    valid_metadata: Mapping[str, Mapping[str, Collection[str]]],
+) -> Generator[DocumentResult, None, None]:
+    """
+    Validate the given CSV, generating document objects to be loaded
+
+
+    """
+    valid_cclw_metadata = valid_metadata[CCLW_SOURCE]
+    for row in csv_reader:
+        errors_encountered = {}
+
+        country_code = _validated_values(
+            valid_cclw_metadata,
+            META_GEOGRAPHY_KEY,
+            row[COUNTRY_CODE_FIELD].strip(),
+            errors_encountered,
+        )
+        year = row[YEAR_FIELD].strip()
+        document_name = row[TITLE_FIELD].strip()
+        document_description = _strip_tags(row[DESCRIPTION_FIELD])
+        action_id = row[ACTION_ID_FIELD].strip()
+        import_id = f"{action_id}-{row[DOCUMENT_ID_FIELD].strip()}"
+        document_url = _parse_url(row[DOCUMENT_FIELD])
+        document_languages = _validated_values(
+            valid_cclw_metadata,
+            META_LANGUAGE_KEY,
+            _split_not_null(row[LANGUAGES_FIELD], ";"),
+            errors_encountered,
+        )
+        presented_category = row[CATEGORY_FIELD].strip()
+        if presented_category in CATEGORY_MAPPING:
+            document_category = CATEGORY_MAPPING[presented_category].value
+        else:
+            document_category = presented_category
+            errors_encountered[META_CATEGORY_KEY] = [presented_category]
+        document_type = _validated_values(
+            valid_cclw_metadata,
+            META_DOC_TYPE_KEY,
+            row[DOCUMENT_TYPE_FIELD].strip(),
+            errors_encountered,
+        )
+        events = _extract_events(row[EVENTS_FIELD])
+        sectors = _validated_values(
+            valid_cclw_metadata,
+            META_SECTOR_KEY,
+            _split_not_null(row[SECTORS_FIELD], ";"),
+            errors_encountered,
+        )
+        instruments = _validated_values(
+            valid_cclw_metadata,
+            META_INSTRUMENT_KEY,
+            _split_not_null(row[INSTRUMENTS_FIELD], ";"),
+            errors_encountered,
+        )
+        frameworks = _validated_values(
+            valid_cclw_metadata,
+            META_FRAMEWORK_KEY,
+            _split_not_null(row[FRAMEWORKS_FIELD], ";"),
+            errors_encountered,
+        )
+        topics = _validated_values(
+            valid_cclw_metadata,
+            META_TOPIC_KEY,
+            _split_not_null(row[TOPICS_FIELD], ";"),
+            errors_encountered,
+        )
+        hazards = _validated_values(
+            valid_cclw_metadata,
+            META_HAZARD_KEY,
+            _split_not_null(row[HAZARDS_FIELD], ";"),
+            errors_encountered,
+        )
+        keywords = _validated_values(
+            valid_cclw_metadata,
+            META_KEYWORD_KEY,
+            _apply_map(CLEANUP_KEYWORDS_MAP, _split_not_null(row[KEYWORDS_FIELD], ";")),
+            errors_encountered,
+        )
+        if errors_encountered:
+            _LOGGER.error(
+                f"Invalid data found for document with id 'CCLW:{import_id}'. "
+                f"Invalid metadata values: '{errors_encountered}'"
+            )
+
+        publication_date = _calculate_publication_date(
+            events=events,
+            override_year=year,
+        )
+
+        yield (
+            DocumentCreateRequest(
+                name=document_name,
+                description=document_description,
+                source_url=document_url,
+                import_id=import_id,
+                publication_ts=publication_date,
+                url=None,  # Not yet uploaded
+                md5_sum=None,  # Calculated during upload
+                languages=document_languages,
+                type=document_type,
+                source=CCLW_SOURCE,
+                category=document_category,
+                geography=country_code,
+                frameworks=frameworks,
+                instruments=instruments,
+                topics=topics,
+                keywords=keywords,
+                hazards=hazards,
+                sectors=sectors,
+                events=events,
+            ),
+            errors_encountered,
+        )
+
+
+def _calculate_publication_date(
+    events: Sequence[Event],
+    override_year: str,
+) -> datetime:
+    """
+    Calculate the publication date from a sequence of events and a given fallback year.
+
+    Calculates the publication date of a document according to the following heuristic:
+        - The date of a "Publication" event if present
+        - The earliest event if no "Publication" event is found
+        - The first of January on the given fallback year if no events are present
+        - DEFAULT_POLICY_DATE if no other useful information can be derived
+
+    A warning will be issued if the fallback_year does not match a discovered event.
+
+    :param Sequence[Event] events: A sequence of parsed events associated with
+        the document
+    :returns datetime: The calculated publication date as described by the
+        heuristic above
+    """
+    publication_date = None
+
+    if override_year:
+        try:
+            parsed_fallback_year = int(override_year.strip())
+        except ValueError:
+            _LOGGER.exception(f"Could not parse specified year '{override_year}'")
+        else:
+            publication_date = datetime(year=parsed_fallback_year, month=1, day=1)
+
+    if publication_date is None:
+        for event in events:
+            if event.name.lower() == PUBLICATION_EVENT_NAME.lower():
+                return event.created_ts
+
+            if publication_date is None or event.created_ts < publication_date:
+                publication_date = event.created_ts
+
+    if publication_date is None:
+        _LOGGER.warn(
+            "Publication date could not be derived from input row, "
+            "falling back to setting a default policy publication date."
+        )
+
+    return publication_date or DEFAULT_POLICY_DATE
+
+
+def _parse_url(url: str) -> Optional[str]:
+    """
+    Parse a document URL.
+
+    In addition to parsing the URL, we also:
+        - convert http to https
+        - Remove any delimiters (a hang-over from the original CSV)
+
+    :param str url: An input string representing a URL
+    :returns str: An updated parsed URL as a string
+    """
+    if not url.strip():
+        return None
+    return url.split("|")[0].strip().replace("http://", "https://")
+
+
+class _HTMLStripper(HTMLParser):
+    """Strips HTML from strings."""
+
+    def __init__(self):
+        super().__init__()
+        self.reset()
+        self.strict = False
+        self.convert_charrefs = True
+        self.text = StringIO()
+
+    def handle_data(self, d):  # noqa:D102
+        self.text.write(d)
+
+    def get_data(self):  # noqa:D102
+        return self.text.getvalue()
+
+
+def _strip_tags(html: str) -> str:
+    s = _HTMLStripper()
+    s.feed(html)
+    return s.get_data()
+
+
+Value = TypeVar("Value", str, Sequence[str])
+
+
+def _validated_values(
+    metadata_map: Mapping[str, Collection[str]],
+    metadata_key: str,
+    presented_values: Value,
+    errors: Dict[str, Collection[str]],
+) -> Value:
+    if isinstance(presented_values, str):
+        check_presented_values = [presented_values]
+    else:
+        check_presented_values = presented_values
+    allowed_values = metadata_map[metadata_key]
+    invalid_values = {v for v in check_presented_values if v not in allowed_values}
+    if invalid_values:
+        errors[metadata_key] = invalid_values
+    return presented_values
+
+
+def _apply_map(
+    value_map: Mapping[str, str], presented_values: Sequence[str]
+) -> Sequence[str]:
+    return [value_map.get(v, v) for v in presented_values]

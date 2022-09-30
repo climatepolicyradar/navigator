@@ -4,7 +4,7 @@ from unittest.mock import ANY, MagicMock
 
 import pytest
 
-from app.api.api_v1.routers.lookups.utils import tree_table_to_json
+from app.api.api_v1.routers.lookups.util import tree_table_to_json
 from app.db.session import SessionLocal
 
 
