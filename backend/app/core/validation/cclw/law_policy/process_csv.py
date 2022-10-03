@@ -1,25 +1,26 @@
+import json
 import logging
 from csv import DictReader
 from datetime import datetime
 from enum import Enum
 from html.parser import HTMLParser
-from io import StringIO
+from io import BytesIO, StringIO, TextIOWrapper
 from typing import (
-    Any,
     Collection,
-    Dict,
     Generator,
     Mapping,
     Optional,
     Sequence,
-    Tuple,
     TypeVar,
 )
 
-import requests
-
-from app.core.validation.util import get_valid_metadata
 from app.api.api_v1.schemas.document import DocumentCreateRequest, Event
+from app.core.aws import S3Client
+from app.core.validation.types import (
+    DocumentValidationResult,
+    ImportSchemaMismatchError,
+)
+from app.core.validation import PIPELINE_BUCKET
 
 _LOGGER = logging.getLogger(__file__)
 
@@ -42,6 +43,30 @@ SECTORS_FIELD = "Sectors"
 TITLE_FIELD = "Title"
 TOPICS_FIELD = "Responses"
 YEAR_FIELD = "Year"
+
+_EXPECTED_FIELDS = set(
+    [
+        ACTION_ID_FIELD,
+        CATEGORY_FIELD,
+        COUNTRY_CODE_FIELD,
+        DESCRIPTION_FIELD,
+        DOCUMENT_FIELD,
+        DOCUMENT_ID_FIELD,
+        DOCUMENT_TYPE_FIELD,
+        EVENTS_FIELD,
+        FRAMEWORKS_FIELD,
+        GEOGRAPHY_FIELD,
+        HAZARDS_FIELD,
+        INSTRUMENTS_FIELD,
+        KEYWORDS_FIELD,
+        LANGUAGES_FIELD,
+        PARENT_LEGISLATION_FIELD,
+        SECTORS_FIELD,
+        TITLE_FIELD,
+        TOPICS_FIELD,
+        YEAR_FIELD,
+    ]
+)
 
 CCLW_SOURCE = "CCLW"
 META_CATEGORY_KEY = "categories"
@@ -113,7 +138,6 @@ CLEANUP_KEYWORDS_MAP = {
     "wetlands": "Wetlands",
 }
 
-DEFAULT_DESCRIPTION = "Imported by CPR loader"
 DEFAULT_POLICY_DATE = datetime(1900, 1, 1)
 PUBLICATION_EVENT_NAME = "Publication"
 
@@ -129,6 +153,8 @@ SINGLE_FILE_CONTENT_TYPES = {
 }
 MULTI_FILE_CONTENT_TYPES = {CONTENT_TYPE_HTML}
 SUPPORTED_CONTENT_TYPES = SINGLE_FILE_CONTENT_TYPES | MULTI_FILE_CONTENT_TYPES
+
+INGEST_TRIGGER_ROOT = "data-ingest"
 
 
 class _LawPolicyDocumentType(str, Enum):
@@ -159,21 +185,54 @@ def _extract_events(events_str: str) -> Sequence[Event]:
     return events
 
 
-DocumentResult = Tuple[DocumentCreateRequest, Mapping[str, Any]]
+def validated_input(csv_file: TextIOWrapper) -> DictReader:
+    """
+    Checks an input file for the correct provided headers.
+
+    :param TextIOWrapper csv_file: a file object to be processed as a CSV containing
+        document specifications
+    :returns DictReader: A csv.DictReader object for reading document specifications
+    :raises
+    """
+    csv_reader = DictReader(csv_file)
+
+    csv_fields = csv_reader.fieldnames
+    if csv_fields is None:
+        raise ImportSchemaMismatchError(message="File is empty", details={})
+
+    unexpected_fields = set(csv_fields) - _EXPECTED_FIELDS
+    missing_fields = _EXPECTED_FIELDS - set(csv_fields)
+    if unexpected_fields or missing_fields:
+        raise ImportSchemaMismatchError(
+            message="Provided CSV fields do not match those expected",
+            details={
+                "unexpected_fields": unexpected_fields,
+                "missing_fields": missing_fields,
+            },
+        )
+
+    return csv_reader
+
+
+_ValidMetadata = Mapping[str, Mapping[str, Collection[str]]]
 
 
 def extract_documents(
     csv_reader: DictReader,
-    valid_metadata: Mapping[str, Mapping[str, Collection[str]]],
-) -> Generator[DocumentResult, None, None]:
+    valid_metadata: _ValidMetadata,
+) -> Generator[DocumentValidationResult, None, None]:
     """
     Validate the given CSV, generating document objects to be loaded
 
-
+    :param DictReader csv_reader: a CSV file reader from which to read document
+        specifications
+    :param _ValidMetadata valid_metadata: a mapping specifying all the metadata values
+        known for each known input type
     """
     valid_cclw_metadata = valid_metadata[CCLW_SOURCE]
+    row_index = 1
     for row in csv_reader:
-        errors_encountered = {}
+        errors_encountered: dict[str, Collection[str]] = {}
 
         country_code = _validated_values(
             valid_cclw_metadata,
@@ -253,14 +312,15 @@ def extract_documents(
             override_year=year,
         )
 
-        yield (
-            DocumentCreateRequest(
+        yield DocumentValidationResult(
+            row=row_index,
+            create_request=DocumentCreateRequest(
                 name=document_name,
                 description=document_description,
                 source_url=document_url,
                 import_id=import_id,
                 publication_ts=publication_date,
-                url=None,  # Not yet uploaded
+                url=None,  # Produced when an upload is requested
                 md5_sum=None,  # Calculated during upload
                 languages=document_languages,
                 type=document_type,
@@ -275,8 +335,9 @@ def extract_documents(
                 sectors=sectors,
                 events=events,
             ),
-            errors_encountered,
+            errors=errors_encountered,
         )
+        row_index += 1
 
 
 def _calculate_publication_date(
@@ -372,7 +433,7 @@ def _validated_values(
     metadata_map: Mapping[str, Collection[str]],
     metadata_key: str,
     presented_values: Value,
-    errors: Dict[str, Collection[str]],
+    errors: dict[str, Collection[str]],
 ) -> Value:
     if isinstance(presented_values, str):
         check_presented_values = [presented_values]
@@ -389,3 +450,26 @@ def _apply_map(
     value_map: Mapping[str, str], presented_values: Sequence[str]
 ) -> Sequence[str]:
     return [value_map.get(v, v) for v in presented_values]
+
+
+def write_documents_to_s3(
+    s3_client: S3Client, documents: Sequence[DocumentCreateRequest]
+):
+    """
+    Write document specifications successfully created during a bulk import to S3
+
+    :param S3Client s3_client: an S3 client to use to write data
+    :param Sequence[DocumentCreateRequest] documents: a sequence of document
+        specifications to write to S3
+    """
+    json_content = json.dumps(documents, indent=2)
+    bytes_content = BytesIO(json_content.encode("utf8"))
+    current_datetime = datetime.now().isoformat()
+    documents_object_key = f"{INGEST_TRIGGER_ROOT}/{current_datetime}/documents.json"
+
+    s3_client.upload_fileobj(
+        bucket=PIPELINE_BUCKET,
+        key=documents_object_key,
+        content_type="application/json",
+        fileobj=bytes_content,
+    )

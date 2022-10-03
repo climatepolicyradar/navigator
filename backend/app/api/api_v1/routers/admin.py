@@ -1,3 +1,4 @@
+from io import TextIOWrapper
 from typing import cast
 
 from fastapi import (
@@ -12,15 +13,25 @@ from fastapi import (
 )
 from sqlalchemy.exc import IntegrityError
 
+from app.api.api_v1.schemas.document import BulkImportResult
 from app.api.api_v1.schemas.user import User, UserCreateAdmin
 from app.core.auth import get_current_active_superuser
+from app.core.aws import get_s3_client
 from app.core.email import (
     send_new_account_email,
     send_password_reset_email,
 )
 from app.core.ratelimit import limiter
+from app.core.validation.types import (
+    ImportSchemaMismatchError,
+    DocumentsFailedValidationError,
+)
 from app.core.validation.util import get_valid_metadata
-from app.core.validation.cclw.law_policy.process_csv import extract_documents
+from app.core.validation.cclw.law_policy.process_csv import (
+    extract_documents,
+    validated_input,
+    write_documents_to_s3,
+)
 from app.db.crud.password_reset import (
     create_password_reset_token,
     invalidate_existing_password_reset_tokens,
@@ -161,28 +172,57 @@ async def request_password_reset(
 
 @r.post(
     "/bulk-imports/cclw/law-policy",
-    # FIXME: implement response model
-    # response_model=LawPolicyImportValidation,
+    response_model=BulkImportResult,
+    status_code=status.HTTP_202_ACCEPTED,
 )
 async def import_law_policy(
     request: Request,
     law_policy_csv: UploadFile = File(
-        default="",
+        default=None,
+        media_type="text/csv",
         description="CSV file containing law/policy data to import.",
     ),
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
+    s3_client=Depends(get_s3_client),
 ):
     """Process a Law/Policy data import"""
     try:
+        csv_reader = validated_input(TextIOWrapper(law_policy_csv.file))
         valid_metadata = get_valid_metadata(db)
-        # FIXME: insert validation
-        # validate uploaded file using extract_documents
-        pass
-    # FIXME: Implement validation error heirarchy
-    # except ValidationError as e:
-    except Exception as e:
+
+        encountered_errors = {}
+        document_create_objects = []
+
+        # TODO: Check for document existence?
+        for validation_result in extract_documents(
+            csv_reader=csv_reader, valid_metadata=valid_metadata
+        ):
+            if validation_result.errors:
+                encountered_errors[validation_result.row] = validation_result.errors
+            else:
+                document_create_objects.append(validation_result.create_request)
+
+        if encountered_errors:
+            raise DocumentsFailedValidationError(
+                message="File failed detailed validation.", details=encountered_errors
+            )
+
+        write_documents_to_s3(s3_client=s3_client, documents=document_create_objects)
+
+        # TODO: Some way to monitor processing pipeline
+        return BulkImportResult(document_count=len(document_create_objects))
+    except ImportSchemaMismatchError as e:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=e.details,
+        ) from e
+    except DocumentsFailedValidationError as e:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-            detail=f"File failed validation: {e}",
-        )
+            detail=e.details,
+        ) from e
+    raise HTTPException(
+        status_code=status.HTTP_501_NOT_IMPLEMENTED,
+        detail="Endpoint not yet implemented.",
+    )

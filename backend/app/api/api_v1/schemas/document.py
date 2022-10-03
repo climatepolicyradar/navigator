@@ -129,3 +129,16 @@ class RelationshipAndDocumentsGetResponse(BaseModel):
 
     relationship: RelationshipEntityResponse
     documents: Optional[Sequence[DocumentOverviewResponse]] = None
+
+
+class DocumentUploadCompleteRequest(BaseModel):
+    """Information generated during the upload of a document that should be stored."""
+
+    md5_sum: str
+    content_type: str
+
+
+class BulkImportResult(BaseModel):
+    """Response for bulk import request."""
+
+    document_count: int
