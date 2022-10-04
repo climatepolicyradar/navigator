@@ -1,9 +1,8 @@
 import csv
-from typing import Dict
 from config import CSV_PARTIES, CSV_DOCUMENTS, CSV_CASES, CSV_EVENTS
 
 
-def _data_load(filename: str, id_key: str) -> Dict[str, Dict]:
+def _data_load(filename: str, id_key: str) -> dict[str, dict]:
     """Reads the filename as csv returning a Dict indexed on the id_key"""
     objects = {}
     with open(filename) as f:
