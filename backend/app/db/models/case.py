@@ -22,7 +22,7 @@ class LitBody(Base):  # noqa: D101
     description = Column(Text)
 
 
-class CaseStatus(enum.Enum):
+class CaseStatus(str, enum.Enum):
     """The current status of a Case."""
 
     OPEN = "Open"
@@ -32,7 +32,7 @@ class CaseStatus(enum.Enum):
     CLOSED = "Closed"
 
 
-class UNFCCCPillars(enum.Enum):
+class UNFCCCPillars(str, enum.Enum):
     """The UNFCCC Pillars"""
 
     ADAPTATION_RESILIENCE = "Adaptation & Resilience"
@@ -40,7 +40,7 @@ class UNFCCCPillars(enum.Enum):
     LOSS_DAMAGE = "Loss & Damage"
 
 
-class CaseOutcome(enum.Enum):
+class CaseOutcome(str, enum.Enum):
     """The outcome of a Case."""
 
     ENHANCED_CLIMATE_ACTION = "Enhanced climate action"
@@ -49,7 +49,7 @@ class CaseOutcome(enum.Enum):
     NA = "N/A"
 
 
-class ClimateAlignmentClass(enum.Enum):
+class ClimateAlignmentClass(str, enum.Enum):
     """The class of climate alignment."""
 
     CLIMATE_ALIGNED = "Climate aligned"
@@ -57,7 +57,7 @@ class ClimateAlignmentClass(enum.Enum):
     JUST_TRANSITION = "Just transition"
 
 
-class StrategicAlignmentClass(enum.Enum):
+class StrategicAlignmentClass(str, enum.Enum):
     """The class of strategic alignment."""
 
     ENFORCING_CLIMATE_STANDARDS = "Enforcing climate standards"

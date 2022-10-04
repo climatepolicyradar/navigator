@@ -73,7 +73,7 @@ class LitCaseExternalLaws(Base):  # noqa: D101
 # --------------------------------------------------
 
 
-class LitPartyType(enum.Enum):
+class LitPartyType(str, enum.Enum):
     """The type of Party involved in a case."""
 
     GOVERNMENT = "Government"
@@ -89,7 +89,7 @@ class LitPartyType(enum.Enum):
     INDIVIDUAL_REPRESENTING_CORPORATION = "Individual representing corporation"
 
 
-class LitSideType(enum.Enum):
+class LitSideType(str, enum.Enum):
     """The role of the party in the particular case."""
 
     FILING_PARTY = "Filing party"
@@ -142,7 +142,7 @@ class LitDocument(Base):  # noqa: D101
 # --------------------------------------------------
 
 
-class LitEventType(enum.Enum):
+class LitEventType(str, enum.Enum):
     """The type of event in a litigation case."""
 
     FILING = "Filing"
