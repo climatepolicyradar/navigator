@@ -2,16 +2,12 @@ import React, { FC } from "react";
 import Header from "@cclw/components/Header";
 import Footer from "@cclw/components/Footer";
 
-type TProps = {
-  screenHeight?: boolean;
-};
+type TProps = {};
 
-const Main: FC<TProps> = ({ screenHeight, children }) => (
+const Main: FC<TProps> = ({ children }) => (
   <>
     <Header />
-    <main className={`${screenHeight ? "h-screen" : ""} flex flex-col flex-1 relative`}>
-      {children}
-    </main>
+    <main className="flex flex-col flex-1">{children}</main>
     <Footer />
   </>
 );
