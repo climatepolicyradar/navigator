@@ -5,9 +5,10 @@ import { getCountryId } from "@helpers/getCountryId";
 
 type TCountryLink = {
   countryCode: string;
+  className?: string;
 };
 
-export const CountryLink: FC<TCountryLink> = ({ countryCode, children }) => {
+export const CountryLink: FC<TCountryLink> = ({ countryCode, className, children }) => {
   const configQuery: any = useConfig("config");
   const { data: { countries = [] } = {} } = configQuery;
 
@@ -15,7 +16,7 @@ export const CountryLink: FC<TCountryLink> = ({ countryCode, children }) => {
   if (!countryId) return <>{children}</>;
   return (
     <Link href={`/geographies/${countryId}`}>
-      <a className="flex underline text-blue-600">{children}</a>
+      <a className={`flex items-center underline ${className}`}>{children}</a>
     </Link>
   );
 };
