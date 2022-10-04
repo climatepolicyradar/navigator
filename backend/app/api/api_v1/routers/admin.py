@@ -30,7 +30,6 @@ from app.core.validation.util import get_valid_metadata
 from app.core.validation.cclw.law_policy.process_csv import (
     extract_documents,
     validated_input,
-    write_documents_to_s3,
 )
 from app.db.crud.password_reset import (
     create_password_reset_token,
@@ -208,7 +207,8 @@ async def import_law_policy(
                 message="File failed detailed validation.", details=encountered_errors
             )
 
-        write_documents_to_s3(s3_client=s3_client, documents=document_create_objects)
+        # TODO: BAK-1208 create documents in database
+        # TODO: BAK-1209 write document specs to s3
 
         # TODO: Some way to monitor processing pipeline
         return BulkImportResult(document_count=len(document_create_objects))
