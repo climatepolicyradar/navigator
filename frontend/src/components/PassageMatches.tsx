@@ -33,7 +33,7 @@ const PassageMatches = ({ document, setShowPDF, setPassageIndex, activeIndex }: 
                 </span>
                 <span>go to page &gt;</span>
               </div>
-              <p className="mt-2 text-indigo-400">{item.text}</p>
+              <p className="mt-2 text-indigo-400 font-light">{item.text}</p>
             </div>
           ))}
         </>
