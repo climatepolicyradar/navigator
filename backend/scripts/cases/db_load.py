@@ -24,16 +24,14 @@ def load(
     for case in all_cases:
         print(f"Importing Case {case}")
         case_data = cases[case]
-        
+
         # TODO: Create any Parties
         # TODO: Create any Events
         # TODO: Create any Documents
         # TODO: Create any Bodies
-        
+
         # TODO: Find Sector
         # TODO: Find Geography
-        
-
 
 
 if __name__ == "__main__":
