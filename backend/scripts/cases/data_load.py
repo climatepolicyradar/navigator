@@ -1,8 +1,9 @@
 import csv
+from typing import Mapping
 from config import CSV_PARTIES, CSV_DOCUMENTS, CSV_CASES, CSV_EVENTS
 
 
-def _data_load(filename: str, id_key: str) -> dict[str, dict]:
+def _data_load(filename: str, id_key: str) -> Mapping[str, Mapping]:
     """Reads the filename as csv returning a Dict indexed on the id_key"""
     objects = {}
     with open(filename) as f:
@@ -14,7 +15,7 @@ def _data_load(filename: str, id_key: str) -> dict[str, dict]:
     return objects
 
 
-def data_load() -> Dict[str, Dict]:
+def data_load() -> Mapping[str, Mapping]:
     return {
         "cases": _data_load(CSV_CASES, "Case ID"),
         "parties": _data_load(CSV_PARTIES, "Party ID"),
