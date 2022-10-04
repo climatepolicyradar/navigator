@@ -9,7 +9,7 @@ type TProps = {
 const Main: FC<TProps> = ({ screenHeight, children }) => (
   <>
     <Header />
-    <main className={`${screenHeight ? "h-screen" : ""} flex flex-col flex-1`}>
+    <main className={`${screenHeight ? "h-screen" : ""} flex flex-col flex-1 relative`}>
       {children}
     </main>
     <Footer />

@@ -6,16 +6,13 @@ import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
 import useUpdateSearch from "@hooks/useUpdateSearch";
 import useUpdateCountries from "@hooks/useUpdateCountries";
 import Layout from "@components/layouts/LandingPage";
-import LayoutMain from "@components/layouts/Main";
-import { Hero } from "@components/blocks/Hero";
 import LoaderOverlay from "@components/LoaderOverlay";
-import LandingSearchForm from "@components/forms/LandingSearchForm";
-import AlphaLogo from "@components/logo/AlphaLogo";
-import ExactMatch from "@components/filters/ExactMatch";
-import LandingPageLinks from "@components/blocks/LandingPageLinks";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { emptySearchResults } from "@constants/search";
 import useConfig from "@hooks/useConfig";
+import getSite from "@utils/getSite";
+
+import CPRHomepage from "@cpr/components/blocks/HomepageHero";
 
 const IndexPage = () => {
   const { t, ready } = useTranslation(["searchStart", "searchResults"]);
@@ -24,6 +21,7 @@ const IndexPage = () => {
   const updateSearchCriteria = useUpdateSearchCriteria();
   const { mutate: updateCountries } = useUpdateCountries();
   const { mutate: updateSearch } = useUpdateSearch();
+  const site = getSite();
 
   const configQuery: any = useConfig("config");
   const { data: { regions = [], countries = [] } = {} } = configQuery;
@@ -44,12 +42,6 @@ const IndexPage = () => {
     updateSearchCriteria.mutate({ [type]: value });
   };
 
-  const handleLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault();
-    const term = e.currentTarget.textContent;
-    handleSearchInput(term);
-  };
-  
   useEffect(() => {
     updateCountries({
       regionName: "",
@@ -57,27 +49,23 @@ const IndexPage = () => {
       countries,
     });
     updateSearch({ data: emptySearchResults });
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateCountries, updateSearch]);
 
   if (!ready || !searchCriteria) return <LoaderOverlay />;
 
-  // TODO: load the relevant landing page content dynamically
   return (
     <>
       <Layout title={t("Law and Policy Search")}>
-        <Hero>
-          <AlphaLogo />
-          <div className="container mt-24 md:mt-48 max-w-screen-lg mx-auto">
-            <LandingSearchForm handleSearchInput={handleSearchInput} placeholder={t("Search for something, e.g. 'carbon taxes'")} input={searchCriteria.query_string} />
-            <div className="mt-4 flex justify-end">
-              <ExactMatch landing={true} checked={searchCriteria.exact_match} id="exact-match" handleSearchChange={handleSearchChange} />
-            </div>
-            <div className="mt-12">
-              <LandingPageLinks handleLinkClick={handleLinkClick} />
-            </div>
-          </div>
-        </Hero>
+        {site === "cpr" && (
+          <CPRHomepage
+            handleSearchInput={handleSearchInput}
+            handleSearchChange={handleSearchChange}
+            searchInput={searchCriteria.query_string}
+            exactMatch={searchCriteria.exact_match}
+          />
+        )}
+        {site === "cclw" && null}
       </Layout>
     </>
   );
