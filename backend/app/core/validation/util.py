@@ -42,15 +42,13 @@ def get_valid_metadata(
     :param requests.Session session: The session used for making the request.
     :return Mapping[str, Sequence[str]]: _description_
     """
-    _LOGGER.info(f"Retrieving valid metadata values from database")
+    _LOGGER.info("Retrieving valid metadata values from database")
 
-    raw_metadata = get_metadata(db)
+    raw_metadata = get_metadata(db)["metadata"]
 
     return {
         source: {
-            meta: {
-                k: _flatten_maybe_tree(v) for k, v in raw_metadata[source][meta].items()
-            }
+            meta: _flatten_maybe_tree(raw_metadata[source][meta])
             for meta in raw_metadata[source]
         }
         for source in raw_metadata

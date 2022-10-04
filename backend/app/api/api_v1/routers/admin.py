@@ -222,6 +222,7 @@ async def import_law_policy(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=e.details,
         ) from e
+
     raise HTTPException(
         status_code=status.HTTP_501_NOT_IMPLEMENTED,
         detail="Endpoint not yet implemented.",
