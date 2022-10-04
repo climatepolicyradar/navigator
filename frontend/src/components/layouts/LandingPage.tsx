@@ -1,9 +1,6 @@
 import React, { ReactNode } from "react";
 import Head from "next/head";
-import getSite from "@utils/getSite";
 import getPageTitle from "@utils/getPageTitle";
-import CPRMain from "@cpr/pages/landing-page";
-import CCLWMain from "@cclw/pages/landing-page";
 
 type TProps = {
   children?: ReactNode;
@@ -11,7 +8,6 @@ type TProps = {
 };
 
 const Layout = ({ children, title = "" }: TProps) => {
-  const site = getSite();
   return (
     <div>
       <Head>
@@ -22,8 +18,7 @@ const Layout = ({ children, title = "" }: TProps) => {
       <a className="sr-only" href="#main">
         Skip to content
       </a>
-      {site === "cpr" && <CPRMain>{children}</CPRMain>}
-      {site === "cclw" && <CCLWMain>{children}</CCLWMain>}
+      {children}
     </div>
   );
 };

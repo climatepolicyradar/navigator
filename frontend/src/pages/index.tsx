@@ -5,14 +5,15 @@ import useSearchCriteria from "@hooks/useSearchCriteria";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
 import useUpdateSearch from "@hooks/useUpdateSearch";
 import useUpdateCountries from "@hooks/useUpdateCountries";
+import useConfig from "@hooks/useConfig";
 import Layout from "@components/layouts/LandingPage";
 import LoaderOverlay from "@components/LoaderOverlay";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { emptySearchResults } from "@constants/search";
-import useConfig from "@hooks/useConfig";
 import getSite from "@utils/getSite";
 
-import CPRHomepage from "@cpr/components/blocks/HomepageHero";
+import CPRLandingPage from "@cpr/pages/landing-page";
+import CCLWLandingPage from "@cclw/pages/landing-page";
 
 const IndexPage = () => {
   const { t, ready } = useTranslation(["searchStart", "searchResults"]);
@@ -58,14 +59,14 @@ const IndexPage = () => {
     <>
       <Layout title={t("Law and Policy Search")}>
         {site === "cpr" && (
-          <CPRHomepage
+          <CPRLandingPage
             handleSearchInput={handleSearchInput}
             handleSearchChange={handleSearchChange}
             searchInput={searchCriteria.query_string}
             exactMatch={searchCriteria.exact_match}
           />
         )}
-        {site === "cclw" && null}
+        {site === "cclw" && <CCLWLandingPage handleSearchInput={handleSearchInput} handleSearchChange={handleSearchChange} searchInput={searchCriteria.query_string} />}
       </Layout>
     </>
   );
