@@ -6,11 +6,10 @@ import { Partners } from "@cclw/components/Partners";
 
 type TProps = {
   handleSearchInput: (term: string, filter?: string, filterValue?: string) => void;
-  handleSearchChange: (type: string, value: any) => void;
   searchInput: string;
 };
 
-const LandingPage = ({ handleSearchInput, handleSearchChange, searchInput }: TProps) => {
+const LandingPage = ({ handleSearchInput, searchInput }: TProps) => {
   return (
     <Main>
       <Hero handleSearchInput={handleSearchInput} searchInput={searchInput} />

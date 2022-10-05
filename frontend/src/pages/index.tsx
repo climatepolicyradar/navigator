@@ -66,7 +66,7 @@ const IndexPage = () => {
             exactMatch={searchCriteria.exact_match}
           />
         )}
-        {site === "cclw" && <CCLWLandingPage handleSearchInput={handleSearchInput} handleSearchChange={handleSearchChange} searchInput={searchCriteria.query_string} />}
+        {site === "cclw" && <CCLWLandingPage handleSearchInput={handleSearchInput} searchInput={searchCriteria.query_string} />}
       </Layout>
     </>
   );
