@@ -53,33 +53,30 @@ const ARTICLES: TArticle[] = [
 
 export const Articles = () => {
   return (
-    <div className="container my-10">
-      <h2 className="text-center mb-6">Featured Content</h2>
-      <div className="md:flex flex-wrap justify-center">
-        {ARTICLES.map((article) => {
-          return (
-            <div className="p-4 text-primary-400 md:basis-1/2 lg:basis-1/3" key={article.title}>
-              <ExternalLink url={article.url} className="block relative border border-grey-400 rounded h-full">
-                <div className="absolute top-0 left-0 p-2 bg-secondary-500 rounded text-xs text-white z-10">{article.type}</div>
-                <div className="text-center flex flex-col justify-center items-center min-h-[180px]">
-                  {article.imageUrl && (
-                    <div className="w-full h-[120px] overflow-hidden relative">
-                      <Image src={article.imageUrl} alt={article.imageAlt} layout="fill" objectFit="cover" />
-                    </div>
-                  )}
-                  <div className={`p-4 text-primary-400 flex-1 flex items-center text-lg font-bold ${article.imageUrl ? "" : "pt-8"}`}>{article.title}</div>
-                  {article.meta && (
-                    <div className="flex items-center gap-2 mb-2 text-grey-700">
-                      {article.countryCode && <span className={`rounded-sm border border-black flag-icon-background flag-icon-${article.countryCode} inline-block`} />}
-                      <div className="">{article.meta}</div>
-                    </div>
-                  )}
-                </div>
-              </ExternalLink>
-            </div>
-          );
-        })}
-      </div>
+    <div className="md:flex flex-wrap justify-center">
+      {ARTICLES.map((article) => {
+        return (
+          <div className="p-4 text-primary-400 md:basis-1/2 lg:basis-1/3" key={article.title}>
+            <ExternalLink url={article.url} className="block relative border border-grey-400 rounded h-full">
+              <div className="absolute top-0 left-0 p-2 bg-secondary-500 rounded text-xs text-white z-10">{article.type}</div>
+              <div className="text-center flex flex-col justify-center items-center min-h-[180px]">
+                {article.imageUrl && (
+                  <div className="w-full h-[120px] overflow-hidden relative">
+                    <Image src={article.imageUrl} alt={article.imageAlt} layout="fill" objectFit="cover" />
+                  </div>
+                )}
+                <div className={`p-4 text-primary-400 flex-1 flex items-center text-lg font-bold ${article.imageUrl ? "" : "pt-8"}`}>{article.title}</div>
+                {article.meta && (
+                  <div className="flex items-center gap-2 mb-2 text-grey-700">
+                    {article.countryCode && <span className={`rounded-sm border border-black flag-icon-background flag-icon-${article.countryCode} inline-block`} />}
+                    <div className="">{article.meta}</div>
+                  </div>
+                )}
+              </div>
+            </ExternalLink>
+          </div>
+        );
+      })}
     </div>
   );
 };

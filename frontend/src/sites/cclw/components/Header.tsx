@@ -31,36 +31,38 @@ const Header = () => {
             </Link>
           </div>
           <div className="flex-1 flex flex-col mt-6 text-blue-400">
-            <div className="font-bold md:text-xl lg:text-3xl">
-              <Link href={`/`}>
-                <a className="">Climate Change Laws of the World</a>
-              </Link>
-            </div>
+            {activePage !== "/" && (
+              <div className="font-bold md:text-xl lg:text-3xl">
+                <Link href={`/`}>
+                  <a className="">Climate Change Laws of the World</a>
+                </Link>
+              </div>
+            )}
             <nav className="mt-8 flex-1 text-white hidden md:block">
               <ul className="flex items-end gap-8 h-full text-sm lg:text-base">
                 <li>
                   <Link href="/">
-                    <a className={linkClass('/')}>Home</a>
+                    <a className={linkClass("/")}>Home</a>
                   </Link>
                 </li>
                 <li>
                   <Link href="/">
-                    <a className={linkClass('/about')}>About</a>
+                    <a className={linkClass("/about")}>About</a>
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/methodology">
+                    <a className={linkClass("/methodology")}>Methodology</a>
                   </Link>
                 </li>
                 <li>
                   <Link href="/">
-                    <a className={linkClass('/methodology')}>Methodology</a>
+                    <a className={linkClass("/acknowledgements")}>Acknowledgements</a>
                   </Link>
                 </li>
                 <li>
-                  <Link href="/">
-                    <a className={linkClass('/acknowledgements')}>Acknowledgements</a>
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/">
-                    <a className={linkClass('/search')}>Search</a>
+                  <Link href="/search">
+                    <a className={linkClass("/search")}>Search</a>
                   </Link>
                 </li>
               </ul>
