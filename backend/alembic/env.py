@@ -5,7 +5,7 @@ from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-from app.db.models import Base
+from app.db.session import Base
 
 logger = logging.getLogger(__name__)
 
