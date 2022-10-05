@@ -87,7 +87,6 @@ class LitPartyType(str, enum.Enum):
     TRADE_ASSOCIATION = "Trade association"
     SUPRANATIONAL_LEGAL_BODY = "Supranational legal body"
     INDIVIDUAL_REPRESENTING_CORPORATION = "Individual representing corporation"
-    INTERVENING_PARTY = "Intervening Party"
     NA = "N/A"
 
 

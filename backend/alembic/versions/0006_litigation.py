@@ -51,7 +51,6 @@ def upgrade():
                 "TRADE_ASSOCIATION",
                 "SUPRANATIONAL_LEGAL_BODY",
                 "INDIVIDUAL_REPRESENTING_CORPORATION",
-                "INTERVENING_PARTY",
                 "NA",
                 name="litpartytype",
             ),
