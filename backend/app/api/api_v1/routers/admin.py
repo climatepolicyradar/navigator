@@ -13,7 +13,7 @@ from fastapi import (
 )
 from sqlalchemy.exc import IntegrityError
 
-from app.api.api_v1.schemas.document import BulkImportResult
+from app.api.api_v1.schemas.document import BulkImportValidatedResult
 from app.api.api_v1.schemas.user import User, UserCreateAdmin
 from app.core.auth import get_current_active_superuser
 from app.core.aws import get_s3_client
@@ -172,7 +172,7 @@ async def request_password_reset(
 
 @r.post(
     "/bulk-imports/cclw/law-policy",
-    response_model=BulkImportResult,
+    response_model=BulkImportValidatedResult,
     status_code=status.HTTP_202_ACCEPTED,
 )
 async def import_law_policy(
@@ -211,7 +211,7 @@ async def import_law_policy(
         # TODO: BAK-1209 write document specs to s3
 
         # TODO: Some way to monitor processing pipeline
-        return BulkImportResult(document_count=len(document_create_objects))
+        return BulkImportValidatedResult(document_count=len(document_create_objects))
     except ImportSchemaMismatchError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,

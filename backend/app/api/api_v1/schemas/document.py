@@ -138,7 +138,7 @@ class DocumentUploadCompleteRequest(BaseModel):
     content_type: str
 
 
-class BulkImportResult(BaseModel):
+class BulkImportValidatedResult(BaseModel):
     """Response for bulk import request."""
 
     document_count: int
