@@ -35,7 +35,7 @@ const LandingPage = ({ handleSearchInput, handleSearchChange, searchInput, exact
         <Hero>
           <AlphaLogo />
           <div className="container mt-24 md:mt-48 max-w-screen-lg mx-auto">
-            <LandingSearchForm handleSearchInput={handleSearchInput} placeholder={t("Search for something, e.g. 'carbon taxes'")} input={searchInput} />
+            <LandingSearchForm handleSearchInput={handleSearchInput} input={searchInput} />
             <div className="mt-4 flex justify-end">
               <ExactMatch landing={true} checked={exactMatch} id="exact-match" handleSearchChange={handleSearchChange} />
             </div>
