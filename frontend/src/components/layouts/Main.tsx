@@ -24,7 +24,7 @@ const Layout: FC<TProps> = ({ children, title = "", screenHeight = false }) => {
         Skip to content
       </a>
       {site === "cpr" && <CPRMain screenHeight={screenHeight}>{children}</CPRMain>}
-      {site === "cclw" && <CCLWMain screenHeight={screenHeight}>{children}</CCLWMain>}
+      {site === "cclw" && <CCLWMain>{children}</CCLWMain>}
     </div>
   );
 };
