@@ -89,6 +89,7 @@ class LitPartyType(str, enum.Enum):
     INDIVIDUAL_REPRESENTING_CORPORATION = "Individual representing corporation"
 
 
+
 class LitSideType(str, enum.Enum):
     """The role of the party in the particular case."""
 
