@@ -2,7 +2,7 @@
 
 Revision ID: 0006
 Revises: 0005
-Create Date: 2022-09-29 15:43:57.297268
+Create Date: 2022-10-05 17:15:03.956379
 
 """
 from alembic import op
@@ -51,13 +51,17 @@ def upgrade():
                 "TRADE_ASSOCIATION",
                 "SUPRANATIONAL_LEGAL_BODY",
                 "INDIVIDUAL_REPRESENTING_CORPORATION",
-                name="partytype",
+                "INTERVENING_PARTY",
+                "NA",
+                name="litpartytype",
             ),
             nullable=True,
         ),
         sa.Column(
             "side_type",
-            sa.Enum("FILING_PARTY", "RESPONDING_PARTY", "INTERVENOR", name="sidetype"),
+            sa.Enum(
+                "FILING_PARTY", "RESPONDING_PARTY", "INTERVENOR", name="litsidetype"
+            ),
             nullable=True,
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_lit_party")),
@@ -256,7 +260,7 @@ def upgrade():
                 "OTHER",
                 "APPEAL",
                 "PRE_ACTION_EVENT",
-                name="eventtype",
+                name="liteventtype",
             ),
             nullable=True,
         ),
@@ -285,28 +289,6 @@ def upgrade():
             "event_id", "document_id", name=op.f("pk_lit_event_documents")
         ),
     )
-
-    # Now get rid of smallintegers
-    op.alter_column(
-        "geography", "id", type_=sa.Integer(), existing_type=sa.SmallInteger
-    )
-    op.alter_column("language", "id", type_=sa.Integer(), existing_type=sa.SmallInteger)
-    op.alter_column(
-        "geo_statistics", "id", type_=sa.Integer(), existing_type=sa.SmallInteger
-    )
-
-    op.alter_column(
-        "document", "geography_id", type_=sa.Integer(), existing_type=sa.SmallInteger
-    )
-    op.alter_column(
-        "passage", "language_id", type_=sa.Integer(), existing_type=sa.SmallInteger
-    )
-
-    # and for the seq too
-    op.execute("ALTER SEQUENCE geo_statistics_id_seq AS INTEGER")
-    op.execute("ALTER SEQUENCE geography_id_seq AS INTEGER")
-    op.execute("ALTER SEQUENCE language_id_seq AS INTEGER")
-
     # ### end Alembic commands ###
 
 
@@ -323,8 +305,4 @@ def downgrade():
     op.drop_table("lit_party")
     op.drop_table("lit_external_law")
     op.drop_table("lit_body")
-
-    # NOTE:
-    #   Note handcrafted the downgrade as downgrads are not maintained.
-
     # ### end Alembic commands ###
