@@ -307,6 +307,7 @@ def test_bulk_import_cclw_law_policy_valid(
     )
     print(response.text)
     assert response.status_code == 202
+    assert response.json()["document_count"] == 2
 
 
 @pytest.mark.parametrize(
