@@ -79,7 +79,7 @@ class Document(Base, Auditable):
     )
 
     geography_id = sa.Column(
-        sa.SmallInteger,
+        sa.Integer,
         sa.ForeignKey(Geography.id),
         nullable=False,
     )
@@ -204,7 +204,7 @@ class DocumentResponse(Base):  # noqa: D101
 class Language(Base):  # noqa: D101
     __tablename__ = "language"
 
-    id = sa.Column(sa.SmallInteger, primary_key=True)
+    id = sa.Column(sa.Integer, primary_key=True)
     language_code = sa.Column(sa.CHAR(length=3), nullable=False, unique=True)
     part1_code = sa.Column(sa.CHAR(length=2))
     part2_code = sa.Column(sa.CHAR(length=3))
@@ -292,7 +292,7 @@ class Passage(Base):  # noqa: D101
         sa.ForeignKey("passage.id"),
     )
     language_id = sa.Column(
-        sa.SmallInteger,
+        sa.Integer,
         sa.ForeignKey(Language.id),
     )
     text = sa.Column(sa.TEXT(), autoincrement=False, nullable=False)

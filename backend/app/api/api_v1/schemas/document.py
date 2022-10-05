@@ -97,6 +97,7 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
         orm_mode = True
         validate_assignment = True
 
+
 class RelationshipCreateRequest(BaseModel):
     """Schema for Relationship create request."""
 
