@@ -24,6 +24,7 @@ module.exports = {
         200: "#F9FAFB",
         400: "#E7E7EA",
         500: "#CFD0D7",
+        700: "#6e6e6e",
       },
       indigo: {
         100: "#f2f2f5",
@@ -38,6 +39,7 @@ module.exports = {
       primary: {
         400: "#ED3D48",
         700: "#C9131E",
+        default: "#ED3D48",
       },
       secondary: {
         500: "#393A5A",
