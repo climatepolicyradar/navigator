@@ -48,6 +48,7 @@ from .document import (
     Event,
     Relationship,
     DocumentRelationship,
+    Base,
 )
 from .user import User, PasswordResetToken
 from .source import Source
