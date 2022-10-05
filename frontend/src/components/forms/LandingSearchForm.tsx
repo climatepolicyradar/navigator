@@ -18,11 +18,6 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
   const formRef = useRef(null);
   const site = getSite();
 
-  const typePlaceholder = () => {
-    const text = [placeholder ?? "Search full text of 3000+ laws and policies"];
-    StartTextAnimation(0, text, inputRef.current);
-  };
-
   const clearSearch = () => {
     setTerm("");
   };
@@ -41,8 +36,11 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
   }, [input]);
 
   useEffect(() => {
-    if (inputRef.current) typePlaceholder();
-  }, [inputRef]);
+    if (inputRef.current) {
+      const text = [placeholder ?? "Search full text of 3000+ laws and policies"];
+      StartTextAnimation(0, text, inputRef.current);
+    };
+  }, [inputRef, placeholder]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
