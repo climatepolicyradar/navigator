@@ -274,7 +274,9 @@ def test_reset_password(
     assert mock_send_email.call_count == 2
 
 
+@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
 def test_bulk_import_cclw_law_policy_valid(
+    mock_write_s3,
     client,
     superuser_token_headers,
     test_db,
@@ -305,9 +307,10 @@ def test_bulk_import_cclw_law_policy_valid(
         files=files,
         headers=superuser_token_headers,
     )
-    print(response.text)
     assert response.status_code == 202
     assert response.json()["document_count"] == 2
+    mock_write_s3.assert_called_once()
+    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
 
 
 @pytest.mark.parametrize(
@@ -317,7 +320,9 @@ def test_bulk_import_cclw_law_policy_valid(
         (INVALID_CSV_MIXED_ERRORS, 400),
     ],
 )
+@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
 def test_bulk_import_cclw_law_policy_invalid(
+    mock_write_s3,
     invalid_file_content,
     expected_status,
     client,
@@ -350,7 +355,7 @@ def test_bulk_import_cclw_law_policy_invalid(
         files=files,
         headers=superuser_token_headers,
     )
-    print(response.text)
     assert response.status_code == expected_status
     assert "detail" in response.json()
     assert response.json()["detail"]
+    mock_write_s3.assert_not_called()

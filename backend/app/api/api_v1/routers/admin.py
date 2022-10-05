@@ -26,11 +26,10 @@ from app.core.validation.types import (
     ImportSchemaMismatchError,
     DocumentsFailedValidationError,
 )
-from app.core.validation.util import get_valid_metadata
+from app.core.validation.util import get_valid_metadata, write_documents_to_s3
 from app.core.validation.cclw.law_policy.process_csv import (
     extract_documents,
     validated_input,
-    write_documents_to_s3,
 )
 from app.db.crud.password_reset import (
     create_password_reset_token,

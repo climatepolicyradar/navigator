@@ -1,5 +1,5 @@
 import datetime
-from typing import Optional, Sequence
+from typing import Any, Mapping, Optional, Sequence
 
 from pydantic import BaseModel
 
@@ -106,6 +106,16 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
     topics: Sequence[str]
 
     events: Sequence[Event]
+
+    def to_json(self) -> Mapping[str, Any]:
+        """Provide a serialisable version of the model"""
+
+        json_dict = self.dict()
+        json_dict["publication_ts"] = (
+            self.publication_ts.isoformat() if self.publication_ts is not None else None
+        )
+        json_dict["events"] = [event.to_json() for event in self.events]
+        return json_dict
 
     class Config:  # noqa: D106
         orm_mode = True
