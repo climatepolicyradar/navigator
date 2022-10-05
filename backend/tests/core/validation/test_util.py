@@ -22,7 +22,7 @@ NOT_A_TREE_4 = []
 )
 def test__flatten_maybe_tree_not_a_tree(not_a_tree: Sequence):
     """Just test that we get values from JSON that does not describe a tree"""
-    assert {min(d.values()) for d in not_a_tree} == _flatten_maybe_tree(not_a_tree)
+    assert [min(d.values()) for d in not_a_tree] == _flatten_maybe_tree(not_a_tree)
 
 
 IS_A_TREE_1 = [{"node": {"name": "dave"}, "children": []}]
@@ -48,10 +48,10 @@ IS_A_TREE_3 = [
     {"node": {"value": "stewart"}, "children": []},
 ]
 IS_A_TREE_4 = []
-IS_A_TREE_1_EXPECTED = {"dave"}
-IS_A_TREE_2_EXPECTED = {"dave", "steve"}
-IS_A_TREE_3_EXPECTED = {"dave", "steve", "othello", "ally", "stewart"}
-IS_A_TREE_4_EXPECTED = set()
+IS_A_TREE_1_EXPECTED = ["dave"]
+IS_A_TREE_2_EXPECTED = ["dave", "steve"]
+IS_A_TREE_3_EXPECTED = ["dave", "steve", "othello", "ally", "stewart"]
+IS_A_TREE_4_EXPECTED = []
 
 
 @pytest.mark.parametrize(
@@ -96,6 +96,6 @@ def test_valid_metadata(test_db):
     assert "sources" in cclw_metadata
     assert "topics" in cclw_metadata
 
-    assert cclw_metadata["sources"] == {"Primary"}
-    assert cclw_metadata["keywords"] == {"some keyword"}
-    assert cclw_metadata["sectors"] == {"Energy", "Agriculture"}
+    assert cclw_metadata["sources"] == ["Primary"]
+    assert cclw_metadata["keywords"] == ["some keyword"]
+    assert cclw_metadata["sectors"] == ["Energy", "Agriculture"]

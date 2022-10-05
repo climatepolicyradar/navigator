@@ -19,7 +19,6 @@ from fastapi import (
 
 from app.core.auth import (
     get_current_active_superuser,
-    get_current_active_db_superuser,
 )
 from app.core.aws import get_s3_client
 from app.core.util import CONTENT_TYPE_MAP
@@ -84,7 +83,7 @@ async def post_document(
     request: Request,
     document_with_metadata: DocumentCreateRequest,
     db=Depends(get_db),
-    current_user=Depends(get_current_active_db_superuser),
+    current_user=Depends(get_current_active_superuser),
 ):
     """Create a document, with associated metadata."""
 

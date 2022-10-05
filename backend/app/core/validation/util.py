@@ -10,7 +10,7 @@ _LOGGER = logging.getLogger(__file__)
 
 def _flatten_maybe_tree(
     maybe_tree: Sequence[Mapping[str, Any]],
-    values: Optional[set[str]] = None,
+    values: Optional[list[str]] = None,
 ) -> Collection[str]:
     def is_tree_node(maybe_node: Mapping[str, Any]) -> bool:
         return set(maybe_node.keys()) == {"node", "children"}
@@ -21,14 +21,14 @@ def _flatten_maybe_tree(
             raise Exception(f"No value found in '{data_node}'")
         return value
 
-    values = values or set()
+    values = values or []
 
     for maybe_node in maybe_tree:
         if is_tree_node(maybe_node):
-            values.add(get_value(maybe_node["node"]))
+            values.append(get_value(maybe_node["node"]))
             _flatten_maybe_tree(maybe_node["children"], values=values)
         else:
-            values.add(get_value(maybe_node))
+            values.append(get_value(maybe_node))
 
     return values
 

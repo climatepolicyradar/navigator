@@ -1,10 +1,10 @@
-from io import TextIOWrapper
+from io import StringIO
+import logging
 from typing import cast
 
 from fastapi import (
     APIRouter,
     Depends,
-    File,
     HTTPException,
     Request,
     Response,
@@ -43,6 +43,8 @@ from app.db.crud.user import (
     get_users,
 )
 from app.db.session import get_db
+
+_LOGGER = logging.getLogger(__name__)
 
 admin_users_router = r = APIRouter()
 
@@ -137,7 +139,6 @@ async def user_delete(
     current_user=Depends(get_current_active_superuser),
 ):
     """Deletes existing user"""
-    # TODO send email?
     return deactivate_user(db, user_id)
 
 
@@ -176,18 +177,17 @@ async def request_password_reset(
 )
 async def import_law_policy(
     request: Request,
-    law_policy_csv: UploadFile = File(
-        default=None,
-        media_type="text/csv",
-        description="CSV file containing law/policy data to import.",
-    ),
+    law_policy_csv: UploadFile,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
     s3_client=Depends(get_s3_client),
 ):
     """Process a Law/Policy data import"""
+    _LOGGER.info("Received bulk import request for CCLW Law & Policy data")
     try:
-        csv_reader = validated_input(TextIOWrapper(law_policy_csv.file))
+        csv_reader = validated_input(
+            StringIO(law_policy_csv.file.read().decode("utf8"))
+        )
         valid_metadata = get_valid_metadata(db)
 
         encountered_errors = {}
@@ -222,8 +222,8 @@ async def import_law_policy(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
             detail=e.details,
         ) from e
-
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="Endpoint not yet implemented.",
-    )
+    except Exception as e:
+        _LOGGER.exception("Unexpected error")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        ) from e

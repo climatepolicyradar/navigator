@@ -197,8 +197,8 @@ def validated_input(csv_file: TextIOWrapper) -> DictReader:
     if csv_fields is None:
         raise ImportSchemaMismatchError(message="File is empty", details={})
 
-    unexpected_fields = set(csv_fields) - _EXPECTED_FIELDS
-    missing_fields = _EXPECTED_FIELDS - set(csv_fields)
+    unexpected_fields = [f for f in csv_fields if f not in _EXPECTED_FIELDS]
+    missing_fields = [f for f in _EXPECTED_FIELDS if f not in set(csv_fields)]
     if unexpected_fields or missing_fields:
         raise ImportSchemaMismatchError(
             message="Provided CSV fields do not match those expected",
@@ -437,7 +437,7 @@ def _validated_values(
     else:
         check_presented_values = presented_values
     allowed_values = metadata_map[metadata_key]
-    invalid_values = {v for v in check_presented_values if v not in allowed_values}
+    invalid_values = [v for v in check_presented_values if v not in allowed_values]
     if invalid_values:
         errors[metadata_key] = invalid_values
     return presented_values
