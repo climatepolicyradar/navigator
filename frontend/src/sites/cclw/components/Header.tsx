@@ -68,7 +68,7 @@ const Header = () => {
               </ul>
             </nav>
           </div>
-          <div className="text-white items-end mb-6 hidden xl:flex">
+          <div className="text-white items-end mb-6 hidden xl:flex text-sm">
             <div>
               <p>A project of... </p>
               <div className="flex xflex-col gap-4 mt-2">
