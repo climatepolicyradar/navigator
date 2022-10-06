@@ -20,8 +20,8 @@ from fastapi import (
 from app.core.auth import (
     get_current_active_superuser,
 )
-from app.core.aws import get_s3_client
-from app.core.util import CONTENT_TYPE_MAP
+from app.core.aws import AWS_REGION, S3Document, get_s3_client
+from app.core.util import CONTENT_TYPE_MAP, s3_to_cdn_url
 from app.db.crud.document import (
     UnknownMetadataError,
     create_document_relationship,
@@ -38,6 +38,8 @@ from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
+    DocumentUploadRequest,
+    DocumentUploadResponse,
     RelationshipAndDocumentsGetResponse,
     RelationshipCreateRequest,
     RelationshipEntityResponse,
@@ -99,6 +101,51 @@ async def post_document(
 
 
 @documents_router.post(
+    "/document-uploads",
+    response_model=DocumentUploadResponse,
+    status_code=201,
+)
+def create_upload_url(
+    request: Request,
+    document_upload_request: DocumentUploadRequest,
+    current_user=Depends(get_current_active_superuser),
+    s3_client=Depends(get_s3_client),
+) -> DocumentUploadResponse:
+    """
+    Create a pre-signed URL for uploading a document
+
+    :param Request request: the fastapi request context
+    :param DocumentUploadRequest document_upload_request: details of the file to create
+    :param current_user: the details of the user making the request - must be
+        a superuser, defaults to Depends(get_current_active_superuser)
+    :param s3_client: the s3 client to use to create a pre-signed URL, defaults
+        to Depends(get_s3_client)
+    :raises HTTPException: on user auth failure or client failure
+    :return str: the URL to use for file upload
+    """
+    bucket = os.environ.get("DOCUMENT_BUCKET", "cpr-document-queue")
+    s3_document = S3Document(
+        bucket_name=bucket,
+        region=AWS_REGION,
+        key=document_upload_request.filename,
+    )
+    if s3_client.document_exists(s3_document) and not document_upload_request.overwrite:
+        raise HTTPException(
+            UNPROCESSABLE_ENTITY, "File already exists & overwrite not requested."
+        )
+    try:
+        return DocumentUploadResponse(
+            presigned_upload_url=s3_client.generate_pre_signed_url(s3_document),
+            cdn_url=s3_to_cdn_url(s3_document.url),
+        )
+    except Exception:
+        raise HTTPException(
+            INTERNAL_SERVER_ERROR,
+            "Internal Server Error: upload error.",
+        )
+
+
+@documents_router.post(
     "/document",
 )
 def document_upload(
@@ -120,6 +167,7 @@ def document_upload(
         )
 
     try:
+        # s3_client.ge
         s3_document = s3_client.upload_fileobj(
             fileobj=file.file,
             bucket=bucket,

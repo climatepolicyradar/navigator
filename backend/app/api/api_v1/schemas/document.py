@@ -67,6 +67,20 @@ class DocumentDetailResponse(BaseModel):
         frozen = True
 
 
+class DocumentUploadRequest(BaseModel):
+    """Details of a file we wish to upload."""
+
+    filename: str
+    overwrite: Optional[bool] = False
+
+
+class DocumentUploadResponse(BaseModel):
+    """Details required to upload a document to our backend storage."""
+
+    presigned_upload_url: str
+    cdn_url: str
+
+
 class DocumentCreateRequest(BaseModel):  # noqa: D106
     """Details of a document to create - metadata will be validated & looked up."""
 
