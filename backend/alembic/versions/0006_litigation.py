@@ -2,12 +2,12 @@
 
 Revision ID: 0006
 Revises: 0005
-Create Date: 2022-10-05 17:15:03.956379
+Create Date: 2022-10-06 17:28:54.289411
 
 """
 from alembic import op
 import sqlalchemy as sa
-
+from sqlalchemy.dialects import postgresql
 
 # revision identifiers, used by Alembic.
 revision = "0006"
@@ -64,7 +64,10 @@ def upgrade():
             nullable=True,
         ),
         sa.PrimaryKeyConstraint("id", name=op.f("pk_lit_party")),
-        sa.UniqueConstraint("name", name=op.f("uq_lit_party__name")),
+        sa.UniqueConstraint(
+            "name", "party_type", "side_type", name=op.f("uq_lit_party__name")
+        ),
+        schema="public",
     )
     op.create_table(
         "lit_case",
@@ -140,6 +143,7 @@ def upgrade():
             nullable=True,
         ),
         sa.Column("source", sa.Text(), nullable=True),
+        sa.Column("keywords", postgresql.ARRAY(sa.Text()), nullable=True),
         sa.Column("body_id", sa.Integer(), nullable=True),
         sa.Column("sector_id", sa.Integer(), nullable=True),
         sa.ForeignKeyConstraint(
@@ -210,9 +214,8 @@ def upgrade():
     )
     op.create_table(
         "lit_case_parties",
-        sa.Column("id", sa.Integer(), nullable=False),
-        sa.Column("case_id", sa.Integer(), nullable=True),
-        sa.Column("party_id", sa.Integer(), nullable=True),
+        sa.Column("case_id", sa.Integer(), nullable=False),
+        sa.Column("party_id", sa.Integer(), nullable=False),
         sa.ForeignKeyConstraint(
             ["case_id"],
             ["lit_case.id"],
@@ -220,10 +223,30 @@ def upgrade():
         ),
         sa.ForeignKeyConstraint(
             ["party_id"],
-            ["lit_party.id"],
+            ["public.lit_party.id"],
             name=op.f("fk_lit_case_parties__party_id__lit_party"),
         ),
-        sa.PrimaryKeyConstraint("id", name=op.f("pk_lit_case_parties")),
+        sa.PrimaryKeyConstraint(
+            "case_id", "party_id", name=op.f("pk_lit_case_parties")
+        ),
+    )
+    op.create_table(
+        "lit_case_sectors",
+        sa.Column("case_id", sa.Integer(), nullable=False),
+        sa.Column("sector_id", sa.Integer(), nullable=False),
+        sa.ForeignKeyConstraint(
+            ["case_id"],
+            ["lit_case.id"],
+            name=op.f("fk_lit_case_sectors__case_id__lit_case"),
+        ),
+        sa.ForeignKeyConstraint(
+            ["sector_id"],
+            ["sector.id"],
+            name=op.f("fk_lit_case_sectors__sector_id__sector"),
+        ),
+        sa.PrimaryKeyConstraint(
+            "case_id", "sector_id", name=op.f("pk_lit_case_sectors")
+        ),
     )
     op.create_table(
         "lit_document",
@@ -296,12 +319,13 @@ def downgrade():
     op.drop_table("lit_event_documents")
     op.drop_table("lit_event")
     op.drop_table("lit_document")
+    op.drop_table("lit_case_sectors")
     op.drop_table("lit_case_parties")
     op.drop_table("lit_case_keyword")
     op.drop_table("lit_case_int_laws")
     op.drop_table("lit_case_ext_laws")
     op.drop_table("lit_case")
-    op.drop_table("lit_party")
+    op.drop_table("lit_party", schema="public")
     op.drop_table("lit_external_law")
     op.drop_table("lit_body")
     # ### end Alembic commands ###

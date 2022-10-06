@@ -7,7 +7,7 @@ from sqlalchemy import (
     ForeignKey,
     Boolean,
 )
-
+from sqlalchemy.dialects.postgresql import ARRAY
 from app.db.session import Base
 from . import Sector, Geography
 
@@ -94,6 +94,7 @@ class Case(Base):  # noqa: D101
     alignment_class = Column(Enum(ClimateAlignmentClass))
     strategic_class = Column(Enum(StrategicAlignmentClass))
     source = Column(Text)
+    keywords = Column(ARRAY(Text))
 
     geography_id = (Integer, ForeignKey(Geography.id))
     body_id = Column(Integer, ForeignKey(LitBody.id))

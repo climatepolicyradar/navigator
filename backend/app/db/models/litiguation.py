@@ -6,10 +6,11 @@ from sqlalchemy import (
     Text,
     ForeignKey,
     Date,
+    UniqueConstraint,
 )
 
 from app.db.session import Base
-from . import Case, Keyword, Document
+from . import Case, Keyword, Document, Sector
 
 
 class LitCaseKeyword(Base):  # noqa: D101
@@ -90,7 +91,6 @@ class LitPartyType(str, enum.Enum):
     NA = "N/A"
 
 
-
 class LitSideType(str, enum.Enum):
     """The role of the party in the particular case."""
 
@@ -103,21 +103,27 @@ class LitParty(Base):  # noqa: D101
     """Database model for a Litigation party."""
 
     __tablename__ = "lit_party"
-
+    __table_args__ = (
+        UniqueConstraint("name", "party_type", "side_type"),
+        {"schema": "public"},
+    )
     id = Column(Integer, primary_key=True)
-    name = Column(Text, unique=True, nullable=False)
+    name = Column(Text, nullable=False)
     party_type = Column(Enum(LitPartyType))
     side_type = Column(Enum(LitSideType))
 
 
 class LitCaseParties(Base):  # noqa: D101
-    """Database model for a Litigation party."""
+    """Link case to parties.
+
+    Please note we cannot have a role type on this link, as some different parties
+    may have the same name. (e.g. 'Environment Minister')
+    """
 
     __tablename__ = "lit_case_parties"
 
-    id = Column(Integer, primary_key=True)
-    case_id = Column(Integer, ForeignKey(Case.id))
-    party_id = Column(Integer, ForeignKey(LitParty.id))
+    case_id = Column(Integer, ForeignKey(Case.id), primary_key=True)
+    party_id = Column(Integer, ForeignKey(LitParty.id), primary_key=True)
 
 
 # --------------------------------------------------
@@ -182,3 +188,17 @@ class LitEventDocuments(Base):  # noqa: D101
 
     event_id = Column(Integer, ForeignKey(LitEvent.id), primary_key=True)
     document_id = Column(Integer, ForeignKey(LitDocument.id), primary_key=True)
+
+
+# --------------------------------------------------
+# Links to other parts of the schema
+# --------------------------------------------------
+
+
+class LitCaseSectors(Base):  # noqa: D101
+    """Link case to muliple sectors."""
+
+    __tablename__ = "lit_case_sectors"
+
+    case_id = Column(Integer, ForeignKey(Case.id), primary_key=True)
+    sector_id = Column(Integer, ForeignKey(Sector.id), primary_key=True)
