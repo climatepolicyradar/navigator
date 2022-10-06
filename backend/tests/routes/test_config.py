@@ -1,10 +1,10 @@
 from http.client import OK
-from typing import Any, Dict, List
+from typing import Any
 from unittest.mock import ANY, MagicMock
 
 import pytest
 
-from app.api.api_v1.routers.lookups.utils import tree_table_to_json
+from app.api.api_v1.routers.lookups.util import tree_table_to_json
 from app.db.session import SessionLocal
 
 
@@ -42,12 +42,12 @@ class _MockColumn:
 
 
 class _MockTable:
-    def __init__(self, columns: List[str]):
+    def __init__(self, columns: list[str]):
         self.columns = [_MockColumn(c) for c in columns]
 
 
 class _MockRow:
-    def __init__(self, data: Dict[str, Any]):
+    def __init__(self, data: dict[str, Any]):
         self.__table__ = _MockTable(list(data.keys()))
         for key, value in data.items():
             setattr(self, key, value)
