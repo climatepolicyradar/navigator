@@ -1,11 +1,15 @@
 import logging
 from typing import Any, Mapping, Set
 from app.db.models.litiguation import LitParty, LitPartyType, LitSideType
-from app.db.models.case import Case
+from app.db.models.case import Case, ClimateAlignmentClass, StrategicAlignmentClass
 from app.db.models.geography import Geography
 from app.db.models.document import Sector
 
 from sqlalchemy.orm import Session
+
+
+def _to_bool(value: str) -> bool:
+    return value.upper() == "YES" or value.upper() == "TRUE"
 
 
 def _validate_refs(
@@ -168,9 +172,12 @@ def ingest_case(db: Session, log: logging.Logger, json_case: Mapping[str, Any]) 
             )
 
     # Validate sources
+    climate_class = json_case["Climate alignment classification"]
+    strategic_class = json_case["Strategic case type classification"]
 
     case = Case(
         name=json_case["Case name"],
+        ext_id="CCLW:" + json_case["Case ID"],
         year=json_case["Year of filing"],
         status=json_case["Current status"],
         outcome=json_case["Assessment of outcome"],
@@ -178,28 +185,14 @@ def ingest_case(db: Session, log: logging.Logger, json_case: Mapping[str, Any]) 
         pillars=json_case["UNFCCC pillars"],
         summary=json_case["Summary"],
         reference=json_case["Citation/reference number"],
-        strategic=json_case["Classified as strategic case"],
-        alignment_class=json_case["Climate alignment classification"],
-        strategic_class=json_case["Strategic case type classification"],
+        strategic=_to_bool(json_case["Classified as strategic case"]),
+        climate_class=ClimateAlignmentClass(climate_class) if climate_class else None,
+        strategic_class=StrategicAlignmentClass(strategic_class)
+        if strategic_class
+        else None,
         case_class=json_case["Case grounds classification"],
         source=json_case["Data source"],  # semicolon sep
-        keywords=json_case["Keywords"],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
-        # x=json_case[''],
+        keywords=json_case["Keywords"].split(","),
     )
     """_summary_
 
@@ -221,4 +214,6 @@ def ingest_case(db: Session, log: logging.Logger, json_case: Mapping[str, Any]) 
      - Add case_link_sector
     """
 
+    db.add(case)
+    db.commit()
     return case

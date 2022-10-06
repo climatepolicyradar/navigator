@@ -81,6 +81,7 @@ class Case(Base):  # noqa: D101
     __tablename__ = "lit_case"
 
     id = Column(Integer, primary_key=True)
+    ext_id = Column(Text)
     name = Column(Text, unique=True, nullable=False)
     year = Column(Integer)
     status = Column(Enum(CaseStatus))
@@ -91,7 +92,7 @@ class Case(Base):  # noqa: D101
     reference = Column(Text)
     case_class = Column(Text)
     strategic = Column(Boolean)
-    alignment_class = Column(Enum(ClimateAlignmentClass))
+    climate_class = Column(Enum(ClimateAlignmentClass))
     strategic_class = Column(Enum(StrategicAlignmentClass))
     source = Column(Text)
     keywords = Column(ARRAY(Text))

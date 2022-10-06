@@ -2,7 +2,7 @@
 
 Revision ID: 0006
 Revises: 0005
-Create Date: 2022-10-06 17:28:54.289411
+Create Date: 2022-10-06 17:53:42.240144
 
 """
 from alembic import op
@@ -72,6 +72,7 @@ def upgrade():
     op.create_table(
         "lit_case",
         sa.Column("id", sa.Integer(), nullable=False),
+        sa.Column("ext_id", sa.Text(), nullable=True),
         sa.Column("name", sa.Text(), nullable=False),
         sa.Column("year", sa.Integer(), nullable=True),
         sa.Column(
@@ -113,7 +114,7 @@ def upgrade():
         sa.Column("case_class", sa.Text(), nullable=True),
         sa.Column("strategic", sa.Boolean(), nullable=True),
         sa.Column(
-            "alignment_class",
+            "climate_class",
             sa.Enum(
                 "CLIMATE_ALIGNED",
                 "CLIMATE_NON_ALIGNED",
