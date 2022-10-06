@@ -1,13 +1,8 @@
-import datetime
-import json
 from csv import DictReader
 from io import BytesIO, TextIOWrapper
-from unittest import mock
 
 import pytest
 
-from app.api.api_v1.schemas.document import DocumentCreateRequest
-from app.core.validation import PIPELINE_BUCKET
 from app.core.validation.cclw.law_policy.process_csv import (
     extract_documents,
     validated_input,
@@ -32,7 +27,7 @@ from app.core.validation.cclw.law_policy.process_csv import (
     YEAR_FIELD,
 )
 from app.core.validation.types import ImportSchemaMismatchError
-from app.core.validation.util import get_valid_metadata, write_documents_to_s3
+from app.core.validation.util import get_valid_metadata
 from app.db.models import (
     Source,
     Geography,
@@ -220,44 +215,3 @@ def test_extract_documents_valid(test_db):
     assert validated_files[1].create_request.source_url == "https://steve"
     assert validated_files[1].create_request.keywords == ["keyword1", "keyword2"]
     assert validated_files[1].create_request.hazards == ["hazard1", "hazard2"]
-
-
-def test_write_documents_to_s3(test_s3_client, mocker):
-    """Really simple check that values are passed to the s3 client correctly"""
-    d = DocumentCreateRequest(
-        publication_ts=None,
-        name="name",
-        description="description",
-        source_url=None,
-        url=None,
-        md5_sum=None,
-        type="executive",
-        source="CCLW",
-        import_id="1234-5678",
-        category="category",
-        frameworks=[],
-        geography="GEO",
-        hazards=[],
-        instruments=[],
-        keywords=[],
-        languages=[],
-        sectors=[],
-        topics=[],
-        events=[],
-    )
-
-    upload_file_mock = mocker.patch.object(test_s3_client, "upload_fileobj")
-    datetime_mock = mocker.patch("app.core.validation.util.datetime")
-    every_now = datetime.datetime(year=2001, month=12, day=25)
-    datetime_mock.now.return_value = every_now
-
-    write_documents_to_s3(test_s3_client, documents=[d])
-    upload_file_mock.assert_called_once_with(
-        bucket=PIPELINE_BUCKET,
-        key=f"data-ingest/{every_now.isoformat()}/documents.json",
-        content_type="application/json",
-        fileobj=mock.ANY,
-    )
-    assert upload_file_mock.mock_calls[0].kwargs["fileobj"].read().decode(
-        "utf8"
-    ) == json.dumps([d.to_json()], indent=2)
