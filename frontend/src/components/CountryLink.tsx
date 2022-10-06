@@ -8,7 +8,7 @@ type TCountryLink = {
   className?: string;
 };
 
-export const CountryLink: FC<TCountryLink> = ({ countryCode, className, children }) => {
+export const CountryLink: FC<TCountryLink> = ({ countryCode, className = "", children }) => {
   const configQuery: any = useConfig("config");
   const { data: { countries = [] } = {} } = configQuery;
 
