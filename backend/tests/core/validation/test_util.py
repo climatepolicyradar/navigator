@@ -1,9 +1,19 @@
+import datetime
+import json
 from typing import Collection, Sequence
-
-from app.core.validation.util import _flatten_maybe_tree, get_valid_metadata
-from app.db.models import Keyword, Sector, Source
+from unittest import mock
 
 import pytest
+
+from app.api.api_v1.schemas.document import DocumentCreateRequest
+from app.core.validation import PIPELINE_BUCKET
+
+from app.core.validation.util import (
+    _flatten_maybe_tree,
+    get_valid_metadata,
+    write_documents_to_s3,
+)
+from app.db.models import Keyword, Sector, Source
 
 
 NOT_A_TREE_1 = [{"name": 1}, {"name": 2}, {"name": 3}]
@@ -99,3 +109,45 @@ def test_valid_metadata(test_db):
     assert cclw_metadata["sources"] == ["Primary"]
     assert cclw_metadata["keywords"] == ["some keyword"]
     assert cclw_metadata["sectors"] == ["Energy", "Agriculture"]
+
+
+def test_write_documents_to_s3(test_s3_client, mocker):
+    """Really simple check that values are passed to the s3 client correctly"""
+    d = DocumentCreateRequest(
+        publication_ts=None,
+        name="name",
+        description="description",
+        source_url=None,
+        url=None,
+        md5_sum=None,
+        type="executive",
+        source="CCLW",
+        import_id="1234-5678",
+        category="category",
+        frameworks=[],
+        geography="GEO",
+        hazards=[],
+        instruments=[],
+        keywords=[],
+        languages=[],
+        sectors=[],
+        topics=[],
+        events=[],
+    )
+
+    upload_file_mock = mocker.patch.object(test_s3_client, "upload_fileobj")
+    datetime_mock = mocker.patch("app.core.validation.util.datetime")
+    every_now = datetime.datetime(year=2001, month=12, day=25)
+    datetime_mock.now.return_value = every_now
+
+    write_documents_to_s3(test_s3_client, documents=[d])
+    upload_file_mock.assert_called_once_with(
+        bucket=PIPELINE_BUCKET,
+        key=f"data-ingest/{every_now.isoformat()}/documents.json",
+        content_type="application/json",
+        fileobj=mock.ANY,
+    )
+    uploaded_json_documents = json.loads(
+        upload_file_mock.mock_calls[0].kwargs["fileobj"].read().decode("utf8")
+    )
+    assert uploaded_json_documents == [d.to_json()]

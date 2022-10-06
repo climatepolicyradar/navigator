@@ -151,8 +151,6 @@ SINGLE_FILE_CONTENT_TYPES = {
 MULTI_FILE_CONTENT_TYPES = {CONTENT_TYPE_HTML}
 SUPPORTED_CONTENT_TYPES = SINGLE_FILE_CONTENT_TYPES | MULTI_FILE_CONTENT_TYPES
 
-INGEST_TRIGGER_ROOT = "data-ingest"
-
 
 class _LawPolicyDocumentType(str, Enum):
     """Document types supported by the backend API."""
