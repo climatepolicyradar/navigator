@@ -15,7 +15,7 @@ module.exports = {
       semiTransWhite: "rgba(255, 255, 255, 0.85)",
       overlayWhite: "rgba(217, 217, 217, 0.25)",
       offwhite: "#EFF3FB",
-      lineBorder: "#2B2F49",
+      lineBorder: "#bfc2d9",
       search: {
         dropdownBg: "#f2f2f5",
         itemHover: "#e4e6ea",
