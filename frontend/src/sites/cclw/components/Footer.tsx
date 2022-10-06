@@ -118,15 +118,6 @@ const Footer = () => {
                 </ul>
               </div>
             ))}
-            <div className="footer__section">
-              <div>Powered by CPR</div>
-              <div>
-                <ExternalLink className="flex text-indigo-600 mb-4" url="https://www.climatepolicyradar.org">
-                  <Logo />
-                </ExternalLink>
-                <ExternalLink url="https://www.climatepolicyradar.org">Visit Climate Policy Radar</ExternalLink>
-              </div>
-            </div>
             <div>
               <div className="mb-10 footer__section">
                 <div>Follow us</div>
@@ -151,6 +142,18 @@ const Footer = () => {
                 <div>Tel: +44 (0)20 7107 5027</div>
                 <ExternalLink url="/">Full contact details</ExternalLink>
               </div>
+            </div>
+            <div className="footer__section">
+              <div className="flex gap-4">
+                Powered by
+                <ExternalLink className="flex text-indigo-600 mb-4" url="https://www.climatepolicyradar.org">
+                  <Logo />
+                </ExternalLink>
+              </div>
+              <p>We use AI and data science to map the world's climate policies.</p>
+              <p>
+                <ExternalLink url="https://www.climatepolicyradar.org">www.climatepolicyradar.org</ExternalLink>
+              </p>
             </div>
           </div>
         </div>

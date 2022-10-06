@@ -3,6 +3,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { ExternalLink } from "@components/ExternalLink";
 import Logo from "@components/svg/Logo";
+import { SearchIcon } from "@components/svg/Icons";
 import { useEffect, useState } from "react";
 
 // TODO: import config for menu items
@@ -39,7 +40,7 @@ const Header = () => {
               </div>
             )}
             <nav className="mt-8 flex-1 text-white hidden md:block">
-              <ul className="flex items-end gap-8 h-full text-sm lg:text-base">
+              <ul className="flex items-end gap-8 h-full text-sm lg:text-base font-bold">
                 <li>
                   <Link href="/">
                     <a className={linkClass("/")}>Home</a>
@@ -62,7 +63,7 @@ const Header = () => {
                 </li>
                 <li>
                   <Link href="/search">
-                    <a className={linkClass("/search")}>Search</a>
+                    <a className={linkClass("/search") + " flex gap-2"}>Search <span className="mt-[-2px]"><SearchIcon height="24" width="24" /></span></a>
                   </Link>
                 </li>
               </ul>

@@ -27,13 +27,11 @@ export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-start">
           <Link href={`/document/${id}`}>
-            <a className={`text-left text-blue-500 font-medium text-lg transition duration-300 leading-tight hover:underline ${site === "cpr" ? "underline" : ""}`}>
-              {truncateString(name, 80)}
-            </a>
+            <a className={`text-left text-blue-500 font-medium text-lg transition duration-300 leading-tight hover:underline ${site === "cpr" ? "underline" : ""}`}>{name}</a>
           </Link>
         </h2>
       </div>
-      <div className="flex flex-wrap text-sm text-indigo-400 mt-4 items-center space-y-1.5 font-medium">
+      <div className="flex flex-wrap text-sm text-indigo-400 mt-4 items-center font-medium">
         {category && (
           <div className="mr-3" title={category}>
             {getCategoryIcon(category, "20")}
