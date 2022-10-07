@@ -5,12 +5,13 @@ import re
 import typing as t
 
 import boto3
+import botocore.client
 from botocore.exceptions import ClientError
 from botocore.response import StreamingBody
 
 logger = logging.getLogger(__name__)
 
-_AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
+AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
 
 
 class S3Document:
@@ -48,6 +49,9 @@ class S3Client:
             "s3",
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
+            config=botocore.client.Config(
+                signature_version="s3v4", region_name=AWS_REGION
+            ),
         )
 
     def upload_fileobj(
@@ -79,7 +83,7 @@ class S3Client:
             logger.error(e)
             return False
 
-        return S3Document(bucket, _AWS_REGION, key)
+        return S3Document(bucket, AWS_REGION, key)
 
     def upload_file(
         self,
@@ -115,7 +119,7 @@ class S3Client:
             logger.exception(f"Uploading {file_name} encountered an error")
             return False
 
-        return S3Document(bucket, _AWS_REGION, key)
+        return S3Document(bucket, AWS_REGION, key)
 
     def copy_document(
         self, s3_document: S3Document, new_bucket: str, new_key: t.Optional[str] = None
@@ -138,7 +142,7 @@ class S3Client:
 
         self.client.copy_object(CopySource=copy_source, Bucket=new_bucket, Key=new_key)
 
-        return S3Document(new_bucket, _AWS_REGION, new_key)
+        return S3Document(new_bucket, AWS_REGION, new_key)
 
     def delete_document(self, s3_document: S3Document) -> None:
         """Delete a document.
@@ -166,7 +170,7 @@ class S3Client:
 
         self.delete_document(s3_document)
 
-        return S3Document(new_bucket, _AWS_REGION, new_key or s3_document.key)
+        return S3Document(new_bucket, AWS_REGION, new_key or s3_document.key)
 
     def list_files(
         self, bucket: str, max_keys=1000
@@ -201,7 +205,7 @@ class S3Client:
                 response = self.client.list_objects_v2(**kwargs)
 
                 for s3_file in response.get("Contents", []):
-                    yield S3Document(bucket, _AWS_REGION, s3_file["Key"])
+                    yield S3Document(bucket, AWS_REGION, s3_file["Key"])
 
                 # Find out whether request was truncated and get continuation token
                 is_truncated = response.get("IsTruncated", False)
@@ -230,6 +234,44 @@ class S3Client:
         except ClientError:
             logger.exception(f"Request for object {s3_document.key} failed")
             raise
+
+    def generate_pre_signed_url(
+        self,
+        s3_document: S3Document,
+    ) -> str:
+        """
+        Generate a pre-signed URL to an object for file uploads
+
+        :param S3Document s3_document: A description of the document to create/update
+        :return str: A pre-signed URL
+        """
+        try:
+            url = self.client.generate_presigned_url(
+                "put_object",
+                Params={
+                    "Bucket": s3_document.bucket_name,
+                    "Key": s3_document.key,
+                },
+            )
+            return url
+        except ClientError:
+            logger.exception(
+                f"Request to create pre-signed URL for {s3_document.key} failed"
+            )
+            raise
+
+    def document_exists(self, s3_document: S3Document) -> bool:
+        """
+        Detect whether an S3Document already exists in storage.
+
+        :param S3Document s3_document: The s3 document description to check for.
+        :return bool: A flag indicating whether the described document already exists.
+        """
+        try:
+            self.client.head_object(Bucket=s3_document.bucket_name, Key=s3_document.key)
+            return True
+        except ClientError:
+            return False
 
 
 def get_s3_client():
