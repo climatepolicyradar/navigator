@@ -1,4 +1,7 @@
 import enum
+from typing import Union
+
+"""Creates the enum from a string value."""
 from sqlalchemy import (
     Column,
     Enum,
@@ -31,6 +34,15 @@ class CaseStatus(str, enum.Enum):
     CLOSED_WITHDRAWN = "Closed - withdrawn"
     CLOSED = "Closed"
 
+    @staticmethod
+    def from_value(value: str) -> Union["CaseStatus", None]:
+        """Creates the enum from a string value."""
+        if value is None:
+            return None
+        if value == "N/A":
+            return None
+        return CaseStatus(value)
+
 
 class UNFCCCPillars(str, enum.Enum):
     """The UNFCCC Pillars"""
@@ -38,6 +50,17 @@ class UNFCCCPillars(str, enum.Enum):
     ADAPTATION_RESILIENCE = "Adaptation & Resilience"
     MITIGATION = "Mitigation"
     LOSS_DAMAGE = "Loss & Damage"
+
+    @staticmethod
+    def from_value(value: str) -> Union["UNFCCCPillars", None]:
+        """Creates the enum from a string value."""
+        if value is None:
+            return None
+        if value.upper() == "LOSS AND DAMAGE":
+            return UNFCCCPillars.LOSS_DAMAGE
+        if value == "Mitigation and Adaptation & Resilience":
+            return UNFCCCPillars.ADAPTATION_RESILIENCE
+        return UNFCCCPillars(value)
 
 
 class CaseOutcome(str, enum.Enum):
@@ -56,6 +79,15 @@ class ClimateAlignmentClass(str, enum.Enum):
     CLIMATE_NON_ALIGNED = "Climate non-aligned"
     JUST_TRANSITION = "Just transition"
 
+    @staticmethod
+    def from_value(value: str) -> Union["ClimateAlignmentClass", None]:
+        """Creates the enum from a string value."""
+        if value is None:
+            return None
+        if value == "N/A":
+            return None
+        return ClimateAlignmentClass(value)
+
 
 class StrategicAlignmentClass(str, enum.Enum):
     """The class of strategic alignment."""
@@ -73,6 +105,17 @@ class StrategicAlignmentClass(str, enum.Enum):
     CORPORATE_FRAMEWORK = "Corporate framework"
     OTHER = "Other"
     NA = "N/A"
+
+    @staticmethod
+    def from_value(value: str) -> Union["StrategicAlignmentClass", None]:
+        """Creates the enum from a string value."""
+        if value is None:
+            return None
+        if value == "Stranded assets":
+            return StrategicAlignmentClass.OTHER
+        if value.upper() == "JUST TRANSITION":
+            return StrategicAlignmentClass.JUST_TRANSITION
+        return StrategicAlignmentClass(value)
 
 
 class Case(Base):  # noqa: D101

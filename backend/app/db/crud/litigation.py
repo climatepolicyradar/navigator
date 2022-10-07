@@ -1,7 +1,13 @@
 import logging
 from typing import Any, Mapping, Set
 from app.db.models.litiguation import LitParty, LitPartyType, LitSideType
-from app.db.models.case import Case, ClimateAlignmentClass, StrategicAlignmentClass
+from app.db.models.case import (
+    Case,
+    CaseStatus,
+    ClimateAlignmentClass,
+    StrategicAlignmentClass,
+    UNFCCCPillars,
+)
 from app.db.models.geography import Geography
 from app.db.models.document import Sector
 
@@ -152,6 +158,10 @@ def ingest_party(db: Session, csv_row: Mapping[str, str]) -> LitParty:
 def ingest_case(db: Session, log: logging.Logger, json_case: Mapping[str, Any]) -> Case:
     """Will attempt to find or create a Case represented by json_case."""
 
+    found = db.query(Case).filter(Case.name == json_case["Case name"]).first()
+    if found:
+        return found
+
     # Validate geography
     geography_id = (
         db.query(Geography.id)
@@ -179,17 +189,19 @@ def ingest_case(db: Session, log: logging.Logger, json_case: Mapping[str, Any]) 
         name=json_case["Case name"],
         ext_id="CCLW:" + json_case["Case ID"],
         year=json_case["Year of filing"],
-        status=json_case["Current status"],
+        status=CaseStatus.from_value(json_case["Current status"]),
         outcome=json_case["Assessment of outcome"],
         objective=json_case["Core objective"],
-        pillars=json_case["UNFCCC pillars"],
+        pillars=UNFCCCPillars.from_value(
+            json_case["UNFCCC pillars"].split(";")[0]
+        ),  # Schema change?
         summary=json_case["Summary"],
         reference=json_case["Citation/reference number"],
         strategic=_to_bool(json_case["Classified as strategic case"]),
-        climate_class=ClimateAlignmentClass(climate_class) if climate_class else None,
-        strategic_class=StrategicAlignmentClass(strategic_class)
-        if strategic_class
-        else None,
+        climate_class=ClimateAlignmentClass.from_value(climate_class),
+        strategic_class=StrategicAlignmentClass.from_value(
+            strategic_class.split(",")[0]
+        ),
         case_class=json_case["Case grounds classification"],
         source=json_case["Data source"],  # semicolon sep
         keywords=json_case["Keywords"].split(","),
