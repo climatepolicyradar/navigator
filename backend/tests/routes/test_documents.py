@@ -483,7 +483,6 @@ def test_document_detail(
     # Test properties
     get_detail_response_2 = client.get(
         f"/api/v1/documents/{response2_document['id']}",
-        headers=user_token_headers,
     )
     assert get_detail_response_2.status_code == 200
 
@@ -590,7 +589,6 @@ def test_document_detail(
     # Test associations
     get_detail_response_1 = client.get(
         f"/api/v1/documents/{response1_document['id']}",
-        headers=user_token_headers,
     )
     assert get_detail_response_1.status_code == 200
     get_detail_json_1 = get_detail_response_1.json()
@@ -602,7 +600,6 @@ def test_document_detail(
 
     get_detail_response_3 = client.get(
         f"/api/v1/documents/{response3_document['id']}",
-        headers=user_token_headers,
     )
     assert get_detail_response_3.status_code == 200
     get_detail_json_3 = get_detail_response_3.json()
@@ -614,7 +611,6 @@ def test_document_detail(
 
     get_detail_response_4 = client.get(
         f"/api/v1/documents/{response4_document['id']}",
-        headers=user_token_headers,
     )
     assert get_detail_response_4.status_code == 200
     get_detail_json_4 = get_detail_response_4.json()

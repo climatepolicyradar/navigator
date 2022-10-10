@@ -161,14 +161,17 @@ def test_unauthenticated_routes(client):
     assert response.status_code == 401
 
 
-def test_unauthorized_routes(client, user_token_headers):
-    response = client.get("/api/v1/admin/users", headers=user_token_headers)
+def test_unauthorized_routes(client):
+    response = client.get(
+        "/api/v1/admin/users",
+    )
     assert response.status_code == 404
-    response = client.get("/api/v1/admin/users/123", headers=user_token_headers)
+    response = client.get(
+        "/api/v1/admin/users/123",
+    )
     assert response.status_code == 404
     response = client.post(
         "/api/v1/admin/bulk-imports/cclw/law-policy",
-        headers=user_token_headers,
     )
     assert response.status_code == 404
 

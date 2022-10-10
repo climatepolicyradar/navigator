@@ -48,7 +48,6 @@ def test_create_relationship_security(
 ):
     response_create = client.post(
         "/api/v1/document-relationships",
-        headers=user_token_headers,
         json=RelationshipCreateRequest(
             name="Rel", type="test", description="test relationship"
         ).dict(),
@@ -81,7 +80,7 @@ def test_get_relationships_security(
     _create_10_relationships(client, superuser_token_headers)
 
     response_get = client.get(
-        "/api/v1/document-relationships", headers=user_token_headers
+        "/api/v1/document-relationships",
     )
     assert response_get.status_code == 404
     assert response_get.json() == {"detail": "Not Found"}
@@ -166,7 +165,6 @@ def test_add_document_to_relationship_security(
     # Set up document relationship
     response_docrel1 = client.put(
         "/api/v1/document-relationships/1/documents/1",
-        headers=user_token_headers,
     )
     assert response_docrel1.status_code == 404
     assert response_docrel1.json() == {"detail": "Not Found"}
@@ -232,7 +230,6 @@ def test_delete_document_from_relationship_security(
     # Delete a document relationship
     response_reldel = client.delete(
         "/api/v1/document-relationships/1/documents/1",
-        headers=user_token_headers,
     )
     assert response_reldel.status_code == 404
     assert response_reldel.json() == {"detail": "Not Found"}
@@ -291,7 +288,7 @@ def test_get_relationship_documents_security(
 ):
 
     response_get = client.get(
-        "/api/v1/document-relationships/1", headers=user_token_headers
+        "/api/v1/document-relationships/1",
     )
 
     assert response_get.status_code == 404

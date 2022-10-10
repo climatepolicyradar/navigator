@@ -199,23 +199,6 @@ def verify_password_mock(first: str, second: str) -> bool:
 
 
 @pytest.fixture
-def user_token_headers(
-    client: TestClient, test_user, test_password, monkeypatch
-) -> t.Dict[str, str]:
-    monkeypatch.setattr(security, "verify_password", verify_password_mock)
-
-    login_data = {
-        "username": test_user.email,
-        "password": test_password,
-    }
-    r = client.post("/api/tokens", data=login_data)
-    tokens = r.json()
-    a_token = tokens["access_token"]
-    headers = {"Authorization": f"Bearer {a_token}"}
-    return headers
-
-
-@pytest.fixture
 def superuser_token_headers(
     client: TestClient, test_superuser, test_password, monkeypatch
 ) -> t.Dict[str, str]:
