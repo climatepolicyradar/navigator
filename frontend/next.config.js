@@ -1,3 +1,14 @@
+import getSite from "@utils/getSite";
+
+// for pages that are not in cclw's sitemap
+const cclwRedirects = [];
+
+// for pages that are not in cpr's sitemap
+const cprRedirects = [
+  { source: "/about", destination: "/", permanent: true },
+  { source: "/contact", destination: "/", permanent: true },
+];
+
 module.exports = {
   i18n: {
     locales: ["en", "fr"],
@@ -7,25 +18,25 @@ module.exports = {
   async redirects() {
     return [
       {
-        source: '/auth/:id*',
-        destination: '/',
+        source: "/auth/:id*",
+        destination: "/",
         permanent: true,
       },
       {
-        source: '/account',
-        destination: '/',
+        source: "/account",
+        destination: "/",
         permanent: true,
       },
       {
-        source: '/users/:id*',
-        destination: '/',
+        source: "/users/:id*",
+        destination: "/",
         permanent: true,
       },
       {
-        source: '/litigation/:id*',
-        destination: '/',
+        source: "/litigation/:id*",
+        destination: "/",
         permanent: true,
       },
-    ]
+    ].concat(getSite() === "cpr" ? cprRedirects : cclwRedirects);
   },
 };
