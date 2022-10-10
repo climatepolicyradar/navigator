@@ -7,6 +7,7 @@ from fastapi import (
 from sqlalchemy import extract
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from hashlib import md5
 
 from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
@@ -235,6 +236,34 @@ def get_document_overviews(
     query = query.order_by(Document.publication_ts.desc())
 
     return [DocumentOverviewResponse(**dict(row)) for row in query.all()]
+
+
+def get_document_ids(db: Session) -> Sequence[str]:
+    """_summary_
+
+    Args:
+        db (Session): Database connection
+
+    Returns:
+        Sequence[str]: List of document ids
+    """
+
+    # This query is ordered so that the return is deterministic
+    query = db.query(Document.id).order_by(Document.publication_ts.desc())
+
+    return [str(row[0]) for row in query.all()]
+
+
+def get_document_ids_hash(db: Session) -> str:
+    """_summary_
+
+    Args:
+        db (Session): Database connection
+
+    Returns:
+        str: the hex hash of the list of document ids
+    """
+    return md5("".join(get_document_ids(db)).encode()).hexdigest()
 
 
 def get_document(db, document_id: int) -> Document:
