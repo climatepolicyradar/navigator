@@ -71,7 +71,7 @@ const DocumentCoverPage = () => {
   const sourceLogo = page?.source?.name === "CCLW" ? "lse-logo.png" : null;
 
   return (
-    <Layout title={`Climate Policy Radar | Document title`}>
+    <Layout title={`Climate Policy Radar | ${page?.name ?? 'Loading...'}`}>
       {isFetching || !page?.name ? (
         <Loading />
       ) : (
