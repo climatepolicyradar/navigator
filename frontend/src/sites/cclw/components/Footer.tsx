@@ -20,27 +20,27 @@ const navLinks: TFooterItem[] = [
     links: [
       {
         text: "About",
-        url: "/",
+        url: "/about",
         external: false,
       },
       {
         text: "Methodology",
-        url: "/",
+        url: "/methodology",
         external: false,
       },
       {
-        text: "Collaborations & Acknowledgements",
-        url: "/",
+        text: "Acknowledgements",
+        url: "/collaborations-and-acknowledgements",
         external: false,
       },
       {
         text: "Terms of use",
-        url: "/",
+        url: "/terms-of-use",
         external: false,
       },
       {
-        text: "Policy & data protection",
-        url: "/",
+        text: "Privacy and data protection",
+        url: "/privary-policy",
         external: false,
       },
     ],
@@ -49,38 +49,33 @@ const navLinks: TFooterItem[] = [
     title: "Grantham Research Institute",
     links: [
       {
-        text: "Governance & legislation research theme",
-        url: "/",
+        text: "Grantham Research Institute",
+        url: "https://www.lse.ac.uk/granthaminstitute/",
+        external: true,
+      },
+      {
+        text: "Research areas",
+        url: "https://www.lse.ac.uk/granthaminstitute/research-areas/",
         external: true,
       },
       {
         text: "Publications",
-        url: "/",
-        external: true,
-      },
-      {
-        text: "News & commentray",
-        url: "/",
-        external: true,
-      },
-      {
-        text: "Research topics",
-        url: "/",
+        url: "https://www.lse.ac.uk/granthaminstitute/publications/",
         external: true,
       },
       {
         text: "Events",
-        url: "/",
+        url: "https://www.lse.ac.uk/granthaminstitute/events/",
         external: true,
       },
       {
-        text: "People",
-        url: "/",
+        text: "News and commentary",
+        url: "https://www.lse.ac.uk/granthaminstitute/news-and-commentary/",
         external: true,
       },
       {
-        text: "Mailing list",
-        url: "/",
+        text: "Sign up to our newsletter",
+        url: "https://www.lse.ac.uk/granthaminstitute/mailing-list/ ",
         external: true,
       },
     ],
@@ -140,7 +135,9 @@ const Footer = () => {
                   gri.cgl@lse.co.uk
                 </ExternalLink>
                 <div>Tel: +44 (0)20 7107 5027</div>
-                <ExternalLink url="/">Full contact details</ExternalLink>
+                <Link href="/contact">
+                  <a>Full contact details</a>
+                </Link>
               </div>
             </div>
             <div className="footer__section">
