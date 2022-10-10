@@ -298,7 +298,6 @@ def test_year_range_filters(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
     mocker,
     year_range,
 ):
@@ -605,7 +604,6 @@ def test_empty_search_term_performs_browse(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
 ):
     """Make sure that empty search terms return no results."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -624,7 +622,6 @@ def test_browse_order_by_title(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
     order,
 ):
     """Make sure that empty search terms return no results."""
@@ -661,7 +658,6 @@ def test_browse_order_by_date(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
     order,
 ):
     """Make sure that empty search terms return no results."""
@@ -699,7 +695,6 @@ def test_browse_limit_offset(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
     limit,
     offset,
 ):

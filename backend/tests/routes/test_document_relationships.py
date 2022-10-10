@@ -44,7 +44,6 @@ def test_create_relationship(
 
 def test_create_relationship_security(
     client,
-    user_token_headers,
 ):
     response_create = client.post(
         "/api/v1/document-relationships",
@@ -75,7 +74,6 @@ def test_get_relationships(
 def test_get_relationships_security(
     client,
     superuser_token_headers,
-    user_token_headers,
 ):
     _create_10_relationships(client, superuser_token_headers)
 
@@ -159,7 +157,6 @@ def test_add_document_to_relationship_is_idempotent(
 
 def test_add_document_to_relationship_security(
     client,
-    user_token_headers,
 ):
 
     # Set up document relationship
@@ -224,7 +221,6 @@ def test_delete_document_from_relationship(
 
 def test_delete_document_from_relationship_security(
     client,
-    user_token_headers,
 ):
 
     # Delete a document relationship
@@ -284,7 +280,6 @@ def test_get_relationship_documents(
 
 def test_get_relationship_documents_security(
     client,
-    user_token_headers,
 ):
 
     response_get = client.get(

@@ -442,7 +442,6 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
 def test_document_detail(
     client,
     superuser_token_headers,
-    user_token_headers,
     test_db,
 ):
 
