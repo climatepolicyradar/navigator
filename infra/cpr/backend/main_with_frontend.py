@@ -48,6 +48,7 @@ services:
       SENDGRID_FROM_EMAIL: {sendgrid_from_email}
       SENDGRID_ENABLED: "{sendgrid_enabled}"
       ENABLE_SELF_REGISTRATION: "{self_registration_enabled}"
+      PIPELINE_BUCKET: "{pipeline_s3_bucket}"
 
   frontend:
     image: {frontend_image}
@@ -86,6 +87,7 @@ class Backend:
         sendgrid_from_email = config.require_secret("sendgrid_from_email")
         sendgrid_enabled = config.require_secret("sendgrid_enabled")
         frontend_pdf_embed_key = config.require_secret("pdf_embed_key")
+        pipeline_s3_bucket = config.require_secret("pipeline_s3_bucket")
 
         app_domain = config.require("domain")
         frontend_api_url = f"https://{app_domain}/api/v1"
@@ -185,6 +187,7 @@ class Backend:
                         "frontend_api_url_login",
                         "frontend_pdf_embed_key",
                         "self_registration_enabled",
+                        "pipeline_s3_bucket",
                     ],
                     arg_list,
                 )
@@ -208,6 +211,7 @@ class Backend:
             frontend_api_url_login,
             frontend_pdf_embed_key,
             self_registration_enabled,
+            pipeline_s3_bucket,
         ).apply(fill_template)
 
         def create_deploy_resource(manifest):
