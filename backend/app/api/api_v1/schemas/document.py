@@ -1,5 +1,5 @@
 import datetime
-from typing import List, Optional
+from typing import Any, Mapping, Optional, Sequence
 
 from pydantic import BaseModel
 
@@ -20,7 +20,7 @@ from app.api.api_v1.schemas.metadata import (
 
 
 class DocumentOverviewResponse(BaseModel):  # noqa: D101
-    """A document overview returned in browse & related document lists"""
+    """A document overview returned in browse & related document Sequences"""
 
     document_id: int
     name: str
@@ -52,19 +52,33 @@ class DocumentDetailResponse(BaseModel):
     category: Category
     geography: Geography
 
-    frameworks: List[Framework]
-    hazards: List[Hazard]
-    instruments: List[Instrument]
-    keywords: List[Keyword]
-    languages: List[Language]
-    sectors: List[Sector]
-    topics: List[Topic]
+    frameworks: Sequence[Framework]
+    hazards: Sequence[Hazard]
+    instruments: Sequence[Instrument]
+    keywords: Sequence[Keyword]
+    languages: Sequence[Language]
+    sectors: Sequence[Sector]
+    topics: Sequence[Topic]
 
-    events: List[Event]
-    related_documents: Optional[List[DocumentOverviewResponse]] = None
+    events: Sequence[Event]
+    related_documents: Optional[Sequence[DocumentOverviewResponse]] = None
 
     class Config:  # noqa: D106
         frozen = True
+
+
+class DocumentUploadRequest(BaseModel):
+    """Details of a file we wish to upload."""
+
+    filename: str
+    overwrite: Optional[bool] = False
+
+
+class DocumentUploadResponse(BaseModel):
+    """Details required to upload a document to our backend storage."""
+
+    presigned_upload_url: str
+    cdn_url: str
 
 
 class DocumentCreateRequest(BaseModel):  # noqa: D106
@@ -73,29 +87,40 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
     publication_ts: Optional[datetime.datetime]
     name: str
     description: str
-    source_url: str
-    url: str
-    md5_sum: str
+    source_url: Optional[str]
+    url: Optional[str]
+    md5_sum: Optional[str]
 
     type: str
     source: str
     import_id: str
     category: str
 
-    frameworks: List[str]
+    frameworks: Sequence[str]
     geography: str
-    hazards: List[str]
-    instruments: List[str]
-    keywords: List[str]
-    languages: List[str]
-    sectors: List[str]
-    topics: List[str]
+    hazards: Sequence[str]
+    instruments: Sequence[str]
+    keywords: Sequence[str]
+    languages: Sequence[str]
+    sectors: Sequence[str]
+    topics: Sequence[str]
 
-    events: List[Event]
+    events: Sequence[Event]
+
+    def to_json(self) -> Mapping[str, Any]:
+        """Provide a serialisable version of the model"""
+
+        json_dict = self.dict()
+        json_dict["publication_ts"] = (
+            self.publication_ts.isoformat() if self.publication_ts is not None else None
+        )
+        json_dict["events"] = [event.to_json() for event in self.events]
+        return json_dict
 
     class Config:  # noqa: D106
         orm_mode = True
         validate_assignment = True
+
 
 class RelationshipCreateRequest(BaseModel):
     """Schema for Relationship create request."""
@@ -117,7 +142,7 @@ class RelationshipEntityResponse(RelationshipCreateRequest):
 class RelationshipGetResponse(BaseModel):
     """Response for Relationship get request."""
 
-    relationships: List[RelationshipEntityResponse]
+    relationships: Sequence[RelationshipEntityResponse]
 
     class Config:  # noqa: D106
         orm_mode = True
@@ -127,4 +152,17 @@ class RelationshipAndDocumentsGetResponse(BaseModel):
     """Response for Relationship get request."""
 
     relationship: RelationshipEntityResponse
-    documents: Optional[List[DocumentOverviewResponse]] = None
+    documents: Optional[Sequence[DocumentOverviewResponse]] = None
+
+
+class DocumentUploadCompleteRequest(BaseModel):
+    """Information generated during the upload of a document that should be stored."""
+
+    md5_sum: str
+    content_type: str
+
+
+class BulkImportValidatedResult(BaseModel):
+    """Response for bulk import request."""
+
+    document_count: int

@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Optional, Dict, List
+from typing import Any, Mapping, Optional
 
 from pydantic import BaseModel
 
@@ -12,6 +12,14 @@ class Event(BaseModel):  # noqa: D101
     name: str
     description: str
     created_ts: datetime
+
+    def to_json(self) -> Mapping[str, Any]:
+        """Provide a serialisable version of the model"""
+        return {
+            "name": self.name,
+            "description": self.description,
+            "created_ts": self.created_ts.isoformat(),
+        }
 
 
 class SectorCreate(BaseModel):  # noqa: D101
@@ -90,10 +98,17 @@ class Topic(BaseModel):  # noqa: D101
 class CCLWSourceCollection(BaseModel):
     """Metadata sources from CCLW."""
 
-    geographies: List[Dict]
-    document_types: List[Dict]
-    sectors: List[Dict]
-    instruments: List[Dict]
+    categories: list[dict]
+    document_types: list[dict]
+    frameworks: list[dict]
+    geographies: list[dict]
+    hazards: list[dict]
+    instruments: list[dict]
+    keywords: list[dict]
+    languages: list[dict]
+    sectors: list[dict]
+    sources: list[dict]
+    topics: list[dict]
 
 
 class SourceCollections(BaseModel):

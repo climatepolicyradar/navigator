@@ -157,13 +157,10 @@ def create_document(
     db: Session,
     document_create_request: DocumentCreateRequest,
 ) -> Document:
-    existing_geography_id = (
-        db.query(Geography.id).filter(
-            Geography.display_value == document_create_request.geography
-        )
-    ).scalar()
-    if existing_geography_id is None:
-        raise UnknownGeographyError(document_create_request.geography)
+    existing_geography_id = _get_geography_id_by_display_or_value(
+        db,
+        document_create_request.geography,
+    )
 
     existing_source_id = (
         db.query(Source.id).filter(Source.name == document_create_request.source)
@@ -397,12 +394,44 @@ def persist_document_and_metadata(
             new_document = create_document(db, document_create_request)
             write_metadata(db, new_document, document_create_request)
 
+        # This commit is necessary after completing the nested transaction
+        db.commit()
         return get_document_detail(db, new_document.id)
     except Exception as e:
         _LOGGER.exception(f"Error saving document {document_create_request}")
         if isinstance(e, IntegrityError):
             raise HTTPException(409, detail="Document already exists")
         raise e
+
+
+def _get_geography_id_by_display_or_value(db: Session, display_or_value: str) -> int:
+    # Lookup geography by display_value or value
+    existing_geography_id = (
+        db.query(Geography.id).filter(Geography.display_value == display_or_value)
+    ).scalar()
+    if existing_geography_id is None:
+        # If the display_value returned no results, attempt a lookup by value
+        existing_geography_id = (
+            db.query(Geography.id).filter(Geography.value == display_or_value)
+        ).scalar()
+    if existing_geography_id is None:
+        raise UnknownGeographyError(display_or_value)
+    return existing_geography_id
+
+
+def _get_language_id_by_code_or_name(db: Session, code_or_name: str) -> int:
+    # Lookup language by language_code as a preference
+    existing_language_id = (
+        db.query(Language.id).filter(Language.language_code == code_or_name)
+    ).scalar()
+    if existing_language_id is None:
+        # If the language_code returned no results, attempt a lookup by name
+        existing_language_id = (
+            db.query(Language.id).filter(Language.name == code_or_name)
+        ).scalar()
+    if existing_language_id is None:
+        raise UnknownLanguageError(code_or_name)
+    return existing_language_id
 
 
 def write_metadata(
@@ -412,17 +441,7 @@ def write_metadata(
 ) -> None:
     # doc languages
     for language in document_create_request.languages:
-        # Lookup language by language code as a preference
-        existing_language_id = (
-            db.query(Language.id).filter(Language.language_code == language)
-        ).scalar()
-        if existing_language_id is None:
-            # If the language code returned no results, attempt a lookup by name
-            existing_language_id = (
-                db.query(Language.id).filter(Language.name == language)
-            ).scalar()
-        if existing_language_id is None:
-            raise UnknownLanguageError(language)
+        existing_language_id = _get_language_id_by_code_or_name(db, language)
 
         # TODO: Need to ensure uniqueness for metadata links, especially for future
         #       update paths.
@@ -631,15 +650,17 @@ def create_document_relationship(
     new_doc_rel = DocumentRelationship(
         document_id=document_id, relationship_id=relationship_id
     )
-    with db.begin_nested():
-        db.add(new_doc_rel)
-        try:
-            db.commit()
-        except IntegrityError:
-            # ensure idemopotency
-            raise HTTPException(
-                200, detail="Document-Relationship already exists - Nothing to do"
-            )
+    try:
+        with db.begin_nested():
+            db.add(new_doc_rel)
+
+        # The call to db.commit() must exist outside the nested transaction
+        db.commit()
+    except IntegrityError:
+        # ensure idemopotency
+        raise HTTPException(
+            200, detail="Document-Relationship already exists - Nothing to do"
+        )
 
 
 def remove_document_relationship(

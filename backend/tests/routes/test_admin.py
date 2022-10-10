@@ -1,8 +1,30 @@
 import datetime
+from io import BytesIO
 from unittest.mock import patch
 
-from app.db.models import User, PasswordResetToken
+import pytest
+
 from app.api.api_v1.routers.admin import ACCOUNT_ACTIVATION_EXPIRE_MINUTES
+from app.db.models import (
+    Source,
+    Geography,
+    DocumentType,
+    Language,
+    Sector,
+    Response,
+    Hazard,
+    Framework,
+    Instrument,
+    Category,
+    Keyword,
+    User,
+    PasswordResetToken,
+)
+from tests.core.validation.cclw.test_law_policy import (
+    INVALID_FILE_1,
+    INVALID_CSV_MIXED_ERRORS,
+    VALID_FILE_1,
+)
 
 
 def test_get_users(client, test_superuser, superuser_token_headers):
@@ -135,12 +157,19 @@ def test_unauthenticated_routes(client):
     assert response.status_code == 401
     response = client.delete("/api/v1/admin/users/123")
     assert response.status_code == 401
+    response = client.post("/api/v1/admin/bulk-imports/cclw/law-policy")
+    assert response.status_code == 401
 
 
 def test_unauthorized_routes(client, user_token_headers):
     response = client.get("/api/v1/admin/users", headers=user_token_headers)
     assert response.status_code == 404
     response = client.get("/api/v1/admin/users/123", headers=user_token_headers)
+    assert response.status_code == 404
+    response = client.post(
+        "/api/v1/admin/bulk-imports/cclw/law-policy",
+        headers=user_token_headers,
+    )
     assert response.status_code == 404
 
 
@@ -243,3 +272,90 @@ def test_reset_password(
     assert mock_get_password_reset_token_expiry_ts.call_count == 2
     mock_send_email.assert_called_with(test_user, prt_new)
     assert mock_send_email.call_count == 2
+
+
+@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
+def test_bulk_import_cclw_law_policy_valid(
+    mock_write_s3,
+    client,
+    superuser_token_headers,
+    test_db,
+):
+    test_db.add(Source(name="CCLW"))
+    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(DocumentType(name="doctype", description="doctype"))
+    test_db.add(Language(language_code="LAN", name="language"))
+    test_db.add(Category(name="executive", description="executive"))
+    test_db.add(Keyword(name="keyword1", description="keyword1"))
+    test_db.add(Keyword(name="keyword2", description="keyword2"))
+    test_db.add(Hazard(name="hazard1", description="hazard1"))
+    test_db.add(Hazard(name="hazard2", description="hazard2"))
+    test_db.add(Response(name="topic", description="topic"))
+    test_db.add(Framework(name="framework", description="framework"))
+
+    test_db.commit()
+
+    test_db.add(Instrument(name="instrument", description="instrument", source_id=1))
+    test_db.add(Sector(name="sector", description="sector", source_id=1))
+
+    test_db.commit()
+
+    csv_file = BytesIO(VALID_FILE_1.encode("utf8"))
+    files = {"law_policy_csv": ("valid.csv", csv_file, "text/csv", {"Expires": "0"})}
+    response = client.post(
+        "/api/v1/admin/bulk-imports/cclw/law-policy",
+        files=files,
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == 202
+    assert response.json()["document_count"] == 2
+    mock_write_s3.assert_called_once()
+    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
+
+
+@pytest.mark.parametrize(
+    "invalid_file_content,expected_status",
+    [
+        (INVALID_FILE_1, 422),
+        (INVALID_CSV_MIXED_ERRORS, 400),
+    ],
+)
+@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
+def test_bulk_import_cclw_law_policy_invalid(
+    mock_write_s3,
+    invalid_file_content,
+    expected_status,
+    client,
+    superuser_token_headers,
+    test_db,
+):
+    test_db.add(Source(name="CCLW"))
+    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(DocumentType(name="doctype", description="doctype"))
+    test_db.add(Language(language_code="LAN", name="language"))
+    test_db.add(Category(name="executive", description="executive"))
+    test_db.add(Keyword(name="keyword1", description="keyword1"))
+    test_db.add(Keyword(name="keyword2", description="keyword2"))
+    test_db.add(Hazard(name="hazard1", description="hazard1"))
+    test_db.add(Hazard(name="hazard2", description="hazard2"))
+    test_db.add(Response(name="topic", description="topic"))
+    test_db.add(Framework(name="framework", description="framework"))
+
+    test_db.commit()
+
+    test_db.add(Instrument(name="instrument", description="instrument", source_id=1))
+    test_db.add(Sector(name="sector", description="sector", source_id=1))
+
+    test_db.commit()
+
+    csv_file = BytesIO(invalid_file_content.encode("utf8"))
+    files = {"law_policy_csv": ("valid.csv", csv_file, "text/csv", {"Expires": "0"})}
+    response = client.post(
+        "/api/v1/admin/bulk-imports/cclw/law-policy",
+        files=files,
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == expected_status
+    assert "detail" in response.json()
+    assert response.json()["detail"]
+    mock_write_s3.assert_not_called()
