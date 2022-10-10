@@ -27,6 +27,9 @@ certificate_pub.crt
 # https certificate for localhost (front end)
 /frontend/certificates
 
+#frontend
+frontend/public/robots.txt
+
 #design files
 /psd/
 
