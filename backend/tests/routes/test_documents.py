@@ -439,52 +439,6 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
     assert test_db.query(Event).first() is None
 
 
-def test_document_ids(
-    client,
-    superuser_token_headers,
-    test_db,
-):
-
-    (
-        response1_document,
-        document1_payload,
-        response2_document,
-        document2_payload,
-        response3_document,
-        document3_payload,
-        response4_document,
-        document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
-
-    # Test properties
-    get_ids_response = client.get("/api/v1/documents/ids")
-    assert get_ids_response.status_code == 200
-    assert get_ids_response.json() == ["1", "2", "3", "4"]
-
-
-def test_document_hash_ids(
-    client,
-    superuser_token_headers,
-    test_db,
-):
-
-    (
-        response1_document,
-        document1_payload,
-        response2_document,
-        document2_payload,
-        response3_document,
-        document3_payload,
-        response4_document,
-        document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
-
-    # Test properties
-    get_ids_response = client.get("/api/v1/documents/ids/hash")
-    assert get_ids_response.status_code == 200
-    assert get_ids_response.json() == "81dc9bdb52d04dc20036dbd8313ed055"
-
-
 def test_document_detail(
     client,
     superuser_token_headers,

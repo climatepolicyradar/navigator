@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence, Set, Union, cast
+from typing import Sequence, Set, Tuple, Union, cast
 
 from fastapi import (
     HTTPException,
@@ -238,32 +238,21 @@ def get_document_overviews(
     return [DocumentOverviewResponse(**dict(row)) for row in query.all()]
 
 
-def get_document_ids(db: Session) -> Sequence[str]:
-    """_summary_
+def get_document_ids(db: Session) -> Tuple[str, Sequence[str]]:
+    """Returns hash of and the entire list of document ids
 
     Args:
         db (Session): Database connection
 
     Returns:
-        Sequence[str]: List of document ids
+        Tuple[str, Sequence[str]]: Tuple of the hash and the id list
     """
-
     # This query is ordered so that the return is deterministic
     query = db.query(Document.id).order_by(Document.publication_ts.desc())
 
-    return [str(row[0]) for row in query.all()]
-
-
-def get_document_ids_hash(db: Session) -> str:
-    """_summary_
-
-    Args:
-        db (Session): Database connection
-
-    Returns:
-        str: the hex hash of the list of document ids
-    """
-    return md5("".join(get_document_ids(db)).encode()).hexdigest()
+    id_list = [str(row[0]) for row in query.all()]
+    hash = md5("".join(id_list).encode()).hexdigest()
+    return (hash, id_list)
 
 
 def get_document(db, document_id: int) -> Document:

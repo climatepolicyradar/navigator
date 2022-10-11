@@ -25,8 +25,6 @@ from app.core.util import CONTENT_TYPE_MAP, s3_to_cdn_url
 from app.db.crud.document import (
     UnknownMetadataError,
     create_document_relationship,
-    get_document_ids,
-    get_document_ids_hash,
     remove_document_relationship,
     create_relationship,
     get_document_detail,
@@ -67,30 +65,6 @@ async def document_browse(
 ):
     """Get matching document overviews"""
     return get_document_overviews(db, country_code, start_year, end_year)
-
-
-@documents_router.get(
-    "/documents/ids",
-    response_model=List[str],
-    summary="Get a list of all document ids",
-)
-async def document_ids(
-    db=Depends(get_db),
-):
-    """Get all document ids"""
-    return get_document_ids(db)
-
-
-@documents_router.get(
-    "/documents/ids/hash",
-    response_model=str,
-    summary="Get a hex hash of all document ids, useful in determining if documents have changed without retrieving the entire list.",
-)
-async def document_ids_hash(
-    db=Depends(get_db),
-):
-    """Get hex hash of all document ids"""
-    return get_document_ids_hash(db)
 
 
 @documents_router.get(
