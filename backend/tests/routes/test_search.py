@@ -608,16 +608,21 @@ def test_sensitive_queries(test_opensearch, monkeypatch, client, user_token_head
         headers=user_token_headers,
     )
 
+    response1_json = response1.json()
+    response2_json = response2.json()
+
     assert all(
         [
             "transgender" in passage_match["text"]
-            for passage_match in response1.document_passage_matches
+            for document in response1_json["documents"]
+            for passage_match in document["document_passage_matches"]
         ]
     )
     assert not all(
         [
             "electric vehicle charging" in passage_match["text"]
-            for passage_match in response2.document_passage_matches
+            for document in response2_json["documents"]
+            for passage_match in document["document_passage_matches"]
         ]
     )
 
