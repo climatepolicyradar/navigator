@@ -30,7 +30,7 @@ const navLinks: TFooterItem[] = [
       },
       {
         text: "Acknowledgements",
-        url: "/collaborations-and-acknowledgements",
+        url: "/acknowledgements",
         external: false,
       },
       {
