@@ -47,7 +47,7 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/">
+                  <Link href="/about">
                     <a className={linkClass("/about")}>About</a>
                   </Link>
                 </li>
@@ -57,7 +57,7 @@ const Header = () => {
                   </Link>
                 </li>
                 <li>
-                  <Link href="/">
+                  <Link href="/acknowledgements">
                     <a className={linkClass("/acknowledgements")}>Acknowledgements</a>
                   </Link>
                 </li>
