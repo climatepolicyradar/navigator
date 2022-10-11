@@ -165,15 +165,15 @@ def test_unauthorized_routes(client):
     response = client.get(
         "/api/v1/admin/users",
     )
-    assert response.status_code == 404
+    assert response.status_code == 401
     response = client.get(
         "/api/v1/admin/users/123",
     )
-    assert response.status_code == 404
+    assert response.status_code == 401
     response = client.post(
         "/api/v1/admin/bulk-imports/cclw/law-policy",
     )
-    assert response.status_code == 404
+    assert response.status_code == 401
 
 
 @patch("app.db.crud.password_reset.get_password_reset_token_expiry_ts")

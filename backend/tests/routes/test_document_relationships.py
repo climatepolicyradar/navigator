@@ -51,8 +51,8 @@ def test_create_relationship_security(
             name="Rel", type="test", description="test relationship"
         ).dict(),
     )
-    assert response_create.status_code == 404
-    assert response_create.json() == {"detail": "Not Found"}
+    assert response_create.status_code == 401
+    assert response_create.json() == {"detail": "Not authenticated"}
 
 
 # --- tests for GET /api/v1/document-relationship
@@ -80,8 +80,8 @@ def test_get_relationships_security(
     response_get = client.get(
         "/api/v1/document-relationships",
     )
-    assert response_get.status_code == 404
-    assert response_get.json() == {"detail": "Not Found"}
+    assert response_get.status_code == 401
+    assert response_get.json() == {"detail": "Not authenticated"}
 
 
 # --- tests for POST /api/v1/document-relationships/id/documents/id
@@ -163,8 +163,8 @@ def test_add_document_to_relationship_security(
     response_docrel1 = client.put(
         "/api/v1/document-relationships/1/documents/1",
     )
-    assert response_docrel1.status_code == 404
-    assert response_docrel1.json() == {"detail": "Not Found"}
+    assert response_docrel1.status_code == 401
+    assert response_docrel1.json() == {"detail": "Not authenticated"}
 
 
 # --- tests for DELETE /api/v1/document-relationships/id/documents/id
@@ -227,8 +227,8 @@ def test_delete_document_from_relationship_security(
     response_reldel = client.delete(
         "/api/v1/document-relationships/1/documents/1",
     )
-    assert response_reldel.status_code == 404
-    assert response_reldel.json() == {"detail": "Not Found"}
+    assert response_reldel.status_code == 401
+    assert response_reldel.json() == {"detail": "Not authenticated"}
 
 
 # --- tests for GET /api/v1/document-relationships/id
@@ -286,5 +286,5 @@ def test_get_relationship_documents_security(
         "/api/v1/document-relationships/1",
     )
 
-    assert response_get.status_code == 404
-    assert response_get.json() == {"detail": "Not Found"}
+    assert response_get.status_code == 401
+    assert response_get.json() == {"detail": "Not authenticated"}
