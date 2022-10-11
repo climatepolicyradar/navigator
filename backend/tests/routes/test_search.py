@@ -592,6 +592,37 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client, user_token_he
 
 
 @pytest.mark.search
+def test_sensitive_queries(test_opensearch, monkeypatch, client, user_token_headers):
+    """Make sure that queries in the list of sensitive queries only return results containing that term, and not KNN results."""
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    response1 = client.post(
+        "/api/v1/searches",
+        json={"query_string": "transgender", "exact_match": False},
+        headers=user_token_headers,
+    )
+
+    response2 = client.post(
+        "/api/v1/searches",
+        json={"query_string": "electric vehicle charging", "exact_match": False},
+        headers=user_token_headers,
+    )
+
+    assert all(
+        [
+            "transgender" in passage_match["text"]
+            for passage_match in response1.document_passage_matches
+        ]
+    )
+    assert not all(
+        [
+            "electric vehicle charging" in passage_match["text"]
+            for passage_match in response2.document_passage_matches
+        ]
+    )
+
+
+@pytest.mark.search
 def test_accents_ignored(test_opensearch, monkeypatch, client, user_token_headers):
     """Make sure that accents in query strings are ignored."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
