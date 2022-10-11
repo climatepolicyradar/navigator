@@ -18,7 +18,7 @@ _TOTAL_DOCUMENT_COUNT = 7
 
 
 @pytest.mark.search
-def test_simple_pagination(test_opensearch, monkeypatch, client, user_token_headers):
+def test_simple_pagination(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     page1_response = client.post(
@@ -29,7 +29,6 @@ def test_simple_pagination(test_opensearch, monkeypatch, client, user_token_head
             "limit": 2,
             "offset": 0,
         },
-        headers=user_token_headers,
     )
     assert page1_response.status_code == 200
 
@@ -45,7 +44,6 @@ def test_simple_pagination(test_opensearch, monkeypatch, client, user_token_head
             "limit": 2,
             "offset": 2,
         },
-        headers=user_token_headers,
     )
     assert page2_response.status_code == 200
 
@@ -64,7 +62,7 @@ def test_simple_pagination(test_opensearch, monkeypatch, client, user_token_head
 
 
 @pytest.mark.search
-def test_pagination_overlap(test_opensearch, monkeypatch, client, user_token_headers):
+def test_pagination_overlap(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     page1_response = client.post(
@@ -75,7 +73,6 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client, user_token_hea
             "limit": 2,
             "offset": 0,
         },
-        headers=user_token_headers,
     )
     assert page1_response.status_code == 200
 
@@ -91,7 +88,6 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client, user_token_hea
             "limit": 2,
             "offset": 1,
         },
-        headers=user_token_headers,
     )
     assert page2_response.status_code == 200
 
@@ -109,29 +105,25 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client, user_token_hea
 
 
 @pytest.mark.search
-def test_search_body_valid(test_opensearch, monkeypatch, client, user_token_headers):
+def test_search_body_valid(test_opensearch, monkeypatch, client):
     """Test a simple known valid search responds with success."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
         "/api/v1/searches",
         json={"query_string": "disaster", "exact_match": False},
-        headers=user_token_headers,
     )
     assert response.status_code == 200
 
     response = client.post(
         "/api/v1/searches",
         json={"query_string": "disaster", "exact_match": True},
-        headers=user_token_headers,
     )
     assert response.status_code == 200
 
 
 @pytest.mark.search
-def test_jit_query_is_default(
-    test_opensearch, monkeypatch, client, user_token_headers, mocker
-):
+def test_jit_query_is_default(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
     jit_query_spy = mocker.spy(app.core.jit_query_wrapper, "jit_query")
     background_task_spy = mocker.spy(fastapi.BackgroundTasks, "add_task")
@@ -142,7 +134,6 @@ def test_jit_query_is_default(
             "query_string": "climate",
             "exact_match": True,
         },
-        headers=user_token_headers,
     )
 
     assert response.status_code == 200
@@ -153,7 +144,7 @@ def test_jit_query_is_default(
 
 
 @pytest.mark.search
-def test_with_jit(test_opensearch, monkeypatch, client, user_token_headers, mocker):
+def test_with_jit(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
     jit_query_spy = mocker.spy(app.core.jit_query_wrapper, "jit_query")
     background_task_spy = mocker.spy(fastapi.BackgroundTasks, "add_task")
@@ -164,7 +155,6 @@ def test_with_jit(test_opensearch, monkeypatch, client, user_token_headers, mock
             "query_string": "climate",
             "exact_match": True,
         },
-        headers=user_token_headers,
     )
 
     assert response.status_code == 200
@@ -219,7 +209,7 @@ def test_with_jit(test_opensearch, monkeypatch, client, user_token_headers, mock
 
 
 @pytest.mark.search
-def test_without_jit(test_opensearch, monkeypatch, client, user_token_headers, mocker):
+def test_without_jit(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
     query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "query")
     background_task_spy = mocker.spy(fastapi.BackgroundTasks, "add_task")
@@ -231,7 +221,6 @@ def test_without_jit(test_opensearch, monkeypatch, client, user_token_headers, m
             "exact_match": True,
             "jit_query": "disabled",
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
     # Ensure nothing has/is going on in the background
@@ -261,9 +250,7 @@ def test_without_jit(test_opensearch, monkeypatch, client, user_token_headers, m
 
 
 @pytest.mark.search
-def test_keyword_filters(
-    test_opensearch, monkeypatch, client, user_token_headers, mocker
-):
+def test_keyword_filters(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
@@ -275,7 +262,6 @@ def test_keyword_filters(
             "keyword_filters": {"countries": ["Kenya"]},
             "jit_query": "disabled",
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
     assert query_spy.call_count == 1
@@ -287,9 +273,7 @@ def test_keyword_filters(
 
 
 @pytest.mark.search
-def test_invalid_keyword_filters(
-    test_opensearch, monkeypatch, client, user_token_headers
-):
+def test_invalid_keyword_filters(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
@@ -302,7 +286,6 @@ def test_invalid_keyword_filters(
                 "unknown_filter_no1": ["BOOM"],
             },
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 422
 
@@ -315,7 +298,6 @@ def test_year_range_filters(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
     mocker,
     year_range,
 ):
@@ -330,7 +312,6 @@ def test_year_range_filters(
             "year_range": year_range,
             "jit_query": "disabled",
         },
-        headers=user_token_headers,
     )
     query_body = query_spy.mock_calls[0].args[0]
 
@@ -370,9 +351,7 @@ def test_year_range_filters(
 
 
 @pytest.mark.search
-def test_multiple_filters(
-    test_opensearch, monkeypatch, client, user_token_headers, mocker
-):
+def test_multiple_filters(test_opensearch, monkeypatch, client, mocker):
     """Check that multiple filters are successfully applied"""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -389,7 +368,6 @@ def test_multiple_filters(
             "year_range": (1900, 2020),
             "jit_query": "disabled",
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
     assert query_spy.call_count == 1
@@ -407,9 +385,7 @@ def test_multiple_filters(
 
 
 @pytest.mark.search
-def test_result_order_score(
-    test_opensearch, monkeypatch, client, user_token_headers, mocker
-):
+def test_result_order_score(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
@@ -419,7 +395,6 @@ def test_result_order_score(
             "query_string": "disaster",
             "exact_match": False,
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
     query_response = query_spy.spy_return.raw_response
@@ -435,9 +410,7 @@ def test_result_order_score(
 
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
-def test_result_order_date(
-    test_opensearch, monkeypatch, client, user_token_headers, order
-):
+def test_result_order_date(test_opensearch, monkeypatch, client, order):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
@@ -448,7 +421,6 @@ def test_result_order_date(
             "sort_field": "date",
             "sort_order": order.value,
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
 
@@ -469,9 +441,7 @@ def test_result_order_date(
 
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
-def test_result_order_title(
-    test_opensearch, monkeypatch, client, user_token_headers, order
-):
+def test_result_order_title(test_opensearch, monkeypatch, client, order):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
@@ -482,7 +452,6 @@ def test_result_order_title(
             "sort_field": "title",
             "sort_order": order.value,
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
 
@@ -502,50 +471,44 @@ def test_result_order_title(
 
 
 @pytest.mark.search
-def test_invalid_request(test_opensearch, monkeypatch, client, user_token_headers):
+def test_invalid_request(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
         "/api/v1/searches",
         json={"exact_match": False},
-        headers=user_token_headers,
     )
     assert response.status_code == 422
 
     response = client.post(
         "/api/v1/searches",
         json={"limit": 1, "offset": 2},
-        headers=user_token_headers,
     )
     assert response.status_code == 422
 
     response = client.post(
         "/api/v1/searches",
         json={},
-        headers=user_token_headers,
     )
     assert response.status_code == 422
 
 
 @pytest.mark.search
-def test_case_insensitivity(test_opensearch, monkeypatch, client, user_token_headers):
+def test_case_insensitivity(test_opensearch, monkeypatch, client):
     """Make sure that query string results are not affected by case."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response1 = client.post(
         "/api/v1/searches",
         json={"query_string": "climate", "exact_match": False},
-        headers=user_token_headers,
     )
     response2 = client.post(
         "/api/v1/searches",
         json={"query_string": "ClImAtE", "exact_match": False},
-        headers=user_token_headers,
     )
     response3 = client.post(
         "/api/v1/searches",
         json={"query_string": "CLIMATE", "exact_match": False},
-        headers=user_token_headers,
     )
 
     response1_json = response1.json()
@@ -560,24 +523,21 @@ def test_case_insensitivity(test_opensearch, monkeypatch, client, user_token_hea
 
 
 @pytest.mark.search
-def test_punctuation_ignored(test_opensearch, monkeypatch, client, user_token_headers):
+def test_punctuation_ignored(test_opensearch, monkeypatch, client):
     """Make sure that punctuation in query strings is ignored."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response1 = client.post(
         "/api/v1/searches",
         json={"query_string": "climate.", "exact_match": False},
-        headers=user_token_headers,
     )
     response2 = client.post(
         "/api/v1/searches",
         json={"query_string": "climate, ", "exact_match": False},
-        headers=user_token_headers,
     )
     response3 = client.post(
         "/api/v1/searches",
         json={"query_string": ";climate", "exact_match": False},
-        headers=user_token_headers,
     )
 
     response1_json = response1.json()
@@ -592,24 +552,21 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client, user_token_he
 
 
 @pytest.mark.search
-def test_accents_ignored(test_opensearch, monkeypatch, client, user_token_headers):
+def test_accents_ignored(test_opensearch, monkeypatch, client):
     """Make sure that accents in query strings are ignored."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response1 = client.post(
         "/api/v1/searches",
         json={"query_string": "climàte", "exact_match": False},
-        headers=user_token_headers,
     )
     response2 = client.post(
         "/api/v1/searches",
         json={"query_string": "climatë", "exact_match": False},
-        headers=user_token_headers,
     )
     response3 = client.post(
         "/api/v1/searches",
         json={"query_string": "climàtë", "exact_match": False},
-        headers=user_token_headers,
     )
 
     response1_json = response1.json()
@@ -624,7 +581,7 @@ def test_accents_ignored(test_opensearch, monkeypatch, client, user_token_header
 
 
 @pytest.mark.search
-def test_time_taken(test_opensearch, monkeypatch, client, user_token_headers):
+def test_time_taken(test_opensearch, monkeypatch, client):
     """Make sure that query time taken is sensible."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -647,7 +604,6 @@ def test_empty_search_term_performs_browse(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
 ):
     """Make sure that empty search terms return no results."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -655,7 +611,6 @@ def test_empty_search_term_performs_browse(
     response = client.post(
         "/api/v1/searches",
         json={"query_string": ""},
-        headers=user_token_headers,
     )
     assert response.status_code == 200
     assert response.json()["hits"] == _TOTAL_DOCUMENT_COUNT
@@ -667,7 +622,6 @@ def test_browse_order_by_title(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
     order,
 ):
     """Make sure that empty search terms return no results."""
@@ -680,7 +634,6 @@ def test_browse_order_by_title(
             "sort_field": "title",
             "sort_order": order.value,
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
 
@@ -705,7 +658,6 @@ def test_browse_order_by_date(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
     order,
 ):
     """Make sure that empty search terms return no results."""
@@ -718,7 +670,6 @@ def test_browse_order_by_date(
             "sort_field": "date",
             "sort_order": order.value,
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
 
@@ -744,7 +695,6 @@ def test_browse_limit_offset(
     test_opensearch,
     monkeypatch,
     client,
-    user_token_headers,
     limit,
     offset,
 ):
@@ -754,7 +704,6 @@ def test_browse_limit_offset(
     response = client.post(
         "/api/v1/searches",
         json={"query_string": "", "limit": limit, "offset": offset},
-        headers=user_token_headers,
     )
     assert response.status_code == 200
 
@@ -764,9 +713,7 @@ def test_browse_limit_offset(
 
 
 @pytest.mark.search
-def test_browse_filters(
-    test_opensearch, monkeypatch, client, user_token_headers, mocker
-):
+def test_browse_filters(test_opensearch, monkeypatch, client, mocker):
     """Check that multiple filters are successfully applied"""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
@@ -782,7 +729,6 @@ def test_browse_filters(
             "year_range": (1900, 2020),
             "jit_query": "disabled",
         },
-        headers=user_token_headers,
     )
     assert response.status_code == 200
     assert query_spy.call_count == 1

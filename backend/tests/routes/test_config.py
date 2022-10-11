@@ -8,13 +8,12 @@ from app.api.api_v1.routers.lookups.util import tree_table_to_json
 from app.db.session import SessionLocal
 
 
-def test_endpoint_returns_correct_keys(client, user_token_headers):
+def test_endpoint_returns_correct_keys(client):
     """Tests whether we get the correct data when the /config endpoint is called."""
     url_under_test = "/api/v1/config"
 
     response = client.get(
         url_under_test,
-        headers=user_token_headers,
     )
 
     response_json = response.json()
