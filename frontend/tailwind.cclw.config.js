@@ -39,7 +39,6 @@ module.exports = {
       primary: {
         400: "#ED3D48",
         700: "#C9131E",
-        default: "#ED3D48",
       },
       secondary: {
         500: "#393A5A",

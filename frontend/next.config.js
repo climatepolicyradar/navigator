@@ -43,6 +43,6 @@ module.exports = {
         destination: "/",
         permanent: false, // will become a page eventually
       },
-    ].concat(getSite() === "cpr" ? cprRedirects : cclwRedirects);
+    ].concat(getSite === "cpr" ? cprRedirects : cclwRedirects);
   },
 };
