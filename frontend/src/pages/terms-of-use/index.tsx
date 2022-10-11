@@ -26,7 +26,10 @@ const TermsOfUse = () => {
             2.2 LSE, its collaborators, licensors, or authorised contributors own the copyright, database right and all other intellectual property rights (whether registered or
             unregistered and anywhere in the world) in the selection, coordination, arrangement and enhancement of the CCLW Database, as well as in the content original to it.
           </p>
-          <p>2.3 We are pleased to make the content of the CCLW Database available under the Creative Commons Attribution Non-Commercial licence (CC BY-NC 4.0).</p>
+          <p>
+            2.3 We are pleased to make the content of the CCLW Database available under the Creative Commons Attribution Non-Commercial licence{" "}
+            <ExternalLink url="https://creativecommons.org/licenses/by-nc/4.0/legalcode">(CC BY-NC 4.0)</ExternalLink>.
+          </p>
           <p>2.4 Under this Creative Commons licence: </p>
           <p>
             <span className="font-bold">You are free to:</span>
@@ -39,8 +42,8 @@ const TermsOfUse = () => {
           <p>
             2.4.3 credit the LSE and its partners on all materials, publications, products or services which incorporate or use the information from the CCLW Database using the
             following notice: "Climate Change Laws of the World Database, copyright of the Grantham Research Institute on Climate Change and the Environment, London School of
-            Economics and Political Science and Sabin Center for Climate Change Law, Columbia University. Sourced from climate-laws.org and made available under the Creative
-            Commons CC BY-NC licence."
+            Economics and Political Science and Sabin Center for Climate Change Law, Columbia University. Sourced from{" "}
+            <ExternalLink url="https://climate-laws.org">climate-laws.org</ExternalLink> and made available under the Creative Commons CC BY-NC licence."
           </p>
           <p>
             2.4.4 comply with the other terms of the Creative Commons licence, which include, without limitation, providing a disclaimer notice, indicating if changes have been
@@ -77,8 +80,8 @@ const TermsOfUse = () => {
             <span className="font-bold">4. General terms</span>
           </p>
           <p>
-            4.1 For details of all other terms applicable to The Grantham Research Institute on Climate Change and the Environment website and its content please visit Terms of use
-            (lse.ac.uk).
+            4.1 For details of all other terms applicable to The Grantham Research Institute on Climate Change and the Environment website and its content please visit{" "}
+            <ExternalLink url="https://www.climate-laws.org/terms-of-use#:~:text=Terms%20of%20use%20(lse.ac.uk)">Terms of use (lse.ac.uk)</ExternalLink>.
           </p>
         </div>
       </section>

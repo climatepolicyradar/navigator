@@ -40,8 +40,8 @@ const navLinks: TFooterItem[] = [
       },
       {
         text: "Privacy and data protection",
-        url: "/privary-policy",
-        external: false,
+        url: "https://www.lse.ac.uk/lse-information/privacy-policy",
+        external: true,
       },
     ],
   },
