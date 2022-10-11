@@ -1,4 +1,4 @@
-import getSite from "@utils/getSite";
+const getSite = process.env.NEXT_PUBLIC_THEME || "cpr";
 
 // for pages that are not in cclw's sitemap
 const cclwRedirects = [];
