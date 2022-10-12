@@ -598,7 +598,7 @@ def test_sensitive_queries(test_opensearch, monkeypatch, client, user_token_head
 
     response1 = client.post(
         "/api/v1/searches",
-        json={"query_string": "transgender", "exact_match": False},
+        json={"query_string": "germany", "exact_match": False},
         headers=user_token_headers,
     )
 
@@ -608,20 +608,40 @@ def test_sensitive_queries(test_opensearch, monkeypatch, client, user_token_head
         headers=user_token_headers,
     )
 
+    # In this example the sensitive term is less than half the length of the query, so KNN results should be returned
+    response3 = client.post(
+        "/api/v1/searches",
+        json={"query_string": "germany foreign investment", "exact_match": False},
+        headers=user_token_headers,
+    )
+
     response1_json = response1.json()
     response2_json = response2.json()
+    response3_json = response3.json()
+
+    # If the queries above return no results then the tests below are meaningless
+    assert len(response1_json["documents"]) > 0
+    assert len(response2_json["documents"]) > 0
+    assert len(response3_json["documents"]) > 0
 
     assert all(
         [
-            "transgender" in passage_match["text"]
+            "germany" in passage_match["text"].lower()
             for document in response1_json["documents"]
             for passage_match in document["document_passage_matches"]
         ]
     )
     assert not all(
         [
-            "electric vehicle charging" in passage_match["text"]
+            "electric vehicle charging" in passage_match["text"].lower()
             for document in response2_json["documents"]
+            for passage_match in document["document_passage_matches"]
+        ]
+    )
+    assert not all(
+        [
+            "germany foreign investment" in passage_match["text"].lower()
+            for document in response3_json["documents"]
             for passage_match in document["document_passage_matches"]
         ]
     )

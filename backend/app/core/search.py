@@ -119,7 +119,7 @@ def load_sensitive_query_terms() -> Set[str]:
         reader = csv.reader(tsv_file, delimiter="\t")
 
         # first column is group name, second column is keyword
-        sensitive_terms = set([row[1].lower() for row in reader])
+        sensitive_terms = set([row[1].lower().strip() for row in reader])
 
     return sensitive_terms
 
@@ -598,8 +598,23 @@ def build_opensearch_request_body(
         if search_request.exact_match:
             builder.with_exact_query(search_request.query_string)
         else:
-            # Disable KNN search for sensitive query terms
-            use_knn = search_request.query_string.lower() not in sensitive_query_terms
+            sensitive_terms_in_query = [
+                term
+                for term in sensitive_query_terms
+                if term in search_request.query_string.lower()
+            ]
+
+            # If the query contains any sensitive terms, and the length of the shortest sensitive term is >=50% of the length of the query by number of words, then disable KNN
+            if (
+                sensitive_terms_in_query
+                and len(min(sensitive_terms_in_query, key=len).split(" "))
+                / len(search_request.query_string.split(" "))
+                >= 0.5
+            ):
+                use_knn = False
+            else:
+                use_knn = True
+
             builder.with_semantic_query(search_request.query_string, knn=use_knn)
 
         if search_request.sort_field is not None:
