@@ -25,7 +25,7 @@ const Methodology = () => {
         <h2 id="legislation">Methodology - Legislation</h2>
         <h4>Introduction</h4>
         <div className="italic">
-          <p>This page was last updated on June 26th, 2022.</p>
+          <p>This legislation methodology was last updated on June 26th, 2022.</p>
           <p>
             This page outlines the definitions, scope, and principles used to collect and categorise the legislation displayed in the Climate Change Laws of the World database.{" "}
           </p>
@@ -332,23 +332,112 @@ const Methodology = () => {
         </ul>
         {/* LITIGATION */}
         <h2 id="litigation">Methodology - Litigation</h2>
+        <div className="italic">
+          <p>This ligitation methodology was last updated on May 4th, 2021.</p>
+          <p>
+            This page outlines the definitions, scope, and principles used to collect and categorise the litigation cases displayed in the Climate Change Laws of the World
+            database.
+          </p>
+          <p>
+            Climate Change Laws of the World also tracks climate change legislation. For details on the methodology used to collect and categorise legislation{" "}
+            <a href="#legislation">click here</a>.
+          </p>
+        </div>
+        <h4>Scope</h4>
+        <p>
+          At present, the Climate Change Litigation of the World database features cases from over 40 countries, including the EU as a block. Cases brought before international or
+          regional courts or tribunals that meet the criteria set out below are included. This dataset does not include cases from the United States, which are collected separately
+          by the <ExternalLink url="http://climatecasechart.com/us-climate-change-litigation/">Sabin Center / Arnold & Porter Kaye Scholer database</ExternalLink>.
+        </p>
+        <p>
+          To fall within the scope of the database, cases must satisfy two key criteria. Firstly, cases must generally be brought before judicial bodies (though in some exemplary
+          instances matters brought before administrative or investigatory bodies are also included). Secondly, climate change law, policy or science must be a material issue of
+          law or fact in the case. Cases that make only a passing reference to climate change, but do not address climate-relevant laws, policies, or actions in a meaningful way
+          are not included.
+        </p>
+        <p>
+          In general, cases that may have a direct impact on climate change, but do not explicitly raise climate issues, are also not included in the database. Examples of such
+          cases may include challenges to government inaction on air pollution or challenges to the development of fossil fuel infrastructure on the basis of other types of harm to
+          human health and/or the environment. The intent of the litigants with regard to the climate-related consequences of such cases is not considered during the assessment
+          process. One exception to this rule is that the database now includes a number of cases brought before arbitral tribunals under the terms of bilateral and multilateral
+          international investment agreements, commonly referred to as Investor-State Dispute Settlement (ISDS). In these cases, private investors domiciled outside a given country
+          typically seek compensation from the host country’s national governments for losses incurred as a result of policy changes and regulatory measuresthat unlawfully affect
+          their investment (for example, by rendering the relevant assets not exploitable altogether), thus impacting the investment’s overall profitability. While these cases
+          rarely contain explicit mentions of climate change, they are often closely related to and may impact on climate action at the national level. Cases are therefore
+          considered to be within the scope of the database insofar as they relate directly to the enactment or withdrawal of a domestic measure explicitly adopted to meet a
+          country’s climate goals and objectives. Examples of ‘climate-justified’ policy measures at the heart of these cases could include the enactment of plans to phase out
+          coal-fired power plants within the coming decades or the withdrawal of existing subsidies or other incentives to encourage investment in renewable energy. More
+          information on these cases and their inclusion in the database can be found{" "}
+          <ExternalLink url="https://www.lse.ac.uk/granthaminstitute/news/investor-state-dispute-settlement-as-a-new-avenue-for-climate-change-litigation/">here</ExternalLink>.
+        </p>
+        <h4>Categorisation</h4>
+        <p>Prior to addition to the database, cases are categorised according to:</p>
+        <ol>
+          <li>Jurisdiction, including the court or tribunal before which the case was filed (where this information is available);</li>
+          <li>The type of parties involved (typically NGOs, individual, corporations, or governments); </li>
+          <li>The status of the case – e.g. whether the case is filed, on appeal, or concluded;</li>
+          <li>
+            Whether the case primarily relates to climate change mitigation, adaptation, disaster risk reduction or loss and damage (see{" "}
+            <a href="#legislation">CCLW Legislation Methodology</a> for definitions);
+          </li>
+          <li>
+            The sector(s) of the economy to which the case is most relevant (see <a href="#legislation">CCLW Legislation Methodology</a> for definitions); and
+          </li>
+          <li>
+            The primary laws to which the litigation relates. Where these laws are included in the Climate Change Laws of the World Database, the information is cross-referenced.
+          </li>
+        </ol>
+        <p>Discretionary keywords may also be assigned to cases to enable data users to identify these more easily. We do not maintain a comprehensive list of keywords.</p>
+        <h4>Data collection process</h4>
+        <p>
+          Cases are identified on a rolling basis by the Sabin Center for Climate Change Law, working in partnership with researchers at the Grantham Institute for Climate Change
+          Research. Common sources of information relied on by researchers include media reports, legal databases, court websites and newsletters, social media, academic articles
+          and other online sources. We take a collaborative approach to data gathering and many cases have been reported through networks of plaintiffs and defendants, academics
+          and researchers, or crowdsourced through other channels.
+        </p>
+        <p>
+          For some specific types of litigation, data is collected in partnership with other institutions. The primary source of cases from Australia is the University of
+          Melbourne, which maintains the{" "}
+          <ExternalLink url="https://law.app.unimelb.edu.au/climate-change/index.php#overview">Australian Climate Change Litigation Database</ExternalLink>. The primary source of
+          cases from the Asia-Pacific region is the Asia Development Bank.
+        </p>
+        <p>
+          Data regarding ISDS cases is collected in partnership with Hasselt University, Centre for Government and Law, Faculty of Law. The primary source of cases is the UNCTAD
+          Investment Policy Hub database, which collects over 1.000 existing ISDS cases worldwide. Another source of information is the ICSID database on its website. Full details
+          of complaints, decisions, and arbitral awards in ISDS cases are not always made public, but original documents are included in the database where these have been
+          identified.
+        </p>
+        <p>
+          Once a case is identified, it is reviewed by researchers at the Sabin Center for Climate Change Law with relevant expertise in the field of environmental and climate
+          change law. Researchers draft case summaries and categorise cases according to the categories described above prior to entry into the databases.
+        </p>
+        <h4>Data Limitations</h4>
+        <p>
+          The database has helped highlight and inform a global field of practice in climate change law, providing information on more than 400 cases in over 40 countries. While we
+          have sought to identify as many cases as possible that may fall within the scope outlined above, the database is not exhaustive. Key limitations include language
+          barriers, levels of media coverage, and public availability of court documents. As a result, coverage in some jurisdictions is more comprehensive than in others. This may
+          contribute to the wide discrepancy in the numbers of climate cases identified in different jurisdictions, although the legal culture in different jurisdictions should
+          also be considered a key factor. In some instances, cases which are identical in subject matter may also have been recorded in the database in one entry. Similarly, the
+          fact that no climate litigation has yet been identified in a given jurisdiction should not be taken as a certain indication that no such litigation has been filed.
+        </p>
+        <p>
+          At present, the categorisation of cases is limited in scope. For example, the term government is used to identify a wide range of governments and institutions and may
+          refer to national or subnational governments, or to specific government entities such as banks or other institutions. To mitigate this limitation, we do our best to
+          specify the name of the government entities implicated in the litigation.
+        </p>
+        <p>
+          The definition of climate change litigation found in some academic and practitioner-oriented literature is broader than that used to determine whether a case falls within
+          the scope of these databases. The criteria for inclusion set out above has been adopted to facilitate both the process of data collection and to emphasise the distinct
+          nature and importance of cases where climate change is material to the outcome. Climate change touches on a vast range of law and policy issues in the fields of
+          environment, energy, natural resources, land use, and securities and financial regulation, among others; these criteria provide meaningful limits on researchers’
+          discretion to determine whether a case has climate relevance and help define climate litigation as a distinct field. While the dataset is sufficiently comprehensive and
+          cross-cutting to provide wide-ranging insights, data-users should be aware that individual cases that meet these criteria may be missing and certain trends may not
+          currently be captured in the database. Some cases in the database are identified with the support of pro-climate litigants and their allies, which may mean that these
+          cases are captured in more detail than cases seeking to challenge climate action. Our data collection processes are subject to continual evolution and may in future be
+          modified to include additional categories of cases or to better capture the volume of cases of a given type.
+        </p>
       </div>
     </section>
   );
 };
 export default Methodology;
-
-{
-  /* <ExternalLink url="mailto:gri.cgl@lse.co.uk">gri.cgl@lse.ac.uk</ExternalLink> */
-}
-
-{
-  /* 
-<p>
-  <span className="block font-bold"></span>
-</p>
-<p>
-  <span className="block font-bold"></span>
-</p> 
-*/
-}
