@@ -552,27 +552,24 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client):
 
 
 @pytest.mark.search
-def test_sensitive_queries(test_opensearch, monkeypatch, client, user_token_headers):
+def test_sensitive_queries(test_opensearch, monkeypatch, client):
     """Make sure that queries in the list of sensitive queries only return results containing that term, and not KNN results."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response1 = client.post(
         "/api/v1/searches",
         json={"query_string": "germany", "exact_match": False},
-        headers=user_token_headers,
     )
 
     response2 = client.post(
         "/api/v1/searches",
         json={"query_string": "electric vehicle charging", "exact_match": False},
-        headers=user_token_headers,
     )
 
     # In this example the sensitive term is less than half the length of the query, so KNN results should be returned
     response3 = client.post(
         "/api/v1/searches",
         json={"query_string": "germany foreign investment", "exact_match": False},
-        headers=user_token_headers,
     )
 
     response1_json = response1.json()
