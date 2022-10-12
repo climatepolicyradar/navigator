@@ -24,21 +24,12 @@ const Header = () => {
     <header data-cy="header" className="bg-secondary-700 w-full border-b-2 border-overlayWhite">
       <div className="container">
         <div className="flex justify-between">
-          <div className="my-6 mr-6">
-            <Link href={`/`}>
-              <a className="flex text-blue-400">
-                <Image src="/cclw/CCLW_logo.jpg" alt="Climate Change Laws of the World logo" width={200} height={100} layout={"fixed"} priority />
-              </a>
-            </Link>
-          </div>
           <div className="flex-1 flex flex-col mt-6 text-blue-400">
-            {activePage !== "/" && (
-              <div className="font-bold md:text-xl lg:text-3xl">
-                <Link href={`/`}>
-                  <a className="">Climate Change Laws of the World</a>
-                </Link>
-              </div>
-            )}
+            <div className="font-bold md:text-xl lg:text-3xl">
+              <Link href={`/`}>
+                <a className="">Climate Change Laws of the World</a>
+              </Link>
+            </div>
             <nav className="mt-8 flex-1 text-white hidden md:block">
               <ul className="flex items-end gap-8 h-full text-sm lg:text-base font-bold">
                 <li>
@@ -63,7 +54,12 @@ const Header = () => {
                 </li>
                 <li>
                   <Link href="/search">
-                    <a className={linkClass("/search") + " flex gap-2"}>Search <span className="mt-[-2px]"><SearchIcon height="24" width="24" /></span></a>
+                    <a className={linkClass("/search") + " flex gap-2"}>
+                      Search{" "}
+                      <span className="mt-[-2px]">
+                        <SearchIcon height="24" width="24" />
+                      </span>
+                    </a>
                   </Link>
                 </li>
               </ul>
