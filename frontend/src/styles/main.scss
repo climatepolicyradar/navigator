@@ -321,6 +321,12 @@ ul li.selected {
       }
     }
   }
+  ol {
+    @apply list-decimal list-inside;
+    li {
+      @apply my-6 font-light;
+    }
+  }
 }
 .pdf-container {
   height: 440px;
@@ -375,7 +381,6 @@ ul li.selected {
   }
 
   @screen md {
-
     &:first-child {
       @apply rounded-none;
     }
@@ -388,7 +393,6 @@ ul li.selected {
     }
     &:nth-child(3n) {
       @apply rounded-r-lg;
-      
     }
 
     &:nth-child(3n + 2) {
