@@ -20,14 +20,13 @@ class ApiClient {
     return this.axiosClient
       .get(`${this.baseUrl}${url}`, { params })
       .then((res: any) => res)
-      .catch((err: any) => Promise.reject(err));
+      .catch((err: any) => err);
   }
   post(url: string, values: any, config = {}) {
     return this.axiosClient
       .post(`${this.baseUrl}${url}`, values, config)
       .then((res) => res)
       .catch((err) => {
-        console.log(err);
         return Promise.reject(err);
       });
   }
@@ -36,10 +35,13 @@ class ApiClient {
       .put(`${this.baseUrl}${url}`, values)
       .then((res) => res)
       .catch((err) => {
-        console.log(err);
         return Promise.reject(err);
       });
   }
 }
 
-export { ApiClient };
+const AxiosCPR: AxiosInstance = axios.create({
+  baseURL: process.env.NEXT_PUBLIC_API_URL
+});
+
+export { ApiClient, AxiosCPR };
