@@ -44,17 +44,15 @@ def test_create_relationship(
 
 def test_create_relationship_security(
     client,
-    user_token_headers,
 ):
     response_create = client.post(
         "/api/v1/document-relationships",
-        headers=user_token_headers,
         json=RelationshipCreateRequest(
             name="Rel", type="test", description="test relationship"
         ).dict(),
     )
-    assert response_create.status_code == 404
-    assert response_create.json() == {"detail": "Not Found"}
+    assert response_create.status_code == 401
+    assert response_create.json() == {"detail": "Not authenticated"}
 
 
 # --- tests for GET /api/v1/document-relationship
@@ -76,15 +74,14 @@ def test_get_relationships(
 def test_get_relationships_security(
     client,
     superuser_token_headers,
-    user_token_headers,
 ):
     _create_10_relationships(client, superuser_token_headers)
 
     response_get = client.get(
-        "/api/v1/document-relationships", headers=user_token_headers
+        "/api/v1/document-relationships",
     )
-    assert response_get.status_code == 404
-    assert response_get.json() == {"detail": "Not Found"}
+    assert response_get.status_code == 401
+    assert response_get.json() == {"detail": "Not authenticated"}
 
 
 # --- tests for POST /api/v1/document-relationships/id/documents/id
@@ -160,16 +157,14 @@ def test_add_document_to_relationship_is_idempotent(
 
 def test_add_document_to_relationship_security(
     client,
-    user_token_headers,
 ):
 
     # Set up document relationship
     response_docrel1 = client.put(
         "/api/v1/document-relationships/1/documents/1",
-        headers=user_token_headers,
     )
-    assert response_docrel1.status_code == 404
-    assert response_docrel1.json() == {"detail": "Not Found"}
+    assert response_docrel1.status_code == 401
+    assert response_docrel1.json() == {"detail": "Not authenticated"}
 
 
 # --- tests for DELETE /api/v1/document-relationships/id/documents/id
@@ -226,16 +221,14 @@ def test_delete_document_from_relationship(
 
 def test_delete_document_from_relationship_security(
     client,
-    user_token_headers,
 ):
 
     # Delete a document relationship
     response_reldel = client.delete(
         "/api/v1/document-relationships/1/documents/1",
-        headers=user_token_headers,
     )
-    assert response_reldel.status_code == 404
-    assert response_reldel.json() == {"detail": "Not Found"}
+    assert response_reldel.status_code == 401
+    assert response_reldel.json() == {"detail": "Not authenticated"}
 
 
 # --- tests for GET /api/v1/document-relationships/id
@@ -287,12 +280,11 @@ def test_get_relationship_documents(
 
 def test_get_relationship_documents_security(
     client,
-    user_token_headers,
 ):
 
     response_get = client.get(
-        "/api/v1/document-relationships/1", headers=user_token_headers
+        "/api/v1/document-relationships/1",
     )
 
-    assert response_get.status_code == 404
-    assert response_get.json() == {"detail": "Not Found"}
+    assert response_get.status_code == 401
+    assert response_get.json() == {"detail": "Not authenticated"}
