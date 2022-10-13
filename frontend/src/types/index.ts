@@ -59,6 +59,19 @@ export type TTarget = {
   target_year: string;
 };
 
+export type TGeographyConfigNode = {
+  id: number;
+  display_value: string;
+  value: string;
+  type: string;
+  parent_id: number;
+};
+
+export type TGeographyConfig = {
+  node: TGeographyConfigNode;
+  children: TGeographyConfigNode[];
+};
+
 export type TGeographyStats = {
   id: number;
   name: string;
