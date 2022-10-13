@@ -1,14 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { TTarget, TEvent } from "@types";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
-import useGeoStats from "@hooks/useGeoStats";
-import useGeoSummary from "@hooks/useGeoSummary";
 import Layout from "@components/layouts/Main";
 import { SingleCol } from "@components/SingleCol";
 import Event from "@components/blocks/Event";
-import { Loading } from "@components/blocks/Loading";
 import { Timeline } from "@components/blocks/Timeline";
 import { CountryHeader } from "@components/blocks/CountryHeader";
 import { KeyDetail } from "@components/KeyDetail";
@@ -23,7 +20,7 @@ import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { ExternalLink } from "@components/ExternalLink";
 
-import { ApiClient, AxiosCPR } from "@api/http-common";
+import { ApiClient } from "@api/http-common";
 import { TGeographyStats, TGeographySummary } from "@types";
 
 type TTargets = {
@@ -254,23 +251,19 @@ export default CountryPage;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params.geographyId;
   const client = new ApiClient();
-  const data = await client.get(`/geo_stats/${id}`, null);
+
   const { data: geographyData }: { data: TGeographyStats } = await client.get(`/geo_stats/${id}`, null);
   const { data: summaryData }: { data: TGeographySummary } = await client.get(`/summaries/country/${id}`, null);
 
-  console.log("data", data.response.status);
-  console.log("geo", geographyData);
-  console.log("summary", summaryData);
-
-  // if (!geographyData || !summaryData) {
-  //   return {
-  //     notFound: true,
-  //   };
-  // }
+  if (!geographyData || !summaryData) {
+    return {
+      notFound: true,
+    };
+  }
 
   return {
     props: {
-      geography: null,
+      geography: geographyData,
       summary: summaryData,
     },
   };
