@@ -40,8 +40,4 @@ class ApiClient {
   }
 }
 
-const AxiosCPR: AxiosInstance = axios.create({
-  baseURL: process.env.NEXT_PUBLIC_API_URL
-});
-
-export { ApiClient, AxiosCPR };
+export { ApiClient };
