@@ -69,7 +69,7 @@ export type TGeographyConfigNode = {
 
 export type TGeographyConfig = {
   node: TGeographyConfigNode;
-  children: TGeographyConfigNode[];
+  children: TGeographyConfig[];
 };
 
 export type TGeographyStats = {

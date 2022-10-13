@@ -1,30 +1,40 @@
 import { ApiClient } from "@api/http-common";
 import { TGeographyConfig } from "@types";
 
-function Sitemap() {}
+function Sitemap() { }
 
+function extractGeographyIds(config: TGeographyConfig): number[] {
+  const children_ids: number[] = config.children.flatMap((node): number[] => (extractGeographyIds(node)));
+  return [config.node.id].concat(children_ids);
+}
 
-function getGeographyIdsFromConfig(config: TGeographyConfig) {
-  //config.reduce
+async function fetchGeographies(): Promise<TGeographyConfig[]> {
+  const client = new ApiClient();
+  const { data: data } = await client.get(`/config/`, null);
+  return data.metadata.CCLW.geographies;
+}
+
+async function getGeographyIds(): Promise<number[]> {
+  const geographyData: TGeographyConfig[] = await fetchGeographies();
+  return geographyData.flatMap((item: TGeographyConfig) => extractGeographyIds(item));
+}
+
+async function getGeographyPages(res: any): Promise<string[]> {
+  const host = res.req.headers.host;
+  const id_list: number[] = await getGeographyIds();
+  return id_list.map((geo_id: number) => `https://${host}/geographies/${geo_id}`);
 }
 
 export async function getServerSideProps({ res }) {
-  const client = new ApiClient();
 
-  const {data: data} = await client.get(`/config/`, null);
-  console.log(data);
-  console.log("-----");
-
-  const geographyData: TGeographyConfig = data.metadata.CCLW.geographies;
-  console.log(geographyData);
-
-  res.setHeader("Content-Type", "text/plan");
-  res.write(JSON.stringify(geographyData, null, 4));
+  res.setHeader("Content-Type", "text/plain");
+  res.write((await getGeographyPages(res)).join('\n'));
   res.end();
 
   return {
     props: {},
   };
+
 }
 
 export default Sitemap;
