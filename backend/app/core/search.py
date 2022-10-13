@@ -4,7 +4,9 @@ import logging
 import os
 from dataclasses import dataclass
 from enum import Enum
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple
+from pathlib import Path
+import csv
+from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Set
 
 from opensearchpy import OpenSearch
 from opensearchpy import JSONSerializer as jss
@@ -106,6 +108,22 @@ def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
         return 1 / (1 - ip_thresh)
 
 
+def load_sensitive_query_terms() -> Set[str]:
+    """
+    Return sensitive query terms from the first column of a TSV file. Outputs are lowercased for case-insensitive matching.
+
+    :return _type_: _description_
+    """
+    tsv_path = Path(__file__).parent / "sensitive_query_terms.tsv"
+    with open(tsv_path, "r") as tsv_file:
+        reader = csv.reader(tsv_file, delimiter="\t")
+
+        # first column is group name, second column is keyword
+        sensitive_terms = set([row[1].lower().strip() for row in reader])
+
+    return sensitive_terms
+
+
 @dataclass(frozen=True)
 class OpenSearchQueryConfig:
     """Configuration for searches sent to OpenSearch."""
@@ -164,6 +182,7 @@ class OpenSearchConnection:
     ):
         self._opensearch_config = opensearch_config
         self._opensearch_connection: Optional[OpenSearch] = None
+        self._sensitive_query_terms = load_sensitive_query_terms()
 
     def query(
         self,
@@ -176,6 +195,7 @@ class OpenSearchConnection:
         opensearch_request = build_opensearch_request_body(
             search_request=search_request_body,
             opensearch_internal_config=opensearch_internal_config,
+            sensitive_query_terms=self._sensitive_query_terms,
         )
         opensearch_response_body = self.raw_query(opensearch_request.query, preference)
 
@@ -356,7 +376,7 @@ class QueryBuilder:
             },
         }
 
-    def with_semantic_query(self, query_string: str):
+    def with_semantic_query(self, query_string: str, knn: bool):
         """Configure the query to search semantically for a given query string."""
 
         embedding = _ENCODER.encode(query_string)
@@ -399,19 +419,6 @@ class QueryBuilder:
                                 }
                             }
                         },
-                        {
-                            "function_score": {
-                                "query": {
-                                    "knn": {
-                                        OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY: {
-                                            "vector": embedding,
-                                            "k": self._config.k,
-                                        },
-                                    },
-                                },
-                                "min_score": self._config.lucene_threshold,
-                            }
-                        },
                     ],
                     "minimum_should_match": 1,
                     "boost": self._config.description_boost,
@@ -429,25 +436,45 @@ class QueryBuilder:
                                 },
                             }
                         },
-                        {
-                            "function_score": {
-                                "query": {
-                                    "knn": {
-                                        "text_embedding": {
-                                            "vector": embedding,
-                                            "k": self._config.k,
-                                        },
-                                    },
-                                },
-                                "min_score": self._config.lucene_threshold,
-                            }
-                        },
                     ],
                     "minimum_should_match": 1,
                     "boost": self._config.embedded_text_boost,
                 }
             },
         ]
+
+        if knn:
+            self._request_body["query"]["bool"]["should"][1]["bool"]["should"].append(
+                {
+                    "function_score": {
+                        "query": {
+                            "knn": {
+                                OPENSEARCH_INDEX_DESCRIPTION_EMBEDDING_KEY: {
+                                    "vector": embedding,
+                                    "k": self._config.k,
+                                },
+                            },
+                        },
+                        "min_score": self._config.lucene_threshold,
+                    }
+                }
+            )
+
+            self._request_body["query"]["bool"]["should"][2]["bool"]["should"].append(
+                {
+                    "function_score": {
+                        "query": {
+                            "knn": {
+                                "text_embedding": {
+                                    "vector": embedding,
+                                    "k": self._config.k,
+                                },
+                            },
+                        },
+                        "min_score": self._config.lucene_threshold,
+                    }
+                }
+            )
 
     def with_exact_query(self, query_string: str):
         """Configure the query to search for an exact match to a given query string."""
@@ -558,6 +585,7 @@ class QueryBuilder:
 def build_opensearch_request_body(
     search_request: SearchRequestBody,
     opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
+    sensitive_query_terms: Set[str] = set(),
 ) -> QueryBuilder:
     """Build a complete OpenSearch request body."""
 
@@ -570,7 +598,24 @@ def build_opensearch_request_body(
         if search_request.exact_match:
             builder.with_exact_query(search_request.query_string)
         else:
-            builder.with_semantic_query(search_request.query_string)
+            sensitive_terms_in_query = [
+                term
+                for term in sensitive_query_terms
+                if term in search_request.query_string.lower()
+            ]
+
+            # If the query contains any sensitive terms, and the length of the shortest sensitive term is >=50% of the length of the query by number of words, then disable KNN
+            if (
+                sensitive_terms_in_query
+                and len(min(sensitive_terms_in_query, key=len).split(" "))
+                / len(search_request.query_string.split(" "))
+                >= 0.5
+            ):
+                use_knn = False
+            else:
+                use_knn = True
+
+            builder.with_semantic_query(search_request.query_string, knn=use_knn)
 
         if search_request.sort_field is not None:
             builder.with_search_order(

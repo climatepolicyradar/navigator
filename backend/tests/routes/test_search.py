@@ -552,6 +552,59 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client):
 
 
 @pytest.mark.search
+def test_sensitive_queries(test_opensearch, monkeypatch, client):
+    """Make sure that queries in the list of sensitive queries only return results containing that term, and not KNN results."""
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    response1 = client.post(
+        "/api/v1/searches",
+        json={"query_string": "germany", "exact_match": False},
+    )
+
+    response2 = client.post(
+        "/api/v1/searches",
+        json={"query_string": "electric vehicle charging", "exact_match": False},
+    )
+
+    # In this example the sensitive term is less than half the length of the query, so KNN results should be returned
+    response3 = client.post(
+        "/api/v1/searches",
+        json={"query_string": "germany foreign investment", "exact_match": False},
+    )
+
+    response1_json = response1.json()
+    response2_json = response2.json()
+    response3_json = response3.json()
+
+    # If the queries above return no results then the tests below are meaningless
+    assert len(response1_json["documents"]) > 0
+    assert len(response2_json["documents"]) > 0
+    assert len(response3_json["documents"]) > 0
+
+    assert all(
+        [
+            "germany" in passage_match["text"].lower()
+            for document in response1_json["documents"]
+            for passage_match in document["document_passage_matches"]
+        ]
+    )
+    assert not all(
+        [
+            "electric vehicle charging" in passage_match["text"].lower()
+            for document in response2_json["documents"]
+            for passage_match in document["document_passage_matches"]
+        ]
+    )
+    assert not all(
+        [
+            "germany foreign investment" in passage_match["text"].lower()
+            for document in response3_json["documents"]
+            for passage_match in document["document_passage_matches"]
+        ]
+    )
+
+
+@pytest.mark.search
 def test_accents_ignored(test_opensearch, monkeypatch, client):
     """Make sure that accents in query strings are ignored."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
