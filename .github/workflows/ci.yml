@@ -31,14 +31,15 @@ jobs:
       - name: Get python Container
         run:  docker pull python:3.9
 
-      - name: AWS login to ECR 
+      - name: AWS login to ECR & pull
         run:  |
           .github/docker-login.sh
+          docker pull 073457443605.dkr.ecr.eu-west-2.amazonaws.com/navigator-backend-base:latest
         env:
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
           AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
           AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          
+
       - name: Build
         run: |
           docker-compose build
