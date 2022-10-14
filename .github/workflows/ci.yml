@@ -25,22 +25,21 @@ jobs:
       - name: Use .env.example
         run:  cp .env.example .env
 
+      - name: AWS login to ECR & pull
+        run:  |
+          .github/docker-login.sh
+          aws ecr describe-images --repository-name navigator-backend-base --region eu-west-2
+          docker pull ${DOCKER_REGISTRY}/navigator-backend-base:latest
+        env:
+          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+
       - name: Get node Container
         run:  docker pull node:16-alpine3.13
 
       - name: Get python Container
         run:  docker pull python:3.9
-
-      - name: AWS login to ECR & pull
-        run:  |
-          .github/docker-login.sh
-          aws ecr describe-images --repository-name navigator-backend --region eu-west-2
-          aws ecr describe-images --repository-name navigator-backend-base --region eu-west-2
-          docker pull 073457443605.dkr.ecr.eu-west-2.amazonaws.com/navigator-backend-base:latest
-        env:
-          DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
       - name: Build
         run: |
