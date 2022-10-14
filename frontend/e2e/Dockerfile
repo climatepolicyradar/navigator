@@ -1,4 +1,4 @@
-FROM cypress/included:10.1.0
+FROM cypress/included:10.10.0
 
 WORKDIR /opt
 RUN npm install cypress-file-upload cypress-pseudo-localization dotenv
