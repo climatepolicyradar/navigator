@@ -1,4 +1,4 @@
-FROM 073457443605.dkr.ecr.eu-west-2.amazonaws.com/navigator-backend-base:latest
+FROM navigator-backend-base:latest
 
 WORKDIR /app
 
