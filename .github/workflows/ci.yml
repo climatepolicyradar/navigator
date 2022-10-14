@@ -61,8 +61,11 @@ jobs:
       - name: Get cypress Container      
         run:  docker pull cypress/included:10.1.0
 
+      - name: Build frontend tests
+        run:  cd frontend/e2e && docker-compose build
+
       - name: Run frontend tests
-        run:  make test_frontend
+        run:  cd frontend/e2e && docker-compose up --exit-code-from cypress
       
       - name: Run backend search tests
         run:  make test_backend_search
