@@ -20,9 +20,8 @@ async function getGeographyIds(): Promise<number[]> {
 }
 
 async function getGeographyPages(res: any): Promise<string[]> {
-  const host = res.req.headers.host;
   const id_list: number[] = await getGeographyIds();
-  return id_list.map((geo_id: number) => `https://${host}/geographies/${geo_id}`);
+  return id_list.map((geo_id: number) => `https://app.climatepolicyradar.org/geographies/${geo_id}`);
 }
 
 export async function getServerSideProps({ res }) {
