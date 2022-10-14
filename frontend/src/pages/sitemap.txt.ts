@@ -21,6 +21,7 @@ async function getGeographyIds(): Promise<number[]> {
 
 async function getGeographyPages(res: any): Promise<string[]> {
   const id_list: number[] = await getGeographyIds();
+  // TODO: Fix this: https://linear.app/climate-policy-radar/issue/FRO-114/replace-hardcoded-hostname-with-one-injected-at-deploytime
   return id_list.map((geo_id: number) => `https://app.climatepolicyradar.org/geographies/${geo_id}`);
 }
 
