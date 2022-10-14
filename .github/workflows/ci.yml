@@ -33,7 +33,7 @@ jobs:
 
       - name: AWS login to ECR 
         run:  |
-          aws ecr get-login-password --region eu-west-2 | docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
+          .github/docker-login.sh
         env:
           DOCKER_REGISTRY: ${{ secrets.DOCKER_REGISTRY }}
 
