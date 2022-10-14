@@ -25,6 +25,12 @@ jobs:
       - name: Use .env.example
         run:  cp .env.example .env
 
+      - name: Get node Container
+        run:  docker pull node:16-alpine3.13
+
+      - name: Get python Container
+        run:  docker pull python:3.9
+
       - name: Build
         run: |
           docker-compose build
@@ -37,7 +43,7 @@ jobs:
         run:  curl http://localhost:8000/api/docs
 
       - name: Run backend tests
-        run:  make test_backend && make test_backend_search
+        run:  make test_backend
       
       - name: docker
         run: |
@@ -51,9 +57,15 @@ jobs:
       
       - name: Configure frontend test env
         run:  cp frontend/e2e/.env.example frontend/e2e/.env
-      
+
+      - name: Get cypress Container      
+        run:  docker pull cypress/included:10.1.0
+
       - name: Run frontend tests
         run:  make test_frontend
+      
+      - name: Run backend search tests
+        run:  make test_backend_search
       
       - name: Log Dump
         if:   always()
