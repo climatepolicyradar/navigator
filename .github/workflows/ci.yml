@@ -65,7 +65,7 @@ jobs:
         run:  cd frontend/e2e && docker-compose build
 
       - name: Run frontend tests
-        run:  cd frontend/e2e && docker-compose up --exit-code-from cypress
+        run:  cd frontend/e2e && docker-compose up --abort-on-container-exit --exit-code-from cypress
       
       - name: Run backend search tests
         run:  make test_backend_search
