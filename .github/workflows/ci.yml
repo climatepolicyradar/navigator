@@ -45,6 +45,8 @@ jobs:
         run:  |
           .github/docker-login.sh
           docker pull ${DOCKER_REGISTRY}/navigator-backend-base:latest
+          docker images
+          docker-compose build backend
           docker-compose build
           docker images
         env:
