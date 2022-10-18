@@ -233,12 +233,11 @@ async def import_law_policy(
         ) from e
 
 
-@r.put("/document/{id}", status_code=status.HTTP_200_OK)
+@r.put("/documents/{id}", status_code=status.HTTP_200_OK)
 async def update_document(
     request: Request,
     meta_data: DocumentUpdateRequest,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
-    # Do the things
-    pass
+    print("*" * 20, "Called")
