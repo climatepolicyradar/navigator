@@ -342,8 +342,7 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
         url=s3_to_cdn_url(document.url),
         slug=document.slug,
         import_id=document.import_id,
-        # TODO: replace with proper content type handling
-        content_type=content_type_from_path(document.url),
+        content_type=document.content_type,
         md5_sum=document.md5_sum,
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),

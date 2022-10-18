@@ -753,6 +753,7 @@ def create_search_response_document(
         document_category=opensearch_match.document_category,
         document_source_url=opensearch_match.document_source_url,
         document_url=s3_to_cdn_url(opensearch_match.document_url),
+        # TODO - we now need to get this from the db
         document_content_type=content_type_from_path(opensearch_match.document_url),
         document_title_match=False,
         document_description_match=False,

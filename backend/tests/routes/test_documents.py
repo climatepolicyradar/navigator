@@ -503,6 +503,11 @@ def test_document_detail(
         get_detail_json_2["url"]
         == "https://cdn.climatepolicyradar.org/AFG/2009-10-12/AFG-2009-10-12-Agriculture+Sector%2BStrategy+1487-1491+%282008/9-2013/4%29-1.html"
     )
+    assert get_detail_json_2["md5_sum"] == "the other md5 sum"
+
+    # Test content type is correctly inferred
+    assert get_detail_json_2["content_type"] == "text/html"
+
     assert get_detail_json_2["source"] == {"name": "may it be with you"}
     assert get_detail_json_2["geography"] == {
         "display_value": "not my favourite subject",
@@ -676,7 +681,7 @@ def test_update_document(
 
     doc_id = response1_document["id"]
     payload = {
-        "md5_sum": "abc123",
+        "md5_sum": "c184214e-4870-48e0-adab-3e064b1b0e76",
         "content_type": "updated content_type",
         "source_url": "updated source_url",
     }
@@ -689,6 +694,6 @@ def test_update_document(
 
     assert response.status_code == 200
     json_object = response.json()
-    assert json_object["md5_sum"] == "abc123"
+    assert json_object["md5_sum"] == "c184214e-4870-48e0-adab-3e064b1b0e76"
     assert json_object["content_type"] == "updated content_type"
     assert json_object["source_url"] == "updated source_url"
