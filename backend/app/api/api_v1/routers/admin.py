@@ -13,7 +13,10 @@ from fastapi import (
 )
 from sqlalchemy.exc import IntegrityError
 
-from app.api.api_v1.schemas.document import BulkImportValidatedResult
+from app.api.api_v1.schemas.document import (
+    BulkImportValidatedResult,
+    DocumentUploadCompleteRequest,
+)
 from app.api.api_v1.schemas.user import User, UserCreateAdmin
 from app.core.auth import get_current_active_superuser
 from app.core.aws import get_s3_client
@@ -228,3 +231,14 @@ async def import_law_policy(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         ) from e
+
+
+@r.post("/ingest-update/document-upload-complete/{id}", status_code=status.HTTP_200_OK)
+async def update_document(
+    request: Request,
+    meta_data: DocumentUploadCompleteRequest,
+    db=Depends(get_db),
+    current_user=Depends(get_current_active_superuser),
+):
+    # Do the things
+    pass
