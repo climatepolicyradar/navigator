@@ -160,6 +160,7 @@ class DocumentUploadCompleteRequest(BaseModel):
 
     md5_sum: str
     content_type: str
+    source_url: str
 
 
 class BulkImportValidatedResult(BaseModel):
