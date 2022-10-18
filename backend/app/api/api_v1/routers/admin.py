@@ -15,7 +15,7 @@ from sqlalchemy.exc import IntegrityError
 
 from app.api.api_v1.schemas.document import (
     BulkImportValidatedResult,
-    DocumentUploadCompleteRequest,
+    DocumentUpdateRequest,
 )
 from app.api.api_v1.schemas.user import User, UserCreateAdmin
 from app.core.auth import get_current_active_superuser
@@ -233,10 +233,10 @@ async def import_law_policy(
         ) from e
 
 
-@r.post("/ingest-update/document-upload-complete/{id}", status_code=status.HTTP_200_OK)
+@r.put("/document/{id}", status_code=status.HTTP_200_OK)
 async def update_document(
     request: Request,
-    meta_data: DocumentUploadCompleteRequest,
+    meta_data: DocumentUpdateRequest,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):

@@ -160,10 +160,17 @@ class DocumentUploadCompleteRequest(BaseModel):
 
     md5_sum: str
     content_type: str
-    source_url: str
 
 
 class BulkImportValidatedResult(BaseModel):
     """Response for bulk import request."""
 
     document_count: int
+
+
+class DocumentUpdateRequest(BaseModel):
+    """The current supported fields allowed for update."""
+
+    md5_sum: Optional[str]
+    content_type: Optional[str]
+    source_url: Optional[str]
