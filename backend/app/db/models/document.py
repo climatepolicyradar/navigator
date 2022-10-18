@@ -64,6 +64,7 @@ class Document(Base, Auditable):
     source_id = sa.Column(sa.Integer, sa.ForeignKey(Source.id), nullable=False)
     url = sa.Column(sa.Text, nullable=True)
     md5_sum = sa.Column(sa.Text, nullable=True)
+    content_type = sa.Column(sa.Text, nullable=True)
 
     slug = sa.Column(
         sa.Text,

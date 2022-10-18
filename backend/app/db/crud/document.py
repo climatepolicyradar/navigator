@@ -183,6 +183,7 @@ def create_document(
     if existing_category_id is None:
         raise UnknownCategoryError(document_create_request.category)
 
+    url = document_create_request.url
     new_document = Document(
         name=document_create_request.name,
         description=document_create_request.description,
@@ -190,7 +191,8 @@ def create_document(
         source_id=existing_source_id,
         slug=None,  # TODO: create slug after agreeing slug spec
         import_id=document_create_request.import_id,
-        url=document_create_request.url,
+        url=url,
+        content_type=content_type_from_path(url) if url else None,
         md5_sum=document_create_request.md5_sum,
         geography_id=existing_geography_id,
         type_id=existing_type_id,
@@ -342,6 +344,7 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
         import_id=document.import_id,
         # TODO: replace with proper content type handling
         content_type=content_type_from_path(document.url),
+        md5_sum=document.md5_sum,
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),
             value=cast(str, geography.value),

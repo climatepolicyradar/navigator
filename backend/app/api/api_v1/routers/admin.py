@@ -1,6 +1,8 @@
 from io import StringIO
 import logging
 from typing import cast
+from app.db.models.document import Document
+from app.db.crud.document import get_document
 
 from fastapi import (
     APIRouter,
@@ -12,6 +14,7 @@ from fastapi import (
     status,
 )
 from sqlalchemy.exc import IntegrityError
+from sqlalchemy import update
 
 from app.api.api_v1.schemas.document import (
     BulkImportValidatedResult,
@@ -236,8 +239,22 @@ async def import_law_policy(
 @r.put("/documents/{id}", status_code=status.HTTP_200_OK)
 async def update_document(
     request: Request,
+    id: int,
     meta_data: DocumentUpdateRequest,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
 ):
-    print("*" * 20, "Called")
+    # TODO: As this grows move it out into the crud later.
+    doc_update = update(Document)
+    doc_update = doc_update.values(meta_data.__dict__)
+    doc_update = doc_update.where(Document.id == id)
+
+    try:
+        db.execute(doc_update)
+    except Exception as e:
+        _LOGGER.exception("Update document failed")
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+        ) from e
+
+    return get_document(db, id)

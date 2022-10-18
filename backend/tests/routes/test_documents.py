@@ -628,39 +628,6 @@ def test_document_detail(
     assert get_detail_json_4["content_type"] == "unknown"
 
 
-def test_update_document(
-    client,
-    superuser_token_headers,
-    test_db,
-):
-
-    (
-        response1_document,
-        document1_payload,
-        response2_document,
-        document2_payload,
-        response3_document,
-        document3_payload,
-        response4_document,
-        document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
-
-    doc_id = response1_document["id"]
-    payload = {
-        "md5sum": "abc123",
-        "content_type": "content_type",
-        "source_url": "source_url",
-    }
-
-    response = client.put(
-        f"/api/v1/admin/documents/{doc_id}",
-        headers=superuser_token_headers,
-        json=payload,
-    )
-
-    assert response.status_code == 200
-
-
 def test_update_document_security(
     client,
     superuser_token_headers,
@@ -688,3 +655,40 @@ def test_update_document_security(
     response = client.put(f"/api/v1/admin/documents/{doc_id}", json=payload)
 
     assert response.status_code == 401
+
+
+def test_update_document(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    doc_id = response1_document["id"]
+    payload = {
+        "md5_sum": "abc123",
+        "content_type": "updated content_type",
+        "source_url": "updated source_url",
+    }
+
+    response = client.put(
+        f"/api/v1/admin/documents/{doc_id}",
+        headers=superuser_token_headers,
+        json=payload,
+    )
+
+    assert response.status_code == 200
+    json_object = response.json()
+    assert json_object["md5_sum"] == "abc123"
+    assert json_object["content_type"] == "updated content_type"
+    assert json_object["source_url"] == "updated source_url"
