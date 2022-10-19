@@ -17,14 +17,12 @@ import { truncateString } from "@helpers/index";
 
 import { TEvent } from "@types";
 import { ExternalLink } from "@components/ExternalLink";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
+import { ApiClient } from "@api/http-common";
 
-const DocumentCoverPage = () => {
+const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({page,}) => {
   const [showFullSummary, setShowFullSummary] = useState(false);
   const [summary, setSummary] = useState("");
-  const router = useRouter();
-
-  const documentQuery = useDocumentDetail(router.query.docId as string);
-  const { data: { data: page } = {}, isFetching, refetch: refetchDocument } = documentQuery;
 
   const [year] = convertDate(page?.publication_ts);
 
@@ -39,11 +37,6 @@ const DocumentCoverPage = () => {
     }
   }, [page, showFullSummary]);
 
-  useEffect(() => {
-    if (router?.query.docId) {
-      refetchDocument();
-    }
-  }, [router?.query, refetchDocument]);
 
   const renderSourceLink = () => {
     let link: string;
@@ -72,9 +65,6 @@ const DocumentCoverPage = () => {
 
   return (
     <Layout title={`Climate Policy Radar | ${page?.name ?? 'Loading...'}`}>
-      {isFetching || !page?.name ? (
-        <Loading />
-      ) : (
         <section className="mb-8">
           <div className="bg-offwhite border-solid border-blue-200 border-b">
             <div className="container">
@@ -133,7 +123,7 @@ const DocumentCoverPage = () => {
                   <section className="mt-12">
                     <h3>Associated Documents</h3>
                     {page.related_documents.map((doc) => (
-                      <div key={doc.related_id} className="my-4">
+                      <div key={doc.document_id} className="my-4">
                         <RelatedDocument document={doc} />
                       </div>
                     ))}
@@ -171,8 +161,21 @@ const DocumentCoverPage = () => {
             </div>
           </div>
         </section>
-      )}
     </Layout>
   );
 };
 export default DocumentCoverPage;
+
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const id = context.params.docId;
+  const client = new ApiClient();
+
+  const { data: page } = {} = await client.get(`/documents/${id}`, null);
+
+  return {
+    props: {
+      page: page,
+    },
+  };
+};
