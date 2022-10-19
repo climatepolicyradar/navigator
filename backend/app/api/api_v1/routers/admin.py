@@ -246,7 +246,7 @@ async def update_document(
 ):
     # TODO: As this grows move it out into the crud later.
     doc_update = update(Document)
-    doc_update = doc_update.values(meta_data.__dict__)
+    doc_update = doc_update.values(meta_data.dict())
     doc_update = doc_update.where(Document.id == id)
 
     try:
