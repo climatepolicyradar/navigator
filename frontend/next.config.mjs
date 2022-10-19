@@ -12,7 +12,7 @@ const nextConfig = {
   },
   pageExtensions: ["tsx", "ts"],
   async redirects() {
-    const std_redirects = [
+    const standardRedirects = [
       {
         source: '/auth/:id*',
         destination: '/',
@@ -35,10 +35,8 @@ const nextConfig = {
       },
     ];
 
-    return std_redirects.concat(await getRedirectsFromCsv(REDIRECT_FILE)) ;
+    return standardRedirects.concat(await getRedirectsFromCsv(REDIRECT_FILE));
   },
 }
 
 export default nextConfig
-
-
