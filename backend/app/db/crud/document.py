@@ -30,7 +30,7 @@ from app.api.api_v1.schemas.metadata import (
     Source as SourceSchema,
     Topic as TopicSchema,
 )
-from app.core.util import content_type_from_path, to_cdn_url
+from app.core.util import content_type_from_path, to_cdn_url, s3_to_cdn_url
 from app.db.models import (
     Document,
     DocumentFramework,
@@ -338,11 +338,14 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
         source_url=cast(str, document.source_url),
-        url=to_cdn_url(document.cdn_object),
+        # TODO: remove with document.url
+        url=to_cdn_url(document.cdn_object) or s3_to_cdn_url(document.url),
         slug=document.slug,
         import_id=document.import_id,
         # TODO: replace with proper content type handling
-        content_type=content_type_from_path(document.url) or "unknown",
+        content_type=(
+            content_type_from_path(document.cdn_object or document.url) or "unknown"
+        ),
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),
             value=cast(str, geography.value),

@@ -605,3 +605,34 @@ def test_document_detail(
     assert get_detail_json_2["content_type"] == "unknown"
     assert get_detail_json_3["content_type"] == "unknown"
     assert get_detail_json_4["content_type"] == "unknown"
+
+    document1_object = (
+        test_db.query(Document).filter(Document.id == response1_document["id"]).first()
+    )
+    document1_object.cdn_object = "hello1.pdf"
+    document1_object.url = "some_url1"
+
+    document2_object = (
+        test_db.query(Document).filter(Document.id == response2_document["id"]).first()
+    )
+    document2_object.url = "https://ab.s3.cde.amazonaws.com/url2.htm"
+
+    test_db.flush()
+
+    get_detail_response_1 = client.get(
+        f"/api/v1/documents/{response1_document['id']}",
+    )
+    assert get_detail_response_1.status_code == 200
+    get_detail_json_1 = get_detail_response_1.json()
+
+    get_detail_response_2 = client.get(
+        f"/api/v1/documents/{response2_document['id']}",
+    )
+    assert get_detail_response_2.status_code == 200
+    get_detail_json_2 = get_detail_response_2.json()
+
+    assert get_detail_json_1["url"] == "https://cdn.climatepolicyradar.org/hello1.pdf"
+    assert get_detail_json_1["content_type"] == "application/pdf"
+
+    assert get_detail_json_2["url"] == "https://cdn.climatepolicyradar.org/url2.htm"
+    assert get_detail_json_2["content_type"] == "text/html"

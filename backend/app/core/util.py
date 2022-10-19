@@ -1,15 +1,17 @@
 import os
 import random
+import re
 import string
 from pathlib import Path
 from typing import Any, Optional, Union
+from urllib.parse import quote_plus, urlsplit
 
 from sqlalchemy.orm import Session
 
 from app.db.session import Base
 
 
-CDN_DOMAIN: str = os.getenv("CDN_URL", "cdn.climatepolicyradar.org")
+CDN_DOMAIN: str = os.getenv("CDN_DOMAIN", "cdn.climatepolicyradar.org")
 # TODO: remove & replace with proper content-type handling through pipeline
 CONTENT_TYPE_MAP = {
     ".pdf": "application/pdf",
@@ -82,3 +84,35 @@ def tree_table_to_json(
             append_list.append(node_row_object)
 
     return json_out
+
+
+# TODO: remove below when cdn_object migration is complete
+def _encode_characters_in_path(s3_path: str) -> str:
+    """
+    Encode special characters in S3 URL path component to fix broken CDN links.
+
+    :param s3_path: The s3 URL path component in which to fix encodings
+    :returns str: A URL path component containing encoded characters
+    """
+    encoded_path = "/".join([quote_plus(c) for c in s3_path.split("/")])
+    return encoded_path
+
+
+def s3_to_cdn_url(s3_url: Optional[str]) -> Optional[str]:
+    """
+    Convert a URL to a PDF in our s3 bucket to a URL to a PDF in our CDN.
+
+    :param str s3_url: URL to a PDF in our s3 bucket.
+    :returns str: URL to the PDF via our CDN domain.
+    """
+    if s3_url is None:
+        return None
+    converted_cdn_url = re.sub(
+        r"https:\/\/.*\.s3\..*\.amazonaws.com",
+        f"https://{CDN_DOMAIN}",
+        s3_url,
+    )
+    split_url = urlsplit(converted_cdn_url)
+    new_path = _encode_characters_in_path(split_url.path)
+    # CDN URL should include only scheme, host & modified path
+    return f"{split_url.scheme}://{split_url.hostname}{new_path}"
