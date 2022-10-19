@@ -2,7 +2,7 @@
  * @type {import('next').NextConfig}
  */
 
-import getRedirectsFromCsv from "./redirects/reader.mjs"
+import read from "./redirects/reader.mjs"
 const REDIRECT_FILE = process.env.NEXT_REDIRECT_FILE || "default.csv"
 
 const nextConfig = {
@@ -35,7 +35,7 @@ const nextConfig = {
       },
     ];
 
-    return standardRedirects.concat(await getRedirectsFromCsv(REDIRECT_FILE));
+    return standardRedirects.concat(await read(REDIRECT_FILE));
   },
 }
 
