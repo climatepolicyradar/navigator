@@ -30,7 +30,7 @@ from app.api.api_v1.schemas.metadata import (
     Source as SourceSchema,
     Topic as TopicSchema,
 )
-from app.core.util import content_type_from_path, s3_to_cdn_url
+from app.core.util import content_type_from_path, to_cdn_url, s3_to_cdn_url
 from app.db.models import (
     Document,
     DocumentFramework,
@@ -189,9 +189,10 @@ def create_document(
         source_url=document_create_request.source_url,
         source_id=existing_source_id,
         slug=None,  # TODO: create slug after agreeing slug spec
+        url=None,  # Added by processing pipeline
+        md5_sum=None,  # Added by processing pipeline
+        cdn_object=None,  # Added by processing pipeline
         import_id=document_create_request.import_id,
-        url=document_create_request.url,
-        md5_sum=document_create_request.md5_sum,
         geography_id=existing_geography_id,
         type_id=existing_type_id,
         category_id=existing_category_id,
@@ -337,11 +338,14 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
         source_url=cast(str, document.source_url),
-        url=s3_to_cdn_url(document.url),
+        # TODO: remove with document.url
+        url=to_cdn_url(document.cdn_object) or s3_to_cdn_url(document.url),
         slug=document.slug,
         import_id=document.import_id,
         # TODO: replace with proper content type handling
-        content_type=content_type_from_path(document.url),
+        content_type=(
+            content_type_from_path(document.cdn_object or document.url) or "unknown"
+        ),
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),
             value=cast(str, geography.value),
