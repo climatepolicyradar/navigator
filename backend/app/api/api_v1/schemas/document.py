@@ -79,7 +79,7 @@ class DocumentUploadResponse(BaseModel):
     """Details required to upload a document to our backend storage."""
 
     presigned_upload_url: str
-    cdn_url: str
+    cdn_object: str
 
 
 class DocumentCreateRequest(BaseModel):  # noqa: D106
@@ -89,8 +89,6 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
     name: str
     description: str
     source_url: Optional[str]
-    url: Optional[str]
-    md5_sum: Optional[str]
 
     type: str
     source: str

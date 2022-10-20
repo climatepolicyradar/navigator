@@ -21,7 +21,7 @@ from app.core.auth import (
     get_current_active_superuser,
 )
 from app.core.aws import AWS_REGION, S3Document, get_s3_client
-from app.core.util import CONTENT_TYPE_MAP, s3_to_cdn_url
+from app.core.util import CONTENT_TYPE_MAP
 from app.db.crud.document import (
     UnknownMetadataError,
     create_document_relationship,
@@ -136,7 +136,7 @@ def create_upload_url(
     try:
         return DocumentUploadResponse(
             presigned_upload_url=s3_client.generate_pre_signed_url(s3_document),
-            cdn_url=s3_to_cdn_url(s3_document.url),
+            cdn_object=s3_document.key,
         )
     except Exception:
         raise HTTPException(

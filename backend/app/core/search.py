@@ -1,12 +1,14 @@
+import csv
 import json
-import time
 import logging
 import os
+import re
+import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-import csv
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Set
+from urllib.parse import quote_plus, urlsplit
 
 from opensearchpy import OpenSearch
 from opensearchpy import JSONSerializer as jss
@@ -37,7 +39,7 @@ from app.core.config import (
     OPENSEARCH_SSL_WARNINGS,
     OPENSEARCH_JIT_MAX_DOC_COUNT,
 )
-from app.core.util import content_type_from_path, s3_to_cdn_url
+
 from app.api.api_v1.schemas.search import (
     FilterField,
     OpenSearchResponseDescriptionMatch,
@@ -84,6 +86,38 @@ _REQUIRED_FIELDS = ["document_name"]
 _DEFAULT_BROWSE_SORT_FIELD = SortField.DATE
 _DEFAULT_SORT_ORDER = SortOrder.DESCENDING
 _JSON_SERIALIZER = jss()
+
+
+# TODO: Remove when we get object keys back from opensearch
+CDN_URL: str = os.getenv("CDN_URL", "https://cdn.climatepolicyradar.org")
+
+
+def _encode_characters_in_path(s3_path: str) -> str:
+    """
+    Encode special characters in S3 URL path component to fix broken CDN links.
+
+    :param s3_path: The s3 URL path component in which to fix encodings
+    :returns str: A URL path component containing encoded characters
+    """
+    encoded_path = "/".join([quote_plus(c) for c in s3_path.split("/")])
+    return encoded_path
+
+
+def s3_to_cdn_url(s3_url: str) -> str:
+    """
+    Convert a URL to a PDF in our s3 bucket to a URL to a PDF in our CDN.
+
+    :param str s3_url: URL to a PDF in our s3 bucket.
+    :returns str: URL to the PDF via our CDN domain.
+    """
+    converted_cdn_url = re.sub(r"https:\/\/.*\.s3\..*\.amazonaws.com", CDN_URL, s3_url)
+    split_url = urlsplit(converted_cdn_url)
+    new_path = _encode_characters_in_path(split_url.path)
+    # CDN URL should include only scheme, host & modified path
+    return f"{split_url.scheme}://{split_url.hostname}{new_path}"
+
+
+# END TODO
 
 
 class QueryMode(Enum):
@@ -741,6 +775,7 @@ def process_browse_response_body(
 def create_search_response_document(
     opensearch_match: OpenSearchResponseMatchBase,
 ):
+    content_type = content_type_from_path(opensearch_match.document_url) or "unknown"
     return SearchResponseDocument(
         document_name=opensearch_match.document_name,
         document_description=opensearch_match.document_description,
@@ -753,8 +788,7 @@ def create_search_response_document(
         document_category=opensearch_match.document_category,
         document_source_url=opensearch_match.document_source_url,
         document_url=s3_to_cdn_url(opensearch_match.document_url),
-        # TODO - we now need to get this from the db
-        document_content_type=content_type_from_path(opensearch_match.document_url),
+        document_content_type=content_type,
         document_title_match=False,
         document_description_match=False,
         document_passage_matches=[],
