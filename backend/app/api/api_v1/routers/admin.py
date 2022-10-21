@@ -245,6 +245,8 @@ async def update_document(
     current_user=Depends(get_current_active_superuser),
 ):
     # TODO: As this grows move it out into the crud later.
+
+    # Note this code relies on the fields being the same as the db column names
     doc_update = update(Document)
     doc_update = doc_update.values(meta_data.dict())
     doc_update = doc_update.where(Document.id == id)

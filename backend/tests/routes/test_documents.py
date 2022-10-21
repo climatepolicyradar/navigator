@@ -691,7 +691,7 @@ def test_update_document(
     payload = {
         "md5_sum": "c184214e-4870-48e0-adab-3e064b1b0e76",
         "content_type": "updated content_type",
-        "source_url": "updated source_url",
+        "cdn_object": "updated source_url",
     }
 
     response = client.put(
@@ -704,4 +704,4 @@ def test_update_document(
     json_object = response.json()
     assert json_object["md5_sum"] == "c184214e-4870-48e0-adab-3e064b1b0e76"
     assert json_object["content_type"] == "updated content_type"
-    assert json_object["source_url"] == "updated source_url"
+    assert json_object["cdn_object"] == "updated source_url"

@@ -171,4 +171,4 @@ class DocumentUpdateRequest(BaseModel):
 
     md5_sum: Optional[str]
     content_type: Optional[str]
-    source_url: Optional[str]
+    cdn_object: Optional[str]
