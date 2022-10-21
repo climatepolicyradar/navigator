@@ -183,7 +183,6 @@ def create_document(
     if existing_category_id is None:
         raise UnknownCategoryError(document_create_request.category)
 
-    url = document_create_request.url
     new_document = Document(
         name=document_create_request.name,
         description=document_create_request.description,
