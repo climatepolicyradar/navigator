@@ -39,7 +39,7 @@ from app.core.config import (
     OPENSEARCH_SSL_WARNINGS,
     OPENSEARCH_JIT_MAX_DOC_COUNT,
 )
-
+from app.core.util import content_type_from_path
 from app.api.api_v1.schemas.search import (
     FilterField,
     OpenSearchResponseDescriptionMatch,
