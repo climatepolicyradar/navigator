@@ -65,6 +65,7 @@ class Document(Base, Auditable):
     url = sa.Column(sa.Text, nullable=True)  # TODO: remove
     cdn_object = sa.Column(sa.Text, nullable=True)
     md5_sum = sa.Column(sa.Text, nullable=True)
+    content_type = sa.Column(sa.Text, nullable=True)
 
     slug = sa.Column(
         sa.Text,

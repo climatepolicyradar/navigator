@@ -17,7 +17,9 @@ from app.db.models import (
     Category,
     Keyword,
 )
-from app.api.api_v1.schemas.document import RelationshipCreateRequest
+from app.api.api_v1.schemas.document import (
+    RelationshipCreateRequest,
+)
 
 
 def create_4_documents(test_db, client, superuser_token_headers):
@@ -485,6 +487,7 @@ def test_document_detail(
         get_detail_json_2["source_url"]
         == "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g"
     )
+
     assert get_detail_json_2["source"] == {"name": "may it be with you"}
     assert get_detail_json_2["geography"] == {
         "display_value": "not my favourite subject",
@@ -636,3 +639,69 @@ def test_document_detail(
 
     assert get_detail_json_2["url"] == "https://cdn.climatepolicyradar.org/url2.htm"
     assert get_detail_json_2["content_type"] == "text/html"
+
+
+def test_update_document_security(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    doc_id = response1_document["id"]
+    payload = {
+        "md5sum": "abc123",
+        "content_type": "content_type",
+        "source_url": "source_url",
+    }
+
+    response = client.put(f"/api/v1/admin/documents/{doc_id}", json=payload)
+
+    assert response.status_code == 401
+
+
+def test_update_document(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    doc_id = response1_document["id"]
+    payload = {
+        "md5_sum": "c184214e-4870-48e0-adab-3e064b1b0e76",
+        "content_type": "updated content_type",
+        "cdn_object": "updated source_url",
+    }
+
+    response = client.put(
+        f"/api/v1/admin/documents/{doc_id}",
+        headers=superuser_token_headers,
+        json=payload,
+    )
+
+    assert response.status_code == 200
+    json_object = response.json()
+    assert json_object["md5_sum"] == "c184214e-4870-48e0-adab-3e064b1b0e76"
+    assert json_object["content_type"] == "updated content_type"
+    assert json_object["cdn_object"] == "updated source_url"
