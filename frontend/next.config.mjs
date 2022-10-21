@@ -1,11 +1,18 @@
-module.exports = {
+/**
+ * @type {import('next').NextConfig}
+ */
+
+import read from "./redirects/reader.mjs"
+const REDIRECT_FILE = process.env.NEXT_REDIRECT_FILE || "default.csv"
+
+const nextConfig = {
   i18n: {
     locales: ["en", "fr"],
     defaultLocale: "en",
   },
   pageExtensions: ["tsx", "ts"],
   async redirects() {
-    return [
+    const standardRedirects = [
       {
         source: '/auth/:id*',
         destination: '/',
@@ -26,6 +33,10 @@ module.exports = {
         destination: '/',
         permanent: true,
       },
-    ]
+    ];
+
+    return standardRedirects.concat(await read(REDIRECT_FILE));
   },
-};
+}
+
+export default nextConfig
