@@ -6,13 +6,7 @@
 @import "../../../styles/main.scss";
 
 @mixin cclw-dark-gradient() {
-  background: linear-gradient(
-    134.5deg,
-    rgba(43, 47, 73, 1) 0%,
-    rgba(43, 47, 73, 1) 33%,
-    rgba(21, 116, 209, 1) 66%,
-    rgba(21, 116, 209, 1) 100%,
-  );
+  background: linear-gradient(134.5deg, rgba(43, 47, 73, 1) 0%, rgba(43, 47, 73, 1) 33%, rgba(21, 116, 209, 1) 66%, rgba(21, 116, 209, 1) 100%);
   background-repeat: no-repeat;
 }
 
@@ -83,5 +77,13 @@ footer {
     height: 164px;
     background-position: center;
     width: 100%;
+  }
+}
+
+.cclw-semi-circle {
+  @apply transition duration-300 inline-block w-[260px] lg:w-auto lg:block bg-primary-400 rounded-t-full mt-4 pt-4 pb-2 px-6 text-xl text-center hover:bg-secondary-700;
+
+  span {
+    @apply block;
   }
 }

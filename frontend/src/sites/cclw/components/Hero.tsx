@@ -1,6 +1,7 @@
 import LandingSearchForm from "@components/forms/LandingSearchForm";
-import { CountryLink } from "@components/CountryLink";
+import Button from "@components/buttons/Button";
 import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
+import { ExternalLink } from "@components/ExternalLink";
 
 type TProps = {
   handleSearchInput: (term: string, filter?: string, filterValue?: string) => void;
@@ -14,7 +15,7 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
   };
 
   return (
-    <div className="pt-12 pb-12 text-white">
+    <div className="pt-12 pb-6 text-white">
       <div className="container">
         <div className="mx-auto text-center">
           <p className="text-2xl">Use our database to search climate laws and policies globally</p>
@@ -22,42 +23,44 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
         <div className="max-w-screen-lg mx-auto mt-6">
           <LandingSearchForm handleSearchInput={handleSearchInput} placeholder="Search for countries, legislation and policies and litigation cases" input={searchInput} />
         </div>
-        <div className="mt-20 grid gap-y-5 sm:grid-cols-2 lg:grid-cols-4 text-center">
-          <div>
-            <div className="text-lg font-bold">Climate laws and policies</div>
-            <div className="flex items-center justify-center my-4 cursor-pointer hover:underline" role="button" onClick={(e) => handleDocumentBrowseClick(e, "Policy")}>
-              <div className="p-3 border bg-secondary-500 border-overlayWhite rounded-full mr-[-5px]">{getCategoryIcon("Law")}</div>
-              <div className="w-[100px] h-[100px] bg-primary-400 rounded-full text-3xl flex items-center justify-center">2,576</div>
-            </div>
-            <a className="cursor-pointer hover:underline" onClick={(e) => handleDocumentBrowseClick(e, "Policy")}>
-              Search laws and policy &gt;
+        <div className="mt-6 lg:mt-12 grid gap-y-5 gap-x-8 sm:grid-cols-1 lg:grid-cols-3 text-center max-w-screen-lg mx-auto">
+          <div className="lg:px-8">
+            <div className="text-lg font-bold">Laws and policies</div>
+            <a className="cclw-semi-circle" href="#" onClick={(e) => handleDocumentBrowseClick(e, "Policy")}>
+              <span>Browse</span>
+              <span className="font-bold">2,576</span>
+              <span>laws & policy</span>
+              <span className="font-bold">&gt;</span>
             </a>
           </div>
-          <div>
-            <div className="text-lg font-bold">Climate litigation cases</div>
-            <div className="flex items-center justify-center my-4 cursor-pointer hover:underline" role="button" onClick={(e) => handleDocumentBrowseClick(e, "Law")}>
+          <div className="border-y lg:border-y-0 lg:border-x border-white py-5 lg:py-0 lg:px-8">
+            <div className="text-lg font-bold">Litigation</div>
+            {/* <div className="flex items-center justify-center my-4 cursor-pointer hover:underline" role="button" onClick={(e) => handleDocumentBrowseClick(e, "Law")}>
               <div className="p-3 border bg-secondary-500 border-overlayWhite rounded-full mr-[-5px]">{getCategoryIcon("Case")}</div>
               <div className="w-[100px] h-[100px] bg-primary-400 rounded-full text-3xl flex items-center justify-center">2,082</div>
+            </div> */}
+            <div className="mt-6">
+              <a className="font-bold underline" href="#">
+                Climate litigation coming soon
+              </a>
             </div>
-            <a className="cursor-pointer hover:underline" href="#" onClick={(e) => handleDocumentBrowseClick(e, "Law")}>
-              Search litigation cases &gt;
-            </a>
+            <div className="mt-6">
+              <p>
+                Climate Change Litigation data currently available at{" "}
+                <ExternalLink url="http://climatecasechart.com/" className="font-bold underline">
+                  climatecasechart.com
+                </ExternalLink>
+              </p>
+            </div>
           </div>
-          <div>
-            <div className="text-lg font-bold">Country profiles</div>
-            <div className="mt-4">View all legislation, policies and litigation cases in a country.</div>
+          <div className="flex flex-col justify-between items-center lg:px-8">
+            <div className="text-lg font-bold">Technology</div>
+            <div className="mt-4">We are now powered by data science and AI.</div>
             <div className="mt-4">
-              <div className="font-bold">Featured:</div>
-              <div className="flex gap-4 mt-2 justify-center text-white text-sm">
-                <CountryLink countryCode="KOR" className="hover:text-primary-400">
-                  <span className={`rounded-sm border border-black flag-icon-background flag-icon-kor`} />
-                  <span className="ml-2">South Korea</span>
-                </CountryLink>
-                <CountryLink countryCode="BRA" className="hover:text-primary-400">
-                  <span className={`rounded-sm border border-black flag-icon-background flag-icon-bra`} />
-                  <span className="ml-2">Brazil</span>
-                </CountryLink>
-              </div>
+              <Button extraClasses="flex items-center">
+                <span>Learn more about our technology</span>
+                <span className="text-3xl ml-4">&gt;</span>
+              </Button>
             </div>
           </div>
         </div>
