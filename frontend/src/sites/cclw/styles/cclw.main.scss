@@ -5,19 +5,30 @@
 // Import base styles before overriding
 @import "../../../styles/main.scss";
 
-@font-face {
-  font-family: "LL Brown";
-  src: url("/fonts/LL-Brown/lineto-brown-light.woff2") format("woff2"), url("/fonts/LL-Brown/lineto-brown-light.woff") format("woff");
-  /* font-display: swap; */
-  font-weight: 300;
+@mixin cclw-dark-gradient() {
+  background: linear-gradient(
+    134.5deg,
+    rgba(43, 47, 73, 1) 0%,
+    rgba(43, 47, 73, 1) 33%,
+    rgba(21, 116, 209, 1) 66%,
+    rgba(21, 116, 209, 1) 100%,
+  );
+  background-repeat: no-repeat;
 }
 
-@font-face {
-  font-family: "LL Brown";
-  src: url("/fonts/LL-Brown/lineto-brown-regular.woff2") format("woff2"), url("/fonts/LL-Brown/lineto-brown-regular.woff") format("woff");
-  /* font-display: swap; */
-  font-weight: 400;
-}
+// @font-face {
+//   font-family: "LL Brown";
+//   src: url("/fonts/LL-Brown/lineto-brown-light.woff2") format("woff2"), url("/fonts/LL-Brown/lineto-brown-light.woff") format("woff");
+//   /* font-display: swap; */
+//   font-weight: 300;
+// }
+
+// @font-face {
+//   font-family: "LL Brown";
+//   src: url("/fonts/LL-Brown/lineto-brown-regular.woff2") format("woff2"), url("/fonts/LL-Brown/lineto-brown-regular.woff") format("woff");
+//   /* font-display: swap; */
+//   font-weight: 400;
+// }
 
 @font-face {
   font-family: "LL Brown";
@@ -26,18 +37,20 @@
   font-weight: 500;
 }
 
-body {
+.cclw-font {
   font-family: "LL Brown";
+}
+
+.gradient-container {
+  @include cclw-dark-gradient;
 }
 
 nav {
   a {
-    @apply h-full block pb-6 border-b-4 border-transparent;
-    &:hover {
-      @apply text-blue-400;
-    }
+    @apply h-full block py-2 px-4;
+    &:hover,
     &.active {
-      @apply border-blue-400 text-blue-400;
+      @apply bg-blue-400;
     }
   }
 }

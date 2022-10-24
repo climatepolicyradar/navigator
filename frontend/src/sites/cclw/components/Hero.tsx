@@ -14,11 +14,10 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
   };
 
   return (
-    <div className="bg-secondary-700 pt-4 pb-12 text-white">
+    <div className="pt-12 pb-12 text-white">
       <div className="container">
-        <h1 className="text-3xl lg:text-5xl text-primary-400 text-center my-4">Climate Change Laws of the World</h1>
-        <div className="max-w-screen-sm mx-auto text-center">
-          <p className="text-lg">Use our database to search and browse climate laws, policies and ligitation cases globally</p>
+        <div className="mx-auto text-center">
+          <p className="text-2xl">Use our database to search climate laws and policies globally</p>
         </div>
         <div className="max-w-screen-lg mx-auto mt-6">
           <LandingSearchForm handleSearchInput={handleSearchInput} placeholder="Search for countries, legislation and policies and litigation cases" input={searchInput} />

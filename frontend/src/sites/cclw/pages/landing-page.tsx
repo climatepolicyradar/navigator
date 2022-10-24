@@ -1,5 +1,6 @@
 import React from "react";
-import Main from "../layouts/main";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import { Hero } from "../components/Hero";
 import { Articles } from "../components/Articles";
 import { Partners } from "@cclw/components/Partners";
@@ -11,17 +12,23 @@ type TProps = {
 
 const LandingPage = ({ handleSearchInput, searchInput }: TProps) => {
   return (
-    <Main>
-      <Hero handleSearchInput={handleSearchInput} searchInput={searchInput} />
-      <div className="container mt-12">
-        <h2 className="text-center mb-6">Featured Content</h2>
-        <Articles />
-      </div>
-      <div className="container mt-12">
-        <h2 className="text-center mb-6">Our partners</h2>
-        <Partners />
-      </div>
-    </Main>
+    <>
+      <main className="flex flex-col flex-1">
+        <div className="gradient-container">
+          <Header background={false} />
+          <Hero handleSearchInput={handleSearchInput} searchInput={searchInput} />
+        </div>
+        <div className="container mt-12">
+          <h2 className="text-center mb-6">Featured Content</h2>
+          <Articles />
+        </div>
+        <div className="container mt-12">
+          <h2 className="text-center mb-6">Our partners</h2>
+          <Partners />
+        </div>
+      </main>
+      <Footer />
+    </>
   );
 };
 
