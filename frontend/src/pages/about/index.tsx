@@ -34,7 +34,7 @@ const About = () => {
             format, without written permission of the authors.
           </p>
           <p>
-            <div className="font-bold italic">Please reference the source as follows:</div>
+            <span className="block font-bold italic">Please reference the source as follows:</span>
             Climate Change Laws of the World database, Grantham Research Institute on Climate Change and the Environment and Sabin Center for Climate Change Law. Available at{" "}
             <ExternalLink url="https://climate-laws.org">climate-laws.org</ExternalLink>.
           </p>
