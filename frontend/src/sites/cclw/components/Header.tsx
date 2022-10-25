@@ -4,7 +4,6 @@ import Image from "next/image";
 import { ExternalLink } from "@components/ExternalLink";
 import Logo from "@components/svg/LogoMono";
 import { SearchIcon } from "@components/svg/Icons";
-import { useEffect, useState } from "react";
 
 type TProps = {
   background?: boolean;
@@ -12,21 +11,16 @@ type TProps = {
 
 const Header = ({ background = true }) => {
   const { pathname } = useRouter();
-  const [activePage, setActivePage] = useState("");
-
-  useEffect(() => {
-    setActivePage(pathname);
-  }, [pathname]);
 
   const linkClass = (pageUrl: string) => {
-    return activePage.toLowerCase() === pageUrl ? "active" : "";
+    return pathname.toLowerCase() === pageUrl ? "active" : "";
   };
 
   return (
     <header data-cy="header" className={`${background ? "bg-secondary-700" : ""} w-full border-b-2 border-overlayWhite pt-6 lg:pt-0`}>
       <div className="container">
         <div className="flex flex-wrap lg:flex-nowrap justify-between">
-          <div className="items-end flex flex-grow-0 xbasis-1/3 lg:basis-1/4">
+          <div className="items-end flex flex-grow-0 lg:basis-1/4">
             <ExternalLink className="flex" url="https://www.lse.ac.uk/">
               <Image src="/images/partners/lse-logo.png" alt="LSE logo" width={40} height={40} layout={"fixed"} />
             </ExternalLink>
@@ -35,13 +29,13 @@ const Header = ({ background = true }) => {
             </ExternalLink>
           </div>
           <div className="flex-1 flex justify-center items-end mt-6 text-white order-last lg:-order-none basis-full text-center lg:basis-auto mb-6 lg:mb-0">
-            <div className="cclw-font font-bold text-xl md:text-3xl">
+            <div className="cclw-font font-bold text-2xl md:text-3xl lg:text-4xl">
               <Link href={`/`}>
                 <a className="">Climate Change Laws of the World</a>
               </Link>
             </div>
           </div>
-          <div className="text-white items-end flex justify-end text-sm flex-grow-0 xbasis-1/3 md:basis-1/4">
+          <div className="text-white items-end flex justify-end text-sm flex-grow-0 md:basis-1/4">
             <div className="flex gap-2">
               <p>Powered by</p>
               <ExternalLink className="flex" url="https://www.climatepolicyradar.org">

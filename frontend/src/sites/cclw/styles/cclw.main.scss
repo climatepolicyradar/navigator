@@ -60,7 +60,7 @@ footer {
   .footer__section {
     @apply text-sm lg:text-base;
     > * {
-      @apply mb-2;
+      @apply mb-4;
     }
   }
 
@@ -81,9 +81,6 @@ footer {
 }
 
 .cclw-semi-circle {
-  @apply transition duration-300 inline-block w-[260px] lg:w-auto lg:block bg-primary-400 rounded-t-full mt-4 pt-4 pb-2 px-6 text-xl text-center hover:bg-secondary-700;
-
-  span {
-    @apply block;
-  }
+  @apply transition duration-300  w-[260px] h-[160px] lg:h-auto lg:w-full bg-primary-400 rounded-t-full mt-4 pt-4 pb-2 px-6 text-xl text-center hover:bg-secondary-700 flex-grow flex flex-col items-center justify-center;
 }
+//inline-block lg:block

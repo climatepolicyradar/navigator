@@ -1,6 +1,5 @@
 import LandingSearchForm from "@components/forms/LandingSearchForm";
 import Button from "@components/buttons/Button";
-import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
 import { ExternalLink } from "@components/ExternalLink";
 
 type TProps = {
@@ -18,19 +17,23 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
     <div className="pt-12 pb-6 text-white">
       <div className="container">
         <div className="mx-auto text-center">
-          <p className="text-2xl">Use our database to search climate laws and policies globally</p>
+          <p className="text-lg lg:text-2xl">Use our database to search climate laws and policies globally</p>
         </div>
         <div className="max-w-screen-lg mx-auto mt-6">
           <LandingSearchForm handleSearchInput={handleSearchInput} placeholder="Search for countries, legislation and policies and litigation cases" input={searchInput} />
         </div>
         <div className="mt-6 lg:mt-12 grid gap-y-5 gap-x-8 sm:grid-cols-1 lg:grid-cols-3 text-center max-w-screen-lg mx-auto">
-          <div className="lg:px-8">
+          <div className="lg:px-8 flex flex-col items-center">
             <div className="text-lg font-bold">Laws and policies</div>
             <a className="cclw-semi-circle" href="#" onClick={(e) => handleDocumentBrowseClick(e, "Policy")}>
-              <span>Browse</span>
-              <span className="font-bold">2,576</span>
-              <span>laws & policy</span>
-              <span className="font-bold">&gt;</span>
+              <span className="block">
+                Browse
+                <span className="font-bold"> 2,576</span>
+              </span>
+              <span className="block">
+                laws & policies
+                <span className="font-bold"> &gt;</span>
+              </span>
             </a>
           </div>
           <div className="border-y lg:border-y-0 lg:border-x border-white py-5 lg:py-0 lg:px-8">
