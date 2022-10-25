@@ -18,7 +18,7 @@ const Header = ({ background = true }) => {
   const isHome = pathname.toLowerCase() === "/";
 
   return (
-    <header data-cy="header" className={`${background ? "bg-secondary-700" : ""} w-full border-b-2 border-overlayWhite pt-6 lg:pt-0`}>
+    <header data-cy="header" className={`${background ? "bg-secondary-700" : ""} w-full border-b-2 pt-6 lg:pt-0`}>
       <div className="container">
         <div className={`flex flex-wrap lg:flex-nowrap justify-between ${isHome ? "lg:mb-6" : ""}`}>
           <div className="items-end flex flex-grow-0 lg:basis-1/5">
