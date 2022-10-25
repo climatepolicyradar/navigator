@@ -4,9 +4,12 @@ import Image from "next/image";
 import { ExternalLink } from "@components/ExternalLink";
 import Logo from "@components/svg/LogoMono";
 import { SearchIcon } from "@components/svg/Icons";
+import { useState } from "react";
+import Button from "@components/buttons/Button";
 
 const Header = ({ background = true }) => {
   const { pathname } = useRouter();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   const linkClass = (pageUrl: string) => {
     return pathname.toLowerCase() === pageUrl ? "active" : "";
@@ -44,9 +47,18 @@ const Header = ({ background = true }) => {
             </div>
           </div>
         </div>
-        <div className="flex">
-          <nav className="mt-8 flex-1 text-white hidden md:block">
-            <ul className="flex justify-center items-end gap-1 h-full text-sm lg:text-base font-bold">
+        <div className="flex flex-col">
+          <Button
+            thin
+            onClick={() => {
+              setMenuOpen(!menuOpen);
+            }}
+            extraClasses="mb-6 text-sm font-normal md:hidden"
+          >
+            {menuOpen ? <>Hide menu &#x25B2;</> : <>Show menu &#x25BC;</>}
+          </Button>
+          <nav className={`mt-8 flex-1 text-white transition duration-300 ${menuOpen ? "" : "hidden md:block"}`}>
+            <ul className="grid grid-cols-2 md:flex justify-center items-end gap-1 h-full text-sm lg:text-base font-bold">
               <li>
                 <Link href="/">
                   <a className={linkClass("/")}>Home</a>
