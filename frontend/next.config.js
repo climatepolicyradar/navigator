@@ -10,7 +10,7 @@ const cclwRedirects = [
 // for pages that are not in cpr's sitemap
 const cprRedirects = [
   { source: "/about", destination: "/", permanent: true },
-  { source: "/Acknowledgements", destination: "/", permanent: true },
+  { source: "/acknowledgements", destination: "/", permanent: true },
   { source: "/contact", destination: "/", permanent: true },
   { source: "/terms-of-use", destination: "/", permanent: true },
 ];

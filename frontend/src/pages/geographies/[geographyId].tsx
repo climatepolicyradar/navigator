@@ -145,7 +145,7 @@ const CountryPage = () => {
 
   return (
     <>
-      <Layout title={`Climate Policy Radar | ${geography?.name ?? "Loading..."}`}>
+      <Layout title={geography?.name ?? "Loading..."}>
         {isError || !geography ? (
           <SingleCol>
             <TextLink onClick={() => router.back()}>Go back</TextLink>

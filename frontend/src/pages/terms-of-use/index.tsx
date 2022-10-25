@@ -3,7 +3,7 @@ import { ExternalLink } from "@components/ExternalLink";
 
 const TermsOfUse = () => {
   return (
-    <Layout title={`Climate Policy Radar | Contact`}>
+    <Layout title={`Terms of use`}>
       <section>
         <div className="text-content px-4 container mb-12">
           <h1 className="my-8">Climate Change Laws of the World: Terms of use</h1>

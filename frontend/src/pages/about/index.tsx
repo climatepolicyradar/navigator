@@ -3,7 +3,7 @@ import { ExternalLink } from "@components/ExternalLink";
 
 const About = () => {
   return (
-    <Layout title={`Climate Policy Radar | Contact`}>
+    <Layout title={`About`}>
       <section>
         <div className="text-content px-4 container mb-12">
           <h1 className="my-8">About</h1>
