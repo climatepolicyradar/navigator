@@ -30,7 +30,7 @@ from app.core.config import (
     OPENSEARCH_INDEX_TEXT_BLOCK_KEY,
     OPENSEARCH_INDEX_ENCODER,
     OPENSEARCH_URL,
-    OPENSEARCH_INDEX,
+    OPENSEARCH_INDEX_PREFIX,
     OPENSEARCH_USERNAME,
     OPENSEARCH_PASSWORD,
     OPENSEARCH_REQUEST_TIMEOUT,
@@ -185,7 +185,7 @@ class OpenSearchConfig:
     url: str = OPENSEARCH_URL
     username: str = OPENSEARCH_USERNAME
     password: str = OPENSEARCH_PASSWORD
-    index_name: str = OPENSEARCH_INDEX
+    index_prefix: str = OPENSEARCH_INDEX_PREFIX
     request_timeout: int = OPENSEARCH_REQUEST_TIMEOUT
     use_ssl: bool = OPENSEARCH_USE_SSL
     verify_certs: bool = OPENSEARCH_VERIFY_CERTS
@@ -261,29 +261,29 @@ class OpenSearchConnection:
         """Get the OpenSearch indices to query based on the request body."""
 
         if search_request.exclude_results is None:
-            return f"{self._opensearch_config.index_name}*"
+            return f"{self._opensearch_config.index_prefix}*"
 
         indices_include = [
-            f"{self._opensearch_config.index_name}_core",
-            f"{self._opensearch_config.index_name}_pdfs_non_translated",
-            f"{self._opensearch_config.index_name}_pdfs_translated",
-            f"{self._opensearch_config.index_name}_htmls_non_translated",
-            f"{self._opensearch_config.index_name}_htmls_translated",
+            f"{self._opensearch_config.index_prefix}_core",
+            f"{self._opensearch_config.index_prefix}_pdfs_non_translated",
+            f"{self._opensearch_config.index_prefix}_pdfs_translated",
+            f"{self._opensearch_config.index_prefix}_htmls_non_translated",
+            f"{self._opensearch_config.index_prefix}_htmls_translated",
         ]
 
         if ResultsExclusion.PDFS_TRANSLATED in search_request.exclude_results:
             indices_include.remove(
-                f"{self._opensearch_config.index_name}_pdfs_translated"
+                f"{self._opensearch_config.index_prefix}_pdfs_translated"
             )
 
         if ResultsExclusion.HTMLS_TRANSLATED in search_request.exclude_results:
             indices_include.remove(
-                f"{self._opensearch_config.index_name}_htmls_translated"
+                f"{self._opensearch_config.index_prefix}_htmls_translated"
             )
 
         if ResultsExclusion.HTMLS_NON_TRANSLATED in search_request.exclude_results:
             indices_include.remove(
-                f"{self._opensearch_config.index_name}_htmls_non_translated"
+                f"{self._opensearch_config.index_prefix}_htmls_non_translated"
             )
 
         return ",".join(indices_include)
