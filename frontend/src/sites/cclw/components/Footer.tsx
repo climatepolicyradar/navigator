@@ -75,7 +75,7 @@ const navLinks: TFooterItem = {
       external: true,
     },
     {
-      text: "Sign up to our newsletter",
+      text: "Sign up to Grantham Research Institute's newsletter",
       url: "https://www.lse.ac.uk/granthaminstitute/mailing-list/ ",
       external: true,
     },
@@ -143,48 +143,50 @@ const Footer = () => {
             </div>
 
             <div className="footer__section md:w-1/2 lg:mx-auto">
-              {/* <div className="flex gap-4">
-                Powered by
-                <ExternalLink className="flex text-indigo-600 mb-4" url="https://www.climatepolicyradar.org">
-                  <Logo />
-                </ExternalLink>
-              </div> */}
-              {/* <div className=""> */}
-                <h5 className="font-normal">Climate Policy Radar</h5>
-                <p>Using AI and data science to map the world's climate policies</p>
-                <ul className="mb-6">
+              <h5 className="font-normal">Climate Policy Radar</h5>
+              <p>Using AI and data science to map the world's climate policies</p>
+              <ul className="mb-6">
+                <li className="mb-1">
+                  <ExternalLink url="https://www.climatepolicyradar.org">www.climatepolicyradar.org</ExternalLink>
+                </li>
+                {process.env.NEXT_PUBLIC_CPR_NEWSLETTER_URL && (
                   <li className="mb-1">
-                    <ExternalLink url="https://www.climatepolicyradar.org">www.climatepolicyradar.org</ExternalLink>
+                    <ExternalLink url={process.env.NEXT_PUBLIC_CPR_NEWSLETTER_URL}>Sign up to Climate Policy Radar's newsletter</ExternalLink>
                   </li>
-                  <li className="mb-1">
-                    <ExternalLink url="https://www.climatepolicyradar.org">Sign up to our newsletter</ExternalLink>
-                  </li>
-                  <li className="mb-1">
-                    <ExternalLink url="https://www.climatepolicyradar.org/contact">Contact us</ExternalLink>
-                  </li>
-                </ul>
-                <div className="footer__section">
-                  <div>Follow Climate Policy Radar</div>
-                  <div className="flex items-start gap-6 footer__social-links">
-                    <ExternalLink url="https://twitter.com/climatepolradar">
-                      <img src="/images/social/twitter.svg" alt="Twitter Logo" />
-                    </ExternalLink>
-                    <ExternalLink url="https://www.linkedin.com/company/climate-policy-radar">
-                      <img src="/images/social/linkedIn.svg" alt="LinkedIn Logo" />
-                    </ExternalLink>
-                    <ExternalLink url="https://github.com/climatepolicyradar/">
-                      <img src="/images/social/github.svg" alt="GitHub Logo" />
-                    </ExternalLink>
-                  </div>
-                {/* </div> */}
+                )}
+                <li className="mb-1">
+                  <ExternalLink url="https://www.climatepolicyradar.org/contact">Contact Climate Policy Radar</ExternalLink>
+                </li>
+              </ul>
+              <div className="footer__section">
+                <div>Follow Climate Policy Radar</div>
+                <div className="flex items-start gap-6 footer__social-links">
+                  <ExternalLink url="https://twitter.com/climatepolradar">
+                    <img src="/images/social/twitter.svg" alt="Twitter Logo" />
+                  </ExternalLink>
+                  <ExternalLink url="https://www.linkedin.com/company/climate-policy-radar">
+                    <img src="/images/social/linkedIn.svg" alt="LinkedIn Logo" />
+                  </ExternalLink>
+                  <ExternalLink url="https://github.com/climatepolicyradar/">
+                    <img src="/images/social/github.svg" alt="GitHub Logo" />
+                  </ExternalLink>
+                </div>
               </div>
             </div>
           </div>
         </div>
       </div>
       <div className="footer__base">
-        <div className="container flex flex-1 items-end h-full">
-          <p className=" mb-6">Copyright © LSE {new Date().getFullYear()}</p>
+        <div className="container flex flex-1 items-end gap-10 h-full">
+          <p className="mb-6">Copyright © LSE {new Date().getFullYear()}</p>
+          <div className="mb-6 flex gap-10">
+            <ExternalLink url="https://www.climatepolicyradar.org/privacy-policy" className="text-secondary-700 underline">
+              Privacy policy
+            </ExternalLink>
+            <Link href={"/terms-of-use"}>
+              <a className="text-secondary-700 underline">Terms of use</a>
+            </Link>
+          </div>
         </div>
       </div>
     </footer>

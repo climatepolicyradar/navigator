@@ -43,9 +43,10 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
               <div className="w-[100px] h-[100px] bg-primary-400 rounded-full text-3xl flex items-center justify-center">2,082</div>
             </div> */}
             <div className="mt-6">
-              <a className="font-bold underline" href="#">
-                Climate litigation coming soon
-              </a>
+              <p>Climate litigation coming soon -</p>
+              <ExternalLink url="http://climatecasechart.com/" className="font-bold underline">
+                Read more &gt;
+              </ExternalLink>
             </div>
             <div className="mt-6">
               <p>
