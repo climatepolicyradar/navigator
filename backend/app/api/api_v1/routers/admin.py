@@ -252,7 +252,6 @@ async def update_document(
 
     import_id = None
     slug = None
-    print(f"Input is {import_id_or_slug}")
 
     doc_query = db.query(Document)
     if IMPORT_ID_MATCHER.match(import_id_or_slug) is not None:
@@ -264,11 +263,7 @@ async def update_document(
         doc_update = doc_update.where(Document.slug == slug)
         doc_query = doc_query.filter(Document.slug == slug)
 
-    print(f"Processed Input as {slug} or {import_id}")
-
-    _LOGGER.info(f"Getting with : {doc_query}")
     existing_doc = doc_query.first()
-    _LOGGER.info(f"Got Doc : {existing_doc}")
 
     if existing_doc is None:
         raise HTTPException(
