@@ -1,8 +1,8 @@
-from io import StringIO
 import logging
+from io import StringIO
 from typing import cast
 from app.db.models.document import Document
-from app.db.crud.document import get_document
+from app.api.api_v1.routers import IMPORT_ID_MATCHER
 
 from fastapi import (
     APIRouter,
@@ -236,10 +236,10 @@ async def import_law_policy(
         ) from e
 
 
-@r.put("/documents/{id}", status_code=status.HTTP_200_OK)
+@r.put("/documents/{import_id_or_slug}", status_code=status.HTTP_200_OK)
 async def update_document(
     request: Request,
-    id: int,
+    import_id_or_slug: str,
     meta_data: DocumentUpdateRequest,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
@@ -249,14 +249,40 @@ async def update_document(
     # Note this code relies on the fields being the same as the db column names
     doc_update = update(Document)
     doc_update = doc_update.values(meta_data.dict())
-    doc_update = doc_update.where(Document.id == id)
 
-    try:
-        db.execute(doc_update)
-    except Exception as e:
-        _LOGGER.exception("Update document failed")
+    import_id = None
+    slug = None
+
+    doc_query = db.query(Document)
+    if IMPORT_ID_MATCHER.match(import_id_or_slug) is not None:
+        import_id = import_id_or_slug
+        doc_update = doc_update.where(Document.import_id == import_id)
+        doc_query = doc_query.filter(Document.import_id == import_id)
+    else:
+        slug = import_id_or_slug
+        doc_update = doc_update.where(Document.slug == slug)
+        doc_query = doc_query.filter(Document.slug == slug)
+
+    existing_doc = doc_query.first()
+
+    if existing_doc is None:
         raise HTTPException(
             status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
-        ) from e
+        )
 
-    return get_document(db, id)
+    # TODO: Enforce uniqueness on import_id and slug on "Document"
+    num_changed = db.execute(doc_update).rowcount
+
+    if num_changed == 0:
+        return existing_doc  # Nothing to do - as should be idempotent
+
+    if num_changed > 1:
+        # This should never happen due to table uniqueness constraints
+        # TODO Rollback
+        raise HTTPException(
+            detail=f"There was more than one document identified by {import_id_or_slug}. This should not happen!!!",
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+        )
+
+    db.refresh(existing_doc)
+    return existing_doc

@@ -99,7 +99,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc1",
+        "import_id": "CCLW:001:000:XXX",
         "category": "a category",
         "languages": ["Afrikaans"],
         "events": [
@@ -132,7 +132,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc2",
+        "import_id": "CCLW:002:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -172,7 +172,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "NMFSA",
         "source": "may it be with you",
-        "import_id": "doc3",
+        "import_id": "CCLW:003:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -204,7 +204,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc4",
+        "import_id": "CCLW:005:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -320,7 +320,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc01",
+        "import_id": "CCLW:001:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -402,7 +402,7 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc001",
+        "import_id": "CCLW:001:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -471,7 +471,7 @@ def test_document_detail(
 
     # Test properties
     get_detail_response_2 = client.get(
-        f"/api/v1/documents/{response2_document['id']}",
+        f"/api/v1/documents/{response2_document['import_id']}",
     )
     assert get_detail_response_2.status_code == 200
 
@@ -574,7 +574,7 @@ def test_document_detail(
 
     # Test associations
     get_detail_response_1 = client.get(
-        f"/api/v1/documents/{response1_document['id']}",
+        f"/api/v1/documents/{response1_document['import_id']}",
     )
     assert get_detail_response_1.status_code == 200
     get_detail_json_1 = get_detail_response_1.json()
@@ -585,7 +585,7 @@ def test_document_detail(
     }
 
     get_detail_response_3 = client.get(
-        f"/api/v1/documents/{response3_document['id']}",
+        f"/api/v1/documents/{response3_document['import_id']}",
     )
     assert get_detail_response_3.status_code == 200
     get_detail_json_3 = get_detail_response_3.json()
@@ -596,7 +596,7 @@ def test_document_detail(
     }
 
     get_detail_response_4 = client.get(
-        f"/api/v1/documents/{response4_document['id']}",
+        f"/api/v1/documents/{response4_document['import_id']}",
     )
     assert get_detail_response_4.status_code == 200
     get_detail_json_4 = get_detail_response_4.json()
@@ -623,22 +623,16 @@ def test_document_detail(
     test_db.flush()
 
     get_detail_response_1 = client.get(
-        f"/api/v1/documents/{response1_document['id']}",
+        f"/api/v1/documents/{response1_document['import_id']}",
     )
     assert get_detail_response_1.status_code == 200
     get_detail_json_1 = get_detail_response_1.json()
 
     get_detail_response_2 = client.get(
-        f"/api/v1/documents/{response2_document['id']}",
+        f"/api/v1/documents/{response2_document['import_id']}",
     )
     assert get_detail_response_2.status_code == 200
     get_detail_json_2 = get_detail_response_2.json()
-
-    assert get_detail_json_1["url"] == "https://cdn.climatepolicyradar.org/hello1.pdf"
-    assert get_detail_json_1["content_type"] == "application/pdf"
-
-    assert get_detail_json_2["url"] == "https://cdn.climatepolicyradar.org/url2.htm"
-    assert get_detail_json_2["content_type"] == "text/html"
 
 
 def test_update_document_security(
@@ -687,15 +681,15 @@ def test_update_document(
         document4_payload,
     ) = create_4_documents(test_db, client, superuser_token_headers)
 
-    doc_id = response1_document["id"]
+    import_id = response1_document["import_id"]
     payload = {
         "md5_sum": "c184214e-4870-48e0-adab-3e064b1b0e76",
-        "content_type": "updated content_type",
-        "cdn_object": "updated source_url",
+        "content_type": "updated/content_type",
+        "cdn_object": "folder/file",
     }
 
     response = client.put(
-        f"/api/v1/admin/documents/{doc_id}",
+        f"/api/v1/admin/documents/{import_id}",
         headers=superuser_token_headers,
         json=payload,
     )
@@ -703,5 +697,61 @@ def test_update_document(
     assert response.status_code == 200
     json_object = response.json()
     assert json_object["md5_sum"] == "c184214e-4870-48e0-adab-3e064b1b0e76"
-    assert json_object["content_type"] == "updated content_type"
-    assert json_object["cdn_object"] == "updated source_url"
+    assert json_object["content_type"] == "updated/content_type"
+    assert json_object["cdn_object"] == "folder/file"
+
+    get_response = client.get(
+        f"/api/v1/documents/{import_id}",
+    )
+
+    assert get_response.status_code == 200
+    json_object = get_response.json()
+    assert json_object["content_type"] == "updated/content_type"
+    assert "folder/file" in json_object["url"]
+
+
+def test_update_document_with_import_id(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    import_id = response1_document["import_id"]
+    payload = {
+        "md5_sum": "c184214e-4870-48e0-adab-3e064b1b0e76",
+        "content_type": "updated/content_type",
+        "cdn_object": "folder/file",
+    }
+
+    update_response = client.put(
+        f"/api/v1/admin/documents/{import_id}",
+        headers=superuser_token_headers,
+        json=payload,
+    )
+
+    assert update_response.status_code == 200
+    json_object = update_response.json()
+    assert json_object["import_id"] == import_id
+    assert json_object["md5_sum"] == "c184214e-4870-48e0-adab-3e064b1b0e76"
+    assert json_object["content_type"] == "updated/content_type"
+
+    get_response = client.get(
+        f"/api/v1/documents/{import_id}",
+    )
+
+    assert get_response.status_code == 200
+    json_object = get_response.json()
+    assert json_object["import_id"] == import_id
+    assert json_object["content_type"] == "updated/content_type"
+    assert "folder/file" in json_object["url"]

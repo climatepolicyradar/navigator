@@ -90,7 +90,9 @@ class SearchResponseDocument(BaseModel):
     document_category: str
     document_source_url: str
     document_url: str
-    document_content_type: str
+    document_content_type: Optional[
+        str
+    ]  # TODO: make non-optional when opensearch is updated
 
     document_title_match: bool
     document_description_match: bool
@@ -144,6 +146,7 @@ class OpenSearchResponseMatchBase(BaseModel):
     document_source_url: str
     document_url: str
     document_category: str
+    document_content_type: Optional[str]  # TODO: make non-optional
 
 
 class OpenSearchResponseNameMatch(OpenSearchResponseMatchBase):
