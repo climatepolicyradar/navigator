@@ -78,6 +78,7 @@ class Document(Base, Auditable):
         sa.Text,
         nullable=True,
         # TODO: nullable=False,
+        # and unique=True,
     )
 
     geography_id = sa.Column(

@@ -43,6 +43,7 @@ class DocumentDetailResponse(BaseModel):
     source_url: Optional[str]
     url: Optional[str]
     content_type: Optional[str]
+    md5_sum: Optional[str]
 
     slug: Optional[str]
     import_id: Optional[str]

@@ -144,6 +144,7 @@ class OpenSearchResponseMatchBase(BaseModel):
     document_source_url: str
     document_url: str
     document_category: str
+    document_content_type: str
 
 
 class OpenSearchResponseNameMatch(OpenSearchResponseMatchBase):

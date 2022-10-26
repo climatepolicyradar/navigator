@@ -68,16 +68,16 @@ async def document_browse(
 
 
 @documents_router.get(
-    "/documents/{document_id}",
+    "/documents/{import_id_or_slug}",
     response_model=DocumentDetailResponse,
     response_model_exclude_none=True,
 )
 async def document_detail(
-    document_id: int,
+    import_id_or_slug: str,
     db=Depends(get_db),
 ):
     """Get details of the document with the given ID."""
-    return get_document_detail(db, document_id)
+    return get_document_detail(db, import_id_or_slug)
 
 
 @documents_router.post("/documents", response_model=DocumentDetailResponse)

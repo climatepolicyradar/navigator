@@ -2,8 +2,7 @@ import os
 import random
 import re
 import string
-from pathlib import Path
-from typing import Any, Optional, Union
+from typing import Any, Optional
 from urllib.parse import quote_plus, urlsplit
 
 from sqlalchemy.orm import Session
@@ -33,14 +32,6 @@ def to_cdn_url(s3_object_key: str) -> Optional[str]:
     if s3_object_key is None:
         return None
     return f"https://{CDN_DOMAIN}/{s3_object_key}"
-
-
-def content_type_from_path(path: Union[Path, str]) -> Optional[str]:
-    """Convert a path/URL to its corresponsing content type based on suffix"""
-    if path is None:
-        return None
-    suffix = Path(path).suffix
-    return CONTENT_TYPE_MAP.get(suffix, "unknown")
 
 
 def random_string(length=12):

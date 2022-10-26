@@ -39,7 +39,6 @@ from app.core.config import (
     OPENSEARCH_SSL_WARNINGS,
     OPENSEARCH_JIT_MAX_DOC_COUNT,
 )
-from app.core.util import content_type_from_path
 from app.api.api_v1.schemas.search import (
     FilterField,
     OpenSearchResponseDescriptionMatch,
@@ -775,7 +774,6 @@ def process_browse_response_body(
 def create_search_response_document(
     opensearch_match: OpenSearchResponseMatchBase,
 ):
-    content_type = content_type_from_path(opensearch_match.document_url) or "unknown"
     return SearchResponseDocument(
         document_name=opensearch_match.document_name,
         document_description=opensearch_match.document_description,
@@ -788,7 +786,7 @@ def create_search_response_document(
         document_category=opensearch_match.document_category,
         document_source_url=opensearch_match.document_source_url,
         document_url=s3_to_cdn_url(opensearch_match.document_url),
-        document_content_type=content_type,
+        document_content_type=opensearch_match.document_content_type,
         document_title_match=False,
         document_description_match=False,
         document_passage_matches=[],
