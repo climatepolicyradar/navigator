@@ -12,7 +12,7 @@ const FooterLinks = ({ landing = false }) => {
           <a className="transtion duration-300 hover:text-blue-500">Terms &amp; conditions</a>
         </Link>
         <ExternalLink url="https://climatepolicyradar.org/privacy-policy" className="transtion duration-300 hover:text-blue-500">
-          Privacy Policy
+          Privacy policy
         </ExternalLink>
       </div>
     </nav>

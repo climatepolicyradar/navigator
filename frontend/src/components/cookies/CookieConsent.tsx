@@ -31,7 +31,7 @@ export const CookieConsent = () => {
 
   return (
     <>
-      <div className={`${hide ? "hidden" : ""} fixed w-[90%] max-w-[600px] bottom-6 left-1/2 translate-x-[-50%] z-[9999] rounded-xl bg-blue-100`}>
+      <div data-cy="cookie-consent" className={`${hide ? "hidden" : ""} fixed w-[90%] max-w-[600px] bottom-6 left-1/2 translate-x-[-50%] z-[9999] rounded-xl bg-blue-100`}>
         <div className="py-4 px-6">
           <h3 className="">Cookies and your privacy</h3>
           <p className="text-content text-sm">
@@ -41,12 +41,12 @@ export const CookieConsent = () => {
           </p>
           <div className="flex justify-end">
             <div className="">
-              <Button color="light-hover-dark" thin onClick={cookiesAcceptHandler}>
+              <Button color="light-hover-dark" thin onClick={cookiesAcceptHandler} data-cy="cookie-consent-accept">
                 Accept
               </Button>
             </div>
             <div className="ml-4">
-              <Button color="clear" thin onClick={cookiesRejectHandler}>
+              <Button color="clear" thin onClick={cookiesRejectHandler} data-cy="cookie-consent-reject">
                 Reject
               </Button>
             </div>

@@ -20,9 +20,17 @@ const navigateDropdownMenuItem = (el, title, pathname) => {
   cy.location("pathname", { timeout: 10000 }).should("eq", pathname);
 };
 
-const handleExternalLink = (title, url) => {
+const handleMenuExternalLink = (title, url) => {
   openMenu();
   cy.contains(`${menuSelector} a`, title)
+    .invoke("attr", "href")
+    .then((href) => {
+      expect(href).to.equal(url);
+    });
+};
+
+const handleFooterExternalLink = (title, url) => {
+  cy.contains(`${footerSelector} a`, title)
     .invoke("attr", "href")
     .then((href) => {
       expect(href).to.equal(url);
@@ -47,7 +55,7 @@ export class NavigationConstructor {
     return this;
   }
   aboutUsPage() {
-    handleExternalLink("About us", "https://climatepolicyradar.org");
+    handleMenuExternalLink("About us", "https://climatepolicyradar.org");
     return this;
   }
   methodologyPage() {
@@ -63,7 +71,7 @@ export class NavigationConstructor {
     return this;
   }
   footerLinkPrivacy() {
-    handleFooterTextLink("Privacy policy");
+    handleFooterExternalLink("Privacy policy", "https://climatepolicyradar.org/privacy-policy");
     return this;
   }
   footerLinkCookies() {
