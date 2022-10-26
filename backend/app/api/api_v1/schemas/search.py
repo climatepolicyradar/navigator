@@ -72,8 +72,8 @@ class SearchResponseDocumentPassage(BaseModel):
 
     text: str
     text_block_id: str
-    text_block_page: int
-    text_block_coords: List[Coord]
+    text_block_page: Optional[int]
+    text_block_coords: Optional[List[Coord]]
 
 
 class SearchResponseDocument(BaseModel):
