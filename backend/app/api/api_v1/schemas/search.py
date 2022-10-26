@@ -47,6 +47,17 @@ class FilterField(str, Enum):
     FRAMEWORK = "frameworks"
 
 
+class ResultsExclusion(str, Enum):
+    """Filter field to exclude specific results from the search."""
+
+    PDFS_TRANSLATED = "pdfsTranslated"
+    HTMLS_NON_TRANSLATED = "htmlsNonTranslated"
+    HTMLS_TRANSLATED = "htmlsTranslated"
+
+
+ExcludeResultsList = conlist(ResultsExclusion, min_items=1)
+
+
 class SearchRequestBody(BaseModel):
     """The request body expected by the search API endpoint."""
 
@@ -62,6 +73,7 @@ class SearchRequestBody(BaseModel):
     sort_order: SortOrder = SortOrder.DESCENDING
 
     jit_query: Optional[JitQuery] = JitQuery.ENABLED
+    exclude_results: Optional[ExcludeResultsList] = None
 
     limit: int = 10  # TODO: decide on default
     offset: int = 0

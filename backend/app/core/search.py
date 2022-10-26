@@ -52,6 +52,7 @@ from app.api.api_v1.schemas.search import (
     SearchResponseDocumentPassage,
     SortField,
     SortOrder,
+    ResultsExclusion,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -231,7 +232,12 @@ class OpenSearchConnection:
             opensearch_internal_config=opensearch_internal_config,
             sensitive_query_terms=self._sensitive_query_terms,
         )
-        opensearch_response_body = self.raw_query(opensearch_request.query, preference)
+
+        indices = self._get_opensearch_indices_to_query(search_request_body)
+
+        opensearch_response_body = self.raw_query(
+            opensearch_request.query, preference, indices
+        )
 
         if opensearch_request.mode == QueryMode.SEARCH:
             return process_search_response_body(
@@ -249,10 +255,44 @@ class OpenSearchConnection:
             f"Could not execute unknown query type: {opensearch_request.mode}"
         )
 
+    def _get_opensearch_indices_to_query(
+        self, search_request: SearchRequestBody
+    ) -> str:
+        """Get the OpenSearch indices to query based on the request body."""
+
+        if search_request.exclude_results is None:
+            return f"{self._opensearch_config.index_name}*"
+
+        indices_include = [
+            f"{self._opensearch_config.index_name}_core",
+            f"{self._opensearch_config.index_name}_pdfs_non_translated",
+            f"{self._opensearch_config.index_name}_pdfs_translated",
+            f"{self._opensearch_config.index_name}_htmls_non_translated",
+            f"{self._opensearch_config.index_name}_htmls_translated",
+        ]
+
+        if ResultsExclusion.PDFS_TRANSLATED in search_request.exclude_results:
+            indices_include.remove(
+                f"{self._opensearch_config.index_name}_pdfs_translated"
+            )
+
+        if ResultsExclusion.HTMLS_TRANSLATED in search_request.exclude_results:
+            indices_include.remove(
+                f"{self._opensearch_config.index_name}_htmls_translated"
+            )
+
+        if ResultsExclusion.HTMLS_NON_TRANSLATED in search_request.exclude_results:
+            indices_include.remove(
+                f"{self._opensearch_config.index_name}_htmls_non_translated"
+            )
+
+        return ",".join(indices_include)
+
     def raw_query(
         self,
         request_body: Mapping[str, Any],
         preference: Optional[str],
+        indices: str,
     ) -> OpenSearchResponse:
         """Query the configured OpenSearch instance with a JSON OpenSearch body."""
 
@@ -272,7 +312,7 @@ class OpenSearchConnection:
         start = time.time_ns()
         response = self._opensearch_connection.search(
             body=request_body,
-            index=self._opensearch_config.index_name,
+            index=indices,
             request_timeout=self._opensearch_config.request_timeout,
             preference=preference,
         )
