@@ -18,7 +18,7 @@ import { truncateString } from "@helpers/index";
 import { TEvent } from "@types";
 import { ExternalLink } from "@components/ExternalLink";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { ApiClient } from "@api/http-common";
+import { ApiClient, getEnvFromServer } from "@api/http-common";
 
 const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ page }) => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -169,7 +169,8 @@ export default DocumentCoverPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params.docId;
-  const client = new ApiClient();
+
+  const client = new ApiClient(process.env.NEXT_PUBLIC_API_URL);
 
   const { data: page } = ({} = await client.get(`/documents/${id}`, null));
 

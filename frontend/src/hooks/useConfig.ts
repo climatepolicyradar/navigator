@@ -1,10 +1,8 @@
 import { useQuery } from "react-query";
-import { ApiClient } from "../api/http-common";
+import { ApiClient, getEnvFromServer } from "../api/http-common";
 import { removeDuplicates } from "../utils/removeDuplicates";
 
 export default function useConfig(path: string, filterProp: string = "") {
-  const client = new ApiClient();
-
   const extractNestedData = (response, levels, filterProp) => {
     let level1 = [];
     let level2Nested = [];
@@ -33,6 +31,9 @@ export default function useConfig(path: string, filterProp: string = "") {
   return useQuery(
     path,
     async () => {
+      const { data } = await getEnvFromServer();
+      console.log("in useConfig getResults() returns from getEnvFromServer()", data?.env?.api_url);
+      const client = new ApiClient(data?.env?.api_url);
       const query_response = await client.get(`/${path}`, null);
       const response = query_response.data.metadata.CCLW;
       const response_geo = extractNestedData(response.geographies, 2, "");

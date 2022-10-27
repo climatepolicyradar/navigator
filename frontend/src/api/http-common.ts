@@ -1,6 +1,6 @@
 import axios, { AxiosInstance } from "axios";
 
-async function getEnv() {
+export async function getEnvFromServer() {
   return await axios.get("/api/env").then((res: any) => res);
 }
 
