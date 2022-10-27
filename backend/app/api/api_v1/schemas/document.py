@@ -165,6 +165,9 @@ class BulkImportValidatedResult(BaseModel):
     """Response for bulk import request."""
 
     document_count: int
+    document_added_count: int
+    document_skipped_count: int
+    document_skipped_ids: list[str]
 
 
 class DocumentUpdateRequest(BaseModel):

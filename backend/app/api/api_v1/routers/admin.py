@@ -1,8 +1,6 @@
 import logging
 from io import StringIO
 from typing import cast
-from app.db.models.document import Document
-from app.api.api_v1.routers import IMPORT_ID_MATCHER
 
 from fastapi import (
     APIRouter,
@@ -18,6 +16,7 @@ from sqlalchemy import update
 
 from app.api.api_v1.schemas.document import (
     BulkImportValidatedResult,
+    DocumentCreateRequest,
     DocumentUpdateRequest,
 )
 from app.api.api_v1.schemas.user import User, UserCreateAdmin
@@ -28,6 +27,7 @@ from app.core.email import (
     send_password_reset_email,
 )
 from app.core.ratelimit import limiter
+from app.core.validation import IMPORT_ID_MATCHER
 from app.core.validation.types import (
     ImportSchemaMismatchError,
     DocumentsFailedValidationError,
@@ -37,6 +37,7 @@ from app.core.validation.cclw.law_policy.process_csv import (
     extract_documents,
     validated_input,
 )
+from app.db.crud.document import create_document, write_metadata
 from app.db.crud.password_reset import (
     create_password_reset_token,
     invalidate_existing_password_reset_tokens,
@@ -48,6 +49,7 @@ from app.db.crud.user import (
     get_user,
     get_users,
 )
+from app.db.models.document import Document
 from app.db.session import get_db
 
 _LOGGER = logging.getLogger(__name__)
@@ -197,7 +199,7 @@ async def import_law_policy(
         valid_metadata = get_valid_metadata(db)
 
         encountered_errors = {}
-        document_create_objects = []
+        document_create_objects: list[DocumentCreateRequest] = []
 
         # TODO: Check for document existence?
         for validation_result in extract_documents(
@@ -213,12 +215,41 @@ async def import_law_policy(
                 message="File failed detailed validation.", details=encountered_errors
             )
 
-        # TODO: BAK-1208 create documents in database
+        documents_ids_already_exist: list[str] = []
+        try:
+            # Create a savepoint & start a transaction if necessary
+            with db.begin_nested():
+                for dco in document_create_objects:
+                    existing_document = (
+                        db.query(Document)
+                        .filter(Document.import_id == dco.import_id)
+                        .scalar()
+                    )
+                    if existing_document is None:
+                        new_document = create_document(db, dco)
+                        write_metadata(db, new_document, dco)
+                    else:
+                        documents_ids_already_exist.append(dco.import_id)
+
+            # This commit is necessary after completing the nested transaction
+            db.commit()
+        except Exception as e:
+            _LOGGER.exception("Unexpected error creating document entries")
+            if isinstance(e, IntegrityError):
+                raise HTTPException(409, detail="Document already exists")
+            raise e
 
         write_documents_to_s3(s3_client=s3_client, documents=document_create_objects)
 
-        # TODO: Some way to monitor processing pipeline
-        return BulkImportValidatedResult(document_count=len(document_create_objects))
+        # TODO: Add some way to monitor processing pipeline...
+        total_document_count = len(document_create_objects)
+        document_skipped_count = len(documents_ids_already_exist)
+        return BulkImportValidatedResult(
+            document_count=total_document_count,
+            document_added_count=total_document_count - document_skipped_count,
+            document_skipped_count=document_skipped_count,
+            document_skipped_ids=documents_ids_already_exist,
+        )
     except ImportSchemaMismatchError as e:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
