@@ -170,6 +170,8 @@ export default DocumentCoverPage;
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params.docId;
 
+  localStorage.setItem("api_url", process.env.NEXT_PUBLIC_API_URL);
+
   const client = new ApiClient(process.env.NEXT_PUBLIC_API_URL);
 
   const { data: page } = ({} = await client.get(`/documents/${id}`, null));
