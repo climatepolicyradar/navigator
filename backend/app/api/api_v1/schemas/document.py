@@ -85,7 +85,7 @@ class DocumentUploadResponse(BaseModel):
 class DocumentCreateRequest(BaseModel):  # noqa: D106
     """Details of a document to create - metadata will be validated & looked up."""
 
-    publication_ts: Optional[datetime.datetime]
+    publication_ts: datetime.datetime
     name: str
     description: str
     source_url: Optional[str]

@@ -69,16 +69,15 @@ class Document(Base, Auditable):
 
     slug = sa.Column(
         sa.Text,
-        nullable=True,
+        nullable=False,
         unique=True,
         index=True,
-        # TODO: nullable=False,
     )
     import_id = sa.Column(
         sa.Text,
-        nullable=True,
-        # TODO: nullable=False,
-        # and unique=True,
+        nullable=False,
+        unique=True,
+        index=True,
     )
 
     geography_id = sa.Column(

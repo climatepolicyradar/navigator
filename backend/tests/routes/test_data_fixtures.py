@@ -30,6 +30,8 @@ def make_doc(
         "category_id": category_id,
         "geography_id": geography_id,
         "type_id": type_id,
+        "slug": name,
+        "import_id": name,
         "publication_ts": f"{year}-08-17",
     }
 

@@ -1,15 +1,16 @@
 import logging
+from hashlib import md5
 from typing import Sequence, Set, Tuple, Union, cast
 
 from fastapi import (
     HTTPException,
 )
+from slugify import slugify
 from sqlalchemy import extract
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
-from hashlib import md5
-from app.api.api_v1.routers import IMPORT_ID_MATCHER
 
+from app.api.api_v1.routers import IMPORT_ID_MATCHER
 from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
     DocumentDetailResponse,
@@ -155,11 +156,26 @@ class UnknownCategoryError(UnknownMetadataError):
         )
 
 
+def _create_document_slug(
+    document_create_request: DocumentCreateRequest,
+    geography: Geography,
+) -> str:
+    return "_".join(
+        [
+            slugify(f"{geography.display_value}", separator="-"),
+            f"{document_create_request.publication_ts.year}",
+            # no science here, just limit the slug to a reasonable length
+            slugify(document_create_request.name, separator="-")[:768],
+        ]
+        + slugify(document_create_request.import_id).split("-")[-2:]
+    )
+
+
 def create_document(
     db: Session,
     document_create_request: DocumentCreateRequest,
 ) -> Document:
-    existing_geography_id = _get_geography_id_by_display_or_value(
+    existing_geography = _get_geography_by_display_or_value(
         db,
         document_create_request.geography,
     )
@@ -184,17 +200,22 @@ def create_document(
     if existing_category_id is None:
         raise UnknownCategoryError(document_create_request.category)
 
+    document_slug = _create_document_slug(
+        document_create_request,
+        geography=existing_geography,
+    )
+
     new_document = Document(
         name=document_create_request.name,
         description=document_create_request.description,
         source_url=document_create_request.source_url,
         source_id=existing_source_id,
-        slug=None,  # TODO: create slug after agreeing slug spec
+        slug=document_slug,
         url=None,  # Added by processing pipeline
         md5_sum=None,  # Added by processing pipeline
         cdn_object=None,  # Added by processing pipeline
         import_id=document_create_request.import_id,
-        geography_id=existing_geography_id,
+        geography_id=existing_geography.id,
         type_id=existing_type_id,
         category_id=existing_category_id,
         publication_ts=document_create_request.publication_ts,
@@ -435,34 +456,34 @@ def persist_document_and_metadata(
         raise e
 
 
-def _get_geography_id_by_display_or_value(db: Session, display_or_value: str) -> int:
+def _get_geography_by_display_or_value(db: Session, display_or_value: str) -> Geography:
     # Lookup geography by display_value or value
-    existing_geography_id = (
-        db.query(Geography.id).filter(Geography.display_value == display_or_value)
+    existing_geography = (
+        db.query(Geography).filter(Geography.display_value == display_or_value)
     ).scalar()
-    if existing_geography_id is None:
+    if existing_geography is None:
         # If the display_value returned no results, attempt a lookup by value
-        existing_geography_id = (
-            db.query(Geography.id).filter(Geography.value == display_or_value)
+        existing_geography = (
+            db.query(Geography).filter(Geography.value == display_or_value)
         ).scalar()
-    if existing_geography_id is None:
+    if existing_geography is None:
         raise UnknownGeographyError(display_or_value)
-    return existing_geography_id
+    return existing_geography
 
 
-def _get_language_id_by_code_or_name(db: Session, code_or_name: str) -> int:
+def _get_language_by_code_or_name(db: Session, code_or_name: str) -> Language:
     # Lookup language by language_code as a preference
-    existing_language_id = (
-        db.query(Language.id).filter(Language.language_code == code_or_name)
+    existing_language = (
+        db.query(Language).filter(Language.language_code == code_or_name)
     ).scalar()
-    if existing_language_id is None:
+    if existing_language is None:
         # If the language_code returned no results, attempt a lookup by name
-        existing_language_id = (
-            db.query(Language.id).filter(Language.name == code_or_name)
+        existing_language = (
+            db.query(Language).filter(Language.name == code_or_name)
         ).scalar()
-    if existing_language_id is None:
+    if existing_language is None:
         raise UnknownLanguageError(code_or_name)
-    return existing_language_id
+    return existing_language
 
 
 def write_metadata(
@@ -472,12 +493,12 @@ def write_metadata(
 ) -> None:
     # doc languages
     for language in document_create_request.languages:
-        existing_language_id = _get_language_id_by_code_or_name(db, language)
+        existing_language = _get_language_by_code_or_name(db, language)
 
         # TODO: Need to ensure uniqueness for metadata links, especially for future
         #       update paths.
         doc_language = DocumentLanguage(
-            language_id=existing_language_id,
+            language_id=existing_language.id,
             document_id=new_document.id,
         )
         db.add(doc_language)
