@@ -1,5 +1,4 @@
 import logging
-from datetime import datetime
 from hashlib import md5
 from typing import Sequence, Set, Tuple, Union, cast
 
@@ -158,19 +157,18 @@ class UnknownCategoryError(UnknownMetadataError):
 
 
 def _create_document_slug(
-    document_name: str,
+    document_create_request: DocumentCreateRequest,
     geography: Geography,
-    publication_ts: datetime,
 ) -> str:
     return "_".join(
         [
             slugify(f"{geography.display_value}", separator="-"),
-            f"{publication_ts.year}",
-            slugify(document_name, separator="-"),
+            f"{document_create_request.publication_ts.year}",
+            # no science here, just limit the slug to a reasonable length
+            slugify(document_create_request.name, separator="-")[:768],
         ]
-    )[
-        :1024
-    ]  # just limit the slug to a reasonable length
+        + slugify(document_create_request.import_id).split("-")[-2:]
+    )
 
 
 def create_document(
@@ -203,9 +201,8 @@ def create_document(
         raise UnknownCategoryError(document_create_request.category)
 
     document_slug = _create_document_slug(
-        document_create_request.name,
+        document_create_request,
         geography=existing_geography,
-        publication_ts=document_create_request.publication_ts,
     )
 
     new_document = Document(

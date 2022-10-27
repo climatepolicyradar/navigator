@@ -352,7 +352,8 @@ def test_post_documents(client, superuser_token_headers, test_db):
     assert doc.import_id == payload["import_id"]
     assert doc.publication_ts == datetime(2000, 1, 1)
     assert doc.slug == (
-        "not-my-favourite-subject_2000_energy-sector-strategy-1387-1391-2007-8-2012-3"
+        "not-my-favourite-subject_2000_energy-sector-strategy-"
+        "1387-1391-2007-8-2012-3_000_xxx"
     )
 
     event = test_db.query(Event).first()
