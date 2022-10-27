@@ -65,6 +65,7 @@ services:
     stdin_open: true
     environment:
       NODE_ENV: development
+      NEXT_PUBLIC_API_URL: "docker-compose"
     volumes:
       - ./frontend:/opt/node_app/app
       # bind-mounting these two files in will let you add packages during development without rebuilding.

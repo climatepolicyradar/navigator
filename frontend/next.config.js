@@ -1,5 +1,13 @@
 const getSite = process.env.NEXT_PUBLIC_THEME || "cpr";
 
+console.log("-- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- ");
+console.log(`NEXT_PUBLIC_THEME ${process.env.NEXT_PUBLIC_THEME}`);
+console.log(`NEXT_PUBLIC_API_URL ${process.env.NEXT_PUBLIC_API_URL}`);
+console.log(`NEXT_PUBLIC_LOGIN_API_URL ${process.env.NEXT_PUBLIC_LOGIN_API_URL}`);
+console.log("-- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- ");
+
+
+
 // for pages that are not in cclw's sitemap
 const cclwRedirects = [
   { source: "/cookie-policy", destination: "/", permanent: true },
@@ -45,4 +53,9 @@ module.exports = {
       },
     ].concat(getSite === "cpr" ? cprRedirects : cclwRedirects);
   },
+  env: {
+    NEXT_PUBLIC_THEME: process.env.NEXT_PUBLIC_THEME,
+    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
+    NEXT_PUBLIC_LOGIN_API_URL: process.env.NEXT_PUBLIC_LOGIN_API_URL,
+  }
 };
