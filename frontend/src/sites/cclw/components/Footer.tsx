@@ -104,7 +104,7 @@ const Footer = () => {
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div key={navLinks.title} className="footer__section">
               <h5 className="font-normal">{navLinks.title}</h5>
-              <div className="grid gap-y-5 md:grid-cols-2">
+              <div className="grid gap-x-5 gap-y-5 md:grid-cols-2">
                 <ul>
                   {navLinks.links.map((link) => (
                     <li key={link.text} className="mb-1">
