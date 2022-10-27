@@ -68,3 +68,5 @@ const nextConfig = {
     NEXT_PUBLIC_LOGIN_API_URL: process.env.NEXT_PUBLIC_LOGIN_API_URL,
   }
 };
+
+export default nextConfig;

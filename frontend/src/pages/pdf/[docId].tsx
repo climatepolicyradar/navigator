@@ -1,6 +1,5 @@
 import { useRouter } from "next/router";
 import Layout from "../../components/layouts/Main";
-import "../i18n";
 import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
 import useDocument from "../../hooks/useDocument";

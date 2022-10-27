@@ -12,7 +12,6 @@ export default function useSearch(id: string, obj = initialSearchCriteria) {
 
   const getResults = async () => {
     const { data } = await getEnvFromServer();
-    console.log("in useSearch getResults() returns from getEnvFromServer()", data?.env?.api_url);
     const client = new ApiClient(data?.env?.api_url);
     const results = await client.post(`/searches`, obj, config);
     return results;

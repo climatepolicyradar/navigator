@@ -32,7 +32,6 @@ export default function useConfig(path: string, filterProp: string = "") {
     path,
     async () => {
       const { data } = await getEnvFromServer();
-      console.log("in useConfig getResults() returns from getEnvFromServer()", data?.env?.api_url);
       const client = new ApiClient(data?.env?.api_url);
       const query_response = await client.get(`/${path}`, null);
       const response = query_response.data.metadata.CCLW;

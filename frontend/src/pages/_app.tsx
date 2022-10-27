@@ -1,4 +1,4 @@
-import "./i18n";
+import "../../i18n";
 import { useEffect } from "react";
 import { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "react-query";

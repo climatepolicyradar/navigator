@@ -15,14 +15,13 @@ class ApiClient {
       this.baseUrl = process.env.NEXT_PUBLIC_API_URL;
     }
     this.axiosClient = axios.create();
-    console.log(`APIClient created to: ${this.baseUrl}`);
   }
 
   /**
    * Submit a GET request and return the response as a mapped promise.
    */
   get(url: string, params?: any) {
-    console.log(`GET: ${this.baseUrl}${url}`);
+    // console.log(`GET: ${this.baseUrl}${url}`);
     return this.axiosClient
       .get(`${this.baseUrl}${url}`, { params })
       .then((res: any) => res)
@@ -33,7 +32,7 @@ class ApiClient {
   }
 
   post(url: string, values: any, config = {}) {
-    console.log(`POST: ${this.baseUrl}${url}`);
+    // console.log(`POST: ${this.baseUrl}${url}`);
     return this.axiosClient
       .post(`${this.baseUrl}${url}`, values, config)
       .then((res) => res)
@@ -44,8 +43,7 @@ class ApiClient {
   }
 
   put(url: string, values: any) {
-    console.log(`PUT: ${this.baseUrl}${url}`);
-
+    // console.log(`PUT: ${this.baseUrl}${url}`);
     return this.axiosClient
       .put(`${this.baseUrl}${url}`, values)
       .then((res) => res)
