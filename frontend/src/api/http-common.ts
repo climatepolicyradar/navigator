@@ -1,5 +1,9 @@
 import axios, { AxiosInstance } from "axios";
 
+async function getEnv() {
+  return await axios.get("/api/env").then((res: any) => res);
+}
+
 class ApiClient {
   private baseUrl: string;
   private axiosClient: AxiosInstance;
@@ -11,7 +15,7 @@ class ApiClient {
       this.baseUrl = process.env.NEXT_PUBLIC_API_URL;
     }
     this.axiosClient = axios.create();
-    console.log(`APIClient created to: ${this.baseUrl}` );
+    console.log(`APIClient created to: ${this.baseUrl}`);
   }
 
   /**
@@ -35,7 +39,7 @@ class ApiClient {
         return Promise.reject(err);
       });
   }
-  
+
   put(url: string, values: any) {
     console.log(`PUT: ${this.baseUrl}${url}`);
 
