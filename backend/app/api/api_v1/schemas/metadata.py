@@ -68,6 +68,7 @@ class Language(BaseModel):  # noqa: D101
 
 class Geography(BaseModel):  # noqa: D101
     display_value: str
+    slug: str
     value: str
     type: str
 

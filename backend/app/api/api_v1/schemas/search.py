@@ -83,16 +83,15 @@ class SearchResponseDocument(BaseModel):
     document_country_code: str
     document_source_name: str
     document_date: str
-    document_id: int
+    document_id: str
+    document_slug: Optional[str]  # TODO: required when opensearch is updated
     document_country_english_shortname: str
     document_description: str
     document_type: str
     document_category: str
     document_source_url: str
     document_url: str
-    document_content_type: Optional[
-        str
-    ]  # TODO: make non-optional when opensearch is updated
+    document_content_type: Optional[str]  # TODO: required when opensearch is updated
 
     document_title_match: bool
     document_description_match: bool
@@ -138,7 +137,7 @@ class OpenSearchResponseMatchBase(BaseModel):
     document_country_code: str
     document_description: str
     document_source_name: str
-    document_id: int
+    document_id: str  # Changed semantics to be import_id, not database id
     document_date: str
     document_name_and_id: str
     document_country_english_shortname: str
@@ -147,6 +146,7 @@ class OpenSearchResponseMatchBase(BaseModel):
     document_url: str
     document_category: str
     document_content_type: Optional[str]  # TODO: make non-optional
+    document_slug: Optional[str]  # TODO: make non-optional
 
 
 class OpenSearchResponseNameMatch(OpenSearchResponseMatchBase):
