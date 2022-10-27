@@ -20,10 +20,9 @@ from app.api.api_v1.routers.documents import documents_router
 from app.api.api_v1.routers.lookups import lookups_router
 from app.api.api_v1.routers.search import search_router
 from app.api.api_v1.routers.unauthenticated import unauthenticated_router
-from app.api.api_v1.routers.users import users_router
 from app.api.api_v1.routers.summaries import summary_router
 from app.core import config
-from app.core.auth import get_current_active_user, get_current_active_superuser
+from app.core.auth import get_current_active_superuser
 from app.core.health import is_database_online
 from app.core.ratelimit import limiter
 from app.db.session import SessionLocal
@@ -115,12 +114,6 @@ app.include_router(
     dependencies=[Depends(get_current_active_superuser)],
 )
 app.include_router(auth_router, prefix="/api", tags=["Authentication"])
-app.include_router(
-    users_router,
-    prefix="/api/v1",
-    tags=["Users"],
-    dependencies=[Depends(get_current_active_user)],
-)
 app.include_router(documents_router, prefix="/api/v1", tags=["Documents"])
 app.include_router(lookups_router, prefix="/api/v1", tags=["Lookups"])
 app.include_router(search_router, prefix="/api/v1", tags=["Searches"])

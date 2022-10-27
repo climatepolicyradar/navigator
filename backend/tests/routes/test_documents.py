@@ -17,7 +17,9 @@ from app.db.models import (
     Category,
     Keyword,
 )
-from app.api.api_v1.schemas.document import RelationshipCreateRequest
+from app.api.api_v1.schemas.document import (
+    RelationshipCreateRequest,
+)
 
 
 def create_4_documents(test_db, client, superuser_token_headers):
@@ -94,12 +96,10 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
-        "md5_sum": "the md5 sum",
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc1",
+        "import_id": "CCLW:001:000:XXX",
         "category": "a category",
         "languages": ["Afrikaans"],
         "events": [
@@ -129,12 +129,10 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "name": "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g",
-        "url": "https://juan-test-bucket.s3.eu-west-2.amazonaws.com/AFG/2009-10-12/AFG-2009-10-12-Agriculture Sector+Strategy 1487-1491 (2008/9-2013/4)-1.html",
-        "md5_sum": "the other md5 sum",
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc2",
+        "import_id": "CCLW:002:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -171,12 +169,10 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2010-12-25-Energy Sector Strategy 1387-1391 (2009/8-2014/3)-1.docx",
-        "md5_sum": "the md5 sum",
         "type": "just my type",
         "geography": "NMFSA",
         "source": "may it be with you",
-        "import_id": "doc3",
+        "import_id": "CCLW:003:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -205,12 +201,10 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "name": "Energy Sector Strategy 1387-1391 (2010/8-2015/3)",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2012-12-25-Energy Sector Strategy 1387-1391 (2010/8-2015/3)-1.arrrr",
-        "md5_sum": "the md5 sum",
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc4",
+        "import_id": "CCLW:005:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -323,12 +317,10 @@ def test_post_documents(client, superuser_token_headers, test_db):
         "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
-        "md5_sum": "the md5 sum",
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc01",
+        "import_id": "CCLW:001:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -355,8 +347,8 @@ def test_post_documents(client, superuser_token_headers, test_db):
     doc: Document = test_db.query(Document).first()
     assert doc.name == payload["name"]
     assert doc.description == payload["description"]
-    assert doc.url == payload["url"]
-    assert doc.md5_sum == payload["md5_sum"]
+    assert doc.url is None
+    assert doc.md5_sum is None
     assert doc.import_id == payload["import_id"]
     assert doc.publication_ts == datetime(2000, 1, 1)
 
@@ -407,12 +399,10 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
         "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "url": "https://cpr-document-queue.s3.eu-west-2.amazonaws.com/AFG/2008-12-25/AFG-2008-12-25-Energy Sector Strategy 1387-1391 (2007/8-2012/3)-1.pdf",
-        "md5_sum": "the md5 sum",
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "doc001",
+        "import_id": "CCLW:001:000:XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -442,7 +432,6 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
 def test_document_detail(
     client,
     superuser_token_headers,
-    user_token_headers,
     test_db,
 ):
 
@@ -482,8 +471,7 @@ def test_document_detail(
 
     # Test properties
     get_detail_response_2 = client.get(
-        f"/api/v1/documents/{response2_document['id']}",
-        headers=user_token_headers,
+        f"/api/v1/documents/{response2_document['import_id']}",
     )
     assert get_detail_response_2.status_code == 200
 
@@ -499,10 +487,7 @@ def test_document_detail(
         get_detail_json_2["source_url"]
         == "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g"
     )
-    assert (
-        get_detail_json_2["url"]
-        == "https://cdn.climatepolicyradar.org/AFG/2009-10-12/AFG-2009-10-12-Agriculture+Sector%2BStrategy+1487-1491+%282008/9-2013/4%29-1.html"
-    )
+
     assert get_detail_json_2["source"] == {"name": "may it be with you"}
     assert get_detail_json_2["geography"] == {
         "display_value": "not my favourite subject",
@@ -589,8 +574,7 @@ def test_document_detail(
 
     # Test associations
     get_detail_response_1 = client.get(
-        f"/api/v1/documents/{response1_document['id']}",
-        headers=user_token_headers,
+        f"/api/v1/documents/{response1_document['import_id']}",
     )
     assert get_detail_response_1.status_code == 200
     get_detail_json_1 = get_detail_response_1.json()
@@ -601,8 +585,7 @@ def test_document_detail(
     }
 
     get_detail_response_3 = client.get(
-        f"/api/v1/documents/{response3_document['id']}",
-        headers=user_token_headers,
+        f"/api/v1/documents/{response3_document['import_id']}",
     )
     assert get_detail_response_3.status_code == 200
     get_detail_json_3 = get_detail_response_3.json()
@@ -613,19 +596,162 @@ def test_document_detail(
     }
 
     get_detail_response_4 = client.get(
-        f"/api/v1/documents/{response4_document['id']}",
-        headers=user_token_headers,
+        f"/api/v1/documents/{response4_document['import_id']}",
     )
     assert get_detail_response_4.status_code == 200
     get_detail_json_4 = get_detail_response_4.json()
 
     assert get_detail_json_4["related_documents"] == []
 
-    # Check content types
-    assert get_detail_json_1["content_type"] == "application/pdf"
-    assert get_detail_json_2["content_type"] == "text/html"
-    assert (
-        get_detail_json_3["content_type"]
-        == "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-    )
+    # Check content types are all unknown before update endpoint is called
+    assert get_detail_json_1["content_type"] == "unknown"
+    assert get_detail_json_2["content_type"] == "unknown"
+    assert get_detail_json_3["content_type"] == "unknown"
     assert get_detail_json_4["content_type"] == "unknown"
+
+    document1_object = (
+        test_db.query(Document).filter(Document.id == response1_document["id"]).first()
+    )
+    document1_object.cdn_object = "hello1.pdf"
+    document1_object.url = "some_url1"
+
+    document2_object = (
+        test_db.query(Document).filter(Document.id == response2_document["id"]).first()
+    )
+    document2_object.url = "https://ab.s3.cde.amazonaws.com/url2.htm"
+
+    test_db.flush()
+
+    get_detail_response_1 = client.get(
+        f"/api/v1/documents/{response1_document['import_id']}",
+    )
+    assert get_detail_response_1.status_code == 200
+    get_detail_json_1 = get_detail_response_1.json()
+
+    get_detail_response_2 = client.get(
+        f"/api/v1/documents/{response2_document['import_id']}",
+    )
+    assert get_detail_response_2.status_code == 200
+    get_detail_json_2 = get_detail_response_2.json()
+
+
+def test_update_document_security(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    doc_id = response1_document["id"]
+    payload = {
+        "md5sum": "abc123",
+        "content_type": "content_type",
+        "source_url": "source_url",
+    }
+
+    response = client.put(f"/api/v1/admin/documents/{doc_id}", json=payload)
+
+    assert response.status_code == 401
+
+
+def test_update_document(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    import_id = response1_document["import_id"]
+    payload = {
+        "md5_sum": "c184214e-4870-48e0-adab-3e064b1b0e76",
+        "content_type": "updated/content_type",
+        "cdn_object": "folder/file",
+    }
+
+    response = client.put(
+        f"/api/v1/admin/documents/{import_id}",
+        headers=superuser_token_headers,
+        json=payload,
+    )
+
+    assert response.status_code == 200
+    json_object = response.json()
+    assert json_object["md5_sum"] == "c184214e-4870-48e0-adab-3e064b1b0e76"
+    assert json_object["content_type"] == "updated/content_type"
+    assert json_object["cdn_object"] == "folder/file"
+
+    get_response = client.get(
+        f"/api/v1/documents/{import_id}",
+    )
+
+    assert get_response.status_code == 200
+    json_object = get_response.json()
+    assert json_object["content_type"] == "updated/content_type"
+    assert "folder/file" in json_object["url"]
+
+
+def test_update_document_with_import_id(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    import_id = response1_document["import_id"]
+    payload = {
+        "md5_sum": "c184214e-4870-48e0-adab-3e064b1b0e76",
+        "content_type": "updated/content_type",
+        "cdn_object": "folder/file",
+    }
+
+    update_response = client.put(
+        f"/api/v1/admin/documents/{import_id}",
+        headers=superuser_token_headers,
+        json=payload,
+    )
+
+    assert update_response.status_code == 200
+    json_object = update_response.json()
+    assert json_object["import_id"] == import_id
+    assert json_object["md5_sum"] == "c184214e-4870-48e0-adab-3e064b1b0e76"
+    assert json_object["content_type"] == "updated/content_type"
+
+    get_response = client.get(
+        f"/api/v1/documents/{import_id}",
+    )
+
+    assert get_response.status_code == 200
+    json_object = get_response.json()
+    assert json_object["import_id"] == import_id
+    assert json_object["content_type"] == "updated/content_type"
+    assert "folder/file" in json_object["url"]

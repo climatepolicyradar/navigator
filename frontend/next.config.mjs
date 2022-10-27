@@ -23,14 +23,21 @@ const cprRedirects = [
   { source: "/terms-of-use", destination: "/", permanent: true },
 ];
 
-module.exports = {
+/**
+ * @type {import('next').NextConfig}
+ */
+
+import read from "./redirects/reader.mjs"
+const REDIRECT_FILE = process.env.NEXT_REDIRECT_FILE || "default.csv"
+
+const nextConfig = {
   i18n: {
     locales: ["en", "fr"],
     defaultLocale: "en",
   },
   pageExtensions: ["tsx", "ts"],
   async redirects() {
-    return [
+    const standardRedirects = [
       {
         source: "/auth/:id*",
         destination: "/",
@@ -51,7 +58,9 @@ module.exports = {
         destination: "/",
         permanent: false, // will become a page eventually
       },
-    ].concat(getSite === "cpr" ? cprRedirects : cclwRedirects);
+    ].concat(getSite === "cpr" ? cprRedirects : cclwRedirects);;
+
+    return standardRedirects.concat(await read(REDIRECT_FILE));
   },
   env: {
     NEXT_PUBLIC_THEME: process.env.NEXT_PUBLIC_THEME,

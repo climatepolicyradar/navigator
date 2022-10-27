@@ -315,8 +315,6 @@ def extract_documents(
                 source_url=document_url,
                 import_id=import_id,
                 publication_ts=publication_date,
-                url=None,  # Produced when an upload is requested
-                md5_sum=None,  # Calculated during upload
                 languages=document_languages,
                 type=document_type,
                 source=CCLW_SOURCE,

@@ -6,15 +6,15 @@ import pytest
 
 from app.api.api_v1.routers.lookups.util import tree_table_to_json
 from app.db.session import SessionLocal
+from tests.routes.test_documents import create_4_documents
 
 
-def test_endpoint_returns_correct_keys(client, user_token_headers):
+def test_endpoint_returns_correct_keys(client):
     """Tests whether we get the correct data when the /config endpoint is called."""
     url_under_test = "/api/v1/config"
 
     response = client.get(
         url_under_test,
-        headers=user_token_headers,
     )
 
     response_json = response.json()
@@ -77,3 +77,17 @@ def test_tree_table_to_json(data, expected):
     db.query = lambda _: _MockQuery(data)
     processed_data = tree_table_to_json(ANY, db)
     assert processed_data == expected
+
+
+def test_document_ids(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+    create_4_documents(test_db, client, superuser_token_headers)
+
+    # Test properties
+    get_ids_response = client.get("/api/v1/config/ids")
+    assert get_ids_response.status_code == 200
+    assert get_ids_response.headers.get("ETag") == "81dc9bdb52d04dc20036dbd8313ed055"
+    assert get_ids_response.json() == ["1", "2", "3", "4"]

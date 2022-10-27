@@ -1,5 +1,5 @@
 import logging
-from typing import Sequence, Set, Union, cast
+from typing import Sequence, Set, Tuple, Union, cast
 
 from fastapi import (
     HTTPException,
@@ -7,6 +7,8 @@ from fastapi import (
 from sqlalchemy import extract
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
+from hashlib import md5
+from app.api.api_v1.routers import IMPORT_ID_MATCHER
 
 from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
@@ -29,7 +31,7 @@ from app.api.api_v1.schemas.metadata import (
     Source as SourceSchema,
     Topic as TopicSchema,
 )
-from app.core.util import content_type_from_path, s3_to_cdn_url
+from app.core.util import to_cdn_url, s3_to_cdn_url
 from app.db.models import (
     Document,
     DocumentFramework,
@@ -188,9 +190,10 @@ def create_document(
         source_url=document_create_request.source_url,
         source_id=existing_source_id,
         slug=None,  # TODO: create slug after agreeing slug spec
+        url=None,  # Added by processing pipeline
+        md5_sum=None,  # Added by processing pipeline
+        cdn_object=None,  # Added by processing pipeline
         import_id=document_create_request.import_id,
-        url=document_create_request.url,
-        md5_sum=document_create_request.md5_sum,
         geography_id=existing_geography_id,
         type_id=existing_type_id,
         category_id=existing_category_id,
@@ -237,6 +240,23 @@ def get_document_overviews(
     return [DocumentOverviewResponse(**dict(row)) for row in query.all()]
 
 
+def get_document_ids(db: Session) -> Tuple[str, Sequence[str]]:
+    """Returns hash of and the entire list of document ids
+
+    Args:
+        db (Session): Database connection
+
+    Returns:
+        Tuple[str, Sequence[str]]: Tuple of the hash and the id list
+    """
+    # This query is ordered so that the return is deterministic
+    query = db.query(Document.id).order_by(Document.publication_ts.desc())
+
+    id_list = [str(row[0]) for row in query.all()]
+    hash = md5("".join(id_list).encode()).hexdigest()
+    return (hash, id_list)
+
+
 def get_document(db, document_id: int) -> Document:
     document = db.query(Document).filter(Document.id == document_id).first()
     if not document:
@@ -248,24 +268,33 @@ def get_document(db, document_id: int) -> Document:
     return document
 
 
-def get_document_detail(db, document_id) -> DocumentDetailResponse:
+def get_document_detail(db, import_id_or_slug) -> DocumentDetailResponse:
     """Get detailed information about a document."""
 
     document_data = (
         db.query(Document, Geography, DocumentType, Category, Source)
-        .filter(Document.id == document_id)
         .filter(Document.geography_id == Geography.id)
         .filter(Document.type_id == DocumentType.id)
         .filter(Document.category_id == Category.id)
         .filter(Document.source_id == Source.id)
     )
+
+    # Determine if slug or id
+    if IMPORT_ID_MATCHER.match(import_id_or_slug) is not None:
+        document_data = document_data.filter(Document.import_id == import_id_or_slug)
+    else:
+        document_data = document_data.filter(Document.slug == import_id_or_slug)
+
     if document_data.count() < 1:
-        raise HTTPException(404, f"Document with id {document_id} could not be found.")
+        raise HTTPException(
+            404, f"Document with id {import_id_or_slug} could not be found."
+        )
     if document_data.count() > 1:
         raise HTTPException(
-            500, f"Query returned multiple results for id {document_id}"
+            500, f"Query returned multiple results for id {import_id_or_slug}"
         )
 
+    document_id = document_data.first()[0].id
     # Retrieve all events associated with this document
     events = db.query(Event).filter(Event.document_id == document_id).all()
     events = sorted(events, key=lambda e: e.created_ts)
@@ -313,17 +342,19 @@ def get_document_detail(db, document_id) -> DocumentDetailResponse:
 
     # Now build the required response object
     document, geography, doc_type, category, source = document_data.first()
+
     return DocumentDetailResponse(
         id=document_id,
         name=cast(str, document.name),
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
         source_url=cast(str, document.source_url),
-        url=s3_to_cdn_url(document.url),
+        # TODO: remove with document.url
+        url=to_cdn_url(document.cdn_object) or s3_to_cdn_url(document.url),
         slug=document.slug,
         import_id=document.import_id,
-        # TODO: replace with proper content type handling
-        content_type=content_type_from_path(document.url),
+        content_type=document.content_type or "unknown",
+        md5_sum=document.md5_sum,
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),
             value=cast(str, geography.value),
@@ -396,7 +427,7 @@ def persist_document_and_metadata(
 
         # This commit is necessary after completing the nested transaction
         db.commit()
-        return get_document_detail(db, new_document.id)
+        return get_document_detail(db, new_document.import_id)
     except Exception as e:
         _LOGGER.exception(f"Error saving document {document_create_request}")
         if isinstance(e, IntegrityError):

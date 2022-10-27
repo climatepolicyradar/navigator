@@ -17,84 +17,62 @@ env:
 
 # https://github.com/marketplace/actions/docker-layer-caching
 jobs:
-  build:
+  build-start-test:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
 
       - name: Use .env.example
         run:  cp .env.example .env
+
+      - name: Get node Container
+        run:  docker pull node:16-alpine3.13
+
+      - name: Get python Container
+        run:  docker pull python:3.9
 
       - name: Build
         run: |
           docker-compose build
           docker images
 
-      - name: Package Container Images
-        run: |
-          mkdir -p docker-image
-          docker save -o ${BACKEND_TAR} navigator_backend
-          docker save -o ${FRONTEND_TAR} navigator_frontend
-
-      - uses: actions/upload-artifact@v1
-        with:
-          name: docker-image
-          path: docker-image
-
-  test:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2
-
-      - name: Use .env.example
-        run:  cp .env.example .env
-
-      - uses: actions/download-artifact@v1
-        with:
-          name: docker-image
-
-      - name: Load Images
-        run: |
-          docker load -i ${BACKEND_TAR}
-          docker load -i ${FRONTEND_TAR}
-
       - name: Build docker-compose stack
         run:  make start
+
       - name: verify backend is up
         run:  curl http://localhost:8000/api/docs
+
       - name: Run backend tests
-        run:  make test_backend && make test_backend_search
+        run:  make test_backend
+      
       - name: docker
         run: |
           docker-compose logs
           docker-compose ps
           docker ps -a
           ls -la
+      
       - name: verify frontend is up
         run:  curl http://localhost:3000
+      
       - name: Configure frontend test env
         run:  cp frontend/e2e/.env.example frontend/e2e/.env
+
+      - name: Get cypress Container      
+        run:  docker pull cypress/included:10.1.0
+
+      - name: Build frontend tests
+        run:  cd frontend/e2e && docker-compose build
+
       - name: Run frontend tests
-        run:  make test_frontend
+        run:  cd frontend/e2e && docker-compose up --abort-on-container-exit --exit-code-from cypress
+      
+      - name: Run backend search tests
+        run:  make test_backend_search
+      
       - name: Log Dump
         if:   always()
         run:  docker-compose logs
-
-  integration-tests-and-push:
-    needs: [test]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/download-artifact@v1
-        with:
-          name: docker-image
-
-      - name: Load Images
-        run: |
-          docker load -i ${BACKEND_TAR}
-          docker load -i ${FRONTEND_TAR}
-
-      - uses: actions/checkout@v2
 
       - name: Run Integration Tests
         run: echo TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO-TODO

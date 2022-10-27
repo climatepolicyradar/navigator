@@ -1,13 +1,11 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import { TTarget, TEvent } from "@types";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
-import useGeoStats from "@hooks/useGeoStats";
-import useGeoSummary from "@hooks/useGeoSummary";
 import Layout from "@components/layouts/Main";
 import { SingleCol } from "@components/SingleCol";
 import Event from "@components/blocks/Event";
-import { Loading } from "@components/blocks/Loading";
 import { Timeline } from "@components/blocks/Timeline";
 import { CountryHeader } from "@components/blocks/CountryHeader";
 import { KeyDetail } from "@components/KeyDetail";
@@ -21,6 +19,9 @@ import { LawIcon, PolicyIcon, CaseIcon, TargetIcon } from "@components/svg/Icons
 import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { ExternalLink } from "@components/ExternalLink";
+
+import { ApiClient } from "@api/http-common";
+import { TGeographyStats, TGeographySummary } from "@types";
 
 type TTargets = {
   targets: TTarget[];
@@ -44,14 +45,10 @@ const Targets = ({ targets }: TTargets) => {
   );
 };
 
-const CountryPage = () => {
+const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ geography, summary }) => {
   const router = useRouter();
   const { geographyId } = router.query;
   const updateSearchCriteria = useUpdateSearchCriteria();
-  const geographyQuery = useGeoStats(String(geographyId));
-  const geographySummaryQuery = useGeoSummary(String(geographyId));
-  const { refetch: refetchGeography, data: { data: geography } = {}, isFetching: isFetching, isError } = geographyQuery;
-  const { refetch: refetchSummary, data: { data: summary } = {}, isFetching: isFetchingSummary } = geographySummaryQuery;
   const [showAllTargets, setShowAllTargets] = useState(false);
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
 
@@ -131,22 +128,13 @@ const CountryPage = () => {
     }
   };
 
-  useEffect(() => {
-    if (router.query.geographyId) {
-      refetchGeography();
-      refetchSummary();
-    }
-  }, [router.query.geographyId, refetchGeography, refetchSummary]);
-
   let targets = [];
   if (!!summary?.targets) targets = showAllTargets ? summary.targets : summary.targets.slice(0, TARGETS_SHOW);
-
-  if (isFetching || isFetchingSummary) return <Loading />;
 
   return (
     <>
       <Layout title={geography?.name ?? "Loading..."}>
-        {isError || !geography ? (
+        {!geography ? (
           <SingleCol>
             <TextLink onClick={() => router.back()}>Go back</TextLink>
             <p>We were not able to load the data for the country.</p>
@@ -259,3 +247,24 @@ const CountryPage = () => {
 };
 
 export default CountryPage;
+
+export const getServerSideProps: GetServerSideProps = async (context) => {
+  const id = context.params.geographyId;
+  const client = new ApiClient();
+
+  const { data: geographyData }: { data: TGeographyStats } = await client.get(`/geo_stats/${id}`, null);
+  const { data: summaryData }: { data: TGeographySummary } = await client.get(`/summaries/country/${id}`, null);
+
+  if (!geographyData || !summaryData) {
+    return {
+      notFound: true,
+    };
+  }
+
+  return {
+    props: {
+      geography: geographyData,
+      summary: summaryData,
+    },
+  };
+};

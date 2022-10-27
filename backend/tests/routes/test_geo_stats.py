@@ -15,14 +15,13 @@ TEST_ID_BAD = 123456
 URL_UNDER_TEST_BAD = f"/api/v1/geo_stats/{TEST_ID_BAD}"
 
 
-def test_endpoint_returns_correct_data(client, user_token_headers, test_db):
+def test_endpoint_returns_correct_data(client, test_db):
     """Tests when the db is populated we can get out the data as expected."""
     populate_initial_data(test_db)
     test_db.flush()  # update the session, no need to commit as its just a test
 
     response = client.get(
         URL_UNDER_TEST,
-        headers=user_token_headers,
     )
     stats = response.json()
     assert response.status_code == OK
@@ -32,23 +31,21 @@ def test_endpoint_returns_correct_data(client, user_token_headers, test_db):
     assert stats["federal"] is False
 
 
-def test_endpoint_returns_not_found(client, user_token_headers, test_db):
+def test_endpoint_returns_not_found(client, test_db):
     """Tests the fact if the db is populated then 404 is returned for an unknown id."""
     populate_initial_data(test_db)
     test_db.flush()  # update the session, no need to commit as its just a test
 
     response = client.get(
         URL_UNDER_TEST_BAD,
-        headers=user_token_headers,
     )
     assert response.status_code == NOT_FOUND
 
 
-def test_endpoint_returns_not_found_empty_db(client, user_token_headers):
+def test_endpoint_returns_not_found_empty_db(client):
     """Tests the fact if the db is empty then no error is generated and 404 is returned."""
     response = client.get(
         URL_UNDER_TEST,
-        headers=user_token_headers,
     )
     assert response.status_code == NOT_FOUND
 
