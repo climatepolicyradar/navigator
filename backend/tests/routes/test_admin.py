@@ -8,6 +8,7 @@ from app.api.api_v1.routers.admin import ACCOUNT_ACTIVATION_EXPIRE_MINUTES
 from app.db.models import (
     Source,
     Geography,
+    Document,
     DocumentType,
     Language,
     Sector,
@@ -288,7 +289,7 @@ def test_bulk_import_cclw_law_policy_valid(
     test_db.add(Geography(display_value="geography", value="GEO", type="country"))
     test_db.add(DocumentType(name="doctype", description="doctype"))
     test_db.add(Language(language_code="LAN", name="language"))
-    test_db.add(Category(name="executive", description="executive"))
+    test_db.add(Category(name="Policy", description="policy"))
     test_db.add(Keyword(name="keyword1", description="keyword1"))
     test_db.add(Keyword(name="keyword2", description="keyword2"))
     test_db.add(Hazard(name="hazard1", description="hazard1"))
@@ -362,3 +363,47 @@ def test_bulk_import_cclw_law_policy_invalid(
     assert "detail" in response.json()
     assert response.json()["detail"]
     mock_write_s3.assert_not_called()
+
+
+@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
+def test_bulk_import_cclw_law_policy_db_objects(
+    mock_write_s3,
+    client,
+    superuser_token_headers,
+    test_db,
+):
+    test_db.add(Source(name="CCLW"))
+    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(DocumentType(name="doctype", description="doctype"))
+    test_db.add(Language(language_code="LAN", name="language"))
+    test_db.add(Category(name="Policy", description="Policy"))
+    test_db.add(Keyword(name="keyword1", description="keyword1"))
+    test_db.add(Keyword(name="keyword2", description="keyword2"))
+    test_db.add(Hazard(name="hazard1", description="hazard1"))
+    test_db.add(Hazard(name="hazard2", description="hazard2"))
+    test_db.add(Response(name="topic", description="topic"))
+    test_db.add(Framework(name="framework", description="framework"))
+
+    test_db.commit()
+
+    test_db.add(Instrument(name="instrument", description="instrument", source_id=1))
+    test_db.add(Sector(name="sector", description="sector", source_id=1))
+
+    test_db.commit()
+
+    num_docs_before = test_db.query(Document).count()
+
+    csv_file = BytesIO(VALID_FILE_1.encode("utf8"))
+    files = {"law_policy_csv": ("valid.csv", csv_file, "text/csv", {"Expires": "0"})}
+    response = client.post(
+        "/api/v1/admin/bulk-imports/cclw/law-policy",
+        files=files,
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == 202
+    assert response.json()["document_count"] == 2
+    mock_write_s3.assert_called_once()
+    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
+
+    num_docs_created = test_db.query(Document).count() - num_docs_before
+    assert num_docs_created == 2
