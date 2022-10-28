@@ -9,7 +9,7 @@ export default function useGetTheme() {
     const getTheme = async () => {
       setStatus("loading");
       const response = await getSiteAsync();
-      setTheme(response.env?.theme ?? "cpr");
+      setTheme(response ?? "cpr");
       setStatus("success");
     };
 

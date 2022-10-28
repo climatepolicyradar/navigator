@@ -1,5 +1,5 @@
 import Layout from "@components/layouts/Main";
-import getSite from "@utils/getSite";
+// import getSite from "@utils/getSite";
 
 import CPRMethodology from "@cpr/pages/methodology";
 import CCLWMethodology from "@cclw/pages/methodology";

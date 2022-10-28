@@ -8,9 +8,11 @@ export async function getSiteAsync() {
   const theme = localStorage.getItem("theme");
   if (theme) return theme;
   const { data } = await getEnvFromServer();
+  const themeResponse = data?.env?.theme;
   // Only store the theme if have one set
-  if (data?.env?.theme) {
-    localStorage.setItem("theme", data?.env?.theme);
+  if (themeResponse) {
+    localStorage.setItem("theme", themeResponse);
   }
-  return data;
+  // Will return null if not found
+  return themeResponse;
 }
