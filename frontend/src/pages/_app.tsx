@@ -1,15 +1,15 @@
 import "../../i18n";
-import { useEffect, createContext } from "react";
+import { useEffect } from "react";
 import { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import "../styles/main.scss";
+// import "../styles/main.scss";
 import "../styles/flag-icon.css";
 
 import "@cclw/styles/cclw.main.scss";
 
 import { ThemeContext } from "@context/ThemeContext";
-import useGetSite from "@hooks/useGetSite";
+import useGetSite from "@hooks/useGetTheme";
 import { Loading } from "@components/blocks/Loading";
 
 const queryClient = new QueryClient();

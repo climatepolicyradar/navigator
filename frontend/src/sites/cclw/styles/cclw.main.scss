@@ -17,19 +17,19 @@
   font-weight: 500;
 }
 
-.cclw-font {
+#cclw .cclw-font {
   font-family: "LL Brown";
 }
 
-.gradient-container {
+#cclw .gradient-container {
   @include cclw-dark-gradient;
 }
 
-header {
+#cclw header {
   border-color: rgba(255, 255, 255, 0.5);
 }
 
-nav {
+#cclw nav {
   a {
     @apply h-full block py-2 px-4;
     &:hover,
@@ -39,7 +39,7 @@ nav {
   }
 }
 
-footer {
+#cclw footer {
   a {
     @apply text-primary-400;
     &:hover {
@@ -70,6 +70,6 @@ footer {
   }
 }
 
-.cclw-semi-circle {
+#cclw .cclw-semi-circle {
   @apply transition duration-300  w-[260px] h-[160px] lg:h-auto lg:w-full bg-primary-400 rounded-t-full mt-4 pt-4 pb-2 px-6 text-xl text-center hover:bg-secondary-700 flex-grow flex flex-col items-center justify-center;
 }

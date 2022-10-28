@@ -1,7 +1,7 @@
 import { getSiteAsync } from "@utils/getSite";
 import { useEffect, useState } from "react";
 
-export default function useGetSite() {
+export default function useGetTheme() {
   const [status, setStatus] = useState("idle");
   const [theme, setTheme] = useState(null);
 
@@ -9,7 +9,7 @@ export default function useGetSite() {
     const getTheme = async () => {
       setStatus("loading");
       const response = await getSiteAsync();
-      setTheme(response.env?.theme ?? "cclw");
+      setTheme(response.env?.theme ?? "cpr");
       setStatus("success");
     };
 
