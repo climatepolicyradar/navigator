@@ -1,5 +1,5 @@
 import { useRouter } from "next/router";
-import React, { useEffect } from "react";
+import React, { useEffect, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import useSearchCriteria from "@hooks/useSearchCriteria";
 import useUpdateSearchCriteria from "@hooks/useUpdateSearchCriteria";
@@ -10,10 +10,11 @@ import Layout from "@components/layouts/LandingPage";
 import LoaderOverlay from "@components/LoaderOverlay";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { emptySearchResults } from "@constants/search";
-import getSite from "@utils/getSite";
 
 import CPRLandingPage from "@cpr/pages/landing-page";
 import CCLWLandingPage from "@cclw/pages/landing-page";
+
+import { ThemeContext } from "@context/ThemeContext";
 
 const IndexPage = () => {
   const { t, ready } = useTranslation(["searchStart", "searchResults"]);
@@ -22,7 +23,7 @@ const IndexPage = () => {
   const updateSearchCriteria = useUpdateSearchCriteria();
   const { mutate: updateCountries } = useUpdateCountries();
   const { mutate: updateSearch } = useUpdateSearch();
-  const site = getSite();
+  const theme = useContext(ThemeContext);
 
   const configQuery: any = useConfig("config");
   const { data: { regions = [], countries = [] } = {} } = configQuery;
@@ -58,7 +59,7 @@ const IndexPage = () => {
   return (
     <>
       <Layout title={t("Law and Policy Search")}>
-        {site === "cpr" && (
+        {theme === "cpr" && (
           <CPRLandingPage
             handleSearchInput={handleSearchInput}
             handleSearchChange={handleSearchChange}
@@ -66,7 +67,7 @@ const IndexPage = () => {
             exactMatch={searchCriteria.exact_match}
           />
         )}
-        {site === "cclw" && <CCLWLandingPage handleSearchInput={handleSearchInput} searchInput={searchCriteria.query_string} />}
+        {theme === "cclw" && <CCLWLandingPage handleSearchInput={handleSearchInput} searchInput={searchCriteria.query_string} />}
       </Layout>
     </>
   );

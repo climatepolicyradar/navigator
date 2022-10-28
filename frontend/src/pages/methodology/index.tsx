@@ -4,13 +4,17 @@ import getSite from "@utils/getSite";
 import CPRMethodology from "@cpr/pages/methodology";
 import CCLWMethodology from "@cclw/pages/methodology";
 
+import { useContext } from "react";
+import { ThemeContext } from "@context/ThemeContext";
+
 const Methodology = () => {
-  const site = getSite();
+  // const site = getSite();
+  const theme = useContext(ThemeContext);
 
   return (
     <Layout title={"Methodology"}>
-      {site === "cpr" && <CPRMethodology />}
-      {site === "cclw" && <CCLWMethodology />}
+      {theme === "cpr" && <CPRMethodology />}
+      {theme === "cclw" && <CCLWMethodology />}
     </Layout>
   );
 };

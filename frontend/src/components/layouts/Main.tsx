@@ -5,6 +5,9 @@ import CCLWMain from "@cclw/layouts/main";
 import getSite from "@utils/getSite";
 import getPageTitle from "@utils/getPageTitle";
 
+import { useContext } from "react";
+import { ThemeContext } from "@context/ThemeContext";
+
 type TProps = {
   title?: string;
   heading?: string;
@@ -12,7 +15,9 @@ type TProps = {
 };
 
 const Layout: FC<TProps> = ({ children, title = "", screenHeight = false }) => {
-  const site = getSite();
+  // const site = getSite();
+  const theme = useContext(ThemeContext);
+  
   return (
     <div className="h-full flex flex-col">
       <Head>
@@ -23,8 +28,8 @@ const Layout: FC<TProps> = ({ children, title = "", screenHeight = false }) => {
       <a className="sr-only" href="#main">
         Skip to content
       </a>
-      {site === "cpr" && <CPRMain screenHeight={screenHeight}>{children}</CPRMain>}
-      {site === "cclw" && <CCLWMain>{children}</CCLWMain>}
+      {theme === "cpr" && <CPRMain screenHeight={screenHeight}>{children}</CPRMain>}
+      {theme === "cclw" && <CCLWMain>{children}</CCLWMain>}
     </div>
   );
 };

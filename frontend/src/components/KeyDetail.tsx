@@ -1,4 +1,6 @@
-import getSite from "@utils/getSite";
+// import getSite from "@utils/getSite";
+import { useContext } from "react";
+import { ThemeContext } from "@context/ThemeContext";
 
 type TProps = {
   detail: string;
@@ -9,13 +11,14 @@ type TProps = {
 };
 
 export const KeyDetail = ({ detail, amount, icon, extraDetail, onClick }: TProps) => {
-  const site = getSite();
+  const theme = useContext(ThemeContext);
+  // const site = getSite();
 
   const handleOnClick = () => {
     if (onClick) onClick();
   };
 
-  const cssClass = site === "cpr" ? "text-blue-600" : "text-secondary-700";
+  const cssClass = theme === "cpr" ? "text-blue-600" : "text-secondary-700";
 
   return (
     <div className={`key-detail bg-secondary-700 text-white flex p-3 shadow-md ${onClick ? "cursor-pointer" : ""}`} onClick={handleOnClick}>

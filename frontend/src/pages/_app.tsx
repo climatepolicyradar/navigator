@@ -1,13 +1,16 @@
 import "../../i18n";
-import { useEffect } from "react";
+import { useEffect, createContext } from "react";
 import { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "../styles/main.scss";
 import "../styles/flag-icon.css";
 
-// TODO: load this dynamically from the .env var
 import "@cclw/styles/cclw.main.scss";
+
+import { ThemeContext } from "@context/ThemeContext";
+import useGetSite from "@hooks/useGetSite";
+import { Loading } from "@components/blocks/Loading";
 
 const queryClient = new QueryClient();
 
@@ -19,6 +22,8 @@ declare global {
 }
 
 function MyApp({ Component, pageProps }: AppProps) {
+  const { status: themeStatus, theme } = useGetSite();
+
   // For access inside Cypress:
   useEffect(() => {
     if (window?.Cypress) {
@@ -26,9 +31,13 @@ function MyApp({ Component, pageProps }: AppProps) {
     }
   }, []);
 
+  if (themeStatus != "success") return <Loading />;
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Component {...pageProps} />
+      <ThemeContext.Provider value={theme}>
+        <Component {...pageProps} />
+      </ThemeContext.Provider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
