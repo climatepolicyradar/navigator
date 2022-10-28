@@ -10,7 +10,6 @@ from sqlalchemy import extract
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
-from app.api.api_v1.routers import IMPORT_ID_MATCHER
 from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
     DocumentDetailResponse,
@@ -33,6 +32,7 @@ from app.api.api_v1.schemas.metadata import (
     Topic as TopicSchema,
 )
 from app.core.util import to_cdn_url, s3_to_cdn_url
+from app.core.validation import IMPORT_ID_MATCHER
 from app.db.models import (
     Document,
     DocumentFramework,
