@@ -315,5 +315,6 @@ async def update_document(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
+    db.commit()
     db.refresh(existing_doc)
     return existing_doc
