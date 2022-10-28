@@ -314,7 +314,6 @@ def test_bulk_import_cclw_law_policy_valid(
     assert response.status_code == 202
     response_json = response.json()
     assert response_json["document_count"] == 2
-    assert response_json["document_count"] == 2
     assert response_json["document_skipped_count"] == 0
     assert response_json["document_skipped_ids"] == []
 
@@ -407,7 +406,6 @@ def test_bulk_import_cclw_law_policy_db_objects(
     )
     assert response.status_code == 202
     response_json = response.json()
-    assert response_json["document_count"] == 2
     assert response_json["document_count"] == 2
     assert response_json["document_skipped_count"] == 0
     assert response_json["document_skipped_ids"] == []
