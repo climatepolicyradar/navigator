@@ -81,7 +81,7 @@ const Header = ({ background = true }) => {
               </li>
               <li>
                 <Link href="/search">
-                  <a className={linkClass("/search") + " flex gap-2"}>
+                  <a className={linkClass("/search") + " !flex gap-2"}>
                     Search{" "}
                     <span className="mt-[-2px]">
                       <SearchIcon height="24" width="24" />
