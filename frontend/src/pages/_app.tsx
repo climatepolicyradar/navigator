@@ -5,7 +5,6 @@ import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "../styles/flag-icon.css";
-
 import "@cclw/styles/cclw.main.scss";
 
 import { ThemeContext } from "@context/ThemeContext";
@@ -40,6 +39,25 @@ function MyApp({ Component, pageProps }: AppProps) {
       <ThemeContext.Provider value={theme}>
         <Head>
           <link rel="icon" href={favicon} />
+          <style>{`
+            :root { 
+              --color-lineBorder:#bfc2d9;
+              --color-primary-400:#ED3D48;
+              --color-primary-700:#2B2F49;
+              --color-indigo-400:#2B2F49;
+              --color-indigo-500:#2B2F49;
+              --color-indigo-600:#2B2F49;
+              --color-indigo-700:#2B2F49;
+              --color-sky:#ED3D48;
+              --color-blue-100:#ED3D48;
+              --color-blue-200:#ED3D48;
+              --color-blue-300:#ED3D48;
+              --color-blue-400:#ED3D48;
+              --color-blue-500:#ED3D48;
+              --color-blue-600:#ED3D48;
+              --color-blue-700:#C9131E;
+            }
+          `}</style>
         </Head>
         <div id={theme}>
           <Component {...pageProps} />
