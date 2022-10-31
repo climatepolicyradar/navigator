@@ -74,10 +74,16 @@ json_logging.config_root_logger()
 # Add CORS middleware to allow cross origin requests from any port
 app.add_middleware(
     CORSMiddleware,
+    allow_origins=[
+        "http://localhost:3000",
+        "https://app.climatepolicyradar.org",
+        "https://cclw.climatepolicyradar.org",
+        "https://app.dev.climatepolicyradar.org",
+        "https://cclw.dev.climatepolicyradar.org",
+    ],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    allow_origin_regex=r"https:\/\/.*\.climatepolicyradar\.org|http:\/\/localhost:3000",
 )
 
 # add health endpoint

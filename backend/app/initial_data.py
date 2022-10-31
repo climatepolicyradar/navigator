@@ -2,6 +2,7 @@
 
 from http.client import OK
 import os
+from sys import argv
 from time import sleep
 import requests
 
@@ -117,7 +118,10 @@ def wait_for_app():
 
 if __name__ == "__main__":
     print("Creating initial data...")
-    wait_for_app()
+    skip_wait = len(argv) > 1 and argv[1].lower() == "skip-wait"
+
+    if not skip_wait:
+        wait_for_app()
 
     db = SessionLocal()
     populate_initial_data(db)

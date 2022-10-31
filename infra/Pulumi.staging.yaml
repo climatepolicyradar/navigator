@@ -2,12 +2,12 @@ config:
   aws:region: eu-west-2
   infra:backend_secret_key:
     secure: AAABAOjSBWjNbr7Cz/iuJRE+qX79syl1e62otMKQqKMJK0PlxCx+CUqMXOuNTGf+Bg7Yna7j9xo/sMqAc8GklSh5XHE=
-  infra:cdn_domain: dev.cdn.climatepolicyradar.org
+  infra:cdn_domain: cdn.dev.climatepolicyradar.org
   infra:db_password:
     secure: AAABAI73hsA+fbMqxrcUhp+uhdTLSOjWv7GvAKrhPROh0PUEGoduSxD6sZ0m4TEpSLioBgjo4nyYwhMri/AdDSmnv7djQCeXJcVzBYLuwCI=
   infra:db_username:
     secure: AAABAPyX1rn9gbj9ch5L4Lgqc/82btrJuNAKtHEQqihE9j1EkPbyxTUP2/xrcqhUtA==
-  infra:domain: dev.app.climatepolicyradar.org
+  infra:domain: app.dev.climatepolicyradar.org
   infra:opensearch_password:
     secure: AAABAPsD32wpPpzGnLLB2FHlylL+SqyyEs3aMZebHlpn+7XjYwPSo5G2PF4=
   infra:opensearch_url:

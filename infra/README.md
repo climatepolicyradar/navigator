@@ -82,7 +82,7 @@ pulumi stack select <stack name>
 
 ### The deployment process
 
-#### Deploy to dev.app.climatepolicyradar.org for UAT
+#### Deploy to app.dev.climatepolicyradar.org for UAT
 
 Select the stack for the development environment
 
