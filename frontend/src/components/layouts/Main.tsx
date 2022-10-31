@@ -2,7 +2,6 @@ import React, { FC } from "react";
 import Head from "next/head";
 import CPRMain from "@cpr/layouts/main";
 import CCLWMain from "@cclw/layouts/main";
-// import getSite from "@utils/getSite";
 import getPageTitle from "@utils/getPageTitle";
 
 import { useContext } from "react";
@@ -15,13 +14,12 @@ type TProps = {
 };
 
 const Layout: FC<TProps> = ({ children, title = "", screenHeight = false }) => {
-  // const site = getSite();
   const theme = useContext(ThemeContext);
   
   return (
     <div className="h-full flex flex-col">
       <Head>
-        <title>{`${getPageTitle()} | ${title}`}</title>
+        <title>{`${getPageTitle(theme)} | ${title}`}</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>

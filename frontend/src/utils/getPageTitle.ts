@@ -1,7 +1,4 @@
-import getSite from "./getSite";
-
-export default function getPageTitle(): string {
-  const site = getSite();
+export default function getPageTitle(site: string): string {
   let title = "Climate Policy Radar";
   switch (site) {
     case "cclw":

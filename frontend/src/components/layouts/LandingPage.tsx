@@ -1,5 +1,6 @@
-import React, { ReactNode } from "react";
+import React, { ReactNode, useContext } from "react";
 import Head from "next/head";
+import { ThemeContext } from "@context/ThemeContext";
 import getPageTitle from "@utils/getPageTitle";
 
 type TProps = {
@@ -8,10 +9,12 @@ type TProps = {
 };
 
 const Layout = ({ children, title = "" }: TProps) => {
+  const theme = useContext(ThemeContext);
+
   return (
     <div>
       <Head>
-        <title>{`${getPageTitle()} | ${title}`}</title>
+        <title>{`${getPageTitle(theme)} | ${title}`}</title>
         <meta charSet="utf-8" />
         <meta name="viewport" content="initial-scale=1.0, width=device-width" />
       </Head>
