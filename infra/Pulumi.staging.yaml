@@ -7,7 +7,7 @@ config:
     secure: AAABAI73hsA+fbMqxrcUhp+uhdTLSOjWv7GvAKrhPROh0PUEGoduSxD6sZ0m4TEpSLioBgjo4nyYwhMri/AdDSmnv7djQCeXJcVzBYLuwCI=
   infra:db_username:
     secure: AAABAPyX1rn9gbj9ch5L4Lgqc/82btrJuNAKtHEQqihE9j1EkPbyxTUP2/xrcqhUtA==
-  infra:domain: dev.app.climatepolicyradar.org
+  infra:domain: app.dev.climatepolicyradar.org
   infra:opensearch_password:
     secure: AAABAPsD32wpPpzGnLLB2FHlylL+SqyyEs3aMZebHlpn+7XjYwPSo5G2PF4=
   infra:opensearch_url:
