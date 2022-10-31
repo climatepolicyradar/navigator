@@ -7,7 +7,6 @@ import useUpdateSearch from "@hooks/useUpdateSearch";
 import useUpdateCountries from "@hooks/useUpdateCountries";
 import useConfig from "@hooks/useConfig";
 import Layout from "@components/layouts/LandingPage";
-import LoaderOverlay from "@components/LoaderOverlay";
 import { initialSearchCriteria } from "@constants/searchCriteria";
 import { emptySearchResults } from "@constants/search";
 
@@ -17,7 +16,7 @@ import CCLWLandingPage from "@cclw/pages/landing-page";
 import { ThemeContext } from "@context/ThemeContext";
 
 const IndexPage = () => {
-  const { t, ready } = useTranslation(["searchStart", "searchResults"]);
+  const { t } = useTranslation(["searchStart", "searchResults"]);
   const router = useRouter();
   const { data: searchCriteria }: any = useSearchCriteria();
   const updateSearchCriteria = useUpdateSearchCriteria();
@@ -54,8 +53,6 @@ const IndexPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [updateCountries, updateSearch]);
 
-  if (!ready || !searchCriteria) return <LoaderOverlay />;
-
   return (
     <>
       <Layout title={t("Law and Policy Search")}>
@@ -63,11 +60,11 @@ const IndexPage = () => {
           <CPRLandingPage
             handleSearchInput={handleSearchInput}
             handleSearchChange={handleSearchChange}
-            searchInput={searchCriteria.query_string}
-            exactMatch={searchCriteria.exact_match}
+            searchInput={searchCriteria?.query_string ?? ""}
+            exactMatch={searchCriteria?.exact_match ?? false}
           />
         )}
-        {theme === "cclw" && <CCLWLandingPage handleSearchInput={handleSearchInput} searchInput={searchCriteria.query_string} />}
+        {theme === "cclw" && <CCLWLandingPage handleSearchInput={handleSearchInput} searchInput={searchCriteria?.query_string ?? ""} />}
       </Layout>
     </>
   );
