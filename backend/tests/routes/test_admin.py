@@ -312,7 +312,11 @@ def test_bulk_import_cclw_law_policy_valid(
         headers=superuser_token_headers,
     )
     assert response.status_code == 202
-    assert response.json()["document_count"] == 2
+    response_json = response.json()
+    assert response_json["document_count"] == 2
+    assert response_json["document_skipped_count"] == 0
+    assert response_json["document_skipped_ids"] == []
+
     mock_write_s3.assert_called_once()
     assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
 
@@ -401,9 +405,80 @@ def test_bulk_import_cclw_law_policy_db_objects(
         headers=superuser_token_headers,
     )
     assert response.status_code == 202
-    assert response.json()["document_count"] == 2
+    response_json = response.json()
+    assert response_json["document_count"] == 2
+    assert response_json["document_skipped_count"] == 0
+    assert response_json["document_skipped_ids"] == []
+
     mock_write_s3.assert_called_once()
     assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
 
     num_docs_created = test_db.query(Document).count() - num_docs_before
     assert num_docs_created == 2
+
+
+@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
+def test_bulk_import_cclw_law_policy_preexisting_db_objects(
+    mock_write_s3,
+    client,
+    superuser_token_headers,
+    test_db,
+):
+    test_db.add(Source(name="CCLW"))
+    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(DocumentType(name="doctype", description="doctype"))
+    test_db.add(Language(language_code="LAN", name="language"))
+    test_db.add(Category(name="Policy", description="Policy"))
+    test_db.add(Keyword(name="keyword1", description="keyword1"))
+    test_db.add(Keyword(name="keyword2", description="keyword2"))
+    test_db.add(Hazard(name="hazard1", description="hazard1"))
+    test_db.add(Hazard(name="hazard2", description="hazard2"))
+    test_db.add(Response(name="topic", description="topic"))
+    test_db.add(Framework(name="framework", description="framework"))
+
+    test_db.commit()
+    existing_doc_import_id = "CCLW.executive.1.2"
+    test_db.add(Instrument(name="instrument", description="instrument", source_id=1))
+    test_db.add(Sector(name="sector", description="sector", source_id=1))
+    test_db.add(
+        Document(
+            publication_ts=datetime.datetime.now(),
+            name="test",
+            description="test description",
+            source_url="http://somewhere",
+            source_id=1,
+            url="",
+            cdn_object="",
+            md5_sum=None,
+            content_type=None,
+            slug="None",
+            import_id=existing_doc_import_id,
+            geography_id=1,
+            type_id=1,
+            category_id=1,
+        )
+    )
+    test_db.commit()
+
+    num_docs_before = test_db.query(Document).count()
+    assert num_docs_before == 1
+
+    csv_file = BytesIO(VALID_FILE_1.encode("utf8"))
+    files = {"law_policy_csv": ("valid.csv", csv_file, "text/csv", {"Expires": "0"})}
+    response = client.post(
+        "/api/v1/admin/bulk-imports/cclw/law-policy",
+        files=files,
+        headers=superuser_token_headers,
+    )
+    assert response.status_code == 202
+    response_json = response.json()
+    assert response_json["document_count"] == 2
+    assert response_json["document_skipped_count"] == 1
+    assert response_json["document_skipped_ids"] == [existing_doc_import_id]
+
+    mock_write_s3.assert_called_once()
+    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
+
+    num_docs_created = test_db.query(Document).count() - num_docs_before
+    assert num_docs_created == 1
+
