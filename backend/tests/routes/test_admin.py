@@ -481,4 +481,3 @@ def test_bulk_import_cclw_law_policy_preexisting_db_objects(
 
     num_docs_created = test_db.query(Document).count() - num_docs_before
     assert num_docs_created == 1
-
