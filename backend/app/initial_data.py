@@ -117,7 +117,7 @@ def wait_for_app():
 
 if __name__ == "__main__":
     print("Creating initial data...")
-    wait_for_app()
+    # wait_for_app()
 
     db = SessionLocal()
     populate_initial_data(db)
