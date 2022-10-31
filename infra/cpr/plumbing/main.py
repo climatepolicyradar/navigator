@@ -28,6 +28,25 @@ def get_instance_profile() -> aws.iam.InstanceProfile:
         tags=default_tag,
     )
 
+    aws.iam.RolePolicy(
+        "profile-role-policy-attach-S3PutObject",
+        role=instance_profile_role.name,
+        policy=json.dumps(
+            {
+                "Version": "2012-10-17",
+                "Statement": [
+                    {
+                        "Effect": "Allow",
+                        "Action": [
+                            "s3:putObject",
+                        ],
+                        "Resource": "*",
+                    }
+                ],
+            }
+        ),
+    )
+
     # policy attachments for profile role
     aws.iam.RolePolicyAttachment(
         "profile-role-policy-attach-AWSElasticBeanstalkWebTier",
