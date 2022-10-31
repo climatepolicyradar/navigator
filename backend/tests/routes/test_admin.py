@@ -442,7 +442,7 @@ def test_bulk_import_cclw_law_policy_preexisting_db_objects(
     test_db.add(Sector(name="sector", description="sector", source_id=1))
     test_db.add(
         Document(
-            publication_ts=datetime.datetime.now(),
+            publication_ts=datetime.datetime(year=2014, month=1, day=1),
             name="test",
             description="test description",
             source_url="http://somewhere",
@@ -451,7 +451,7 @@ def test_bulk_import_cclw_law_policy_preexisting_db_objects(
             cdn_object="",
             md5_sum=None,
             content_type=None,
-            slug="None",
+            slug="geography_2014_test_1_2",
             import_id=existing_doc_import_id,
             geography_id=1,
             type_id=1,
@@ -477,7 +477,7 @@ def test_bulk_import_cclw_law_policy_preexisting_db_objects(
     assert response_json["document_skipped_ids"] == [existing_doc_import_id]
 
     mock_write_s3.assert_called_once()
-    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
+    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 1
 
     num_docs_created = test_db.query(Document).count() - num_docs_before
     assert num_docs_created == 1

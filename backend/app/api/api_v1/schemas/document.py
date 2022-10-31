@@ -121,6 +121,12 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
         validate_assignment = True
 
 
+class DocumentParserInput(DocumentCreateRequest):
+    """Extend the document create request with the slug calculated during import."""
+
+    slug: str
+
+
 class RelationshipCreateRequest(BaseModel):
     """Schema for Relationship create request."""
 
