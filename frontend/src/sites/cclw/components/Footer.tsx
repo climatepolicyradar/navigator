@@ -149,11 +149,11 @@ const Footer = () => {
                 <li className="mb-1">
                   <ExternalLink url="https://www.climatepolicyradar.org">www.climatepolicyradar.org</ExternalLink>
                 </li>
-                {process.env.NEXT_PUBLIC_CPR_NEWSLETTER_URL && (
-                  <li className="mb-1">
-                    <ExternalLink url={process.env.NEXT_PUBLIC_CPR_NEWSLETTER_URL}>Sign up to Climate Policy Radar's newsletter</ExternalLink>
-                  </li>
-                )}
+                <li className="mb-1">
+                  <ExternalLink url="https://3566c5a7.sibforms.com/serve/MUIEAPkXK4liqQjleE87527EfcD9gDzY26dQhnJOxNeXZK_TvEAjl_Qu7rrkysJS2ODrj1LioiH24HTGbul2vS1sAxYCPHtu7PgnhZrAE9yCfaFrJ7vzmvBc3u87cs_pkC_99nQ2AqBONHtLwErrV7mcVga2qNlO1xetSeqVVWYsrVPRjg6Rc978eQEMasGQc4PFgIfMFza8TJEv">
+                    Sign up to Climate Policy Radar's newsletter
+                  </ExternalLink>
+                </li>
                 <li className="mb-1">
                   <ExternalLink url="https://www.climatepolicyradar.org/contact">Contact Climate Policy Radar</ExternalLink>
                 </li>
