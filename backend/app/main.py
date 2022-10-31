@@ -77,7 +77,9 @@ app.add_middleware(
     allow_origins=[
         "http://localhost:3000",
         "https://app.climatepolicyradar.org",
-        "https://dev.app.climatepolicyradar.org",
+        "https://cclw.climatepolicyradar.org",
+        "https://app.dev.climatepolicyradar.org",
+        "https://cclw.dev.climatepolicyradar.org",
     ],
     allow_credentials=True,
     allow_methods=["*"],
