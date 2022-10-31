@@ -1,6 +1,6 @@
 import "../../i18n";
 import { useEffect } from "react";
-import { AppProps } from "next/app";
+import App, { AppProps } from "next/app";
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
@@ -60,17 +60,18 @@ function getThemeColours(theme: string): string {
     }`;
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
-  const { status: themeStatus, theme } = useGetTheme();
+type TProps = AppProps & {
+  theme: string;
+};
 
+// APP fallbacks to using the CPR theme if not provided
+function MyApp({ Component, pageProps, theme }: TProps) {
   useEffect(() => {
     // For access inside Cypress:
     if (window?.Cypress) {
       window.queryClient = queryClient;
     }
   }, []);
-
-  if (themeStatus != "success") return <Loading />;
 
   const favicon = theme === "cclw" ? "/cclw/images/favicon.png" : "/favicon.png";
 
@@ -89,5 +90,10 @@ function MyApp({ Component, pageProps }: AppProps) {
     </QueryClientProvider>
   );
 }
+
+MyApp.getInitialProps = async () => {
+  const initialProps = App.getInitialProps;
+  return { ...initialProps, theme: process.env.THEME ?? "cpr" };
+};
 
 export default MyApp;
