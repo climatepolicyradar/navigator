@@ -118,7 +118,7 @@ def wait_for_app():
 
 if __name__ == "__main__":
     print("Creating initial data...")
-    skip_wait = len(argv) > 1
+    skip_wait = len(argv) > 1 and argv[1].lower() == "skip-wait"
 
     if not skip_wait:
         wait_for_app()
