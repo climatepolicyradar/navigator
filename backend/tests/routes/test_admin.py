@@ -278,9 +278,9 @@ def test_reset_password(
     assert mock_send_email.call_count == 2
 
 
-@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
+@patch("app.api.api_v1.routers.admin.start_import")
 def test_bulk_import_cclw_law_policy_valid(
-    mock_write_s3,
+    mock_start_import,
     client,
     superuser_token_headers,
     test_db,
@@ -317,8 +317,9 @@ def test_bulk_import_cclw_law_policy_valid(
     assert response_json["document_skipped_count"] == 0
     assert response_json["document_skipped_ids"] == []
 
-    mock_write_s3.assert_called_once()
-    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
+    mock_start_import.assert_called_once()
+    call = mock_start_import.mock_calls[0]
+    assert len(call.args[2]) == 2
 
 
 @pytest.mark.parametrize(
@@ -328,9 +329,9 @@ def test_bulk_import_cclw_law_policy_valid(
         (INVALID_CSV_MIXED_ERRORS, 400),
     ],
 )
-@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
+@patch("app.api.api_v1.routers.admin.start_import")
 def test_bulk_import_cclw_law_policy_invalid(
-    mock_write_s3,
+    mock_start_import,
     invalid_file_content,
     expected_status,
     client,
@@ -366,12 +367,12 @@ def test_bulk_import_cclw_law_policy_invalid(
     assert response.status_code == expected_status
     assert "detail" in response.json()
     assert response.json()["detail"]
-    mock_write_s3.assert_not_called()
+    mock_start_import.assert_not_called()
 
 
-@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
+@patch("app.api.api_v1.routers.admin.start_import")
 def test_bulk_import_cclw_law_policy_db_objects(
-    mock_write_s3,
+    mock_start_import,
     client,
     superuser_token_headers,
     test_db,
@@ -395,8 +396,6 @@ def test_bulk_import_cclw_law_policy_db_objects(
 
     test_db.commit()
 
-    num_docs_before = test_db.query(Document).count()
-
     csv_file = BytesIO(VALID_FILE_1.encode("utf8"))
     files = {"law_policy_csv": ("valid.csv", csv_file, "text/csv", {"Expires": "0"})}
     response = client.post(
@@ -410,16 +409,14 @@ def test_bulk_import_cclw_law_policy_db_objects(
     assert response_json["document_skipped_count"] == 0
     assert response_json["document_skipped_ids"] == []
 
-    mock_write_s3.assert_called_once()
-    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 2
-
-    num_docs_created = test_db.query(Document).count() - num_docs_before
-    assert num_docs_created == 2
+    mock_start_import.assert_called_once()
+    call = mock_start_import.mock_calls[0]
+    assert len(call.args[2]) == 2
 
 
-@patch("app.api.api_v1.routers.admin.write_documents_to_s3")
+@patch("app.api.api_v1.routers.admin.start_import")
 def test_bulk_import_cclw_law_policy_preexisting_db_objects(
-    mock_write_s3,
+    mock_start_import,
     client,
     superuser_token_headers,
     test_db,
@@ -460,9 +457,6 @@ def test_bulk_import_cclw_law_policy_preexisting_db_objects(
     )
     test_db.commit()
 
-    num_docs_before = test_db.query(Document).count()
-    assert num_docs_before == 1
-
     csv_file = BytesIO(VALID_FILE_1.encode("utf8"))
     files = {"law_policy_csv": ("valid.csv", csv_file, "text/csv", {"Expires": "0"})}
     response = client.post(
@@ -476,8 +470,6 @@ def test_bulk_import_cclw_law_policy_preexisting_db_objects(
     assert response_json["document_skipped_count"] == 1
     assert response_json["document_skipped_ids"] == [existing_doc_import_id]
 
-    mock_write_s3.assert_called_once()
-    assert len(mock_write_s3.mock_calls[0].kwargs["documents"]) == 1
-
-    num_docs_created = test_db.query(Document).count() - num_docs_before
-    assert num_docs_created == 1
+    mock_start_import.assert_called_once()
+    call = mock_start_import.mock_calls[0]
+    assert len(call.args[2]) == 1
