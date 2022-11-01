@@ -1,5 +1,9 @@
 config:
   aws:region: eu-west-2
+  infra:SUPERUSER_EMAIL:
+    secure: AAABAFj7ly9Q9jvGMhDxesZOd0y8VQbtpoWOEZgV2agVqy6q7CY780zy9KOlrakHdjOx3Se7uOk/J7M=
+  infra:SUPERUSER_PASSWORD:
+    secure: AAABADO/DGGWVICJ8f6J9Q/0c8mgcwQh4bBDKJimssP7gg6WRkjPy8ChDbFeDw==
   infra:backend_secret_key:
     secure: AAABACHowsD8gf29n/r7wilcbfElQTf/wuSBzjlULqSEP+yrlRPN74ABwNMaeDI75CL9VqW4Ofvnj02Y19k6HjhJ4QM=
   infra:cdn_domain: cdn.climatepolicyradar.org
