@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import { ExternalLink } from "@components/ExternalLink";
 
@@ -35,8 +36,8 @@ export const Partners = () => {
       {partners.map((partner) => (
         <div className="md:basis-1/2 lg:basis-1/3" key={partner.link}>
           <div className="m-4">
-            <ExternalLink className="block relative py-12 unset-img" url={partner.link}>
-              <Image src={`/cclw/partners/${partner.logo}`} alt={partner.name} layout="fill" className="custom-img" />
+            <ExternalLink className="flex justify-center relative h-[96px]" url={partner.link}>
+              <img src={`/cclw/partners/${partner.logo}`} alt={partner.name} className="h-full" />
             </ExternalLink>
           </div>
         </div>

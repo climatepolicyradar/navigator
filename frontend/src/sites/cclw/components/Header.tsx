@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
 import Link from "next/link";
 import Image from "next/image";
@@ -23,10 +24,14 @@ const Header = ({ background = true }) => {
         <div className={`flex flex-wrap lg:flex-nowrap justify-between ${isHome ? "lg:mb-6" : ""}`}>
           <div className="items-end flex flex-grow-0 lg:basis-1/5">
             <ExternalLink className="flex" url="https://www.lse.ac.uk/">
-              <Image src="/images/partners/lse-logo.png" alt="LSE logo" width={40} height={40} layout={"fixed"} />
+              <div className="h-[40px] w-[40px] flex">
+                <img src="/images/partners/lse-logo.png" alt="LSE logo" width={40} height={40} />
+              </div>
             </ExternalLink>
             <ExternalLink className="flex" url="https://www.lse.ac.uk/granthaminstitute/">
-              <Image src="/cclw/partners/gri_white_logo.svg" alt="GRI logo" width={180} height={40} layout={"fixed"} />
+              <div className="h-[40px] w-[180px] flex">
+                <img src="/cclw/partners/gri_white_logo.svg" alt="GRI logo" width={180} height={40} />
+              </div>
             </ExternalLink>
           </div>
           <div

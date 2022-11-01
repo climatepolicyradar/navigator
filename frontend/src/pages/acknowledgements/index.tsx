@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import { FC } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -18,8 +19,8 @@ const Acknowledgement: FC<TAcknowledgement> = ({ partnerImage, children }) => {
       {partnerImage && (
         <div className="flex mb-6">
           <div className="w-full max-w-full md:w-1/3">
-            <ExternalLink className="inline-block relative py-12 unset-img" url={partnerImage.url}>
-              <Image src={`/cclw/partners/${partnerImage.imageUrl}`} alt={partnerImage.imageAlt} layout="fill" className="custom-img" />
+            <ExternalLink className="flex relative h-[96px]" url={partnerImage.url}>
+              <img src={`/cclw/partners/${partnerImage.imageUrl}`} alt={partnerImage.imageAlt} className="h-full" />
             </ExternalLink>
           </div>
         </div>

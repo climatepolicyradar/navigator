@@ -1,3 +1,4 @@
+/* eslint-disable @next/next/no-img-element */
 import Image from "next/image";
 import { ExternalLink } from "@components/ExternalLink";
 
@@ -62,7 +63,7 @@ export const Articles = () => {
               <div className="text-center flex flex-col justify-center items-center min-h-[180px]">
                 {article.imageUrl && (
                   <div className="w-full h-[120px] overflow-hidden relative">
-                    <Image src={article.imageUrl} alt={article.imageAlt} layout="fill" objectFit="cover" />
+                    <img src={article.imageUrl} alt={article.imageAlt} />
                   </div>
                 )}
                 <div className={`p-4 text-primary-400 flex-1 flex items-center text-lg font-bold ${article.imageUrl ? "" : "pt-8"}`}>{article.title}</div>
