@@ -31,7 +31,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
           </div>
           {document.document_content_type === "application/pdf" && document.document_passage_matches.length > 0 && (
             <button
-              data-docid={document.document_id}
+              data-slug={document.slug}
               className="mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600"
             >
               {`See ${document.document_passage_matches.length} match${document.document_passage_matches.length > 1 ? "es" : ""} in document`}
@@ -46,7 +46,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
     <div className="relative">
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-center">
-          <Link href={`/document/${document.document_id}`}>
+          <Link href={`/document/${document.slug}`}>
             <a className="text-left font-medium text-lg leading-tight underline">{truncateString(document.document_name, 80)}</a>
           </Link>
         </h2>

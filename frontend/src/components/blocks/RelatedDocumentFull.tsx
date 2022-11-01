@@ -10,13 +10,13 @@ type TProps = {
 };
 
 export const RelatedDocumentFull = ({ document }: TProps) => {
-  const { document_country_code, document_country_english_shortname, document_id, document_date, document_description, document_name, document_category } = document;
+  const { document_country_code, document_country_english_shortname, slug, document_date, document_description, document_name, document_category } = document;
   const [year] = convertDate(document_date);
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-start">
-          <Link href={`/document/${document_id}`}>
+          <Link href={`/document/${slug}`}>
             <a className="text-left text-blue-500 font-medium text-lg transition duration-300 hover:text-indigo-600 leading-tight underline">{truncateString(document_name, 80)}</a>
           </Link>
         </h2>

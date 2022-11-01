@@ -17,7 +17,7 @@ export default function useUpdateDocument() {
     }: TSearchResultsDocuments = queryClient.getQueryData<TSearchResultsDocuments>("searches");
 
     const id = Number(value);
-    const document = documents.find((item) => item.document_id === id);
+    const document = documents.find((item) => item.slug === id);
 
     // add fileid for Adobe PDF embed
     const newDocument = { ...document, document_fileid: uuidv4() };
