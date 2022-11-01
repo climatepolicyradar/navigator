@@ -13,7 +13,7 @@ from app.core.validation import PIPELINE_BUCKET
 
 _LOGGER = logging.getLogger(__file__)
 
-INGEST_TRIGGER_ROOT = "data-ingest"
+INGEST_TRIGGER_ROOT = "input"
 
 
 def _flatten_maybe_tree(

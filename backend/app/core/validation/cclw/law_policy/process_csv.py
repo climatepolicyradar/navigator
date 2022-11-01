@@ -313,6 +313,7 @@ def extract_documents(
 
         yield DocumentValidationResult(
             row=row_index,
+            import_id=import_id,
             create_request=DocumentCreateRequest(
                 name=document_name,
                 description=document_description,

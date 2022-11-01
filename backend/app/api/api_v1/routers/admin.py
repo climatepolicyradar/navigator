@@ -4,6 +4,7 @@ from typing import cast
 
 from fastapi import (
     APIRouter,
+    BackgroundTasks,
     Depends,
     HTTPException,
     Request,
@@ -187,6 +188,7 @@ async def request_password_reset(
 async def import_law_policy(
     request: Request,
     law_policy_csv: UploadFile,
+    background_tasks: BackgroundTasks,
     db=Depends(get_db),
     current_user=Depends(get_current_active_superuser),
     s3_client=Depends(get_s3_client),
@@ -198,60 +200,37 @@ async def import_law_policy(
             StringIO(law_policy_csv.file.read().decode("utf8"))
         )
         valid_metadata = get_valid_metadata(db)
+        existing_import_ids = [id[0] for id in db.query(Document.import_id)]
 
         encountered_errors = {}
         document_create_objects: list[DocumentCreateRequest] = []
+        import_ids_to_create = []
+        total_document_count = 0
 
         # TODO: Check for document existence?
         for validation_result in extract_documents(
             csv_reader=csv_reader, valid_metadata=valid_metadata
         ):
+            total_document_count += 1
             if validation_result.errors:
                 encountered_errors[validation_result.row] = validation_result.errors
             else:
-                document_create_objects.append(validation_result.create_request)
+                import_ids_to_create.append(validation_result.import_id)
+                if validation_result.import_id not in existing_import_ids:
+                    document_create_objects.append(validation_result.create_request)
 
         if encountered_errors:
             raise DocumentsFailedValidationError(
                 message="File failed detailed validation.", details=encountered_errors
             )
 
-        document_parser_inputs: list[DocumentParserInput] = []
-        documents_ids_already_exist: list[str] = []
-        try:
-            # Create a savepoint & start a transaction if necessary
-            with db.begin_nested():
-                for dco in document_create_objects:
-                    existing_document = (
-                        db.query(Document)
-                        .filter(Document.import_id == dco.import_id)
-                        .scalar()
-                    )
-                    if existing_document is None:
-                        new_document = create_document(db, dco)
-                        write_metadata(db, new_document, dco)
+        documents_ids_already_exist = set(import_ids_to_create).intersection(
+            set(existing_import_ids)
+        )
 
-                        document_parser_inputs.append(
-                            DocumentParserInput(
-                                slug=cast(str, new_document.slug),
-                                **dco.dict(),
-                            )
-                        )
-                    else:
-                        documents_ids_already_exist.append(dco.import_id)
-
-            # This commit is necessary after completing the nested transaction
-            db.commit()
-        except Exception as e:
-            _LOGGER.exception("Unexpected error creating document entries")
-            if isinstance(e, IntegrityError):
-                raise HTTPException(409, detail="Document already exists")
-            raise e
-
-        write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
+        background_tasks.add_task(start_import, db, s3_client, document_create_objects)
 
         # TODO: Add some way to monitor processing pipeline...
-        total_document_count = len(document_create_objects)
         document_skipped_count = len(documents_ids_already_exist)
         return BulkImportValidatedResult(
             document_count=total_document_count,
@@ -274,6 +253,51 @@ async def import_law_policy(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         ) from e
+
+
+def start_import(db, s3_client, document_create_objects):
+    document_parser_inputs: list[DocumentParserInput] = []
+    try:
+        # Create a savepoint & start a transaction if necessary
+        with db.begin_nested():
+            for dco in document_create_objects:
+                _LOGGER.info(
+                    "Importing", extra={"props": {"import_id": {dco.import_id}}}
+                )
+                existing_document = (
+                    db.query(Document)
+                    .filter(Document.import_id == dco.import_id)
+                    .scalar()
+                )
+                if existing_document is None:
+                    new_document = create_document(db, dco)
+                    _LOGGER.info(
+                        "Created Document",
+                        extra={"props": {"import_id": {dco.import_id}}},
+                    )
+                    write_metadata(db, new_document, dco)
+                    _LOGGER.info(
+                        "Created Metadata",
+                        extra={"props": {"import_id": {dco.import_id}}},
+                    )
+
+                    document_parser_inputs.append(
+                        DocumentParserInput(
+                            slug=cast(str, new_document.slug),
+                            **dco.dict(),
+                        )
+                    )
+
+        # This commit is necessary after completing the nested transaction
+        _LOGGER.info("Importing performing final commit.")
+        db.commit()
+    except Exception as e:
+        _LOGGER.exception("Unexpected error creating document entries")
+        if isinstance(e, IntegrityError):
+            raise HTTPException(409, detail="Document already exists")
+        raise e
+
+    write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
 
 
 @r.put("/documents/{import_id_or_slug}", status_code=status.HTTP_200_OK)
