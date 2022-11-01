@@ -262,7 +262,7 @@ def start_import(db, s3_client, document_create_objects):
         with db.begin_nested():
             for dco in document_create_objects:
                 _LOGGER.info(
-                    "Importing", extra={"props": {"import_id": {dco.input_id}}}
+                    "Importing", extra={"props": {"import_id": {dco.import_id}}}
                 )
                 existing_document = (
                     db.query(Document)
@@ -273,12 +273,12 @@ def start_import(db, s3_client, document_create_objects):
                     new_document = create_document(db, dco)
                     _LOGGER.info(
                         "Created Document",
-                        extra={"props": {"import_id": {dco.input_id}}},
+                        extra={"props": {"import_id": {dco.import_id}}},
                     )
                     write_metadata(db, new_document, dco)
                     _LOGGER.info(
                         "Created Metadata",
-                        extra={"props": {"import_id": {dco.input_id}}},
+                        extra={"props": {"import_id": {dco.import_id}}},
                     )
 
                     document_parser_inputs.append(
