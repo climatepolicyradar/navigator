@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
 import Link from "next/link";
 import useDocumentDetail from "@hooks/useDocumentDetail";
@@ -9,7 +10,7 @@ import Event from "@components/blocks/Event";
 import { Loading } from "@components/blocks/Loading";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
-import { ExternalLinkIcon } from "@components/svg/Icons";
+import { ExternalLinkIcon, DocumentIcon, GlobeIcon } from "@components/svg/Icons";
 import { CountryLink } from "@components/CountryLink";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
@@ -17,8 +18,7 @@ import { truncateString } from "@helpers/index";
 
 import { TEvent } from "@types";
 import { ExternalLink } from "@components/ExternalLink";
-import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { ApiClient, getEnvFromServer } from "@api/http-common";
+import { ApiClient } from "@api/http-common";
 
 const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ page }) => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -48,19 +48,20 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
     if (!link) return null;
 
     return (
-      <p className="mt-4">
-        <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300">
-          <span className="mr-1">Link to source document</span>
-          <span className="inline-block">
-            <ExternalLinkIcon height="16" width="16" />
-          </span>
+      <div className="mt-4 flex align-bottom">
+        {page?.content_type.includes("pdf") && <DocumentIcon height="24" width="24" />}
+        {page?.content_type.includes("html") && <GlobeIcon height="24" width="24" />}
+        <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300 flex ml-2">
+          <span className="mr-1">{page?.content_type.includes("html") ? "Visit source website" : "Open full document"}</span>
+          <ExternalLinkIcon height="16" width="16" />
         </ExternalLink>
-      </p>
+      </div>
     );
   };
 
   // TODO: align with BE on an approach to sources and their logos
-  const sourceLogo = page?.source?.name === "CCLW" ? "lse-logo.png" : null;
+  const sourceLogo = page?.source?.name === "CCLW" ? "grantham-logo.png" : null;
+  const sourceName = page?.source?.name === "CCLW" ? "Grantham Research Institute" : page?.source?.name;
 
   return (
     <Layout title={page?.name}>
@@ -107,6 +108,11 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                 </section>
               )}
 
+              <section className="mt-12">
+                <h3>Source</h3>
+                {renderSourceLink()}
+              </section>
+
               {page.events.length > 0 && (
                 <section className="mt-12">
                   <h3>Timeline</h3>
@@ -144,18 +150,24 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
 
                 {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
                 {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
-                <div className="mt-8 border-t border-lineBorder">
-                  <h3 className="mt-4">Source</h3>
-                  <div className="flex items-end mt-4">
+                <div className="mt-8 border-t border-blue-100">
+                  <h3 className="mt-4">Note</h3>
+                  <div className="flex items-end my-4">
                     {sourceLogo && (
-                      <div className="relative flex-shrink max-w-[40px] mr-1">
+                      <div className="relative flex-shrink w-3/4 xmax-w-[40px] mr-1">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img src={`/images/partners/${sourceLogo}`} alt={page.source.name} />
                       </div>
                     )}
-                    <p className="text-sm">{page.source.name}</p>
+                    {page.source.name !== "CCLW" && <p className="text-sm">{sourceName}</p>}
                   </div>
-                  {renderSourceLink()}
+                  <p>
+                    The summary of this document was written by researchers at the{" "}
+                    <ExternalLink url="http://lse.ac.uk/grantham" className="text-blue-500 hover:text-indigo-600 hover:underline transition duration-300">
+                      Grantham Research Institute
+                    </ExternalLink>
+                    . If you want to use this summary, please check Terms & Conditions for citation and licensing of third party data.
+                  </p>
                 </div>
               </div>
             </section>
