@@ -1,9 +1,7 @@
-from functools import lru_cache
 import logging
 from io import StringIO
 from time import time
-from typing import Collection, Mapping, cast
-from sqlalchemy.orm import Session
+from typing import cast
 
 from fastapi import (
     APIRouter,
@@ -182,11 +180,6 @@ async def request_password_reset(
     return True
 
 
-@lru_cache
-def get_metadata(db: Session) -> Mapping[str, Mapping[str, Collection[str]]]:
-    return get_valid_metadata(db)
-
-
 @r.post(
     "/bulk-imports/cclw/law-policy",
     response_model=BulkImportValidatedResult,
@@ -208,7 +201,7 @@ async def import_law_policy(
         csv_reader = validated_input(
             StringIO(law_policy_csv.file.read().decode("utf8"))
         )
-        valid_metadata = get_metadata(db)
+        valid_metadata = get_valid_metadata(db)
 
         encountered_errors = {}
         document_create_objects: list[DocumentCreateRequest] = []
