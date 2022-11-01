@@ -1,11 +1,8 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useContext } from "react";
 import { StartTextAnimation } from "@utils/typewriter";
-import getSite from "@utils/getSite";
 import Close from "../buttons/Close";
 import { SearchIcon } from "../svg/Icons";
 import { SearchDropdown } from "./SearchDropdown";
-
-import { useContext } from "react";
 import { ThemeContext } from "@context/ThemeContext";
 
 interface SearchFormProps {
@@ -19,7 +16,6 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
   const [formFocus, setFormFocus] = useState(false);
   const inputRef = useRef(null);
   const formRef = useRef(null);
-  // const site = getSite();
   const theme = useContext(ThemeContext);
 
   const clearSearch = () => {

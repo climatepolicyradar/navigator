@@ -1,12 +1,4 @@
-const getSite = process.env.NEXT_PUBLIC_THEME || "cpr";
-
-console.log("-- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- ");
-console.log(`NEXT_PUBLIC_THEME ${process.env.NEXT_PUBLIC_THEME}`);
-console.log(`NEXT_PUBLIC_API_URL ${process.env.NEXT_PUBLIC_API_URL}`);
-console.log(`NEXT_PUBLIC_LOGIN_API_URL ${process.env.NEXT_PUBLIC_LOGIN_API_URL}`);
-console.log("-- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- -- CHEESE -- ");
-
-
+const getSite = process.env.THEME || "cpr";
 
 // for pages that are not in cclw's sitemap
 const cclwRedirects = [
@@ -27,8 +19,8 @@ const cprRedirects = [
  * @type {import('next').NextConfig}
  */
 
-import read from "./redirects/reader.mjs"
-const REDIRECT_FILE = process.env.NEXT_REDIRECT_FILE || "default.csv"
+import read from "./redirects/reader.mjs";
+const REDIRECT_FILE = process.env.NEXT_REDIRECT_FILE || "default.csv";
 
 const nextConfig = {
   i18n: {
@@ -58,15 +50,15 @@ const nextConfig = {
         destination: "/",
         permanent: false, // will become a page eventually
       },
-    ].concat(getSite === "cpr" ? cprRedirects : cclwRedirects);;
+    ].concat(getSite === "cpr" ? cprRedirects : cclwRedirects);
 
     return standardRedirects.concat(await read(REDIRECT_FILE));
   },
   env: {
-    NEXT_PUBLIC_THEME: process.env.NEXT_PUBLIC_THEME,
+    THEME: process.env.THEME,
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
     NEXT_PUBLIC_LOGIN_API_URL: process.env.NEXT_PUBLIC_LOGIN_API_URL,
-  }
+  },
 };
 
 export default nextConfig;

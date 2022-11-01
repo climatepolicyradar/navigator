@@ -1,11 +1,9 @@
-import { FC } from "react";
+import { FC, useContext } from "react";
 import Link from "next/link";
 import { TEventCategory } from "@types";
 import { truncateString } from "@helpers/index";
 import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
 import { CountryLink } from "@components/CountryLink";
-// import getSite from "@utils/getSite";
-import { useContext } from "react";
 import { ThemeContext } from "@context/ThemeContext";
 
 type TProps = {
@@ -22,7 +20,6 @@ type TProps = {
 
 export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {
   const { id, country_code, country_name, description, name, document_year, category } = listItem;
-  // const site = getSite();
   const theme = useContext(ThemeContext);
 
   return (

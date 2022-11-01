@@ -1,8 +1,6 @@
-import { FC } from "react";
-import { SearchIcon } from "../svg/Icons";
-// import getSite from "@utils/getSite";
-import { useContext } from "react";
+import { FC, useContext } from "react";
 import { ThemeContext } from "@context/ThemeContext";
+import { SearchIcon } from "../svg/Icons";
 
 type TProps = {
   onClick?: () => void;
@@ -10,7 +8,6 @@ type TProps = {
 
 const SearchButton: FC<TProps> = ({ onClick, children }) => {
   const theme = useContext(ThemeContext);
-  // const site = getSite();
 
   const handleOnClick = (e: React.MouseEvent<HTMLButtonElement>) => {
     e.preventDefault();

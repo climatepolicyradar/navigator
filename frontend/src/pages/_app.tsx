@@ -8,8 +8,6 @@ import "../styles/flag-icon.css";
 import "@cclw/styles/cclw.main.scss";
 
 import { ThemeContext } from "@context/ThemeContext";
-import useGetTheme from "@hooks/useGetTheme";
-import { Loading } from "@components/blocks/Loading";
 
 const queryClient = new QueryClient();
 

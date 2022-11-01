@@ -1,4 +1,3 @@
-// import getSite from "@utils/getSite";
 import { useContext } from "react";
 import { ThemeContext } from "@context/ThemeContext";
 
@@ -12,7 +11,6 @@ type TProps = {
 
 export const KeyDetail = ({ detail, amount, icon, extraDetail, onClick }: TProps) => {
   const theme = useContext(ThemeContext);
-  // const site = getSite();
 
   const handleOnClick = () => {
     if (onClick) onClick();

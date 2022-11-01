@@ -1,7 +1,7 @@
 import { getEnvFromServer } from "../api/http-common";
 
 export default function getSite(): string | "cpr" {
-  return process.env.NEXT_PUBLIC_THEME || "cpr";
+  return process.env.THEME || "cpr";
 }
 
 export async function getSiteAsync() {
