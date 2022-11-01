@@ -1,5 +1,9 @@
 const getSite = process.env.THEME || "cpr";
 
+console.log("===== IN: next.config.mjs =====");
+console.log("process.env.THEME: ", process.env.THEME);
+console.log("===== OUT: next.config.mjs =====");
+
 // for pages that are not in cclw's sitemap
 const cclwRedirects = [
   { source: "/cookie-policy", destination: "/", permanent: true },

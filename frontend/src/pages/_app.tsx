@@ -78,16 +78,18 @@ function MyApp({ Component, pageProps, theme }: TProps) {
     }
   }, [theme]);
 
+  const dynamicTheme = theme ?? siteTheme;
+
   const favicon = siteTheme === "cclw" ? "/cclw/images/favicon.png" : "/favicon.png";
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeContext.Provider value={siteTheme}>
+      <ThemeContext.Provider value={dynamicTheme}>
         <Head>
           <link rel="icon" href={favicon} />
-          <style>{getThemeColours(siteTheme)}</style>
+          <style>{getThemeColours(dynamicTheme)}</style>
         </Head>
-        <div id={siteTheme}>
+        <div id={dynamicTheme}>
           <Component {...pageProps} />
         </div>
       </ThemeContext.Provider>
