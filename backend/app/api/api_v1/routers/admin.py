@@ -200,7 +200,7 @@ async def import_law_policy(
             StringIO(law_policy_csv.file.read().decode("utf8"))
         )
         valid_metadata = get_valid_metadata(db)
-        existing_import_ids = db.query(Document.import_id).all()
+        existing_import_ids = [id[0] for id in db.query(Document.import_id)]
 
         encountered_errors = {}
         document_create_objects: list[DocumentCreateRequest] = []
