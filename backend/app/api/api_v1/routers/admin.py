@@ -204,17 +204,20 @@ async def import_law_policy(
 
         encountered_errors = {}
         document_create_objects: list[DocumentCreateRequest] = []
-
         import_ids_to_create = []
+        total_document_count = 0
+
         # TODO: Check for document existence?
         for validation_result in extract_documents(
             csv_reader=csv_reader, valid_metadata=valid_metadata
         ):
+            total_document_count += 1
             if validation_result.errors:
                 encountered_errors[validation_result.row] = validation_result.errors
             else:
                 import_ids_to_create.append(validation_result.import_id)
-                document_create_objects.append(validation_result.create_request)
+                if validation_result.import_id not in existing_import_ids:
+                    document_create_objects.append(validation_result.create_request)
 
         if encountered_errors:
             raise DocumentsFailedValidationError(
@@ -228,7 +231,6 @@ async def import_law_policy(
         background_tasks.add_task(start_import, db, s3_client, document_create_objects)
 
         # TODO: Add some way to monitor processing pipeline...
-        total_document_count = len(document_create_objects)
         document_skipped_count = len(documents_ids_already_exist)
         return BulkImportValidatedResult(
             document_count=total_document_count,
@@ -255,7 +257,6 @@ async def import_law_policy(
 
 def start_import(db, s3_client, document_create_objects):
     document_parser_inputs: list[DocumentParserInput] = []
-    documents_ids_already_exist: list[str] = []
     try:
         # Create a savepoint & start a transaction if necessary
         with db.begin_nested():
@@ -275,10 +276,8 @@ def start_import(db, s3_client, document_create_objects):
                             **dco.dict(),
                         )
                     )
-                else:
-                    documents_ids_already_exist.append(dco.import_id)
 
-            # This commit is necessary after completing the nested transaction
+        # This commit is necessary after completing the nested transaction
         db.commit()
     except Exception as e:
         _LOGGER.exception("Unexpected error creating document entries")
@@ -287,7 +286,6 @@ def start_import(db, s3_client, document_create_objects):
         raise e
 
     write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
-    return documents_ids_already_exist
 
 
 @r.put("/documents/{import_id_or_slug}", status_code=status.HTTP_200_OK)
