@@ -1,29 +1,23 @@
-import { useRouter } from 'next/router';
-import Layout from '../../components/layouts/Main';
-import '../i18n';
-import { useTranslation } from 'react-i18next';
-import { useEffect, useState } from 'react';
-import useDocument from '../../hooks/useDocument';
-import EmbeddedPDF from '../../components/EmbeddedPDF';
-import Loader from '../../components/Loader';
-import useDocumentDetail from '../../hooks/useDocumentDetail';
-import TextLink from '../../components/nav/TextLink';
-import { v4 as uuidv4 } from 'uuid';
+import { useRouter } from "next/router";
+import Layout from "../../components/layouts/Main";
+import { useTranslation } from "react-i18next";
+import { useEffect, useState } from "react";
+import useDocument from "../../hooks/useDocument";
+import EmbeddedPDF from "../../components/EmbeddedPDF";
+import Loader from "../../components/Loader";
+import useDocumentDetail from "../../hooks/useDocumentDetail";
+import TextLink from "../../components/nav/TextLink";
+import { v4 as uuidv4 } from "uuid";
 
 const PDFView = () => {
   const [document, setDocument] = useState(null);
-  const { t, i18n, ready } = useTranslation('searchStart');
+  const { t, i18n, ready } = useTranslation("searchStart");
   const router = useRouter();
   // get selected document to show passage matches
   const { data: selectedDoc }: any = useDocument();
   // get document detail in case no document was selected
   const documentQuery = useDocumentDetail(router.query.docId as string);
-  const {
-    isFetching,
-    isError,
-    error,
-    data: { data: documentDetail } = {},
-  } = documentQuery;
+  const { isFetching, isError, error, data: { data: documentDetail } = {} } = documentQuery;
 
   useEffect(() => {
     setDocument(selectedDoc);
@@ -47,13 +41,7 @@ const PDFView = () => {
           <Loader />
         </div>
       ) : (
-        <Layout
-          title={`Climate Policy Radar | ${t(
-            'Law and Policy Search PDF View'
-          )}`}
-          heading={t('Law and Policy Search PDF View')}
-          screenHeight={true}
-        >
+        <Layout title={document.document_name ?? "Loading..."} heading={t("Law and Policy Search PDF View")} screenHeight={true}>
           <div className="container mt-2">
             <h1 className="text-2xl font-medium">{document.document_name}</h1>
             {/* TODO: translate below text */}

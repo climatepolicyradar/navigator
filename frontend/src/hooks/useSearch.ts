@@ -1,18 +1,18 @@
-import { useQuery } from 'react-query';
-import { ApiClient } from '../api/http-common';
-import { initialSearchCriteria } from '../constants/searchCriteria';
+import { useQuery } from "react-query";
+import { ApiClient, getEnvFromServer } from "../api/http-common";
+import { initialSearchCriteria } from "../constants/searchCriteria";
 
 export default function useSearch(id: string, obj = initialSearchCriteria) {
-  const client = new ApiClient();
-
   const config = {
     headers: {
-      accept: 'application/json',
-      'Content-Type': 'application/json',
+      accept: "application/json",
+      "Content-Type": "application/json",
     },
   };
 
   const getResults = async () => {
+    const { data } = await getEnvFromServer();
+    const client = new ApiClient(data?.env?.api_url);
     const results = await client.post(`/searches`, obj, config);
     return results;
   };

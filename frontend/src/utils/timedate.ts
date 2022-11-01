@@ -1,6 +1,6 @@
 import { months } from '../constants/timedate';
 
-export const convertDate = (data) => {
+export const convertDate = (data: string) => {
   const dateObj = new Date(data);
   const year = dateObj.getFullYear();
   const day = padNumber(dateObj.getDate());

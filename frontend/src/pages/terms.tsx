@@ -5,7 +5,7 @@ const Terms = () => {
   const { t } = useTranslation(["common"]);
 
   return (
-    <Layout title={`Climate Policy Radar | ${t("Terms")}`}>
+    <Layout title={t("Terms")}>
       <section>
         <div className="text-content px-4 container mb-12">
           <h1 className="my-8">Terms of Use</h1>

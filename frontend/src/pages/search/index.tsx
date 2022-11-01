@@ -237,7 +237,7 @@ const Search = () => {
       {isFetchingSearchCriteria || !ready ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Climate Policy Radar | ${t("Law and Policy Search")}`} heading={t("Law and Policy Search")}>
+        <Layout title={t("Law and Policy Search")} heading={t("Law and Policy Search")}>
           <div onClick={handleDocumentClick}>
             <Slideout ref={slideoutRef} show={showSlideout} setShowSlideout={resetSlideOut}>
               <div className="flex flex-col h-full relative">
@@ -260,8 +260,8 @@ const Search = () => {
                   <SearchForm placeholder={placeholder} handleSearchInput={handleSearchInput} input={searchCriteria.query_string} handleSuggestion={handleSuggestion} />
                 </div>
               </div>
-              <div className="px-4 md:flex container border-b border-blue-200">
-                <div className="md:w-1/4 lg:w-[30%] xl:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
+              <div className="px-4 md:flex container border-b border-lineBorder">
+                <div className="md:w-1/4 lg:w-[30%] xl:w-1/4 md:border-r border-lineBorder md:pr-8 flex-shrink-0">
                   <div className="flex md:hidden items-center justify-center w-full mt-4">
                     <FilterToggle toggle={toggleFilters} isOpen={showFilters} />
                   </div>

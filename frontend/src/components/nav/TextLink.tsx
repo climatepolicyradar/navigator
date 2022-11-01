@@ -1,27 +1,16 @@
-import Link from 'next/link';
+import Link from "next/link";
 
-const TextLink = ({
-  children,
-  href = null,
-  onClick = () => {},
-  target = '_self',
-}) => {
+const TextLink = ({ children, href = null, onClick = () => {}, target = "_self" }) => {
   return (
     <>
       {href ? (
         <Link href={href}>
-          <a
-            target={target}
-            className="text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300"
-          >
+          <a target={target} className="text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300">
             {children}
           </a>
         </Link>
       ) : (
-        <button
-          className="text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300"
-          onClick={onClick}
-        >
+        <button className="text-blue-500 underline text-sm text-left mt-2 hover:text-indigo-600 transition duration-300" onClick={onClick}>
           {children}
         </button>
       )}

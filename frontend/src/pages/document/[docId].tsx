@@ -1,9 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
 import { useRouter } from "next/router";
+import Link from "next/link";
 import useDocumentDetail from "@hooks/useDocumentDetail";
 import Layout from "@components/layouts/Main";
-import TextLink from "@components/nav/TextLink";
 import DocumentInfo from "@components/blocks/DocumentInfo";
 import { Timeline } from "@components/blocks/Timeline";
 import Event from "@components/blocks/Event";
@@ -64,14 +64,14 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
   const sourceName = page?.source?.name === "CCLW" ? "Grantham Research Institute" : page?.source?.name;
 
   return (
-    <Layout title={`Climate Policy Radar | ${page?.name ?? "Loading..."}`}>
+    <Layout title={page?.name}>
       <section className="mb-8">
-        <div className="bg-offwhite border-solid border-blue-200 border-b">
+        <div className="bg-offwhite border-solid border-lineBorder border-b">
           <div className="container">
             <div className="flex flex-col md:flex-row">
               <div className="flex-1 mt-6">
                 <h1 className="text-3xl lg:smaller">{page.name}</h1>
-                <div className="flex text-base text-indigo-400 mt-3 items-center w-full mb-6">
+                <div className="flex text-base text-indigo-400 mt-3 items-center w-full mb-6 font-medium">
                   <CountryLink countryCode={page.geography.value}>
                     <span className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
                     <span className="ml-2">{page.geography.display_value}</span>
@@ -80,7 +80,9 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                 </div>
               </div>
               <div className="my-6 md:w-2/5 lg:w-1/4 md:pl-16 flex-shrink-0">
-                <TextLink href="/search">Back to search results</TextLink>
+                <Link href="/search">
+                  <a className="underline text-primary-400 hover:text-indigo-600 duration-300">Back to search results</a>
+                </Link>
               </div>
             </div>
             <TabbedNav activeIndex={0} items={["Overview"]} handleTabClick={() => false} showBorder={false} />
@@ -107,7 +109,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
               )}
 
               <section className="mt-12">
-                <h3 className="text-blue-700">Source</h3>
+                <h3>Source</h3>
                 {renderSourceLink()}
               </section>
 
@@ -136,8 +138,8 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
               ) : null}
             </section>
             <section className="mt-6 md:w-2/5 lg:w-1/4 md:pl-12 flex-shrink-0">
-              <div className="md:pl-4 md:border-l md:border-blue-100">
-                <h3 className="text-blue-700">About this document</h3>
+              <div className="md:pl-4 md:border-l md:border-lineBorder">
+                <h3>About this document</h3>
                 <div className="grid grid-cols-2 gap-x-2">
                   <DocumentInfo id="category-tt" heading="Category" text={page.category.name} />
                   <DocumentInfo id="type-tt" heading="Type" text={page.type.name} />
@@ -149,7 +151,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                 {page.keywords.length > 0 && <DocumentInfo id="keywords-tt" heading="Keywords" list={page.keywords} />}
                 {page.sectors.length > 0 && <DocumentInfo id="sectors-tt" heading="Sectors" list={page.sectors} />}
                 <div className="mt-8 border-t border-blue-100">
-                  <h3 className="text-blue-700 mt-4">Note</h3>
+                  <h3 className="mt-4">Note</h3>
                   <div className="flex items-end my-4">
                     {sourceLogo && (
                       <div className="relative flex-shrink w-3/4 xmax-w-[40px] mr-1">
@@ -179,7 +181,8 @@ export default DocumentCoverPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params.docId;
-  const client = new ApiClient();
+
+  const client = new ApiClient(process.env.NEXT_PUBLIC_API_URL);
 
   const { data: page } = ({} = await client.get(`/documents/${id}`, null));
 
