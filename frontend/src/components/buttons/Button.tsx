@@ -30,7 +30,7 @@ const Button = ({
   let colorClasses = "bg-indigo-600 text-white border border-indigo-600 hover:bg-white hover:border-white hover:text-indigo-600";
   switch (color) {
     case "light":
-      colorClasses = "bg-blue-500 border border-blue-500 text-white hover:bg-white hover:border-white hover:text-indigo-600";
+      colorClasses = "bg-blue-500 border border-blue-500 text-white hover:bg-secondary-700 hover:border-secondary-700 hover:text-white";
       break;
     case "secondary":
       colorClasses = "bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white";
@@ -52,7 +52,7 @@ const Button = ({
       type={type}
       disabled={disabled}
       data-cy={props["data-cy"]}
-      className={`${colorClasses} ${thin ? "py-1" : "py-3"} ${wider ? "md:px-12" : "md:px-8"} button transition duration-300 px-4 rounded pointer-events-auto w-full font-bold ${
+      className={`${colorClasses} ${thin ? "py-1" : "py-3"} ${wider ? "md:px-12" : "md:px-8"} button transition duration-300 px-4 rounded-sm pointer-events-auto w-full font-bold ${
         disabled ? "pointer-events-none bg-indigo-300 text-indigo-200 border-indigo-300 hover:bg-indigo-300 hover:text-indigo-200 hover:border-indigo-300" : ""
       } ${extraClasses} ${!fullWidth ? "md:w-auto" : ""}`}
       {...props}

@@ -1,40 +1,49 @@
-import Link from "next/link";
-import { truncateString } from "../../helpers";
 import { convertDate } from "@utils/timedate";
-import { CountryLink } from "@components/CountryLink";
-import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
+import { DocumentListItem } from "@components/document/DocumentListItem";
+import { TDocument } from "@types";
 
 interface SearchResultProps {
-  document: any;
+  document: TDocument;
 }
 
 const SearchResult = ({ document }: SearchResultProps) => {
+  const {
+    document_country_code,
+    document_country_english_shortname,
+    document_id,
+    document_date,
+    document_description,
+    document_name,
+    document_category,
+    document_title_match,
+    document_description_match,
+    document_passage_matches,
+    document_content_type,
+  } = document;
+
   const formatDate = () => {
-    const eudate = document.document_date;
+    const eudate = document_date;
     const dateArr = eudate.split("/");
     return `${dateArr[1]}/${dateArr[0]}/${dateArr[2]}`;
   };
   const [year] = convertDate(formatDate());
 
   const showMatches = () => {
-    if (document.document_passage_matches.length || document.document_title_match || document.document_description_match) {
+    if (document_passage_matches.length || document_title_match || document_description_match) {
       return (
         <>
           <div className="w-full lg:w-auto flex flex-nowrap mt-2 lg:mt-0 lg:mr-4">
             {/* TODO: translate below text, how to handle plurals? */}
             <span className="font-medium lg:ml-10 mr-2">Matches:</span>
             <div className="divide-x divide-current flex-grow-0">
-              {document.document_title_match && <span className="px-2">Title</span>}
-              {document.document_description_match && <span className="px-2">Summary</span>}
-              {document.document_passage_matches.length > 0 && <span className="px-2">Document</span>}
+              {document_title_match && <span className="px-2">Title</span>}
+              {document_description_match && <span className="px-2">Summary</span>}
+              {document_passage_matches.length > 0 && <span className="px-2">Document</span>}
             </div>
           </div>
-          {document.document_content_type === "application/pdf" && document.document_passage_matches.length > 0 && (
-            <button
-              data-docid={document.document_id}
-              className="mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600"
-            >
-              {`See ${document.document_passage_matches.length} match${document.document_passage_matches.length > 1 ? "es" : ""} in document`}
+          {document_content_type === "application/pdf" && document_passage_matches.length > 0 && (
+            <button data-docid={document_id} className="mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600">
+              {`See ${document_passage_matches.length} match${document_passage_matches.length > 1 ? "es" : ""} in document`}
             </button>
           )}
         </>
@@ -43,31 +52,19 @@ const SearchResult = ({ document }: SearchResultProps) => {
   };
 
   return (
-    <div className="relative">
-      <div className="flex justify-between items-start">
-        <h2 className="leading-none flex items-center">
-          <Link href={`/document/${document.document_id}`}>
-            <a className="text-left font-medium text-lg leading-tight underline">{truncateString(document.document_name, 80)}</a>
-          </Link>
-        </h2>
-      </div>
-
-      <div className="flex flex-wrap text-sm text-indigo-400 mt-4 items-center space-y-1.5">
-        {document.document_category && (
-          <div className="mr-3" title={document.document_category}>
-            {getCategoryIcon(document.document_category, "20")}
-          </div>
-        )}
-        <CountryLink countryCode={document.document_country_code}>
-          <span className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`} />
-          <span className="ml-2">{document.document_country_english_shortname}</span>
-        </CountryLink>
-        <span>, {year}</span>
-        {showMatches()}
-      </div>
-
-      <p className="text-indigo-400 mt-3">{truncateString(document.document_description.replace(/(<([^>]+)>)/gi, ""), 375)}</p>
-    </div>
+    <DocumentListItem
+      listItem={{
+        id: document_id,
+        name: document_name,
+        country_code: document_country_code,
+        country_name: document_country_english_shortname,
+        document_year: year,
+        description: document_description,
+        category: document_category,
+      }}
+    >
+      {showMatches()}
+    </DocumentListItem>
   );
 };
 export default SearchResult;

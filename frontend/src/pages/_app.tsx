@@ -1,12 +1,14 @@
-import "./i18n";
-import { useEffect } from "react";
+import "../../i18n";
+import { useEffect, useState } from "react";
+import App, { AppProps } from "next/app";
 import Head from "next/head";
 import Script from "next/script";
-import { AppProps } from "next/app";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
-import "../styles/main.scss";
 import "../styles/flag-icon.css";
+import "@cclw/styles/cclw.main.scss";
+
+import { ThemeContext } from "@context/ThemeContext";
 
 import { CookieConsent } from "@components/cookies/CookieConsent";
 
@@ -19,26 +21,80 @@ declare global {
   }
 }
 
-function MyApp({ Component, pageProps }: AppProps) {
-  // For access inside Cypress:
+function getThemeColours(theme: string): string {
+  return theme === "cclw"
+    ? `
+    :root { 
+      --color-lineBorder:#bfc2d9;
+      --color-primary-400:#ED3D48;
+      --color-primary-700:#2B2F49;
+      --color-indigo-400:#2B2F49;
+      --color-indigo-500:#2B2F49;
+      --color-indigo-600:#2B2F49;
+      --color-indigo-700:#2B2F49;
+      --color-sky:#ED3D48;
+      --color-blue-100:#e8f3fe;
+      --color-blue-200:#ED3D48;
+      --color-blue-300:#ED3D48;
+      --color-blue-400:#ED3D48;
+      --color-blue-500:#ED3D48;
+      --color-blue-600:#ED3D48;
+      --color-blue-700:#C9131E;
+    }`
+    : `
+    :root { 
+      --color-lineBorder:#d0e5fd;
+      --color-primary-400:#1f93ff;
+      --color-primary-700:#0A1C40;
+      --color-indigo-400:#6E6E6E;
+      --color-indigo-500:#616c85;
+      --color-indigo-600:#071e4a;
+      --color-indigo-700:#0A1C40;
+      --color-sky:#ebf2ff;
+      --color-blue-100:#e8f3fe;
+      --color-blue-200:#d0e5fd;
+      --color-blue-300:#a4cdfb;
+      --color-blue-400:#7cb4fa;
+      --color-blue-500:#1f93ff;
+      --color-blue-600:#006FD6;
+      --color-blue-700:#0A1C40;
+    }`;
+}
+
+type TProps = AppProps & {
+  theme?: string;
+};
+
+function MyApp({ Component, pageProps, theme }: TProps) {
+  const [siteTheme, setSiteTheme] = useState(null);
+
   useEffect(() => {
+    // For access inside Cypress:
     if (window?.Cypress) {
       window.queryClient = queryClient;
     }
   }, []);
 
+  useEffect(() => {
+    if (theme && theme !== "") {
+      setSiteTheme(theme);
+    }
+  }, [theme]);
+
+  const dynamicTheme = theme ?? siteTheme;
+
+  const favicon = siteTheme === "cclw" ? "/cclw/images/favicon.png" : "/favicon.png";
+
   return (
     <QueryClientProvider client={queryClient}>
-      <Head>
-        <title>Climate Policy Radar</title>
-        <meta name="viewport" content="initial-scale=1.0, width=device-width" />
-      </Head>
-      <Script
-        src="https://www.googletagmanager.com/gtag/js?id=G-ZD1WWE49TL"
-        strategy="afterInteractive"
-      />
-      <Script id="google-analytics" strategy="afterInteractive">
-        {`
+      <ThemeContext.Provider value={dynamicTheme}>
+        <Head>
+          <link rel="icon" href={favicon} />
+          <style>{getThemeColours(dynamicTheme)}</style>
+        </Head>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-ZD1WWE49TL" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
@@ -48,12 +104,33 @@ function MyApp({ Component, pageProps }: AppProps) {
           });
           gtag('config', 'G-ZD1WWE49TL');
         `}
-      </Script>
-      <Component {...pageProps} />
-      <CookieConsent />
+        </Script>
+        <div id={dynamicTheme}>
+          <Component {...pageProps} />
+        </div>
+        <CookieConsent />
+      </ThemeContext.Provider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   );
 }
 
+MyApp.getInitialProps = async () => {
+  const initialProps = App.getInitialProps;
+  if (typeof window !== "undefined") {
+    return { ...initialProps };
+  }
+  return { ...initialProps, theme: process.env.THEME ?? "cpr" };
+};
+
 export default MyApp;
+
+// <ThemeContext.Provider value={dynamicTheme}>
+//   <Head>
+//     <link rel="icon" href={favicon} />
+//     <style>{getThemeColours(dynamicTheme)}</style>
+//   </Head>
+//   <div id={dynamicTheme}>
+//     <Component {...pageProps} />
+//   </div>
+// </ThemeContext.Provider>

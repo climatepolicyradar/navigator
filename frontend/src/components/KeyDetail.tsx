@@ -1,3 +1,6 @@
+import { useContext } from "react";
+import { ThemeContext } from "@context/ThemeContext";
+
 type TProps = {
   detail: string;
   extraDetail?: string;
@@ -7,15 +10,19 @@ type TProps = {
 };
 
 export const KeyDetail = ({ detail, amount, icon, extraDetail, onClick }: TProps) => {
+  const theme = useContext(ThemeContext);
+
   const handleOnClick = () => {
     if (onClick) onClick();
   };
 
+  const cssClass = theme === "cpr" ? "text-blue-600" : "text-secondary-700";
+
   return (
-    <div className={`key-detail bg-blue-600 text-white flex p-3 shadow-md ${onClick ? "cursor-pointer" : ""}`} onClick={handleOnClick}>
+    <div className={`key-detail bg-secondary-700 text-white flex p-3 shadow-md ${onClick ? "cursor-pointer" : ""}`} onClick={handleOnClick}>
       {icon && (
         <div className="flex items-center justify-center">
-          <div className="p-1 bg-white text-blue-600 rounded-full w-[54px] h-[54px] flex items-center justify-center">{icon}</div>
+          <div className={`p-1 bg-white rounded-full w-[54px] h-[54px] flex items-center justify-center ${cssClass}`}>{icon}</div>
         </div>
       )}
       <div>
