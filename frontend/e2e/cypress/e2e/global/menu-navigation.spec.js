@@ -10,10 +10,12 @@ describe("Site navigation", () => {
   it("Click each dropdown menu icon", () => {
     Navigation.aboutUsPage().methodologyPage();
   });
-  it("Click each footer link", () => {
-    Navigation.footerLinkMethodology().footerLinkTerms().footerLinkPrivacy().footerLinkCookies();
-  });
   it("Clicking logo should return to landing page", () => {
     Navigation.logoLink();
+  });
+  it("Click each footer link", () => {
+    // Close cookie consent popup
+    cy.get('[data-cy="cookie-consent-reject"]').click();
+    Navigation.footerLinkMethodology().footerLinkTerms().footerLinkPrivacy();
   });
 });

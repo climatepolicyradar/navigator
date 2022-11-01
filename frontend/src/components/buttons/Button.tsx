@@ -40,7 +40,7 @@ const Button = ({
       break;
     case "clear":
       colorClasses = !disabled
-        ? "clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white"
+        ? "clear bg-white border hover:border-indigo-600 text-indigo-600 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white"
         : "";
       break;
   }
@@ -52,7 +52,7 @@ const Button = ({
       type={type}
       disabled={disabled}
       data-cy={props["data-cy"]}
-      className={`${colorClasses} ${thin ? "py-1" : "py-3"} ${wider ? "md:px-12" : "md:px-8"} button transition duration-300 px-4 rounded-xl pointer-events-auto w-full font-bold ${
+      className={`${colorClasses} ${thin ? "py-1" : "py-3"} ${wider ? "md:px-12" : "md:px-8"} button transition duration-300 px-4 rounded pointer-events-auto w-full font-bold ${
         disabled ? "pointer-events-none bg-indigo-300 text-indigo-200 border-indigo-300 hover:bg-indigo-300 hover:text-indigo-200 hover:border-indigo-300" : ""
       } ${extraClasses} ${!fullWidth ? "md:w-auto" : ""}`}
       {...props}
