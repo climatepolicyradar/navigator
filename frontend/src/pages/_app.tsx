@@ -1,5 +1,5 @@
 import "../../i18n";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import App, { AppProps } from "next/app";
 import Head from "next/head";
 import { QueryClient, QueryClientProvider } from "react-query";
@@ -59,11 +59,12 @@ function getThemeColours(theme: string): string {
 }
 
 type TProps = AppProps & {
-  theme: string;
+  theme?: string;
 };
 
-// APP fallbacks to using the CPR theme if not provided
 function MyApp({ Component, pageProps, theme }: TProps) {
+  const [siteTheme, setSiteTheme] = useState(null);
+
   useEffect(() => {
     // For access inside Cypress:
     if (window?.Cypress) {
@@ -71,16 +72,22 @@ function MyApp({ Component, pageProps, theme }: TProps) {
     }
   }, []);
 
-  const favicon = theme === "cclw" ? "/cclw/images/favicon.png" : "/favicon.png";
+  useEffect(() => {
+    if (theme && theme !== "") {
+      setSiteTheme(theme);
+    }
+  }, [theme]);
+
+  const favicon = siteTheme === "cclw" ? "/cclw/images/favicon.png" : "/favicon.png";
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeContext.Provider value={theme}>
+      <ThemeContext.Provider value={siteTheme}>
         <Head>
           <link rel="icon" href={favicon} />
-          <style>{getThemeColours(theme)}</style>
+          <style>{getThemeColours(siteTheme)}</style>
         </Head>
-        <div id={theme}>
+        <div id={siteTheme}>
           <Component {...pageProps} />
         </div>
       </ThemeContext.Provider>
@@ -91,6 +98,10 @@ function MyApp({ Component, pageProps, theme }: TProps) {
 
 MyApp.getInitialProps = async () => {
   const initialProps = App.getInitialProps;
+  if (typeof window !== "undefined") {
+    return { ...initialProps };
+  }
+  console.log("SSR: App - getInitialProps", process.env.THEME);
   return { ...initialProps, theme: process.env.THEME ?? "cpr" };
 };
 
