@@ -1,6 +1,6 @@
 import logging
 from io import StringIO
-from time import time
+import time
 from typing import cast
 
 from fastapi import (
@@ -34,7 +34,11 @@ from app.core.validation.types import (
     ImportSchemaMismatchError,
     DocumentsFailedValidationError,
 )
-from app.core.validation.util import get_valid_metadata, write_documents_to_s3
+from app.core.validation.util import (
+    get_valid_metadata,
+    get_valid_metadata_for_db_hints,
+    write_documents_to_s3,
+)
 from app.core.validation.cclw.law_policy.process_csv import (
     extract_documents,
     validated_input,
@@ -194,7 +198,7 @@ async def import_law_policy(
 ):
     """Process a Law/Policy data import"""
 
-    t0 = time.clock()
+    t0 = time.time()
 
     _LOGGER.info("Received bulk import request for CCLW Law & Policy data")
     try:
@@ -202,12 +206,17 @@ async def import_law_policy(
             StringIO(law_policy_csv.file.read().decode("utf8"))
         )
         valid_metadata = get_valid_metadata(db)
+        metadata_db_hints = get_valid_metadata_for_db_hints(db)
+
+        # FIXME: get rid of all debug
+        # pprint(metadata_db_hints["CCLW"]["geographies"])
+        # raise ValueError()
 
         encountered_errors = {}
         document_create_objects: list[DocumentCreateRequest] = []
 
-        _LOGGER.info(f"bulk-import: Setup took: {time.clock() - t0}")
-        t0 = time.clock()
+        _LOGGER.info(f"bulk-import: Setup took: {time.time() - t0}")
+        t0 = time.time()
 
         # TODO: Check for document existence?
         for validation_result in extract_documents(
@@ -222,8 +231,8 @@ async def import_law_policy(
             raise DocumentsFailedValidationError(
                 message="File failed detailed validation.", details=encountered_errors
             )
-        _LOGGER.info(f"bulk-import: Validation took: {time.clock() - t0}")
-        t0 = time.clock()
+        _LOGGER.info(f"bulk-import: Validation took: {time.time() - t0}")
+        t0 = time.time()
 
         document_parser_inputs: list[DocumentParserInput] = []
         documents_ids_already_exist: list[str] = []
@@ -238,7 +247,7 @@ async def import_law_policy(
                     )
                     if existing_document is None:
                         new_document = create_document(db, dco)
-                        write_metadata(db, new_document, dco)
+                        write_metadata(db, new_document, dco, metadata_db_hints)
 
                         document_parser_inputs.append(
                             DocumentParserInput(
@@ -250,9 +259,11 @@ async def import_law_policy(
                         documents_ids_already_exist.append(dco.import_id)
 
             # This commit is necessary after completing the nested transaction
+            _LOGGER.info(f"bulk-import: create objects took: {time.time() - t0}")
+            t0 = time.time()
             db.commit()
-            _LOGGER.info(f"bulk-import: Database create took: {time.clock() - t0}")
-            t0 = time.clock()
+            _LOGGER.info(f"bulk-import: Database commit took: {time.time() - t0}")
+            t0 = time.time()
 
         except Exception as e:
             _LOGGER.exception("Unexpected error creating document entries")
@@ -261,8 +272,8 @@ async def import_law_policy(
             raise e
 
         write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
-        _LOGGER.info(f"bulk-import: Write to S3 took: {time.clock() - t0}")
-        t0 = time.clock()
+        _LOGGER.info(f"bulk-import: Write to S3 took: {time.time() - t0}")
+        t0 = time.time()
 
         # TODO: Add some way to monitor processing pipeline...
         total_document_count = len(document_create_objects)

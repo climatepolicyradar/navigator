@@ -1,6 +1,6 @@
 import logging
 from hashlib import md5
-from typing import Sequence, Set, Tuple, Union, cast
+from typing import Any, Mapping, Optional, Sequence, Set, Tuple, Union, cast
 
 from fastapi import (
     HTTPException,
@@ -33,6 +33,7 @@ from app.api.api_v1.schemas.metadata import (
 )
 from app.core.util import to_cdn_url, s3_to_cdn_url
 from app.core.validation import IMPORT_ID_MATCHER
+from app.core.validation.cclw.law_policy.process_csv import CCLW_SOURCE
 from app.db.models import (
     Document,
     DocumentFramework,
@@ -490,15 +491,30 @@ def write_metadata(
     db: Session,
     new_document: Document,
     document_create_request: DocumentCreateRequest,
+    metadata_db_hints: Optional[Mapping[str, Mapping[str, Any]]] = None,
 ) -> None:
+    hints = metadata_db_hints[CCLW_SOURCE] if metadata_db_hints else {}
+
+    def get_id_from_hint(meta_name: str, meta_key: str, value: str) -> int:
+        """If not found returns zero"""
+        meta_rows = hints.get(meta_name)
+        if meta_rows is None:
+            return 0
+        found = [row["id"] for row in meta_rows if row[meta_key] == value]
+
+        return found[0] if len(found) != 0 else 0
+
     # doc languages
     for language in document_create_request.languages:
-        existing_language = _get_language_by_code_or_name(db, language)
+        id = get_id_from_hint("languages", "language_code", language)
+        if id == 0:
+            existing_language = _get_language_by_code_or_name(db, language)
+            id = existing_language.id
 
         # TODO: Need to ensure uniqueness for metadata links, especially for future
         #       update paths.
         doc_language = DocumentLanguage(
-            language_id=existing_language.id,
+            language_id=id,
             document_id=new_document.id,
         )
         db.add(doc_language)
@@ -519,14 +535,17 @@ def write_metadata(
 
     # sectors
     for sector in document_create_request.sectors:
-        # A sector should already exist, so fail if we cannot find it
-        existing_sector_id = (
-            db.query(Sector.id)
-            .filter(Sector.name == sector)
-            .filter(Sector.source_id == new_document.source_id)
-        ).scalar()
-        if existing_sector_id is None:
-            raise UnknownSectorError(sector)
+        existing_sector_id = get_id_from_hint("sectors", "name", sector)
+
+        if existing_sector_id == 0:
+            # A sector should already exist, so fail if we cannot find it
+            existing_sector_id = (
+                db.query(Sector.id)
+                .filter(Sector.name == sector)
+                .filter(Sector.source_id == new_document.source_id)
+            ).scalar()
+            if existing_sector_id is None:
+                raise UnknownSectorError(sector)
 
         doc_sector = DocumentSector(
             sector_id=existing_sector_id,
@@ -536,14 +555,16 @@ def write_metadata(
 
     # instruments
     for instrument in document_create_request.instruments:
-        # An instrument should already exist, so fail if we cannot find it
-        existing_instrument_id = (
-            db.query(Instrument.id)
-            .filter(Instrument.name == instrument)
-            .filter(Instrument.source_id == new_document.source_id)
-        ).scalar()
-        if existing_instrument_id is None:
-            raise UnknownInstrumentError(instrument)
+        existing_instrument_id = get_id_from_hint("instruments", "name", instrument)
+        if existing_instrument_id == 0:
+            # An instrument should already exist, so fail if we cannot find it
+            existing_instrument_id = (
+                db.query(Instrument.id)
+                .filter(Instrument.name == instrument)
+                .filter(Instrument.source_id == new_document.source_id)
+            ).scalar()
+            if existing_instrument_id is None:
+                raise UnknownInstrumentError(instrument)
 
         doc_instrument = DocumentInstrument(
             instrument_id=existing_instrument_id,
@@ -553,12 +574,14 @@ def write_metadata(
 
     # hazards
     for hazard in document_create_request.hazards:
-        # A hazard should already exist, so fail if we cannot find it
-        existing_hazard_id = (
-            db.query(Hazard.id).filter(Hazard.name == hazard)
-        ).scalar()
-        if existing_hazard_id is None:
-            raise UnknownHazardError(hazard)
+        existing_hazard_id = get_id_from_hint("hazards", "name", hazard)
+        if existing_hazard_id == 0:
+            # A hazard should already exist, so fail if we cannot find it
+            existing_hazard_id = (
+                db.query(Hazard.id).filter(Hazard.name == hazard)
+            ).scalar()
+            if existing_hazard_id is None:
+                raise UnknownHazardError(hazard)
 
         doc_hazard = DocumentHazard(
             hazard_id=existing_hazard_id,
@@ -568,12 +591,15 @@ def write_metadata(
 
     # responses/topics
     for topic in document_create_request.topics:
-        # A response should already exist, so fail if we cannot find it
-        existing_response_id = (
-            db.query(Response.id).filter(Response.name == topic)
-        ).scalar()
-        if existing_response_id is None:
-            raise UnknownTopicError(topic)
+        existing_response_id = get_id_from_hint("topics", "name", topic)
+
+        if existing_response_id == 0:
+            # A response should already exist, so fail if we cannot find it
+            existing_response_id = (
+                db.query(Response.id).filter(Response.name == topic)
+            ).scalar()
+            if existing_response_id is None:
+                raise UnknownTopicError(topic)
 
         doc_response = DocumentResponse(
             response_id=existing_response_id,
@@ -583,12 +609,15 @@ def write_metadata(
 
     # frameworks
     for framework in document_create_request.frameworks:
-        # A framework should already exist, so fail if we cannot find it
-        existing_framework_id = (
-            db.query(Framework.id).filter(Framework.name == framework)
-        ).scalar()
-        if existing_framework_id is None:
-            raise UnknownFrameworkError(framework)
+        existing_framework_id = get_id_from_hint("frameworks", "name", framework)
+
+        if existing_framework_id == 0:
+            # A framework should already exist, so fail if we cannot find it
+            existing_framework_id = (
+                db.query(Framework.id).filter(Framework.name == framework)
+            ).scalar()
+            if existing_framework_id is None:
+                raise UnknownFrameworkError(framework)
 
         doc_framework = DocumentFramework(
             framework_id=existing_framework_id,
@@ -598,12 +627,15 @@ def write_metadata(
 
     # keywords
     for keyword in document_create_request.keywords:
-        # A keyword should already exist, so fail if we cannot find it
-        existing_keyword_id = (
-            db.query(Keyword.id).filter(Keyword.name == keyword)
-        ).scalar()
-        if existing_keyword_id is None:
-            raise UnknownKeywordError(keyword)
+        existing_keyword_id = get_id_from_hint("keywords", "name", keyword)
+
+        if existing_keyword_id == 0:
+            # A keyword should already exist, so fail if we cannot find it
+            existing_keyword_id = (
+                db.query(Keyword.id).filter(Keyword.name == keyword)
+            ).scalar()
+            if existing_keyword_id is None:
+                raise UnknownKeywordError(keyword)
 
         doc_keyword = DocumentKeyword(
             keyword_id=existing_keyword_id,

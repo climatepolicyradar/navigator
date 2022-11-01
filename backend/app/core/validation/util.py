@@ -13,7 +13,8 @@ from app.core.validation import PIPELINE_BUCKET
 
 _LOGGER = logging.getLogger(__file__)
 
-INGEST_TRIGGER_ROOT = "data-ingest"
+# TODO: This should be config
+INGEST_TRIGGER_ROOT = "input"
 
 
 def _flatten_maybe_tree(
@@ -41,6 +42,24 @@ def _flatten_maybe_tree(
     return values
 
 
+def _prune_nodes_and_children(
+    maybe_tree: Sequence[Mapping[str, Any]],
+) -> list[Mapping[str, Any]]:
+    def is_tree_node(maybe_node: Mapping[str, Any]) -> bool:
+        return set(maybe_node.keys()) == {"node", "children"}
+
+    rows = []
+    for maybe_node in maybe_tree:
+        if is_tree_node(maybe_node):
+            rows.append(maybe_node["node"])
+            for row in _prune_nodes_and_children(maybe_node["children"]):
+                rows.append(row)
+        else:
+            rows.append(maybe_node)
+
+    return rows
+
+
 def get_valid_metadata(
     db: Session,
 ) -> Mapping[str, Mapping[str, Collection[str]]]:
@@ -57,6 +76,28 @@ def get_valid_metadata(
     return {
         source: {
             meta: _flatten_maybe_tree(raw_metadata[source][meta])
+            for meta in raw_metadata[source]
+        }
+        for source in raw_metadata
+    }
+
+
+def get_valid_metadata_for_db_hints(
+    db: Session,
+) -> Mapping[str, Mapping[str, Collection[Mapping[str, Any]]]]:
+    """
+    Make a request to the backend to collect valid metadata values
+
+    :param requests.Session session: The session used for making the request.
+    :return Mapping[str, Sequence[str]]: _description_
+    """
+    _LOGGER.info("Retrieving valid metadata values from database")
+
+    raw_metadata = get_metadata(db)["metadata"]
+
+    return {
+        source: {
+            meta: _prune_nodes_and_children(raw_metadata[source][meta])
             for meta in raw_metadata[source]
         }
         for source in raw_metadata
