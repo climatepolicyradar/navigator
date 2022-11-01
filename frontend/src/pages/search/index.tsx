@@ -292,7 +292,7 @@ const Search = () => {
                   <div className="flex justify-end">
                     <ExternalLink
                       url="https://docs.google.com/forms/d/e/1FAIpQLSdFkgTNfzms7PCpfIY3d2xGDP5bYXx8T2-2rAk_BOmHMXvCoA/viewform"
-                      className="text-sm text-blue-600 hover:underline"
+                      className="text-sm text-blue-600 mt-4 md:mt-0 hover:underline"
                     >
                       Request to download all data (.csv)
                     </ExternalLink>
