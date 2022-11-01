@@ -261,6 +261,9 @@ def start_import(db, s3_client, document_create_objects):
         # Create a savepoint & start a transaction if necessary
         with db.begin_nested():
             for dco in document_create_objects:
+                _LOGGER.info(
+                    "Importing", extra={"props": {"import_id": {dco.input_id}}}
+                )
                 existing_document = (
                     db.query(Document)
                     .filter(Document.import_id == dco.import_id)
@@ -268,7 +271,15 @@ def start_import(db, s3_client, document_create_objects):
                 )
                 if existing_document is None:
                     new_document = create_document(db, dco)
+                    _LOGGER.info(
+                        "Created Document",
+                        extra={"props": {"import_id": {dco.input_id}}},
+                    )
                     write_metadata(db, new_document, dco)
+                    _LOGGER.info(
+                        "Created Metadata",
+                        extra={"props": {"import_id": {dco.input_id}}},
+                    )
 
                     document_parser_inputs.append(
                         DocumentParserInput(
@@ -278,6 +289,7 @@ def start_import(db, s3_client, document_create_objects):
                     )
 
         # This commit is necessary after completing the nested transaction
+        _LOGGER.info("Importing performing final commit.")
         db.commit()
     except Exception as e:
         _LOGGER.exception("Unexpected error creating document entries")
