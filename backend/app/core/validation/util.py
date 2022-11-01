@@ -7,7 +7,7 @@ from typing import Any, Collection, Mapping, Optional, Sequence
 from sqlalchemy.orm import Session
 
 from app.api.api_v1.routers.lookups.util import get_metadata
-from app.api.api_v1.schemas.document import DocumentCreateRequest
+from app.api.api_v1.schemas.document import DocumentParserInput
 from app.core.aws import S3Client
 from app.core.validation import PIPELINE_BUCKET
 
@@ -64,7 +64,7 @@ def get_valid_metadata(
 
 
 def write_documents_to_s3(
-    s3_client: S3Client, documents: Sequence[DocumentCreateRequest]
+    s3_client: S3Client, documents: Sequence[DocumentParserInput]
 ):
     """
     Write document specifications successfully created during a bulk import to S3
@@ -75,7 +75,7 @@ def write_documents_to_s3(
     """
     json_content = json.dumps([d.to_json() for d in documents], indent=2)
     bytes_content = BytesIO(json_content.encode("utf8"))
-    current_datetime = datetime.now().isoformat()
+    current_datetime = datetime.now().isoformat().replace(":", ".")
     documents_object_key = f"{INGEST_TRIGGER_ROOT}/{current_datetime}/documents.json"
 
     s3_client.upload_fileobj(

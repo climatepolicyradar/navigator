@@ -17,6 +17,7 @@ from sqlalchemy import update
 from app.api.api_v1.schemas.document import (
     BulkImportValidatedResult,
     DocumentCreateRequest,
+    DocumentParserInput,
     DocumentUpdateRequest,
 )
 from app.api.api_v1.schemas.user import User, UserCreateAdmin
@@ -215,6 +216,7 @@ async def import_law_policy(
                 message="File failed detailed validation.", details=encountered_errors
             )
 
+        document_parser_inputs: list[DocumentParserInput] = []
         documents_ids_already_exist: list[str] = []
         try:
             # Create a savepoint & start a transaction if necessary
@@ -228,6 +230,13 @@ async def import_law_policy(
                     if existing_document is None:
                         new_document = create_document(db, dco)
                         write_metadata(db, new_document, dco)
+
+                        document_parser_inputs.append(
+                            DocumentParserInput(
+                                slug=cast(str, new_document.slug),
+                                **dco.dict(),
+                            )
+                        )
                     else:
                         documents_ids_already_exist.append(dco.import_id)
 
@@ -239,7 +248,7 @@ async def import_law_policy(
                 raise HTTPException(409, detail="Document already exists")
             raise e
 
-        write_documents_to_s3(s3_client=s3_client, documents=document_create_objects)
+        write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
 
         # TODO: Add some way to monitor processing pipeline...
         total_document_count = len(document_create_objects)
