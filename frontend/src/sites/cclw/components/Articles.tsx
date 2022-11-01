@@ -13,14 +13,14 @@ type TArticle = {
 
 const ARTICLES: TArticle[] = [
   {
-    url: "google.com",
-    type: "Litigation",
-    title: "Greenpeace France and Others v. TotalEnergies SE and TotalEnergies Electricité et Gaz France",
+    url: "https://climate-laws.org/geographies/united-states-of-america/laws/inflation-reduction-act",
+    type: "Legislation",
+    title: "US Inflation Reduction Act",
     countryCode: "fra",
-    meta: "France | Filing | 2022",
+    meta: "USA | Filing | 2022",
   },
   {
-    url: "google.com",
+    url: "https://climate-laws.org/geographies/european-union/policies/the-european-green-deal",
     type: "Legislation",
     title: "The European Green Deal",
     countryCode: "eur",
@@ -29,13 +29,13 @@ const ARTICLES: TArticle[] = [
     imageAlt: "European Union flag",
   },
   {
-    url: "google.com",
-    type: "Litigation",
-    title: "Petition of Torres Strait Islanders to the United Nations Human Rights Committee Alleging Violations Stemming from ...",
-    meta: "International | Filing | 2019",
+    url: "https://climate-laws.org/geographies/fiji/laws/climate-change-act-2021",
+    type: "Legislation",
+    title: "Fiji's Climate Change Act 2021",
+    meta: "Fiji | Filing | 2019",
   },
   {
-    url: "google.com",
+    url: "https://climate-laws.org/geographies/chile/laws/framework-law-on-climate-change-chile",
     type: "Legislation",
     title: "Framework Law on Climate Change - Chile",
     meta: "Chile | Published | 2022",
@@ -43,7 +43,7 @@ const ARTICLES: TArticle[] = [
     imageAlt: "Chile flag",
   },
   {
-    url: "google.com",
+    url: "https://www.lse.ac.uk/granthaminstitute/publication/challenging-government-responses-to-climate-change-through-framework-litigation/",
     type: "Policy brief",
     title: "Challenging government responses to climate change through framework litigation",
     imageUrl: "/cclw/images/hague.jpg",
