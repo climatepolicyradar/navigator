@@ -2,12 +2,15 @@ import "../../i18n";
 import { useEffect, useState } from "react";
 import App, { AppProps } from "next/app";
 import Head from "next/head";
+import Script from "next/script";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "../styles/flag-icon.css";
 import "@cclw/styles/cclw.main.scss";
 
 import { ThemeContext } from "@context/ThemeContext";
+
+import { CookieConsent } from "@components/cookies/CookieConsent";
 
 const queryClient = new QueryClient();
 
@@ -30,7 +33,7 @@ function getThemeColours(theme: string): string {
       --color-indigo-600:#2B2F49;
       --color-indigo-700:#2B2F49;
       --color-sky:#ED3D48;
-      --color-blue-100:#ED3D48;
+      --color-blue-100:#f3ddde;
       --color-blue-200:#ED3D48;
       --color-blue-300:#ED3D48;
       --color-blue-400:#ED3D48;
@@ -89,9 +92,23 @@ function MyApp({ Component, pageProps, theme }: TProps) {
           <link rel="icon" href={favicon} />
           <style>{getThemeColours(dynamicTheme)}</style>
         </Head>
+        <Script src="https://www.googletagmanager.com/gtag/js?id=G-ZD1WWE49TL" strategy="afterInteractive" />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+          window.dataLayer = window.dataLayer || [];
+          function gtag(){window.dataLayer.push(arguments);}
+          gtag('js', new Date());
+          gtag('consent', 'default', {
+            'ad_storage': 'denied',
+            'analytics_storage': 'denied',
+          });
+          gtag('config', 'G-ZD1WWE49TL');
+        `}
+        </Script>
         <div id={dynamicTheme}>
           <Component {...pageProps} />
         </div>
+        <CookieConsent />
       </ThemeContext.Provider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
@@ -103,8 +120,17 @@ MyApp.getInitialProps = async () => {
   if (typeof window !== "undefined") {
     return { ...initialProps };
   }
-  console.log("SSR: App - getInitialProps", process.env.THEME);
   return { ...initialProps, theme: process.env.THEME ?? "cpr" };
 };
 
 export default MyApp;
+
+// <ThemeContext.Provider value={dynamicTheme}>
+//   <Head>
+//     <link rel="icon" href={favicon} />
+//     <style>{getThemeColours(dynamicTheme)}</style>
+//   </Head>
+//   <div id={dynamicTheme}>
+//     <Component {...pageProps} />
+//   </div>
+// </ThemeContext.Provider>

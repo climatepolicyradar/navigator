@@ -235,11 +235,20 @@ def extract_documents(
             row[COUNTRY_CODE_FIELD].strip(),
             errors_encountered,
         )
+        presented_category = row[CATEGORY_FIELD].strip()
+        if presented_category in CATEGORY_MAPPING:
+            document_category = CATEGORY_MAPPING[presented_category].value
+        else:
+            document_category = presented_category
+            errors_encountered[META_CATEGORY_KEY] = [presented_category]
+
         year = row[YEAR_FIELD].strip()
         document_name = row[TITLE_FIELD].strip()
         document_description = _strip_tags(row[DESCRIPTION_FIELD])
         action_id = row[ACTION_ID_FIELD].strip()
-        import_id = f"{action_id}-{row[DOCUMENT_ID_FIELD].strip()}"
+        import_id = (
+            f"CCLW.{presented_category}.{action_id}.{row[DOCUMENT_ID_FIELD].strip()}"
+        )
         document_url = _parse_url(row[DOCUMENT_FIELD])
         document_languages = _validated_values(
             valid_cclw_metadata,
@@ -247,12 +256,7 @@ def extract_documents(
             _split_not_null(row[LANGUAGES_FIELD], ";"),
             errors_encountered,
         )
-        presented_category = row[CATEGORY_FIELD].strip()
-        if presented_category in CATEGORY_MAPPING:
-            document_category = CATEGORY_MAPPING[presented_category].value
-        else:
-            document_category = presented_category
-            errors_encountered[META_CATEGORY_KEY] = [presented_category]
+
         document_type = _validated_values(
             valid_cclw_metadata,
             META_DOC_TYPE_KEY,

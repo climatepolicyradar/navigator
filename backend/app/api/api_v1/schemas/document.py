@@ -85,7 +85,7 @@ class DocumentUploadResponse(BaseModel):
 class DocumentCreateRequest(BaseModel):  # noqa: D106
     """Details of a document to create - metadata will be validated & looked up."""
 
-    publication_ts: Optional[datetime.datetime]
+    publication_ts: datetime.datetime
     name: str
     description: str
     source_url: Optional[str]
@@ -119,6 +119,12 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
     class Config:  # noqa: D106
         orm_mode = True
         validate_assignment = True
+
+
+class DocumentParserInput(DocumentCreateRequest):
+    """Extend the document create request with the slug calculated during import."""
+
+    slug: str
 
 
 class RelationshipCreateRequest(BaseModel):
@@ -165,6 +171,9 @@ class BulkImportValidatedResult(BaseModel):
     """Response for bulk import request."""
 
     document_count: int
+    document_added_count: int
+    document_skipped_count: int
+    document_skipped_ids: list[str]
 
 
 class DocumentUpdateRequest(BaseModel):

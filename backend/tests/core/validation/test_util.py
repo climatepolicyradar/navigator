@@ -5,7 +5,7 @@ from unittest import mock
 
 import pytest
 
-from app.api.api_v1.schemas.document import DocumentCreateRequest
+from app.api.api_v1.schemas.document import DocumentParserInput
 from app.core.validation import PIPELINE_BUCKET
 
 from app.core.validation.util import (
@@ -113,16 +113,15 @@ def test_valid_metadata(test_db):
 
 def test_write_documents_to_s3(test_s3_client, mocker):
     """Really simple check that values are passed to the s3 client correctly"""
-    d = DocumentCreateRequest(
-        publication_ts=None,
+    d = DocumentParserInput(
+        publication_ts=datetime.datetime(year=2008, month=12, day=25),
         name="name",
         description="description",
         source_url=None,
-        url=None,
-        md5_sum=None,
         type="executive",
         source="CCLW",
         import_id="1234-5678",
+        slug="geo_2008_name_1234_5678",
         category="category",
         frameworks=[],
         geography="GEO",
@@ -141,9 +140,10 @@ def test_write_documents_to_s3(test_s3_client, mocker):
     datetime_mock.now.return_value = every_now
 
     write_documents_to_s3(test_s3_client, documents=[d])
+    expected_folder_name = every_now.isoformat().replace(":", ".")
     upload_file_mock.assert_called_once_with(
         bucket=PIPELINE_BUCKET,
-        key=f"data-ingest/{every_now.isoformat()}/documents.json",
+        key=f"data-ingest/{expected_folder_name}/documents.json",
         content_type="application/json",
         fileobj=mock.ANY,
     )

@@ -40,7 +40,7 @@ const Button = ({
       break;
     case "clear":
       colorClasses = !disabled
-        ? "clear bg-white border border-indigo-600 text-indigo-600 hover:bg-indigo-100 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white"
+        ? "clear bg-white border hover:border-indigo-600 text-indigo-600 disabled:border-indigo-300 disabled:text-indigo-300 disabled:hover:bg-white"
         : "";
       break;
   }

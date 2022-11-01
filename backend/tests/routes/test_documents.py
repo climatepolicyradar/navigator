@@ -99,7 +99,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "CCLW:001:000:XXX",
+        "import_id": "CCLW.001.000.XXX",
         "category": "a category",
         "languages": ["Afrikaans"],
         "events": [
@@ -132,7 +132,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "CCLW:002:000:XXX",
+        "import_id": "CCLW.002.000.XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -172,7 +172,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "NMFSA",
         "source": "may it be with you",
-        "import_id": "CCLW:003:000:XXX",
+        "import_id": "CCLW.003.000.XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -204,7 +204,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "CCLW:005:000:XXX",
+        "import_id": "CCLW.005.000.XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -320,7 +320,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "CCLW:001:000:XXX",
+        "import_id": "CCLW.001.000.XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -351,6 +351,10 @@ def test_post_documents(client, superuser_token_headers, test_db):
     assert doc.md5_sum is None
     assert doc.import_id == payload["import_id"]
     assert doc.publication_ts == datetime(2000, 1, 1)
+    assert doc.slug == (
+        "not-my-favourite-subject_2000_energy-sector-strategy-"
+        "1387-1391-2007-8-2012-3_000_xxx"
+    )
 
     event = test_db.query(Event).first()
     assert event.name == "Publication"
@@ -402,7 +406,7 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
         "type": "just my type",
         "geography": "not my favourite subject",
         "source": "may it be with you",
-        "import_id": "CCLW:001:000:XXX",
+        "import_id": "CCLW.001.000.XXX",
         "category": "a category",
         "languages": ["afr"],
         "events": [
@@ -596,7 +600,7 @@ def test_document_detail(
     }
 
     get_detail_response_4 = client.get(
-        f"/api/v1/documents/{response4_document['import_id']}",
+        f"/api/v1/documents/{response4_document['slug']}",
     )
     assert get_detail_response_4.status_code == 200
     get_detail_json_4 = get_detail_response_4.json()
