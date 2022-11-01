@@ -173,7 +173,7 @@ class BulkImportValidatedResult(BaseModel):
     document_count: int
     document_added_count: int
     document_skipped_count: int
-    document_skipped_ids: list[str]
+    document_skipped_ids: set[str]
 
 
 class DocumentUpdateRequest(BaseModel):

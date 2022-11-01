@@ -41,6 +41,7 @@ class DocumentValidationResult:
     row: int
     create_request: DocumentCreateRequest
     errors: dict[str, Collection[str]]
+    import_id: str
 
 
 class DocumentGenerator(ABC):
