@@ -33,7 +33,7 @@ export type TDocument = {
   document_date: string;
   document_description: string;
   document_description_match: boolean;
-  slug: string;
+  document_slug: string;
   document_name: string;
   document_passage_matches: TPassage[];
   document_source_name: string;
