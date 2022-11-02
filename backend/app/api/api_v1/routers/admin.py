@@ -248,7 +248,7 @@ async def import_law_policy(
         result: Union[S3Document, bool] = write_csv_to_s3(
             s3_client=s3_client, file_contents=file_contents
         )
-        csv_s3_location = "write failed" if type(result) is bool else result.url
+        csv_s3_location = "write failed" if type(result) is bool else str(result.url)
         _LOGGER.info(
             "Write to CSV complete.",
             extra={"props": {"csv_s3_location": csv_s3_location}},
