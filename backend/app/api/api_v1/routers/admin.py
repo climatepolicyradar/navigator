@@ -1,6 +1,6 @@
 import logging
 from io import StringIO
-from typing import cast
+from typing import cast, Union
 
 from fastapi import (
     APIRouter,
@@ -14,6 +14,7 @@ from fastapi import (
 )
 from sqlalchemy.exc import IntegrityError
 from sqlalchemy import update
+from app.core.aws import S3Document
 
 from app.api.api_v1.schemas.document import (
     BulkImportValidatedResult,
@@ -34,7 +35,11 @@ from app.core.validation.types import (
     ImportSchemaMismatchError,
     DocumentsFailedValidationError,
 )
-from app.core.validation.util import get_valid_metadata, write_documents_to_s3
+from app.core.validation.util import (
+    get_valid_metadata,
+    write_documents_to_s3,
+    write_csv_to_s3,
+)
 from app.core.validation.cclw.law_policy.process_csv import (
     extract_documents,
     validated_input,
@@ -196,9 +201,8 @@ async def import_law_policy(
     """Process a Law/Policy data import"""
     _LOGGER.info("Received bulk import request for CCLW Law & Policy data")
     try:
-        csv_reader = validated_input(
-            StringIO(law_policy_csv.file.read().decode("utf8"))
-        )
+        file_contents = law_policy_csv.file.read().decode("utf8")
+        csv_reader = validated_input(StringIO(file_contents))
         valid_metadata = get_valid_metadata(db)
         existing_import_ids = [id[0] for id in db.query(Document.import_id)]
 
@@ -227,16 +231,44 @@ async def import_law_policy(
         documents_ids_already_exist = set(import_ids_to_create).intersection(
             set(existing_import_ids)
         )
+        document_skipped_count = len(documents_ids_already_exist)
+        _LOGGER.info(
+            "Validation complete.",
+            extra={
+                "props": {
+                    "document_count": total_document_count,
+                    "document_added_count": total_document_count
+                    - document_skipped_count,
+                    "document_skipped_count": document_skipped_count,
+                    "document_skipped_ids": list(documents_ids_already_exist),
+                }
+            },
+        )
+
+        result: Union[S3Document, bool] = write_csv_to_s3(
+            s3_client=s3_client, file_contents=file_contents
+        )
+        csv_s3_location = "write failed" if type(result) is bool else str(result.url)
+        _LOGGER.info(
+            "Write to CSV complete.",
+            extra={"props": {"csv_s3_location": csv_s3_location}},
+        )
 
         background_tasks.add_task(start_import, db, s3_client, document_create_objects)
 
-        # TODO: Add some way to monitor processing pipeline...
-        document_skipped_count = len(documents_ids_already_exist)
+        _LOGGER.info(
+            "Background Task added",
+            extra={"props": {"csv_s3_location": csv_s3_location}},
+        )
+
+        # TODO: Add some way the callee can monitor processing pipeline...
+
         return BulkImportValidatedResult(
             document_count=total_document_count,
             document_added_count=total_document_count - document_skipped_count,
             document_skipped_count=document_skipped_count,
             document_skipped_ids=list(documents_ids_already_exist),
+            csv_s3_location=csv_s3_location,
         )
     except ImportSchemaMismatchError as e:
         raise HTTPException(
@@ -302,6 +334,16 @@ async def update_document(
 ):
     # TODO: As this grows move it out into the crud later.
 
+    _LOGGER.info(
+        "update_document called",
+        extra={
+            "props": {
+                "import_id_or_slug": import_id_or_slug,
+                "meta_data": meta_data,
+            }
+        },
+    )
+
     # Note this code relies on the fields being the same as the db column names
     doc_update = update(Document)
     doc_update = doc_update.values(meta_data.dict())
@@ -314,10 +356,12 @@ async def update_document(
         import_id = import_id_or_slug
         doc_update = doc_update.where(Document.import_id == import_id)
         doc_query = doc_query.filter(Document.import_id == import_id)
+        _LOGGER.info("update_document called with import_id")
     else:
         slug = import_id_or_slug
         doc_update = doc_update.where(Document.slug == slug)
         doc_query = doc_query.filter(Document.slug == slug)
+        _LOGGER.info("update_document called with slug")
 
     existing_doc = doc_query.first()
 
@@ -330,6 +374,7 @@ async def update_document(
     num_changed = db.execute(doc_update).rowcount
 
     if num_changed == 0:
+        _LOGGER.info("update_document complete - nothing changed")
         return existing_doc  # Nothing to do - as should be idempotent
 
     if num_changed > 1:
@@ -342,4 +387,16 @@ async def update_document(
 
     db.commit()
     db.refresh(existing_doc)
+    _LOGGER.info(
+        "update_document complete",
+        extra={
+            "props": {
+                "num_changed": num_changed,
+                "import_id": existing_doc.import_id,
+                "md5_sum": existing_doc.md5_sum,
+                "content_type": existing_doc.content_type,
+                "cdn_object": existing_doc.cdn_object,
+            }
+        },
+    )
     return existing_doc

@@ -278,13 +278,15 @@ def test_reset_password(
     assert mock_send_email.call_count == 2
 
 
-@patch("app.api.api_v1.routers.admin.start_import")
 def test_bulk_import_cclw_law_policy_valid(
-    mock_start_import,
     client,
     superuser_token_headers,
     test_db,
+    mocker,
 ):
+    mock_start_import = mocker.patch("app.api.api_v1.routers.admin.start_import")
+    mock_write_csv_to_s3 = mocker.patch("app.api.api_v1.routers.admin.write_csv_to_s3")
+
     test_db.add(Source(name="CCLW"))
     test_db.add(Geography(display_value="geography", value="GEO", type="country"))
     test_db.add(DocumentType(name="doctype", description="doctype"))
@@ -321,6 +323,10 @@ def test_bulk_import_cclw_law_policy_valid(
     call = mock_start_import.mock_calls[0]
     assert len(call.args[2]) == 2
 
+    mock_write_csv_to_s3.assert_called_once()
+    call = mock_write_csv_to_s3.mock_calls[0]
+    assert len(call.kwargs["file_contents"]) == csv_file.getbuffer().nbytes
+
 
 @pytest.mark.parametrize(
     "invalid_file_content,expected_status",
@@ -329,15 +335,17 @@ def test_bulk_import_cclw_law_policy_valid(
         (INVALID_CSV_MIXED_ERRORS, 400),
     ],
 )
-@patch("app.api.api_v1.routers.admin.start_import")
 def test_bulk_import_cclw_law_policy_invalid(
-    mock_start_import,
     invalid_file_content,
     expected_status,
     client,
     superuser_token_headers,
     test_db,
+    mocker,
 ):
+    mock_start_import = mocker.patch("app.api.api_v1.routers.admin.start_import")
+    mock_write_csv_to_s3 = mocker.patch("app.api.api_v1.routers.admin.write_csv_to_s3")
+
     test_db.add(Source(name="CCLW"))
     test_db.add(Geography(display_value="geography", value="GEO", type="country"))
     test_db.add(DocumentType(name="doctype", description="doctype"))
@@ -368,15 +376,18 @@ def test_bulk_import_cclw_law_policy_invalid(
     assert "detail" in response.json()
     assert response.json()["detail"]
     mock_start_import.assert_not_called()
+    mock_write_csv_to_s3.assert_not_called()
 
 
-@patch("app.api.api_v1.routers.admin.start_import")
 def test_bulk_import_cclw_law_policy_db_objects(
-    mock_start_import,
     client,
     superuser_token_headers,
     test_db,
+    mocker,
 ):
+    mock_start_import = mocker.patch("app.api.api_v1.routers.admin.start_import")
+    mock_write_csv_to_s3 = mocker.patch("app.api.api_v1.routers.admin.write_csv_to_s3")
+
     test_db.add(Source(name="CCLW"))
     test_db.add(Geography(display_value="geography", value="GEO", type="country"))
     test_db.add(DocumentType(name="doctype", description="doctype"))
@@ -413,14 +424,22 @@ def test_bulk_import_cclw_law_policy_db_objects(
     call = mock_start_import.mock_calls[0]
     assert len(call.args[2]) == 2
 
+    mock_write_csv_to_s3.assert_called_once()
+    call = mock_write_csv_to_s3.mock_calls[0]
+    assert len(call.kwargs["file_contents"]) == csv_file.getbuffer().nbytes
 
-@patch("app.api.api_v1.routers.admin.start_import")
+    # TODO: This test needs to check the db objects
+
+
 def test_bulk_import_cclw_law_policy_preexisting_db_objects(
-    mock_start_import,
     client,
     superuser_token_headers,
     test_db,
+    mocker,
 ):
+    mock_start_import = mocker.patch("app.api.api_v1.routers.admin.start_import")
+    mock_write_csv_to_s3 = mocker.patch("app.api.api_v1.routers.admin.write_csv_to_s3")
+
     test_db.add(Source(name="CCLW"))
     test_db.add(Geography(display_value="geography", value="GEO", type="country"))
     test_db.add(DocumentType(name="doctype", description="doctype"))
@@ -473,3 +492,7 @@ def test_bulk_import_cclw_law_policy_preexisting_db_objects(
     mock_start_import.assert_called_once()
     call = mock_start_import.mock_calls[0]
     assert len(call.args[2]) == 1
+
+    mock_write_csv_to_s3.assert_called_once()
+    call = mock_write_csv_to_s3.mock_calls[0]
+    assert len(call.kwargs["file_contents"]) == csv_file.getbuffer().nbytes

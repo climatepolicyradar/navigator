@@ -174,6 +174,7 @@ class BulkImportValidatedResult(BaseModel):
     document_added_count: int
     document_skipped_count: int
     document_skipped_ids: list[str]
+    csv_s3_location: str
 
 
 class DocumentUpdateRequest(BaseModel):

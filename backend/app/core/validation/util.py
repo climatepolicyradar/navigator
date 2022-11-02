@@ -2,7 +2,8 @@ import json
 import logging
 from datetime import datetime
 from io import BytesIO
-from typing import Any, Collection, Mapping, Optional, Sequence
+from typing import Any, Collection, Mapping, Optional, Sequence, Union
+from app.core.aws import S3Document
 
 from sqlalchemy.orm import Session
 
@@ -82,5 +83,24 @@ def write_documents_to_s3(
         bucket=PIPELINE_BUCKET,
         key=documents_object_key,
         content_type="application/json",
+        fileobj=bytes_content,
+    )
+
+
+def write_csv_to_s3(s3_client: S3Client, file_contents: str) -> Union[S3Document, bool]:
+    """Writes the csv into S3
+
+    Args:
+        s3_client (S3Client): a valid S3 client
+        file_contents (str): the contents of the file as a string
+    """
+    bytes_content = BytesIO(file_contents.encode("utf8"))
+    current_datetime = datetime.now().isoformat().replace(":", ".")
+    csv_object_key = f"{INGEST_TRIGGER_ROOT}/{current_datetime}-bulk-import.csv"
+
+    return s3_client.upload_fileobj(
+        bucket=PIPELINE_BUCKET,
+        key=csv_object_key,
+        content_type="text/csv",
         fileobj=bytes_content,
     )
