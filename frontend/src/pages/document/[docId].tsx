@@ -39,8 +39,8 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
 
   const renderSourceLink = () => {
     let link: string;
-    if (page.content_type === "application/pdf" && page.url.length) {
-      link = page.url;
+    if (page.content_type === "application/pdf" && page.source_url.length) {
+      link = page.source_url;
     } else if (page.source_url.length) {
       link = page.source_url;
     }

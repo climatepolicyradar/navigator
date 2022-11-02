@@ -1,4 +1,4 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, AxiosResponse } from "axios";
 
 export async function getEnvFromServer() {
   return await axios.get("/api/env").then((res: any) => res);
@@ -20,7 +20,7 @@ class ApiClient {
   /**
    * Submit a GET request and return the response as a mapped promise.
    */
-  get(url: string, params?: any) {
+  get(url: string, params?: any) : Promise<AxiosResponse> {
     // console.log(`GET: ${this.baseUrl}${url}`);
     return this.axiosClient
       .get(`${this.baseUrl}${url}`, { params })
