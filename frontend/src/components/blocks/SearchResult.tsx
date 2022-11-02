@@ -54,7 +54,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
   return (
     <DocumentListItem
       listItem={{
-        slug: slug,
+        slug: document_slug,
         name: document_name,
         country_code: document_country_code,
         country_name: document_country_english_shortname,

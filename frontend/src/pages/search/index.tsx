@@ -176,7 +176,7 @@ const Search = () => {
     if (!slug) return;
 
     // keep panel open if clicking a different document
-    if (document?.slug != slug) {
+    if (document?.document_slug != slug) {
       resetSlideOut(true);
     } else {
       resetSlideOut();

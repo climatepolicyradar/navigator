@@ -21,7 +21,7 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
         <>
           <div className="border-b border-lineBorder pb-4 flex justify-between relative">
             <div className="pl-6 pr-10 mt-2">
-              <Link href={`/document/${document.slug}`}>
+              <Link href={`/document/${document.document_slug}`}>
                 <a>
                   <h1 className="text-lg text-blue-500 font-medium">{document.document_name}</h1>
                 </a>

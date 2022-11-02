@@ -14,7 +14,7 @@ const switchDocuments = (queryClient: QueryClient, slug: string) => {
     data: { documents },
   }: TSearchResultsDocuments = queryClient.getQueryData<TSearchResultsDocuments>("searches");
 
-  const document = documents.find((item) => item.slug === slug);
+  const document = documents.find((item) => item.document_slug === slug);
 
   // add fileid for Adobe PDF embed
   const newDocument = { ...document, document_fileid: uuidv4() };
