@@ -2,6 +2,7 @@ const getSite = process.env.THEME || "cpr";
 
 console.log("===== IN: next.config.mjs =====");
 console.log("process.env.THEME: ", process.env.THEME);
+console.log("process.env.NEXT_PUBLIC_API_URL: ", process.env.NEXT_PUBLIC_API_URL);
 console.log("===== OUT: next.config.mjs =====");
 
 // for pages that are not in cclw's sitemap
