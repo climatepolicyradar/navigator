@@ -10,7 +10,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
   const {
     document_country_code,
     document_country_english_shortname,
-    document_id,
+    document_slug,
     document_date,
     document_description,
     document_name,
@@ -42,7 +42,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
             </div>
           </div>
           {document_content_type === "application/pdf" && document_passage_matches.length > 0 && (
-            <button data-docid={document_id} className="mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600">
+            <button data-docId={document_slug} className="mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600">
               {`See ${document_passage_matches.length} match${document_passage_matches.length > 1 ? "es" : ""} in document`}
             </button>
           )}
@@ -54,7 +54,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
   return (
     <DocumentListItem
       listItem={{
-        id: document_id,
+        slug: document_slug,
         name: document_name,
         country_code: document_country_code,
         country_name: document_country_english_shortname,

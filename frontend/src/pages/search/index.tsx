@@ -172,16 +172,16 @@ const Search = () => {
 
   const handleDocumentClick = (e: any) => {
     // Check if we are clicking on the document matches button
-    const id = e.target.dataset.docid;
-    if (!id) return;
+    const slug = e.target.dataset.slug;
+    if (!slug) return;
 
     // keep panel open if clicking a different document
-    if (document?.document_id != id) {
+    if (document?.document_slug != slug) {
       resetSlideOut(true);
     } else {
       resetSlideOut();
     }
-    updateDocument.mutate(id);
+    updateDocument.mutate(slug);
   };
 
   const getCurrentSortChoice = () => {

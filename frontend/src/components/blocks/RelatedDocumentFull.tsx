@@ -7,13 +7,13 @@ type TProps = {
 };
 
 export const RelatedDocumentFull = ({ document }: TProps) => {
-  const { document_country_code, document_country_english_shortname, document_id, document_date, document_description, document_name, document_category } = document;
+  const { document_country_code, document_country_english_shortname, document_slug, document_date, document_description, document_name, document_category } = document;
   const [year] = convertDate(document_date);
   
   return (
     <DocumentListItem
       listItem={{
-        id: document_id,
+        slug: document_slug,
         name: document_name,
         country_code: document_country_code,
         country_name: document_country_english_shortname,

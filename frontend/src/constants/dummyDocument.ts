@@ -7,7 +7,7 @@ export const dummyDocument = {
     'The Food and Nutrition Security Policy aims at promoting rational food choices and healthy lifestyles by the population. It further seeks to enhance the resilience of food supplies in front of natural and socio-economic shocks, and climate change.\n\nThe Policy states that the government shall facilitate the implementation of Risk Management and Climate Change Adaptation and Mitigation strategies, including in the food sector. It charges the government to 1) establish a National Task Force for the implementation and supervision of such strategies, 2) to enable capacity building of stakeholders with respect to disaster management, 3) to develop an agricultural risk management scheme, 4) and to facilitate the re-zoning of agricultural production as necessary to reduce vulnerability to adverse effects of climate change.',
   document_description_match: true,
   document_geography_english_shortname: 'Saint Kitts and Nevis',
-  document_id: 2097,
+  slug: "Slug_2097",
   document_name: 'Food and Nutrition Security Policy and Plan of Action',
   document_passage_matches: [
     {
@@ -151,7 +151,7 @@ export const dummyDocument2 = {
     'The Food and Nutrition Security Policy aims at promoting rational food choices and healthy lifestyles by the population. It further seeks to enhance the resilience of food supplies in front of natural and socio-economic shocks, and climate change.\n\nThe Policy states that the government shall facilitate the implementation of Risk Management and Climate Change Adaptation and Mitigation strategies, including in the food sector. It charges the government to 1) establish a National Task Force for the implementation and supervision of such strategies, 2) to enable capacity building of stakeholders with respect to disaster management, 3) to develop an agricultural risk management scheme, 4) and to facilitate the re-zoning of agricultural production as necessary to reduce vulnerability to adverse effects of climate change.',
   document_description_match: true,
   document_geography_english_shortname: 'Saint Kitts and Nevis',
-  document_id: 2097,
+  slug: "Slug_2097",
   document_name: 'Food and Nutrition Security Policy and Plan of Action',
   document_passage_matches: [
     {

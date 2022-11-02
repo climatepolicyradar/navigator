@@ -33,7 +33,7 @@ export type TDocument = {
   document_date: string;
   document_description: string;
   document_description_match: boolean;
-  document_id: number;
+  document_slug: string;
   document_name: string;
   document_passage_matches: TPassage[];
   document_source_name: string;
@@ -116,7 +116,7 @@ export type TAssociatedDocument = {
   country_name: string;
   description: string;
   name: string;
+  slug: string;
   publication_ts: string;
-  document_id: number;
   category?: TCategory;
 };

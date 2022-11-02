@@ -39,8 +39,8 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
 
   const renderSourceLink = () => {
     let link: string;
-    if (page.content_type === "application/pdf" && page.url.length) {
-      link = page.url;
+    if (page.content_type === "application/pdf" && page.source_url.length) {
+      link = page.source_url;
     } else if (page.source_url.length) {
       link = page.source_url;
     }
@@ -111,6 +111,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
               <section className="mt-12">
                 <h3>Source</h3>
                 {renderSourceLink()}
+
               </section>
 
               {page.events.length > 0 && (
@@ -130,7 +131,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                 <section className="mt-12">
                   <h3>Associated Documents</h3>
                   {page.related_documents.map((doc) => (
-                    <div key={doc.document_id} className="my-4">
+                    <div key={doc.slug} className="my-4">
                       <RelatedDocument document={doc} />
                     </div>
                   ))}

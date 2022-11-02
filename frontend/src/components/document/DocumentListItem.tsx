@@ -8,7 +8,7 @@ import { ThemeContext } from "@context/ThemeContext";
 
 type TProps = {
   listItem: {
-    id: number;
+    slug: string;
     country_code: string;
     country_name: string;
     description: string;
@@ -19,14 +19,14 @@ type TProps = {
 };
 
 export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {
-  const { id, country_code, country_name, description, name, document_year, category } = listItem;
+  const { slug, country_code, country_name, description, name, document_year, category } = listItem;
   const theme = useContext(ThemeContext);
 
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-start">
-          <Link href={`/document/${id}`}>
+          <Link href={`/document/${slug}`}>
             <a className={`text-left text-blue-500 font-medium text-lg transition duration-300 leading-tight hover:underline ${theme === "cpr" ? "underline" : ""}`}>{name}</a>
           </Link>
         </h2>
