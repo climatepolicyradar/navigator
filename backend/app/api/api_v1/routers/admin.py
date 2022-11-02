@@ -236,7 +236,7 @@ async def import_law_policy(
             document_count=total_document_count,
             document_added_count=total_document_count - document_skipped_count,
             document_skipped_count=document_skipped_count,
-            document_skipped_ids=documents_ids_already_exist,
+            document_skipped_ids=list(documents_ids_already_exist),
         )
     except ImportSchemaMismatchError as e:
         raise HTTPException(
@@ -261,9 +261,7 @@ def start_import(db, s3_client, document_create_objects):
         # Create a savepoint & start a transaction if necessary
         with db.begin_nested():
             for dco in document_create_objects:
-                _LOGGER.info(
-                    "Importing", extra={"props": {"import_id": {dco.import_id}}}
-                )
+                _LOGGER.info(f"Importing: {dco.import_id}")
                 existing_document = (
                     db.query(Document)
                     .filter(Document.import_id == dco.import_id)
@@ -271,15 +269,9 @@ def start_import(db, s3_client, document_create_objects):
                 )
                 if existing_document is None:
                     new_document = create_document(db, dco)
-                    _LOGGER.info(
-                        "Created Document",
-                        extra={"props": {"import_id": {dco.import_id}}},
-                    )
+                    _LOGGER.info(f"Created Document: {dco.import_id}")
                     write_metadata(db, new_document, dco)
-                    _LOGGER.info(
-                        "Created Metadata",
-                        extra={"props": {"import_id": {dco.import_id}}},
-                    )
+                    _LOGGER.info(f"Created Metadata: {dco.import_id}")
 
                     document_parser_inputs.append(
                         DocumentParserInput(
