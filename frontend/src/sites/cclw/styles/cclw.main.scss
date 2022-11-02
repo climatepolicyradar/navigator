@@ -1,0 +1,75 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+// Import base styles before overriding
+@import "../../../styles/main.scss";
+
+@mixin cclw-dark-gradient() {
+  background: linear-gradient(134.5deg, rgba(43, 47, 73, 1) 0%, rgba(43, 47, 73, 1) 33%, rgba(21, 116, 209, 1) 66%, rgba(21, 116, 209, 1) 100%);
+  background-repeat: no-repeat;
+}
+
+@font-face {
+  font-family: "LL Brown";
+  src: url("/fonts/LL-Brown/lineto-brown-bold.woff2") format("woff2"), url("/fonts/LL-Brown/lineto-brown-bold.woff") format("woff");
+  /* font-display: swap; */
+  font-weight: 500;
+}
+
+#cclw .cclw-font {
+  font-family: "LL Brown";
+}
+
+#cclw .gradient-container {
+  @include cclw-dark-gradient;
+}
+
+#cclw header {
+  border-color: rgba(255, 255, 255, 0.5);
+}
+
+#cclw nav {
+  a {
+    @apply h-full block py-2 px-4;
+    &:hover,
+    &.active {
+      @apply bg-blue-400;
+    }
+  }
+}
+
+#cclw footer {
+  a {
+    @apply text-primary-400;
+    &:hover {
+      @apply underline;
+    }
+  }
+
+  .footer__section {
+    @apply text-sm lg:text-base;
+    > * {
+      @apply mb-4;
+    }
+  }
+
+  .footer__social-links {
+    a {
+      display: block;
+      width: 20px;
+      height: 20px;
+    }
+  }
+
+  .footer__base {
+    background-image: url("/cclw/angles_2.svg");
+    height: 164px;
+    background-position: center;
+    width: 100%;
+  }
+}
+
+#cclw .cclw-semi-circle {
+  @apply transition duration-300  w-[260px] h-[160px] lg:h-auto lg:w-full bg-primary-400 rounded-t-full mt-4 pt-4 pb-2 px-6 text-xl text-center hover:bg-secondary-700 flex-grow flex flex-col items-center justify-center;
+}

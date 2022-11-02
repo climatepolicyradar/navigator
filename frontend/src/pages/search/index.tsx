@@ -31,6 +31,7 @@ import { initialSearchCriteria } from "@constants/searchCriteria";
 import { PER_PAGE } from "@constants/paging";
 import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
 import { TDocument } from "@types";
+import { ExternalLink } from "@components/ExternalLink";
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -214,10 +215,10 @@ const Search = () => {
   };
 
   useEffect(() => {
-    if(offset === null) return;
+    if (offset === null) return;
     handleSearchChange("offset", offset);
     window.scrollTo(0, 0);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [offset]);
 
   useEffect(() => {
@@ -236,7 +237,7 @@ const Search = () => {
       {isFetchingSearchCriteria || !ready ? (
         <LoaderOverlay />
       ) : (
-        <Layout title={`Climate Policy Radar | ${t("Law and Policy Search")}`} heading={t("Law and Policy Search")}>
+        <Layout title={t("Law and Policy Search")} heading={t("Law and Policy Search")}>
           <div onClick={handleDocumentClick}>
             <Slideout ref={slideoutRef} show={showSlideout} setShowSlideout={resetSlideOut}>
               <div className="flex flex-col h-full relative">
@@ -259,8 +260,8 @@ const Search = () => {
                   <SearchForm placeholder={placeholder} handleSearchInput={handleSearchInput} input={searchCriteria.query_string} handleSuggestion={handleSuggestion} />
                 </div>
               </div>
-              <div className="px-4 md:flex container border-b border-blue-200">
-                <div className="md:w-1/4 lg:w-[30%] xl:w-1/4 md:border-r border-blue-200 md:pr-8 flex-shrink-0">
+              <div className="px-4 md:flex container border-b border-lineBorder">
+                <div className="md:w-1/4 lg:w-[30%] xl:w-1/4 md:border-r border-lineBorder md:pr-8 flex-shrink-0">
                   <div className="flex md:hidden items-center justify-center w-full mt-4">
                     <FilterToggle toggle={toggleFilters} isOpen={showFilters} />
                   </div>
@@ -288,6 +289,14 @@ const Search = () => {
                   </div>
                 </div>
                 <div className="md:w-3/4">
+                  <div className="flex justify-end">
+                    <ExternalLink
+                      url="https://docs.google.com/forms/d/e/1FAIpQLSdFkgTNfzms7PCpfIY3d2xGDP5bYXx8T2-2rAk_BOmHMXvCoA/viewform"
+                      className="text-sm text-blue-600 mt-4 md:mt-0 hover:underline"
+                    >
+                      Request to download all data (.csv)
+                    </ExternalLink>
+                  </div>
                   <div className="mt-4 md:flex">
                     <div className="flex-grow">
                       <TabbedNav activeIndex={getCategoryIndex()} items={DOCUMENT_CATEGORIES} handleTabClick={handleDocumentCategoryClick} />

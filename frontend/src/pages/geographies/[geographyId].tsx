@@ -133,7 +133,7 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
 
   return (
     <>
-      <Layout title={`Climate Policy Radar | ${geography?.name ?? "Loading..."}`}>
+      <Layout title={geography?.name ?? "Loading..."}>
         {!geography ? (
           <SingleCol>
             <TextLink onClick={() => router.back()}>Go back</TextLink>
@@ -235,7 +235,7 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
               {geography.legislative_process && (
                 <section className="mt-12">
                   <h3 className="mb-4">Legislative Process</h3>
-                  <div dangerouslySetInnerHTML={{ __html: geography.legislative_process }} />
+                  <div className="text-content" dangerouslySetInnerHTML={{ __html: geography.legislative_process }} />
                 </section>
               )}
             </SingleCol>

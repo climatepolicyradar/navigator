@@ -143,7 +143,7 @@ def test_write_documents_to_s3(test_s3_client, mocker):
     expected_folder_name = every_now.isoformat().replace(":", ".")
     upload_file_mock.assert_called_once_with(
         bucket=PIPELINE_BUCKET,
-        key=f"data-ingest/{expected_folder_name}/documents.json",
+        key=f"input/{expected_folder_name}/documents.json",
         content_type="application/json",
         fileobj=mock.ANY,
     )
