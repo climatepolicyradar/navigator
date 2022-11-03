@@ -1,3 +1,4 @@
+import requests
 from dateutil import parser
 from http.client import OK
 
@@ -10,6 +11,27 @@ def test_endpoint_returns_ok(client, test_db):
         URL_UNDER_TEST,
     )
     assert response.status_code == OK
+
+
+def test_endpoint_returns_data(client, doc_browse_data):
+    """Test the endpoint returns an empty set with no data"""
+    expected_docs = doc_browse_data["docs"]
+    fields = ["import_id", "name", "description", "slug"]
+    response: requests.Response = client.get(
+        URL_UNDER_TEST,
+    )
+    assert response.status_code == OK
+    docs: list[dict] = response.json()
+    assert len(docs) == len(expected_docs)
+
+    sorted_docs = sorted(docs, key=lambda item: item["name"])
+    comparisons_made = 0
+    for actual, expected in zip(sorted_docs, expected_docs):
+        for field in fields:
+            assert actual[field] == expected[field]
+            comparisons_made += 1
+
+    assert comparisons_made == len(fields) * len(expected_docs)
 
 
 def test_no_filters_returns_all(client, doc_browse_data):

@@ -237,6 +237,8 @@ def get_document_overviews(
     query = (
         db.query(
             Document.id.label("document_id"),
+            Document.import_id,
+            Document.slug,
             Document.name,
             Document.description,
             Document.publication_ts,
@@ -624,6 +626,8 @@ def _get_related_documents(
         DocumentOverviewResponse(
             document_id=d.id,
             name=d.name,
+            import_id=d.import_id,
+            slug=d.slug,
             description=d.description,
             country_code=g.value,
             country_name=g.display_value,
@@ -682,6 +686,8 @@ def get_documents_in_relationship(db: Session, relationship_id: int):
         DocumentOverviewResponse(
             document_id=d.id,
             name=d.name,
+            import_id=d.import_id,
+            slug=d.slug,
             description=d.description,
             country_code=g.value,
             country_name=g.display_value,
