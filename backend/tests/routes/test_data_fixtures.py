@@ -1,7 +1,7 @@
 from dateutil.parser import parse
 import pytest
 from app.db.models import Category, Document, DocumentType, Geography, Source, Event
-from app.api.api_v1.schemas.util import json_serialize
+from tests.utils import json_serialize
 
 template_doc = {
     "name": "doc",

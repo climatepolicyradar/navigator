@@ -1,5 +1,5 @@
-from sqlalchemy.orm import class_mapper
 from app.db.session import Base
+from sqlalchemy.orm import class_mapper
 
 
 def json_serialize(model: Base):
