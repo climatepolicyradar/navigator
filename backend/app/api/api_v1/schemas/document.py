@@ -23,6 +23,8 @@ class DocumentOverviewResponse(BaseModel):  # noqa: D101
     """A document overview returned in browse & related document Sequences"""
 
     document_id: int
+    import_id: str
+    slug: str
     name: str
     description: str
     country_code: str

@@ -1,6 +1,7 @@
 from dateutil.parser import parse
 import pytest
 from app.db.models import Category, Document, DocumentType, Geography, Source, Event
+from tests.utils import json_serialize
 
 template_doc = {
     "name": "doc",
@@ -18,6 +19,8 @@ template_doc = {
 
 def make_doc(
     name: str,
+    import_id: str,
+    slug: str,
     source_id: int,
     category_id: int,
     geography_id: int,
@@ -30,8 +33,8 @@ def make_doc(
         "category_id": category_id,
         "geography_id": geography_id,
         "type_id": type_id,
-        "slug": name,
-        "import_id": name,
+        "slug": slug,
+        "import_id": import_id,
         "publication_ts": f"{year}-08-17",
     }
 
@@ -57,9 +60,9 @@ def doc_browse_data(test_db):
 
     # Now setup the Document set
     docs = [
-        make_doc("doc1", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),  # type: ignore
-        make_doc("doc2", sources[0].id, cats[0].id, geos[1].id, doc_types[0].id, 2007),  # type: ignore
-        make_doc("doc3", sources[0].id, cats[0].id, geos[2].id, doc_types[0].id),  # type: ignore
+        make_doc("doc1", "CCLW.executive.1111.1111", "doc1_1111_1111", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),  # type: ignore
+        make_doc("doc2", "CCLW.executive.2222.2222", "doc2_2222_2222", sources[0].id, cats[0].id, geos[1].id, doc_types[0].id, 2007),  # type: ignore
+        make_doc("doc3", "CCLW.executive.3333.3333", "doc3_3333_3333", sources[0].id, cats[0].id, geos[2].id, doc_types[0].id),  # type: ignore
     ]
 
     test_db.add_all(docs)
@@ -67,7 +70,7 @@ def doc_browse_data(test_db):
 
     yield {
         "db": test_db,
-        "docs": docs,
+        "docs": [json_serialize(doc) for doc in docs],
         "geos": geos,
         "doc_types": doc_types,
         "sources": sources,
@@ -99,12 +102,12 @@ def summary_country_data(test_db):
 
     docs = [
         # Sheba's documents
-        make_doc("doc1", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),  # type: ignore
-        make_doc("doc2", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 2007),  # type: ignore
-        make_doc("doc3", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id),  # type: ignore
+        make_doc("doc1", "CCLW.executive.1111.1111", "doc1_1111_1111", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 1990),  # type: ignore
+        make_doc("doc2", "CCLW.executive.2222.2222", "doc2_2222_2222", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id, 2007),  # type: ignore
+        make_doc("doc3", "CCLW.executive.3333.3333", "doc3_3333_3333", sources[0].id, cats[0].id, geos[0].id, doc_types[0].id),  # type: ignore
         # Cuddles' documents
-        make_doc("doc4", sources[0].id, cats[1].id, geos[0].id, doc_types[0].id, 1991),  # type: ignore
-        make_doc("doc5", sources[0].id, cats[1].id, geos[0].id, doc_types[0].id, 2005),  # type: ignore
+        make_doc("doc4", "CCLW.executive.4444.4444", "doc2_4444_4444", sources[0].id, cats[1].id, geos[0].id, doc_types[0].id, 1991),  # type: ignore
+        make_doc("doc5", "CCLW.executive.5555.5555", "doc3_5555_5555", sources[0].id, cats[1].id, geos[0].id, doc_types[0].id, 2005),  # type: ignore
     ]
 
     test_db.add_all(docs)

@@ -514,19 +514,23 @@ def test_document_detail(
     assert sorted_related_docs == [
         {
             "document_id": response1_document["id"],
+            "import_id": "CCLW.001.000.XXX",
             "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
             "description": "the document description",
             "country_code": "NMFS",
             "country_name": "not my favourite subject",
             "publication_ts": "2000-01-01T00:00:00",
+            "slug": "not-my-favourite-subject_2000_energy-sector-strategy-1387-1391-2007-8-2012-3_000_xxx",
         },
         {
             "document_id": response3_document["id"],
+            "import_id": "CCLW.003.000.XXX",
             "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
             "description": "the document description",
             "country_code": "NMFSA",
             "country_name": "not my fav subject again",
             "publication_ts": "1998-01-01T00:00:00",
+            "slug": "not-my-fav-subject-again_1998_energy-sector-strategy-1387-1391-2009-8-2014-3_000_xxx",
         },
     ]
 
