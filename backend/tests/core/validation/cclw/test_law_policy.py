@@ -4,6 +4,7 @@ from io import BytesIO, TextIOWrapper
 import pytest
 
 from app.core.validation.cclw.law_policy.process_csv import (
+    POSTFIX_FIELD,
     extract_documents,
     validated_input,
     ACTION_ID_FIELD,
@@ -63,11 +64,12 @@ CCLW_FIELDNAMES = [
     TITLE_FIELD,
     TOPICS_FIELD,
     YEAR_FIELD,
+    POSTFIX_FIELD,
 ]
 
 
 INVALID_CSV_MISSING_HEADERS = (
-    f"{ACTION_ID_FIELD},{CATEGORY_FIELD},{COUNTRY_CODE_FIELD},{DESCRIPTION_FIELD},"
+    f"{POSTFIX_FIELD},{ACTION_ID_FIELD},{CATEGORY_FIELD},{COUNTRY_CODE_FIELD},{DESCRIPTION_FIELD},"
     f"{DOCUMENT_FIELD},{DOCUMENT_ID_FIELD},{DOCUMENT_TYPE_FIELD},{EVENTS_FIELD},"
     f"{FRAMEWORKS_FIELD},{GEOGRAPHY_FIELD},{HAZARDS_FIELD},{INSTRUMENTS_FIELD},"
     f"{KEYWORDS_FIELD},{PARENT_LEGISLATION_FIELD},{SECTORS_FIELD},"
@@ -75,7 +77,7 @@ INVALID_CSV_MISSING_HEADERS = (
 )
 MISSING_HEADERS = [LANGUAGES_FIELD]
 INVALID_CSV_EXTRA_HEADERS = (
-    f"{ACTION_ID_FIELD},{CATEGORY_FIELD},{COUNTRY_CODE_FIELD},{DESCRIPTION_FIELD},"
+    f"{POSTFIX_FIELD},{ACTION_ID_FIELD},{CATEGORY_FIELD},{COUNTRY_CODE_FIELD},{DESCRIPTION_FIELD},"
     f"{DOCUMENT_FIELD},sneaky,{DOCUMENT_ID_FIELD},{DOCUMENT_TYPE_FIELD},{EVENTS_FIELD},"
     f"{FRAMEWORKS_FIELD},{GEOGRAPHY_FIELD},{HAZARDS_FIELD},{INSTRUMENTS_FIELD},"
     f"{KEYWORDS_FIELD},{LANGUAGES_FIELD},{PARENT_LEGISLATION_FIELD},{SECTORS_FIELD},"
@@ -83,14 +85,14 @@ INVALID_CSV_EXTRA_HEADERS = (
 )
 EXTRA_HEADERS = ["sneaky", "extra"]
 INVALID_CSV_MIXED_ERRORS = (
-    f"{ACTION_ID_FIELD},{CATEGORY_FIELD},{COUNTRY_CODE_FIELD},{DESCRIPTION_FIELD},"
+    f"{POSTFIX_FIELD},{ACTION_ID_FIELD},{CATEGORY_FIELD},{COUNTRY_CODE_FIELD},{DESCRIPTION_FIELD},"
     f"{DOCUMENT_FIELD},{DOCUMENT_ID_FIELD},{DOCUMENT_TYPE_FIELD},{EVENTS_FIELD},"
     f"{FRAMEWORKS_FIELD},sneaky,{GEOGRAPHY_FIELD},{HAZARDS_FIELD},{INSTRUMENTS_FIELD},"
     f"{KEYWORDS_FIELD},{PARENT_LEGISLATION_FIELD},{SECTORS_FIELD},"
     f"{TITLE_FIELD},extra,{TOPICS_FIELD},{YEAR_FIELD}\n"
 )
 VALID_CSV_HEADER = (
-    f"{ACTION_ID_FIELD},{DOCUMENT_ID_FIELD},{TITLE_FIELD},{DESCRIPTION_FIELD},"
+    f"{POSTFIX_FIELD},{ACTION_ID_FIELD},{DOCUMENT_ID_FIELD},{TITLE_FIELD},{DESCRIPTION_FIELD},"
     f"{COUNTRY_CODE_FIELD},{DOCUMENT_FIELD},{CATEGORY_FIELD},{EVENTS_FIELD},"
     f"{SECTORS_FIELD},{INSTRUMENTS_FIELD},{FRAMEWORKS_FIELD},{TOPICS_FIELD},"
     f"{HAZARDS_FIELD},{DOCUMENT_TYPE_FIELD},{YEAR_FIELD},{LANGUAGES_FIELD},"
@@ -126,7 +128,7 @@ def test_validated_input__valid():
 
 
 INVALID_LINE_1 = (
-    "1,2,name,description,GEO,https://dave|en,executive,01/01/2014|Approved||,"
+    ",1,2,name,description,GEO,https://dave|en,executive,01/01/2014|Approved||,"
     "unknown_sector,instrument,framework,topic,hazard,doctype,2014,language,"
     "unknown_keyword,geography\n"
 )
@@ -168,12 +170,12 @@ def test_extract_documents_invalid(test_db):
 
 
 VALID_LINE_1 = (
-    "1,2,name1,description1,GEO,https://dave|en,executive,01/01/2014|Approved||,"
+    "pf1,1,2,name1,description1,GEO,https://dave|en,executive,01/01/2014|Approved||,"
     "sector,instrument,framework,topic,hazard1,doctype,2014,language,"
     "keyword1,geography\n"
 )
 VALID_LINE_2 = (
-    "2,33,name2,description2,GEO,https://steve|en,executive,25/12/2015|Approved||,"
+    "pf2,2,33,name2,description2,GEO,https://steve|en,executive,25/12/2015|Approved||,"
     "sector,instrument,framework,topic,hazard1;hazard2,doctype,2015,language,"
     "keyword1;keyword2,geography\n"
 )
@@ -209,9 +211,11 @@ def test_extract_documents_valid(test_db):
         )
     )
     assert len(validated_files) == 2
+    assert validated_files[0].create_request.postfix == "pf1"
     assert validated_files[0].create_request.source_url == "https://dave"
     assert validated_files[0].create_request.keywords == ["keyword1"]
     assert validated_files[0].create_request.hazards == ["hazard1"]
+    assert validated_files[1].create_request.postfix == "pf2"
     assert validated_files[1].create_request.source_url == "https://steve"
     assert validated_files[1].create_request.keywords == ["keyword1", "keyword2"]
     assert validated_files[1].create_request.hazards == ["hazard1", "hazard2"]
