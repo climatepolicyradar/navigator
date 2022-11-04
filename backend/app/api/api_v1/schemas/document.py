@@ -90,6 +90,7 @@ class DocumentCreateRequest(BaseModel):  # noqa: D106
     publication_ts: datetime.datetime
     name: str
     description: str
+    postfix: Optional[str]
     source_url: Optional[str]
 
     type: str

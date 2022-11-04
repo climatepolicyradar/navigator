@@ -219,6 +219,7 @@ def create_document(
         type_id=existing_type_id,
         category_id=existing_category_id,
         publication_ts=document_create_request.publication_ts,
+        postfix=document_create_request.postfix,
     )
     db.add(new_document)
     db.flush()
