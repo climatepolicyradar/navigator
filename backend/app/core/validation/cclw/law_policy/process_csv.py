@@ -40,6 +40,7 @@ SECTORS_FIELD = "Sectors"
 TITLE_FIELD = "Title"
 TOPICS_FIELD = "Responses"
 YEAR_FIELD = "Year"
+POSTFIX_FIELD = "Display comment"
 
 _EXPECTED_FIELDS = set(
     [
@@ -62,6 +63,7 @@ _EXPECTED_FIELDS = set(
         TITLE_FIELD,
         TOPICS_FIELD,
         YEAR_FIELD,
+        POSTFIX_FIELD,
     ]
 )
 
@@ -310,6 +312,7 @@ def extract_documents(
             events=events,
             override_year=year,
         )
+        postfix = row[POSTFIX_FIELD].strip()
 
         yield DocumentValidationResult(
             row=row_index,
@@ -317,6 +320,7 @@ def extract_documents(
             create_request=DocumentCreateRequest(
                 name=document_name,
                 description=document_description,
+                postfix=postfix,
                 source_url=document_url,
                 import_id=import_id,
                 publication_ts=publication_date,
