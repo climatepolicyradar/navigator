@@ -105,7 +105,7 @@ def write_csv_to_s3(s3_client: S3Client, file_contents: str) -> Union[S3Document
     """
     bytes_content = BytesIO(file_contents.encode("utf8"))
     current_datetime = datetime.now().isoformat().replace(":", ".")
-    csv_object_key = f"{INGEST_TRIGGER_ROOT}/{current_datetime}-bulk-import.csv"
+    csv_object_key = f"{INGEST_TRIGGER_ROOT}/{current_datetime}/bulk-import.csv"
     _LOGGER.info(
         "Writing CSV file into S3",
         extra={
