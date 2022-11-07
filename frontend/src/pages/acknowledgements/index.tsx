@@ -43,7 +43,7 @@ const Acknowledgements = () => {
           <Acknowledgement
             partnerImage={{ url: "https://climate.law.columbia.edu", imageUrl: "Sabin_logo.png", imageAlt: "Sabin Center for Climate Change Law at Columbia Law School logo" }}
           >
-            <h4>The Sabin Centre for Climate Change Law at Columbia Law School</h4>
+            <h4>The Sabin Center for Climate Change Law at Columbia Law School</h4>
             <p>
               The Sabin Center for Climate Change Law at Columbia Law School develops and promulgates legal techniques to address climate change and trains the next generation of
               lawyers who will be leaders in the field. The Sabin Center is an affiliate of the Earth Institute and the Columbia Climate School. Climate Change Laws of the World
