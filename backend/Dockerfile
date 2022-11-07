@@ -8,7 +8,7 @@ RUN apt update && \
 
 # Install pip and poetry
 RUN pip install --upgrade pip
-RUN pip install "poetry==1.1.8"
+RUN pip install "poetry==1.2.2"
 
 # Create layer for dependencies
 COPY poetry.lock pyproject.toml ./

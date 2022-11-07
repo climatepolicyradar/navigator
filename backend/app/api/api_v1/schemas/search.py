@@ -3,8 +3,6 @@ from typing import Dict, List, Mapping, Optional, Tuple
 
 from pydantic import BaseModel, conlist
 
-from app.api.api_v1.schemas.metadata import Event
-
 
 Coord = Tuple[float, float]
 
@@ -117,7 +115,6 @@ class SummaryCountryResponse(BaseModel):
 
     document_counts: Mapping[CategoryName, int]
     top_documents: Mapping[CategoryName, Top5DocumentList]
-    events: List[Event]
     targets: List[str]  # TODO: Placeholder for later
 
 

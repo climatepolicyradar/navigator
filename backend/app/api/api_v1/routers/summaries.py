@@ -8,7 +8,7 @@ from app.api.api_v1.schemas.search import (
     SummaryCountryResponse,
     CategoryName,
 )
-from app.core.browse import BrowseArgs, browse_rds, get_events_for_country
+from app.core.browse import BrowseArgs, browse_rds
 from app.db.session import get_db
 
 _LOGGER = logging.getLogger(__name__)
@@ -32,6 +32,7 @@ def search_by_country(
     db=Depends(get_db),
 ):
     """Searches the documents filtering by country and grouping by category."""
+    _LOGGER.info(f"Getting geography summary for {geography_slug}")
     top_documents = {}
     document_counts = {}
 
@@ -42,14 +43,11 @@ def search_by_country(
         document_counts[cat] = len(results.documents)
         top_documents[cat] = list(results.documents[:5])
 
-    events = get_events_for_country(db, geography_slug)
-
     # TODO: Add targets
     targets = []
 
     return SummaryCountryResponse(
         document_counts=document_counts,
         top_documents=top_documents,
-        events=events,
         targets=targets,
     )

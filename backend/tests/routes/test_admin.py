@@ -288,7 +288,11 @@ def test_bulk_import_cclw_law_policy_valid(
     mock_write_csv_to_s3 = mocker.patch("app.api.api_v1.routers.admin.write_csv_to_s3")
 
     test_db.add(Source(name="CCLW"))
-    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(
+        Geography(
+            display_value="geography", slug="geography", value="GEO", type="country"
+        )
+    )
     test_db.add(DocumentType(name="doctype", description="doctype"))
     test_db.add(Language(language_code="LAN", name="language"))
     test_db.add(Category(name="Policy", description="policy"))
@@ -347,7 +351,11 @@ def test_bulk_import_cclw_law_policy_invalid(
     mock_write_csv_to_s3 = mocker.patch("app.api.api_v1.routers.admin.write_csv_to_s3")
 
     test_db.add(Source(name="CCLW"))
-    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(
+        Geography(
+            display_value="geography", slug="geography", value="GEO", type="country"
+        )
+    )
     test_db.add(DocumentType(name="doctype", description="doctype"))
     test_db.add(Language(language_code="LAN", name="language"))
     test_db.add(Category(name="executive", description="executive"))
@@ -389,7 +397,11 @@ def test_bulk_import_cclw_law_policy_db_objects(
     mock_write_csv_to_s3 = mocker.patch("app.api.api_v1.routers.admin.write_csv_to_s3")
 
     test_db.add(Source(name="CCLW"))
-    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(
+        Geography(
+            display_value="geography", slug="geography", value="GEO", type="country"
+        )
+    )
     test_db.add(DocumentType(name="doctype", description="doctype"))
     test_db.add(Language(language_code="LAN", name="language"))
     test_db.add(Category(name="Policy", description="Policy"))
@@ -441,7 +453,11 @@ def test_bulk_import_cclw_law_policy_preexisting_db_objects(
     mock_write_csv_to_s3 = mocker.patch("app.api.api_v1.routers.admin.write_csv_to_s3")
 
     test_db.add(Source(name="CCLW"))
-    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(
+        Geography(
+            display_value="geography", slug="geography", value="GEO", type="country"
+        )
+    )
     test_db.add(DocumentType(name="doctype", description="doctype"))
     test_db.add(Language(language_code="LAN", name="language"))
     test_db.add(Category(name="Policy", description="Policy"))
