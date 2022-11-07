@@ -147,7 +147,7 @@ const Footer = () => {
               <p>Using AI and data science to map the world's climate policies</p>
               <ul className="mb-6">
                 <li className="mb-1">
-                  <ExternalLink url="https://www.climatepolicyradar.org">www.climatepolicyradar.org</ExternalLink>
+                  Visit the <ExternalLink url="https://www.climatepolicyradar.org">Climate Policy Radar website</ExternalLink>
                 </li>
                 <li className="mb-1">
                   <ExternalLink url="https://3566c5a7.sibforms.com/serve/MUIEAPkXK4liqQjleE87527EfcD9gDzY26dQhnJOxNeXZK_TvEAjl_Qu7rrkysJS2ODrj1LioiH24HTGbul2vS1sAxYCPHtu7PgnhZrAE9yCfaFrJ7vzmvBc3u87cs_pkC_99nQ2AqBONHtLwErrV7mcVga2qNlO1xetSeqVVWYsrVPRjg6Rc978eQEMasGQc4PFgIfMFza8TJEv">
