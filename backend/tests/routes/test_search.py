@@ -4,7 +4,6 @@ import fastapi
 from datetime import datetime
 
 import pytest
-
 import app.core
 from app.api.api_v1.routers import search
 from app.api.api_v1.schemas.search import (
@@ -14,6 +13,7 @@ from app.api.api_v1.schemas.search import (
     FilterField,
 )
 from app.core.search import _FILTER_FIELD_MAP, OpenSearchQueryConfig
+import app.core.jit_query_wrapper
 
 _TOTAL_DOCUMENT_COUNT = 7
 
@@ -171,7 +171,7 @@ def test_search_body_valid(test_opensearch, monkeypatch, client):
 @pytest.mark.search
 def test_jit_query_is_default(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
-    jit_query_spy = mocker.spy(app.core.jit_query_wrapper, "jit_query")
+    jit_query_spy = mocker.spy(app.core.jit_query_wrapper, "jit_query")  # noqa
     background_task_spy = mocker.spy(fastapi.BackgroundTasks, "add_task")
 
     response = client.post(
