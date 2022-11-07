@@ -30,8 +30,8 @@ const Methodology = () => {
             This page outlines the definitions, scope, and principles used to collect and categorise the legislation displayed in the Climate Change Laws of the World database.{" "}
           </p>
           <p>
-            Climate Change Laws of the World also tracks climate change litigation. For details on the methodology used to collect and categorise litigation cases{" "}
-            <a href="#litigation">click here</a>.
+            Climate Change Laws of the World also tracks climate change litigation. Find details on the{" "}
+            <a href="#litigation">methodology used to collect and categorise litigation cases</a>.
           </p>
         </div>
         <h4>Scope of documents included</h4>
@@ -198,9 +198,9 @@ const Methodology = () => {
         <p>
           Since the database has moved online, updates to the data are collected in real time from official sources such as government websites, parliamentary records and court
           documents. Most entries contain a link to the actual text of the law or the filing and court decision. The efforts of the CCLW team are regularly supplemented by
-          contributions from lawyers, scholars, policymakers and other colleagues from around the world who alert us to new data as it becomes available. Please follow{" "}
-          <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLSdBdX2mLzFdeP8sTd_K7dsv8oylX6EBQucR_HhiXYZm1GA6gg/viewform">this link</ExternalLink> if you wish to contribute
-          or email us at <ExternalLink url="mailto:gri.cgl@lse.co.uk">gri.cgl@lse.ac.uk</ExternalLink>.
+          contributions from lawyers, scholars, policymakers and other colleagues from around the world who alert us to new data as it becomes available. Please{" "}
+          <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLSdBdX2mLzFdeP8sTd_K7dsv8oylX6EBQucR_HhiXYZm1GA6gg/viewform">fill out our form</ExternalLink> if you wish to
+          contribute or email us at <ExternalLink url="mailto:gri.cgl@lse.co.uk">gri.cgl@lse.ac.uk</ExternalLink>.
         </p>
         <h4>Principles and Limitations</h4>
         <p>
@@ -339,8 +339,8 @@ const Methodology = () => {
             database.
           </p>
           <p>
-            Climate Change Laws of the World also tracks climate change legislation. For details on the methodology used to collect and categorise legislation{" "}
-            <a href="#legislation">click here</a>.
+            Climate Change Laws of the World also tracks climate change legislation. Find details on the{" "}
+            <a href="#legislation">methodology used to collect and categorise legislation</a>.
           </p>
         </div>
         <h4>Scope</h4>
