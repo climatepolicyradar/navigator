@@ -62,6 +62,49 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
 
 
 @pytest.mark.search
+def test_search_result_schema(test_opensearch, monkeypatch, client):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    expected_search_result_schema = [
+        "document_name",
+        "document_postfix",
+        "document_country_code",
+        "document_source_name",
+        "document_date",
+        "document_id",
+        "document_country_english_shortname",
+        "document_description",
+        "document_type",
+        "document_category",
+        "document_source_url",
+        "document_url",
+        "document_content_type",
+        "document_title_match",
+        "document_description_match",
+        "document_passage_matches",
+    ]
+    page1_response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": False,
+            "limit": 100,
+            "offset": 0,
+        },
+    )
+    assert page1_response.status_code == 200
+
+    page1_response_body = page1_response.json()
+    page1_documents = page1_response_body["documents"]
+    assert len(page1_documents) == 5
+
+    assertions = 0
+    for d in page1_documents:
+        assert list(d.keys()) == expected_search_result_schema
+        assertions += 1
+
+
+@pytest.mark.search
 def test_pagination_overlap(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
