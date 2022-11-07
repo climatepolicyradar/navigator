@@ -52,7 +52,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
         {page?.content_type.includes("pdf") && <DocumentIcon height="24" width="24" />}
         {page?.content_type.includes("html") && <GlobeIcon height="24" width="24" />}
         <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300 flex ml-2">
-          <span className="mr-1">{page?.content_type.includes("html") ? "Visit source website" : "Open full document"}</span>
+          <span className="mr-1">{page?.content_type.includes("html") ? "Visit source website" : "See full text (opens in new tab)"}</span>
           <ExternalLinkIcon height="16" width="16" />
         </ExternalLink>
       </div>
@@ -167,7 +167,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                     <ExternalLink url="http://lse.ac.uk/grantham" className="text-blue-500 hover:text-indigo-600 hover:underline transition duration-300">
                       Grantham Research Institute
                     </ExternalLink>
-                    . If you want to use this summary, please check Terms & Conditions for citation and licensing of third party data.
+                    . If you want to use this summary, please check Terms of use for citation and licensing of third party data.
                   </p>
                 </div>
               </div>
