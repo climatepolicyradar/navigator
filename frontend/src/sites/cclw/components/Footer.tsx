@@ -164,6 +164,9 @@ const Footer = () => {
                   <ExternalLink url="https://twitter.com/climatepolradar">
                     <img src="/images/social/twitter.svg" alt="Twitter Logo" />
                   </ExternalLink>
+                  <ExternalLink url="https://www.youtube.com/channel/UCjcQnXKzZmo7r9t-RnHjbnA">
+                    <img src="/images/social/youtube.svg" alt="YouTube Logo" />
+                  </ExternalLink>
                   <ExternalLink url="https://www.linkedin.com/company/climate-policy-radar">
                     <img src="/images/social/linkedIn.svg" alt="LinkedIn Logo" />
                   </ExternalLink>
