@@ -241,6 +241,7 @@ def get_document_overviews(
             Document.import_id,
             Document.slug,
             Document.name,
+            Document.postfix,
             Document.description,
             Document.publication_ts,
             Geography.display_value.label("country_name"),
@@ -370,6 +371,7 @@ def get_document_detail(db, import_id_or_slug) -> DocumentDetailResponse:
     return DocumentDetailResponse(
         id=document_id,
         name=cast(str, document.name),
+        postfix=cast(str, document.postfix),
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
         source_url=cast(str, document.source_url),
@@ -627,6 +629,7 @@ def _get_related_documents(
         DocumentOverviewResponse(
             document_id=d.id,
             name=d.name,
+            postfix=d.postfix,
             import_id=d.import_id,
             slug=d.slug,
             description=d.description,
@@ -687,6 +690,7 @@ def get_documents_in_relationship(db: Session, relationship_id: int):
         DocumentOverviewResponse(
             document_id=d.id,
             name=d.name,
+            postfix=d.postfix,
             import_id=d.import_id,
             slug=d.slug,
             description=d.description,
