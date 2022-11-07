@@ -169,7 +169,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
     document3_payload = {
         "publication_ts": "1998-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
-        "postfix": "postfix3",
+        "postfix": "",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
         "type": "just my type",
@@ -202,7 +202,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
     document4_payload = {
         "publication_ts": "1997-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2010/8-2015/3)",
-        "postfix": "postfix4",
+        "postfix": None,
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
         "type": "just my type",
@@ -534,7 +534,7 @@ def test_document_detail(
             "document_id": response3_document["id"],
             "import_id": "CCLW.003.000.XXX",
             "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
-            "postfix": "postfix3",
+            "postfix": "",
             "description": "the document description",
             "country_code": "NMFSA",
             "country_name": "not my fav subject again",

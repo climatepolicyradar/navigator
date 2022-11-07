@@ -371,10 +371,10 @@ def get_document_detail(db, import_id_or_slug) -> DocumentDetailResponse:
     return DocumentDetailResponse(
         id=document_id,
         name=cast(str, document.name),
-        postfix=cast(str, document.postfix),
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
-        source_url=cast(str, document.source_url),
+        postfix=cast(str, document.postfix) if document.postfix else None,
+        source_url=cast(str, document.source_url) if document.source_url else None,
         # TODO: remove with document.url
         url=to_cdn_url(document.cdn_object) or s3_to_cdn_url(document.url),
         slug=document.slug,
