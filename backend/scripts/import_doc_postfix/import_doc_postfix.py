@@ -1,19 +1,14 @@
 #!/usr/bin/env python3
 
 import sys
+from app.db.models.document import Document
 from app.db.session import SessionLocal
-from sqlalchemy.orm import Session
 
 from app.core.validation.cclw.law_policy.process_csv import (
     validated_input,
     import_id_from_csv_row,
     POSTFIX_FIELD,
 )
-
-
-def _convert_associations_to_relationship(db: Session, id: int):
-    db.commit()
-
 
 if __name__ == "__main__":
     print("Importing document postfixes...")
@@ -24,6 +19,26 @@ if __name__ == "__main__":
         sys.exit(1)
 
     csv_reader = validated_input(open(sys.argv[1]))
-    rows = [(row[POSTFIX_FIELD], import_id_from_csv_row(row)) for row in csv_reader]
+    mappings = [
+        {
+            "import_id": import_id_from_csv_row(row),
+            "id": db.query(Document.id)
+            .filter(Document.import_id == import_id_from_csv_row(row))
+            .scalar(),
+            "postfix": row[POSTFIX_FIELD],
+        }
+        for row in csv_reader
+    ]
+    id_postfix_mappings = [
+        {
+            "id": row["id"],
+            "postfix": row["postfix"],
+        }
+        for row in mappings
+        if row["id"] is not None
+    ]
+    print(id_postfix_mappings)
 
-    print(rows)
+    # Now https://docs.sqlalchemy.org/en/20/orm/queryguide/dml.html#orm-queryguide-bulk-update
+    db.bulk_update_mappings(Document, id_postfix_mappings)
+    db.commit()
