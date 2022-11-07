@@ -31,7 +31,7 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
                 <span className="font-bold"> 2,576</span>
               </span>
               <span className="block">
-                laws & policies
+                laws and policies
                 <span className="font-bold"> &gt;</span>
               </span>
             </a>
@@ -59,7 +59,7 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
           </div>
           <div className="flex flex-col justify-between items-center lg:px-8">
             <div className="text-lg font-bold">Technology</div>
-            <div className="mt-4">We are now powered by data science and AI.</div>
+            <div className="mt-4">We are now powered by data science and AI</div>
             <div className="mt-4">
               <ExternalLink url="https://climatepolicyradar.org/what-we-do">
                 <Button extraClasses="flex items-center">
