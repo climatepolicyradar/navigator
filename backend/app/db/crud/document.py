@@ -469,14 +469,14 @@ def _get_geography_by_slug_or_display_or_value(
     # Lookup geography by display_value or value
     existing_geography = (
         db.query(Geography).filter(Geography.slug == display_or_value_or_slug)
-    ).scalar()
+    ).first()
     if existing_geography is None:
         # If the slug returned no results, attempt a lookup by display_value
         existing_geography = (
             db.query(Geography).filter(
                 Geography.display_value == display_or_value_or_slug
             )
-        ).scalar()
+        ).first()
     if existing_geography is None:
         # If the slug and display_value returned no results, attempt a lookup by value
         # (this is the least reliable and not guaranteed to be unique)
@@ -492,7 +492,7 @@ def _get_language_by_code_or_name(db: Session, code_or_name: str) -> Language:
     # Lookup language by language_code as a preference
     existing_language = (
         db.query(Language).filter(Language.language_code == code_or_name)
-    ).scalar()
+    ).first()
     if existing_language is None:
         # If the language_code returned no results, attempt a lookup by name
         # (this is the least reliable and not guaranteed to be unique)
