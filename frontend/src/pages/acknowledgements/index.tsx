@@ -53,7 +53,7 @@ const Acknowledgements = () => {
             </p>
           </Acknowledgement>
           <Acknowledgement
-            partnerImage={{ url: "https://www.filefoundation.org/", imageUrl: "File_logo.jpg", imageAlt: "Foundation for International Law and the Environment logo" }}
+            partnerImage={{ url: "https://www.filefoundation.org/", imageUrl: "FILE_logo.jpg", imageAlt: "Foundation for International Law and the Environment logo" }}
           >
             <h4>Foundation for International Law and the Environment</h4>
             <p>
