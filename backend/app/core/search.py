@@ -52,7 +52,7 @@ from app.api.api_v1.schemas.search import (
     SearchResponseDocumentPassage,
     SortField,
     SortOrder,
-    ResultsExclusion,
+    IncludedResults,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -258,31 +258,29 @@ class OpenSearchConnection:
     def _get_opensearch_indices_to_query(
         self, search_request: SearchRequestBody
     ) -> str:
-        """Get the OpenSearch indices to query based on the request body."""
+        """Get the OpenSearch indices to query based on the request body. Returns a comma-separated string of indices."""
 
-        if search_request.exclude_results is None:
-            return f"{self._opensearch_config.index_prefix}*"
-
+        # By default we just query the index containing names and descriptions, and the non-translated PDFs
         indices_include = [
             f"{self._opensearch_config.index_prefix}_core",
             f"{self._opensearch_config.index_prefix}_pdfs_non_translated",
-            f"{self._opensearch_config.index_prefix}_pdfs_translated",
-            f"{self._opensearch_config.index_prefix}_htmls_non_translated",
-            f"{self._opensearch_config.index_prefix}_htmls_translated",
         ]
 
-        if ResultsExclusion.PDFS_TRANSLATED in search_request.exclude_results:
-            indices_include.remove(
+        if search_request.include_results is None:
+            return ",".join(indices_include)
+
+        if IncludedResults.PDFS_TRANSLATED in search_request.include_results:
+            indices_include.extend(
                 f"{self._opensearch_config.index_prefix}_pdfs_translated"
             )
 
-        if ResultsExclusion.HTMLS_TRANSLATED in search_request.exclude_results:
-            indices_include.remove(
+        if IncludedResults.HTMLS_TRANSLATED in search_request.include_results:
+            indices_include.extend(
                 f"{self._opensearch_config.index_prefix}_htmls_translated"
             )
 
-        if ResultsExclusion.HTMLS_NON_TRANSLATED in search_request.exclude_results:
-            indices_include.remove(
+        if IncludedResults.HTMLS_NON_TRANSLATED in search_request.include_results:
+            indices_include.extend(
                 f"{self._opensearch_config.index_prefix}_htmls_non_translated"
             )
 
