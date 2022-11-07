@@ -4,6 +4,7 @@ import fastapi
 from datetime import datetime
 
 import pytest
+
 import app.core
 from app.api.api_v1.routers import search
 from app.api.api_v1.schemas.search import (
@@ -62,27 +63,29 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
 
 
 @pytest.mark.search
-def test_search_result_schema(test_opensearch, monkeypatch, client):
+def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
-    expected_search_result_schema = [
-        "document_name",
-        "document_postfix",
-        "document_country_code",
-        "document_source_name",
-        "document_date",
-        "document_id",
-        "document_country_english_shortname",
-        "document_description",
-        "document_type",
-        "document_category",
-        "document_source_url",
-        "document_url",
-        "document_content_type",
-        "document_title_match",
-        "document_description_match",
-        "document_passage_matches",
-    ]
+    expected_search_result_schema = sorted(
+        [
+            "document_name",
+            "document_postfix",
+            "document_country_code",
+            "document_source_name",
+            "document_date",
+            "document_id",
+            "document_country_english_shortname",
+            "document_description",
+            "document_type",
+            "document_category",
+            "document_source_url",
+            "document_url",
+            "document_content_type",
+            "document_title_match",
+            "document_description_match",
+            "document_passage_matches",
+        ]
+    )
     page1_response = client.post(
         "/api/v1/searches",
         json={
@@ -98,10 +101,10 @@ def test_search_result_schema(test_opensearch, monkeypatch, client):
     page1_documents = page1_response_body["documents"]
     assert len(page1_documents) == 5
 
-    assertions = 0
     for d in page1_documents:
-        assert list(d.keys()) == expected_search_result_schema
-        assertions += 1
+        assert sorted(list(d.keys())) == expected_search_result_schema
+
+    assert "Document ids missing" in caplog.text
 
 
 @pytest.mark.search
