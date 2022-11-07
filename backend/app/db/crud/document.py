@@ -241,6 +241,7 @@ def get_document_overviews(
             Document.import_id,
             Document.slug,
             Document.name,
+            Document.postfix,
             Document.description,
             Document.publication_ts,
             Geography.display_value.label("country_name"),
@@ -372,7 +373,8 @@ def get_document_detail(db, import_id_or_slug) -> DocumentDetailResponse:
         name=cast(str, document.name),
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
-        source_url=cast(str, document.source_url),
+        postfix=cast(str, document.postfix) if document.postfix else None,
+        source_url=cast(str, document.source_url) if document.source_url else None,
         # TODO: remove with document.url
         url=to_cdn_url(document.cdn_object) or s3_to_cdn_url(document.url),
         slug=document.slug,
@@ -627,6 +629,7 @@ def _get_related_documents(
         DocumentOverviewResponse(
             document_id=d.id,
             name=d.name,
+            postfix=d.postfix,
             import_id=d.import_id,
             slug=d.slug,
             description=d.description,
@@ -687,6 +690,7 @@ def get_documents_in_relationship(db: Session, relationship_id: int):
         DocumentOverviewResponse(
             document_id=d.id,
             name=d.name,
+            postfix=d.postfix,
             import_id=d.import_id,
             slug=d.slug,
             description=d.description,

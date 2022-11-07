@@ -26,6 +26,7 @@ class DocumentOverviewResponse(BaseModel):  # noqa: D101
     import_id: str
     slug: str
     name: str
+    postfix: Optional[str]
     description: str
     country_code: str
     country_name: str
@@ -40,6 +41,7 @@ class DocumentDetailResponse(BaseModel):
 
     id: int
     name: str
+    postfix: Optional[str]
     description: str
     publication_ts: datetime.datetime
     source_url: Optional[str]

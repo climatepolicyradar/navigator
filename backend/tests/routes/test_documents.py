@@ -94,6 +94,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
     document1_payload = {
         "publication_ts": "2000-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+        "postfix": "postfix1",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
         "type": "just my type",
@@ -127,6 +128,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
     document2_payload = {
         "publication_ts": "1999-01-01T00:00:00.000000+00:00",
         "name": "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)",
+        "postfix": "postfix2",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/g",
         "type": "just my type",
@@ -167,6 +169,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
     document3_payload = {
         "publication_ts": "1998-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
+        "postfix": "",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
         "type": "just my type",
@@ -199,6 +202,7 @@ def create_4_documents(test_db, client, superuser_token_headers):
     document4_payload = {
         "publication_ts": "1997-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2010/8-2015/3)",
+        "postfix": None,
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
         "type": "just my type",
@@ -315,6 +319,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
     payload = {
         "publication_ts": "2000-01-01T00:00:00.000000+00:00",
         "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+        "postfix": "A",
         "description": "the document description",
         "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
         "type": "just my type",
@@ -346,6 +351,7 @@ def test_post_documents(client, superuser_token_headers, test_db):
 
     doc: Document = test_db.query(Document).first()
     assert doc.name == payload["name"]
+    assert doc.postfix == payload["postfix"]
     assert doc.description == payload["description"]
     assert doc.url is None
     assert doc.md5_sum is None
@@ -486,6 +492,7 @@ def test_document_detail(
         == "Agriculture Sector Strategy 1487-1491 (2008/9-2013/4)"
     )
     assert get_detail_json_2["description"] == "the document description"
+    assert get_detail_json_2["postfix"] == "postfix2"
     assert get_detail_json_2["publication_ts"] == "1999-01-01T00:00:00"
     assert (
         get_detail_json_2["source_url"]
@@ -516,6 +523,7 @@ def test_document_detail(
             "document_id": response1_document["id"],
             "import_id": "CCLW.001.000.XXX",
             "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
+            "postfix": "postfix1",
             "description": "the document description",
             "country_code": "NMFS",
             "country_name": "not my favourite subject",
@@ -526,6 +534,7 @@ def test_document_detail(
             "document_id": response3_document["id"],
             "import_id": "CCLW.003.000.XXX",
             "name": "Energy Sector Strategy 1387-1391 (2009/8-2014/3)",
+            "postfix": "",
             "description": "the document description",
             "country_code": "NMFSA",
             "country_name": "not my fav subject again",
