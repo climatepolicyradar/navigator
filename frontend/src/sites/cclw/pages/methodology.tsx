@@ -17,7 +17,7 @@ const Methodology = () => {
             <a href="#litigation">The methodology for litigation cases</a>
           </li>
           <li>
-            <ExternalLink url="https://app.climatepolicyradar.org/methodology">
+            <ExternalLink url="https://github.com/climatepolicyradar/methodology">
               The methodology used by Climate Policy Radar to power the search functions used by the database
             </ExternalLink>
           </li>
