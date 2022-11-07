@@ -37,7 +37,7 @@ services:
     environment:
       PYTHONPATH: .
       PORT: 8888
-      OPENSEARCH_INDEX: navigator
+      OPENSEARCH_INDEX_PREFIX: navigator
       DATABASE_URL: {database_url}
       SECRET_KEY: {secret_key}
       OPENSEARCH_USER: {opensearch_user}

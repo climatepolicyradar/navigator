@@ -60,7 +60,7 @@ def test_opensearch():
             url=os.environ["OPENSEARCH_URL"],
             username=os.environ["OPENSEARCH_USER"],
             password=os.environ["OPENSEARCH_PASSWORD"],
-            index_name=f"{os.environ['OPENSEARCH_INDEX']}_test",
+            index_prefix=f"{os.environ['OPENSEARCH_INDEX_PREFIX']}_test",
         )
     )
     yield connection
