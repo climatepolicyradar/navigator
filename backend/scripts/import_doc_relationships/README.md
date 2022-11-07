@@ -12,5 +12,15 @@
 
 2. From the `backend` folder in the repository run:
 ```bash
-PYTHONPATH=$PWD python scripts/import_doc_relationships/import_doc_relationships.py <csv_file>
+PYTHONPATH=$PWD python scripts/import_doc_relationships/import_doc_relationships.py
+```
+
+## SQL
+
+```
+SELECT * FROM (
+	SELECT (string_to_array(import_id, '.'))[3] AS grouping_id, json_agg(id) as id_list, count(id) as len 
+		FROM document 
+		GROUP BY grouping_id
+	) AS T where T.len > 1;
 ```
