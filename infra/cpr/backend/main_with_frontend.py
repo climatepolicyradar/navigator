@@ -298,7 +298,17 @@ class Backend:
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:ec2:instances",
                     name="InstanceTypes",
-                    value="t3.large",  # https://aws.amazon.com/ec2/instance-types/
+                    value="r5a.large",  # https://aws.amazon.com/ec2/instance-types/
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeType",
+                    value="gp3",
+                ),
+                aws.elasticbeanstalk.EnvironmentSettingArgs(
+                    namespace="aws:autoscaling:launchconfiguration",
+                    name="RootVolumeSize",
+                    value="32",
                 ),
                 aws.elasticbeanstalk.EnvironmentSettingArgs(
                     namespace="aws:autoscaling:launchconfiguration",
