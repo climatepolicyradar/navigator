@@ -742,8 +742,8 @@ def remove_document_relationship(
 def get_postfix_map(db: Session, doc_ids: list[int]) -> Mapping[int, str]:
 
     postfix_map = {
-        row[0]: row[1] if row[1] else ""
-        for row in db.query(Document.id, Document.postfix).filter(
+        doc_id: postfix if postfix else ""
+        for doc_id, postfix in db.query(Document.id, Document.postfix).filter(
             Document.id.in_(doc_ids)
         )
     }
