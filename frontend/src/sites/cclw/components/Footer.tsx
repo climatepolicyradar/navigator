@@ -66,6 +66,10 @@ const Footer = () => {
     <footer className="flex flex-col bg-grey-400 mt-12">
       <div className="py-12">
         <div className="container">
+          <p className="text-lg mb-6 md:text-center">
+            To report a problem email us at support@climatepolicyradar.org <br /> Spotted missing or inaccurate data?{" "}
+            <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLScNy6pZTInQKdxNDaZPKyPGgbfRktstzgVDjGBCeTnLVzl3Pg/viewform">Let us know</ExternalLink>
+          </p>
           <p className="font-bold text-xl mb-8">Climate Change Laws of the World</p>
           {/* <p className="mb-10">In partnership with the Sabin Center for Climate Change Law, Columbia Law School</p> */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
