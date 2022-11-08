@@ -200,7 +200,12 @@ class OpenSearchConnection:
             sensitive_query_terms=self._sensitive_query_terms,
         )
 
-        indices = self._get_opensearch_indices_to_query(search_request_body)
+        # We only need to use the {PREFIX}_core index if browsing, as there's no need to access the text passages.
+        indices = (
+            self._get_opensearch_indices_to_query(search_request_body)
+            if opensearch_request.mode == QueryMode.SEARCH
+            else f"{self._opensearch_config.index_prefix}_core"
+        )
 
         opensearch_response_body = self.raw_query(
             opensearch_request.query, preference, indices
