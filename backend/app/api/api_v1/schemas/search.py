@@ -99,7 +99,7 @@ class SearchResult(BaseModel):
     document_type: str
     document_category: str
     document_source_url: Optional[str]
-    document_cdn_object: Optional[str]
+    document_url: Optional[str]
     document_content_type: Optional[str]
     document_title_match: bool
     document_description_match: bool

@@ -800,7 +800,7 @@ def create_search_response_document(
         document_type=opensearch_match.document_type,
         document_category=opensearch_match.document_category,
         document_source_url=opensearch_match.document_source_url,
-        document_cdn_object=to_cdn_url(opensearch_match.document_cdn_object),
+        document_url=to_cdn_url(opensearch_match.document_cdn_object),
         document_content_type=opensearch_match.document_content_type,
         document_slug=opensearch_match.document_slug,
         document_title_match=False,
