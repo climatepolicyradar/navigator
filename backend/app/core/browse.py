@@ -5,8 +5,8 @@ from typing import Optional
 from pydantic import BaseModel
 from app.db.models.document import Category, Document, Geography, DocumentType
 from app.api.api_v1.schemas.search import (
-    SearchResponseDocument,
-    SearchResponseBody,
+    SearchResult,
+    SearchResults,
 )
 from sqlalchemy import extract
 from sqlalchemy.orm import Session
@@ -22,8 +22,8 @@ class BrowseArgs(BaseModel):
     category: Optional[str] = None
 
 
-def to_search_resp_doc(row: dict) -> SearchResponseDocument:
-    return SearchResponseDocument(
+def to_search_resp_doc(row: dict) -> SearchResult:
+    return SearchResult(
         document_id=row["import_id"],
         document_slug=row["slug"],
         document_name=row["name"],
@@ -44,7 +44,7 @@ def to_search_resp_doc(row: dict) -> SearchResponseDocument:
     )
 
 
-def browse_rds(db: Session, req: BrowseArgs) -> SearchResponseBody:
+def browse_rds(db: Session, req: BrowseArgs) -> SearchResults:
     """Broswe RDS"""
 
     t0 = perf_counter()
@@ -83,7 +83,7 @@ def browse_rds(db: Session, req: BrowseArgs) -> SearchResponseBody:
 
     documents = [to_search_resp_doc(dict(row)) for row in query.all()]
 
-    return SearchResponseBody(
+    return SearchResults(
         hits=len(documents),
         query_time_ms=int((perf_counter() - t0) * 1e3),
         documents=documents,

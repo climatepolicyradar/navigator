@@ -20,6 +20,7 @@ from app.db.models import (
 from app.api.api_v1.schemas.document import (
     RelationshipCreateRequest,
 )
+from app.db.crud.document import get_postfix_map
 
 
 def create_4_documents(test_db, client, superuser_token_headers):
@@ -785,3 +786,37 @@ def test_update_document_with_import_id(
     assert json_object["import_id"] == import_id
     assert json_object["content_type"] == "updated/content_type"
     assert "folder/file" in json_object["url"]
+
+
+def test_postfix_map(
+    client,
+    superuser_token_headers,
+    test_db,
+):
+
+    (
+        response1_document,
+        document1_payload,
+        response2_document,
+        document2_payload,
+        response3_document,
+        document3_payload,
+        response4_document,
+        document4_payload,
+    ) = create_4_documents(test_db, client, superuser_token_headers)
+
+    pf_map = get_postfix_map(
+        test_db,
+        [
+            response1_document["id"],
+            response2_document["id"],
+            response3_document["id"],
+            response4_document["id"],
+        ],
+    )
+
+    assert len(pf_map) == 4
+    assert pf_map[response1_document["id"]] == "postfix1"
+    assert pf_map[response2_document["id"]] == "postfix2"
+    assert pf_map[response3_document["id"]] == ""
+    assert pf_map[response4_document["id"]] == ""

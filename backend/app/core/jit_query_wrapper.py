@@ -7,7 +7,7 @@ from app.core.search import OpenSearchConnection, OpenSearchQueryConfig
 from app.api.api_v1.schemas.search import (
     JitQuery,
     SearchRequestBody,
-    SearchResponseBody,
+    SearchResults,
 )
 
 _LOGGER = logging.getLogger(__name__)
@@ -41,7 +41,7 @@ def jit_query_wrapper(
     opensearch_internal_config: OpenSearchQueryConfig,
     preference: Optional[str],
     background_tasks: Optional[BackgroundTasks] = None,
-) -> SearchResponseBody:
+) -> SearchResults:
     """Wraps the OpenSearchConnection query function to provide JIT search."""
 
     if (

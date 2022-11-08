@@ -1,6 +1,6 @@
 import logging
 from hashlib import md5
-from typing import Sequence, Set, Tuple, Union, cast
+from typing import Mapping, Sequence, Set, Tuple, Union, cast
 
 from fastapi import (
     HTTPException,
@@ -750,3 +750,22 @@ def remove_document_relationship(
     )
     db.delete(obj)
     db.commit()
+
+
+def get_postfix_map(db: Session, doc_ids: list[int]) -> Mapping[int, str]:
+
+    postfix_map = {
+        doc_id: postfix if postfix else ""
+        for doc_id, postfix in db.query(Document.id, Document.postfix).filter(
+            Document.id.in_(doc_ids)
+        )
+    }
+
+    if len(postfix_map) != len(doc_ids):
+        missing_ids = set(doc_ids).difference(postfix_map.keys())
+        _LOGGER.error(
+            "Document ids missing", extra={"props": {"missing_ids": missing_ids}}
+        )
+        postfix_map.update({missing_id: "" for missing_id in missing_ids})
+
+    return postfix_map

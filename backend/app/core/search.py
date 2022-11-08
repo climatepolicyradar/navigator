@@ -46,8 +46,8 @@ from app.api.api_v1.schemas.search import (
     OpenSearchResponseMatchBase,
     OpenSearchResponsePassageMatch,
     SearchRequestBody,
-    SearchResponseBody,
-    SearchResponseDocument,
+    SearchResults,
+    SearchResult,
     SearchResponseDocumentPassage,
     SortField,
     SortOrder,
@@ -223,7 +223,7 @@ class OpenSearchConnection:
         search_request_body: SearchRequestBody,
         opensearch_internal_config: OpenSearchQueryConfig,
         preference: Optional[str],
-    ) -> SearchResponseBody:
+    ) -> SearchResults:
         """Build & make an OpenSearch query based on the given request body."""
 
         opensearch_request = build_opensearch_request_body(
@@ -729,9 +729,9 @@ def process_search_response_body(
     opensearch_response_body: OpenSearchResponse,
     limit: int = 10,
     offset: int = 0,
-) -> SearchResponseBody:
+) -> SearchResults:
     opensearch_json_response = opensearch_response_body.raw_response
-    search_response = SearchResponseBody(
+    search_response = SearchResults(
         hits=opensearch_json_response["aggregations"]["no_unique_docs"]["value"],
         query_time_ms=opensearch_response_body.request_time_ms,
         documents=[],
@@ -791,9 +791,9 @@ def process_search_response_body(
 
 def process_browse_response_body(
     opensearch_response_body: OpenSearchResponse,
-) -> SearchResponseBody:
+) -> SearchResults:
     opensearch_json_response = opensearch_response_body.raw_response
-    search_response = SearchResponseBody(
+    search_response = SearchResults(
         hits=opensearch_json_response["hits"]["total"]["value"],
         query_time_ms=opensearch_response_body.request_time_ms,
         documents=[],
@@ -812,7 +812,7 @@ def process_browse_response_body(
 def create_search_response_document(
     opensearch_match: OpenSearchResponseMatchBase,
 ):
-    return SearchResponseDocument(
+    return SearchResult(
         document_name=opensearch_match.document_name,
         document_description=opensearch_match.document_description,
         document_country_code=opensearch_match.document_country_code,

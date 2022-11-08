@@ -68,13 +68,13 @@ test_frontend:
 	# TODO: setup a proper test user for cypress
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
 
-clear_test_search_index:
+setup_test_search_index:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}_test --insecure
-
-test_backend_search: clear_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}_test --input=/app/tests/data/test_opensearch_analyzer.dump --type=analyzer
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}_test --input=/app/tests/data/test_opensearch_mapping.dump --type=mapping
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader sh -c "gzip -d /app/tests/data/test_opensearch_data.dump.gz -c > /tmp/data && elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}_test --input=/tmp/data --type=data"
+
+test_backend_search: setup_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'search'
 
 test_backend:
