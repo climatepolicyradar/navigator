@@ -14,7 +14,6 @@ from app.api.api_v1.schemas.search import (
     FilterField,
 )
 from app.core.search import _FILTER_FIELD_MAP, OpenSearchQueryConfig
-import app.core.jit_query_wrapper
 
 _TOTAL_DOCUMENT_COUNT = 6
 
@@ -71,17 +70,16 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
         [
             "document_name",
             "document_postfix",
-            "document_country_code",
-            "document_source_name",
+            "document_geography",
+            "document_source",
             "document_date",
             "document_id",
             "document_slug",
-            "document_country_english_shortname",
             "document_description",
             "document_type",
             "document_category",
             "document_source_url",
-            "document_url",
+            "document_cdn_object",
             "document_content_type",
             "document_title_match",
             "document_description_match",
@@ -101,7 +99,7 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
 
     page1_response_body = page1_response.json()
     page1_documents = page1_response_body["documents"]
-    assert len(page1_documents) == 5
+    assert len(page1_documents) == 2
 
     for d in page1_documents:
         assert sorted(list(d.keys())) == expected_search_result_schema
@@ -109,9 +107,6 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
     assert "Document ids missing" in caplog.text
 
 
-@pytest.mark.skip(
-    reason="Temporarily disabled while test search index is being recreated"
-)
 @pytest.mark.search
 def test_pagination_overlap(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
