@@ -59,11 +59,11 @@ export class NavigationConstructor {
     return this;
   }
   methodologyPage() {
-    navigateDropdownMenuItem("a", "Methodology", "/methodology");
+    handleMenuExternalLink("Methodology", "https://github.com/climatepolicyradar/methodology");
     return this;
   }
   footerLinkMethodology() {
-    handleFooterTextLink("Methodology");
+    handleFooterExternalLink("Methodology", "https://github.com/climatepolicyradar/methodology");
     return this;
   }
   footerLinkTerms() {
