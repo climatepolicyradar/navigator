@@ -1,8 +1,6 @@
 /* eslint-disable @next/next/no-img-element */
 import Link from "next/link";
 import { ExternalLink } from "@components/ExternalLink";
-import Logo from "@components/svg/Logo";
-import { date } from "yup";
 
 type TFooterItem = {
   title: string;
@@ -16,37 +14,6 @@ type TLinkItem = {
 };
 
 const navLinks: TFooterItem = {
-  // {
-  //   title: "Navigation",
-  //   links: [
-  //     {
-  //       text: "About",
-  //       url: "/about",
-  //       external: false,
-  //     },
-  //     {
-  //       text: "Methodology",
-  //       url: "/methodology",
-  //       external: false,
-  //     },
-  //     {
-  //       text: "Acknowledgements",
-  //       url: "/acknowledgements",
-  //       external: false,
-  //     },
-  //     {
-  //       text: "Terms of use",
-  //       url: "/terms-of-use",
-  //       external: false,
-  //     },
-  //     {
-  //       text: "Privacy and data protection",
-  //       url: "https://www.lse.ac.uk/lse-information/privacy-policy",
-  //       external: true,
-  //     },
-  //   ],
-  // },
-  // {
   title: "Grantham Research Institute",
   links: [
     {
@@ -103,7 +70,7 @@ const Footer = () => {
           {/* <p className="mb-10">In partnership with the Sabin Center for Climate Change Law, Columbia Law School</p> */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div key={navLinks.title} className="footer__section">
-              <h5 className="font-normal">{navLinks.title}</h5>
+              <h5>{navLinks.title}</h5>
               <div className="grid gap-x-5 gap-y-5 md:grid-cols-2">
                 <ul>
                   {navLinks.links.map((link) => (
@@ -143,7 +110,7 @@ const Footer = () => {
             </div>
 
             <div className="footer__section md:w-1/2 lg:mx-auto">
-              <h5 className="font-normal">Climate Policy Radar</h5>
+              <h5>Climate Policy Radar</h5>
               <p>Using AI and data science to map the world's climate policies</p>
               <ul className="mb-6">
                 <li className="mb-1">
@@ -151,11 +118,11 @@ const Footer = () => {
                 </li>
                 <li className="mb-1">
                   <ExternalLink url="https://3566c5a7.sibforms.com/serve/MUIEAPkXK4liqQjleE87527EfcD9gDzY26dQhnJOxNeXZK_TvEAjl_Qu7rrkysJS2ODrj1LioiH24HTGbul2vS1sAxYCPHtu7PgnhZrAE9yCfaFrJ7vzmvBc3u87cs_pkC_99nQ2AqBONHtLwErrV7mcVga2qNlO1xetSeqVVWYsrVPRjg6Rc978eQEMasGQc4PFgIfMFza8TJEv">
-                    Sign up to Climate Policy Radar's newsletter
+                    Newsletter
                   </ExternalLink>
                 </li>
                 <li className="mb-1">
-                  <ExternalLink url="https://www.climatepolicyradar.org/contact">Contact Climate Policy Radar</ExternalLink>
+                  <ExternalLink url="https://www.climatepolicyradar.org/contact">Contact</ExternalLink>
                 </li>
               </ul>
               <div className="footer__section">
