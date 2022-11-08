@@ -44,9 +44,17 @@ def make_doc(
 @pytest.fixture
 def doc_browse_data(test_db):
     geos = [
-        Geography(display_value="A place on the planet", value="XXX"),
-        Geography(display_value="A place in the sea", value="YYY"),
-        Geography(display_value="A place in the sky", value="ZZZ"),
+        Geography(
+            display_value="A place on the planet",
+            slug="a-place-on-the-planet",
+            value="XXX",
+        ),
+        Geography(
+            display_value="A place in the sea", slug="a-place-in-the-sea", value="YYY"
+        ),
+        Geography(
+            display_value="A place in the sky", slug="a-place-on-the-sky", value="ZZZ"
+        ),
     ]
     doc_types = [DocumentType(name="doctype", description="for testing")]
     sources = [Source(name="May the source be with you")]
@@ -81,8 +89,12 @@ def doc_browse_data(test_db):
 @pytest.fixture
 def summary_country_data(test_db):
     geos = [
-        Geography(display_value="A place on the land", value="XXX"),
-        Geography(display_value="A place in the sea", value="YYY"),
+        Geography(
+            display_value="A place on the land", slug="a-place-on-the-land", value="XXX"
+        ),
+        Geography(
+            display_value="A place in the sea", slug="a-place-in-the-sea", value="YYY"
+        ),
     ]
     doc_types = [DocumentType(name="doctype", description="for testing")]
     sources = [Source(name="May the source be with you")]

@@ -28,12 +28,18 @@ def create_4_documents(test_db, client, superuser_token_headers):
     test_db.add(Source(name="may it be with you"))
     test_db.add(
         Geography(
-            display_value="not my favourite subject", value="NMFS", type="country"
+            display_value="not my favourite subject",
+            slug="not-my-favourite-subject",
+            value="NMFS",
+            type="country",
         )
     )
     test_db.add(
         Geography(
-            display_value="not my fav subject again", value="NMFSA", type="country"
+            display_value="not my fav subject again",
+            slug="not-my-fav-subject-again",
+            value="NMFSA",
+            type="country",
         )
     )
     test_db.add(DocumentType(name="just my type", description="sigh"))
@@ -290,7 +296,10 @@ def test_post_documents(client, superuser_token_headers, test_db):
     test_db.add(Source(name="may it be with you"))
     test_db.add(
         Geography(
-            display_value="not my favourite subject", value="NMFS", type="country"
+            display_value="not my favourite subject",
+            slug="not-my-favourite-subject",
+            value="NMFS",
+            type="country",
         )
     )
     test_db.add(DocumentType(name="just my type", description="sigh"))
@@ -376,7 +385,10 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
     test_db.add(Source(name="may it be with you"))
     test_db.add(
         Geography(
-            display_value="not my favourite subject", value="NMFS", type="country"
+            display_value="not my favourite subject",
+            slug="not-my-favourite-subject",
+            value="NMFS",
+            type="country",
         )
     )
     test_db.add(DocumentType(name="just my type", description="sigh"))
@@ -503,6 +515,7 @@ def test_document_detail(
     assert get_detail_json_2["source"] == {"name": "may it be with you"}
     assert get_detail_json_2["geography"] == {
         "display_value": "not my favourite subject",
+        "slug": "not-my-favourite-subject",
         "value": "NMFS",
         "type": "country",
     }

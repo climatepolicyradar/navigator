@@ -142,7 +142,11 @@ INVALID_FILE_1 = VALID_CSV_HEADER + INVALID_LINE_1
 def test_extract_documents_invalid(test_db):
     # ensure metadata exists
     test_db.add(Source(name="CCLW"))
-    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(
+        Geography(
+            display_value="geography", slug="geography", value="GEO", type="country"
+        )
+    )
     test_db.add(DocumentType(name="doctype", description="doctype"))
     test_db.add(Language(language_code="LAN", name="language"))
     test_db.add(Category(name="executive", description="executive"))
@@ -185,7 +189,11 @@ VALID_FILE_1 = VALID_CSV_HEADER + VALID_LINE_1 + VALID_LINE_2
 def test_extract_documents_valid(test_db):
     # ensure metadata exists
     test_db.add(Source(name="CCLW"))
-    test_db.add(Geography(display_value="geography", value="GEO", type="country"))
+    test_db.add(
+        Geography(
+            display_value="geography", slug="geography", value="GEO", type="country"
+        )
+    )
     test_db.add(DocumentType(name="doctype", description="doctype"))
     test_db.add(Language(language_code="LAN", name="language"))
     test_db.add(Category(name="executive", description="executive"))

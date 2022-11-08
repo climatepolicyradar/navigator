@@ -175,7 +175,7 @@ def create_document(
     db: Session,
     document_create_request: DocumentCreateRequest,
 ) -> Document:
-    existing_geography = _get_geography_by_display_or_value(
+    existing_geography = _get_geography_by_slug_or_display_or_value(
         db,
         document_create_request.geography,
     )
@@ -383,6 +383,7 @@ def get_document_detail(db, import_id_or_slug) -> DocumentDetailResponse:
         md5_sum=document.md5_sum,
         geography=GeographySchema(
             display_value=cast(str, geography.display_value),
+            slug=cast(str, geography.slug),
             value=cast(str, geography.value),
             type=cast(str, geography.type),
         ),
@@ -461,18 +462,29 @@ def persist_document_and_metadata(
         raise e
 
 
-def _get_geography_by_display_or_value(db: Session, display_or_value: str) -> Geography:
+def _get_geography_by_slug_or_display_or_value(
+    db: Session,
+    display_or_value_or_slug: str,
+) -> Geography:
     # Lookup geography by display_value or value
     existing_geography = (
-        db.query(Geography).filter(Geography.display_value == display_or_value)
-    ).scalar()
+        db.query(Geography).filter(Geography.slug == display_or_value_or_slug)
+    ).first()
     if existing_geography is None:
-        # If the display_value returned no results, attempt a lookup by value
+        # If the slug returned no results, attempt a lookup by display_value
         existing_geography = (
-            db.query(Geography).filter(Geography.value == display_or_value)
-        ).scalar()
+            db.query(Geography).filter(
+                Geography.display_value == display_or_value_or_slug
+            )
+        ).first()
     if existing_geography is None:
-        raise UnknownGeographyError(display_or_value)
+        # If the slug and display_value returned no results, attempt a lookup by value
+        # (this is the least reliable and not guaranteed to be unique)
+        existing_geography = (
+            db.query(Geography).filter(Geography.value == display_or_value_or_slug)
+        ).first()
+    if existing_geography is None:
+        raise UnknownGeographyError(display_or_value_or_slug)
     return existing_geography
 
 
@@ -480,12 +492,13 @@ def _get_language_by_code_or_name(db: Session, code_or_name: str) -> Language:
     # Lookup language by language_code as a preference
     existing_language = (
         db.query(Language).filter(Language.language_code == code_or_name)
-    ).scalar()
+    ).first()
     if existing_language is None:
         # If the language_code returned no results, attempt a lookup by name
+        # (this is the least reliable and not guaranteed to be unique)
         existing_language = (
             db.query(Language).filter(Language.name == code_or_name)
-        ).scalar()
+        ).first()
     if existing_language is None:
         raise UnknownLanguageError(code_or_name)
     return existing_language
