@@ -115,6 +115,9 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
     assert "Document ids missing" in caplog.text
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_pagination_overlap(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
