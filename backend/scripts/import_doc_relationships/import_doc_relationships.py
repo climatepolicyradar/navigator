@@ -5,11 +5,16 @@ from app.db.models.document import DocumentRelationship, Relationship
 from app.db.session import SessionLocal
 
 
-def create_relationship_with_docs(db, name, document_ids):
-    print(f"Creating relationship '{name}' for ids: {document_ids}...")
+def create_relationship_with_docs(db, cclw_group_id, document_ids):
+    name = f"imported_relation_{cclw_group_id}"
+    print(
+        f"Creating relationship called '{name}' for {cclw_group_id} with doc ids: {document_ids}..."
+    )
 
     relationship = Relationship(
-        name=name, type="SYSTEM", description=f"imported at {datetime.now()}"
+        name=name,
+        type="SYSTEM",
+        description=f"CCLW group ID {cclw_group_id}, imported at {datetime.now()}",
     )
     db.add(relationship)
     db.flush()
@@ -36,9 +41,7 @@ if __name__ == "__main__":
     try:
         with db.begin_nested():
             for group in groups:
-                create_relationship_with_docs(
-                    db, f"imported_relation_{group[0]}", group[1]
-                )
+                create_relationship_with_docs(db, group[0], group[1])
         db.commit()
     except Exception as e:
         print(e)
