@@ -20,7 +20,7 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
           <p className="text-lg lg:text-2xl">Use our database to search climate laws and policies globally</p>
         </div>
         <div className="max-w-screen-lg mx-auto mt-6">
-          <LandingSearchForm handleSearchInput={handleSearchInput} placeholder="Search for countries, legislation and policies and litigation cases" input={searchInput} />
+          <LandingSearchForm handleSearchInput={handleSearchInput} placeholder="Search for countries, legislation and policies" input={searchInput} />
         </div>
         <div className="mt-6 lg:mt-12 grid gap-y-5 gap-x-8 sm:grid-cols-1 lg:grid-cols-3 text-center max-w-screen-lg mx-auto">
           <div className="lg:px-8 flex flex-col items-center">
@@ -31,7 +31,7 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
                 <span className="font-bold"> 2,576</span>
               </span>
               <span className="block">
-                laws & policies
+                laws and policies
                 <span className="font-bold"> &gt;</span>
               </span>
             </a>
@@ -59,7 +59,7 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
           </div>
           <div className="flex flex-col justify-between items-center lg:px-8">
             <div className="text-lg font-bold">Technology</div>
-            <div className="mt-4">We are now powered by data science and AI.</div>
+            <div className="mt-4">We are now powered by data science and AI</div>
             <div className="mt-4">
               <ExternalLink url="https://climatepolicyradar.org/what-we-do">
                 <Button extraClasses="flex items-center">

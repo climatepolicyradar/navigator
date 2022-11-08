@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import Link from "next/link";
 import { useTranslation } from "react-i18next";
 import ByTextInput from "../filters/ByTextInput";
@@ -8,6 +8,8 @@ import ExactMatch from "../filters/ExactMatch";
 import ByDateRange from "../filters/ByDateRange";
 import { currentYear, minYear } from "@constants/timedate";
 import { TSector } from "@types";
+import { ExternalLink } from "@components/ExternalLink";
+import { ThemeContext } from "@context/ThemeContext";
 
 interface SearchFiltersProps {
   handleFilterChange(type: string, value: string, action?: string): void;
@@ -35,6 +37,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
 }) => {
   const [showClear, setShowClear] = useState(false);
   const { t } = useTranslation("searchResults");
+  const theme = useContext(ThemeContext);
 
   const {
     keyword_filters: { countries: countryFilters = [], sectors: sectorFilters = [] },
@@ -117,9 +120,15 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           <p className="text-center">
             For more info see
             <br />
-            <Link href="/methodology">
-              <a className="underline text-blue-600">our methodology page</a>
-            </Link>
+            {theme === "cpr" ? (
+              <ExternalLink url="https://github.com/climatepolicyradar/methodology" className="underline text-blue-600">
+                our methodology page
+              </ExternalLink>
+            ) : (
+              <Link href="/methodology">
+                <a className="underline text-blue-600">our methodology page</a>
+              </Link>
+            )}
           </p>
         </div>
       </div>

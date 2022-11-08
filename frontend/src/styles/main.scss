@@ -327,6 +327,11 @@ ul li.selected {
       @apply my-6 font-light;
     }
   }
+  table {
+    @apply text-left my-6;
+    th { @apply p-2; }
+    td { @apply border border-gray-300 p-2 align-top; }
+  }
 }
 .pdf-container {
   height: 440px;

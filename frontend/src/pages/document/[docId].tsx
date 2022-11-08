@@ -1,16 +1,13 @@
 import React, { useEffect, useState } from "react";
 import { GetServerSideProps, InferGetServerSidePropsType } from "next";
-import { useRouter } from "next/router";
 import Link from "next/link";
-import useDocumentDetail from "@hooks/useDocumentDetail";
 import Layout from "@components/layouts/Main";
 import DocumentInfo from "@components/blocks/DocumentInfo";
 import { Timeline } from "@components/blocks/Timeline";
 import Event from "@components/blocks/Event";
-import { Loading } from "@components/blocks/Loading";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
-import { ExternalLinkIcon, DocumentIcon, GlobeIcon } from "@components/svg/Icons";
+import { ExternalLinkIcon, GlobeIcon, PDFIcon } from "@components/svg/Icons";
 import { CountryLink } from "@components/CountryLink";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
@@ -49,10 +46,10 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
 
     return (
       <div className="mt-4 flex align-bottom">
-        {page?.content_type.includes("pdf") && <DocumentIcon height="24" width="24" />}
+        {page?.content_type.includes("pdf") && <PDFIcon height="24" width="24" />}
         {page?.content_type.includes("html") && <GlobeIcon height="24" width="24" />}
         <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300 flex ml-2">
-          <span className="mr-1">{page?.content_type.includes("html") ? "Visit source website" : "Open full document"}</span>
+          <span className="mr-1">{page?.content_type.includes("html") ? "Visit source website" : "See full text (opens in new tab)"}</span>
           <ExternalLinkIcon height="16" width="16" />
         </ExternalLink>
       </div>
@@ -111,7 +108,6 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
               <section className="mt-12">
                 <h3>Source</h3>
                 {renderSourceLink()}
-
               </section>
 
               {page.events.length > 0 && (
@@ -130,8 +126,8 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
               {page.related_documents.length ? (
                 <section className="mt-12">
                   <h3>Associated Documents</h3>
-                  {page.related_documents.map((doc) => (
-                    <div key={doc.slug} className="my-4">
+                  {page.related_documents.map((doc, i) => (
+                    <div key={i + "-" + doc.slug} className="my-4">
                       <RelatedDocument document={doc} />
                     </div>
                   ))}
@@ -167,7 +163,9 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                     <ExternalLink url="http://lse.ac.uk/grantham" className="text-blue-500 hover:text-indigo-600 hover:underline transition duration-300">
                       Grantham Research Institute
                     </ExternalLink>
-                    . If you want to use this summary, please check Terms & Conditions for citation and licensing of third party data.
+                    . If you want to use this summary, please check{" "}
+                    <ExternalLink url="https://www.lse.ac.uk/granthaminstitute/cclw-terms-and-conditions"  className="text-blue-500 hover:text-indigo-600 hover:underline transition duration-300">terms of use</ExternalLink> for citation and licensing of third party
+                    data.
                   </p>
                 </div>
               </div>
