@@ -58,7 +58,7 @@ def tree_table_to_json(
     json_out = []
     child_list_map: dict[int, Any] = {}
 
-    for row in db.query(table).all():
+    for row in db.query(table).order_by(table.id).all():
         row_object = {col.name: getattr(row, col.name) for col in row.__table__.columns}
         row_children: list[dict[str, Any]] = []
         child_list_map[row_object["id"]] = row_children

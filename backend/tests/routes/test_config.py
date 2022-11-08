@@ -1,6 +1,6 @@
 from http.client import OK
 from typing import Any
-from unittest.mock import ANY, MagicMock
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -74,8 +74,14 @@ EXPECTED_TREE_1 = [_EX_ONE]
 @pytest.mark.parametrize("data,expected", [(TREE_TABLE_DATA_1, EXPECTED_TREE_1)])
 def test_tree_table_to_json(data, expected):
     db = MagicMock(spec=SessionLocal)
-    db.query = lambda _: _MockQuery(data)
-    processed_data = tree_table_to_json(ANY, db)
+    db_query_mock = MagicMock()
+    db_query_mock.order_by = lambda _: _MockQuery(data)
+    db.query = lambda _: db_query_mock
+
+    table_mock = MagicMock()
+    table_mock.id = 1
+    processed_data = tree_table_to_json(table_mock, db)
+
     assert processed_data == expected
 
 
