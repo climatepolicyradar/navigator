@@ -2,13 +2,12 @@ import csv
 import json
 import logging
 import os
-import re
 import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Set
-from urllib.parse import quote_plus, urlsplit
+import string
 
 from opensearchpy import OpenSearch
 from opensearchpy import JSONSerializer as jss
@@ -39,6 +38,7 @@ from app.core.config import (
     OPENSEARCH_SSL_WARNINGS,
     OPENSEARCH_JIT_MAX_DOC_COUNT,
 )
+from app.core.util import to_cdn_url
 from app.api.api_v1.schemas.search import (
     FilterField,
     OpenSearchResponseDescriptionMatch,
@@ -86,38 +86,6 @@ _REQUIRED_FIELDS = ["document_name"]
 _DEFAULT_BROWSE_SORT_FIELD = SortField.DATE
 _DEFAULT_SORT_ORDER = SortOrder.DESCENDING
 _JSON_SERIALIZER = jss()
-
-
-# TODO: Remove when we get object keys back from opensearch
-CDN_URL: str = os.getenv("CDN_URL", "https://cdn.climatepolicyradar.org")
-
-
-def _encode_characters_in_path(s3_path: str) -> str:
-    """
-    Encode special characters in S3 URL path component to fix broken CDN links.
-
-    :param s3_path: The s3 URL path component in which to fix encodings
-    :returns str: A URL path component containing encoded characters
-    """
-    encoded_path = "/".join([quote_plus(c) for c in s3_path.split("/")])
-    return encoded_path
-
-
-def s3_to_cdn_url(s3_url: str) -> str:
-    """
-    Convert a URL to a PDF in our s3 bucket to a URL to a PDF in our CDN.
-
-    :param str s3_url: URL to a PDF in our s3 bucket.
-    :returns str: URL to the PDF via our CDN domain.
-    """
-    converted_cdn_url = re.sub(r"https:\/\/.*\.s3\..*\.amazonaws.com", CDN_URL, s3_url)
-    split_url = urlsplit(converted_cdn_url)
-    new_path = _encode_characters_in_path(split_url.path)
-    # CDN URL should include only scheme, host & modified path
-    return f"{split_url.scheme}://{split_url.hostname}{new_path}"
-
-
-# END TODO
 
 
 class QueryMode(Enum):
@@ -232,7 +200,12 @@ class OpenSearchConnection:
             sensitive_query_terms=self._sensitive_query_terms,
         )
 
-        indices = self._get_opensearch_indices_to_query(search_request_body)
+        # We only need to use the {PREFIX}_core index if browsing, as there's no need to access the text passages.
+        indices = (
+            self._get_opensearch_indices_to_query(search_request_body)
+            if opensearch_request.mode == QueryMode.SEARCH
+            else f"{self._opensearch_config.index_prefix}_core"
+        )
 
         opensearch_response_body = self.raw_query(
             opensearch_request.query, preference, indices
@@ -419,7 +392,7 @@ class QueryBuilder:
                         },
                     },
                 },
-                "no_unique_docs": {"cardinality": {"field": "document_name_and_id"}},
+                "no_unique_docs": {"cardinality": {"field": "document_slug"}},
             },
         }
 
@@ -665,6 +638,11 @@ def build_opensearch_request_body(
     )
     builder = QueryBuilder(search_config)
 
+    # Strip punctuation and leading and trailing whitespace from query string
+    search_request.query_string = search_request.query_string.translate(
+        str.maketrans("", "", string.punctuation)
+    ).strip()
+
     if search_request.query_string:
         if search_request.exact_match:
             builder.with_exact_query(search_request.query_string)
@@ -815,16 +793,16 @@ def create_search_response_document(
     return SearchResult(
         document_name=opensearch_match.document_name,
         document_description=opensearch_match.document_description,
-        document_country_code=opensearch_match.document_country_code,
-        document_source_name=opensearch_match.document_source_name,
+        document_geography=opensearch_match.document_geography,
+        document_source=opensearch_match.document_source,
         document_date=opensearch_match.document_date,
         document_id=opensearch_match.document_id,
-        document_country_english_shortname=opensearch_match.document_country_english_shortname,
         document_type=opensearch_match.document_type,
         document_category=opensearch_match.document_category,
         document_source_url=opensearch_match.document_source_url,
-        document_url=s3_to_cdn_url(opensearch_match.document_url),
+        document_cdn_object=to_cdn_url(opensearch_match.document_cdn_object),
         document_content_type=opensearch_match.document_content_type,
+        document_slug=opensearch_match.document_slug,
         document_title_match=False,
         document_description_match=False,
         document_passage_matches=[],

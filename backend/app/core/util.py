@@ -20,7 +20,7 @@ CONTENT_TYPE_MAP = {
 }
 
 
-def to_cdn_url(s3_object_key: str) -> Optional[str]:
+def to_cdn_url(s3_object_key: Optional[str]) -> Optional[str]:
     """Convert an s3 object key for a PDF in our s3 bucket to a URL to a PDF in our CDN.
 
     Args:

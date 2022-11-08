@@ -90,17 +90,16 @@ class SearchResult(BaseModel):
     """A single document in a search response."""
 
     document_name: str
-    document_country_code: str
-    document_source_name: str
+    document_geography: str
+    document_source: str
     document_date: str
     document_id: str
-    document_slug: Optional[str]  # TODO: required when opensearch is updated
-    document_country_english_shortname: str
+    document_slug: str
     document_description: str
     document_type: str
     document_category: str
-    document_source_url: str
-    document_url: str
+    document_source_url: Optional[str]
+    document_cdn_object: Optional[str]
     document_content_type: Optional[str]
     document_title_match: bool
     document_description_match: bool
@@ -160,19 +159,17 @@ class OpenSearchResponseMatchBase(BaseModel):
     """Describes matches returned by an OpenSearch query"""
 
     document_name: str
-    document_country_code: str
+    document_geography: str
     document_description: str
-    document_source_name: str
+    document_source: str
     document_id: str  # Changed semantics to be import_id, not database id
     document_date: str
-    document_name_and_id: str
-    document_country_english_shortname: str
     document_type: str
-    document_source_url: str
-    document_url: str
+    document_source_url: Optional[str]
+    document_cdn_object: Optional[str]
     document_category: str
     document_content_type: Optional[str]
-    document_slug: Optional[str]  # TODO: make non-optional
+    document_slug: str
 
 
 class OpenSearchResponseNameMatch(OpenSearchResponseMatchBase):

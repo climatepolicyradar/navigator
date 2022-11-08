@@ -69,10 +69,8 @@ test_frontend:
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
 
 setup_test_search_index:
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}_test --insecure
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}_test --input=/app/tests/data/test_opensearch_analyzer.dump --type=analyzer
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}_test --input=/app/tests/data/test_opensearch_mapping.dump --type=mapping
-	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader sh -c "gzip -d /app/tests/data/test_opensearch_data.dump.gz -c > /tmp/data && elasticdump --output=${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}_test --input=/tmp/data --type=data"
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend curl -XDELETE -u "${OPENSEARCH_USER}:${OPENSEARCH_PASSWORD}" ${OPENSEARCH_URL}/${OPENSEARCH_INDEX_PREFIX}* --insecure
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm opensearch-test-loader multielasticdump --direction=load --input=/app/tests/data/ --output=${OPENSEARCH_URL} --ignoreType=template
 
 test_backend_search: setup_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'search'
@@ -92,14 +90,6 @@ test: test_backend test_frontend
 # Check OpenSearch running on localhost
 check_opensearch_local:
 	curl -XGET http://localhost:9200 -u 'admin:admin' --insecure
-
-populate_opensearch_test:
-	docker-compose run \
-	-v ${PWD}/backend/tests/data/ids_msmarco-distilbert-dot-v5_20220407-1003.json:/text-ids-path \
-	-v ${PWD}/backend/tests/data/embeddings_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/embeddings-path \
-	-v ${PWD}/backend/tests/data/description_ids_msmarco-distilbert-dot-v5_20220407-1003.csv:/desc-ids-path \
-	-v ${PWD}/backend/tests/data/description_embs_dim_768_msmarco-distilbert-dot-v5_20220407-1003.memmap:/desc-embeddings-path \
-	search-index python /app/index_data.py --text-ids-path /text-ids-path --embeddings-path /embeddings-path --desc-ids-path /desc-ids-path --desc-embeddings-path /desc-embeddings-path -d 768
 
 postgres_dump:
 	docker-compose run -v ${PWD}/backend:/app/data --rm backend_db pg_dump -d ${BACKEND_DATABASE_URL} --data-only -F c --file /app/data/backend_db_dump.dump
