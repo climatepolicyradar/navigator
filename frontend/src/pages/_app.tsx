@@ -11,6 +11,7 @@ import "@cclw/styles/cclw.main.scss";
 import { ThemeContext } from "@context/ThemeContext";
 
 import { CookieConsent } from "@components/cookies/CookieConsent";
+import { Banner } from "@cclw/components/Banner";
 
 const queryClient = new QueryClient();
 
@@ -105,6 +106,7 @@ function MyApp({ Component, pageProps, theme }: TProps) {
           gtag('config', 'G-ZD1WWE49TL');
         `}
         </Script>
+        {dynamicTheme === "cclw" && <Banner />}
         <div id={dynamicTheme}>
           <Component {...pageProps} />
         </div>
