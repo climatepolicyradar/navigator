@@ -808,15 +808,15 @@ def test_postfix_map(
     pf_map = get_postfix_map(
         test_db,
         [
-            response1_document["id"],
-            response2_document["id"],
-            response3_document["id"],
-            response4_document["id"],
+            response1_document["import_id"],
+            response2_document["import_id"],
+            response3_document["import_id"],
+            response4_document["import_id"],
         ],
     )
 
     assert len(pf_map) == 4
-    assert pf_map[response1_document["id"]] == "postfix1"
-    assert pf_map[response2_document["id"]] == "postfix2"
-    assert pf_map[response3_document["id"]] == ""
-    assert pf_map[response4_document["id"]] == ""
+    assert pf_map[response1_document["import_id"]] == "postfix1"
+    assert pf_map[response2_document["import_id"]] == "postfix2"
+    assert pf_map[response3_document["import_id"]] == ""
+    assert pf_map[response4_document["import_id"]] == ""
