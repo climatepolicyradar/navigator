@@ -52,7 +52,7 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
     page2_documents = page2_response_body["documents"]
     assert len(page2_documents) == 1
 
-    # Sanity check that we really do have 4 different documents
+    # Sanity check that we really do have 2 different documents
     document_slugs = {d["document_slug"] for d in page1_documents} | {
         d["document_slug"] for d in page2_documents
     }
@@ -79,7 +79,7 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
             "document_type",
             "document_category",
             "document_source_url",
-            "document_cdn_object",
+            "document_url",
             "document_content_type",
             "document_title_match",
             "document_description_match",
