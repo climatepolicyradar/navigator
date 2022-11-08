@@ -9,7 +9,6 @@ console.log("===== OUT: next.config.mjs =====");
 const cclwRedirects = [
   { source: "/cookie-policy", destination: "/", permanent: true },
   { source: "/privacy", destination: "/", permanent: true },
-  { source: "/terms", destination: "/", permanent: true },
 ];
 
 // for pages that are not in cpr's sitemap
@@ -18,7 +17,6 @@ const cprRedirects = [
   { source: "/acknowledgements", destination: "/", permanent: true },
   { source: "/contact", destination: "/", permanent: true },
   { source: "/methodology", destination: "/", permanent: true },
-  { source: "/terms-of-use", destination: "/", permanent: true },
 ];
 
 /**

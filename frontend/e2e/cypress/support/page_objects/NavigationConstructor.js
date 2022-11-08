@@ -49,7 +49,7 @@ const handleFooterTextLink = (title) => {
 export class NavigationConstructor {
   logoLink() {
     // visit any other page first, then make sure logo links back to home page
-    cy.visit("/terms");
+    cy.visit("/terms-of-use");
     cy.get('[data-cy="cpr-logo"]').find("a").click();
     cy.location("pathname").should("eq", "/");
     return this;

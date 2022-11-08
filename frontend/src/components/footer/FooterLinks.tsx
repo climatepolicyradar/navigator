@@ -8,7 +8,7 @@ const FooterLinks = ({ landing = false }) => {
         <ExternalLink url="https://github.com/climatepolicyradar/methodology" className="transtion duration-300 hover:text-blue-500">
           Methodology
         </ExternalLink>
-        <Link href="/terms">
+        <Link href="/terms-of-use">
           <a className="transtion duration-300 hover:text-blue-500">Terms &amp; conditions</a>
         </Link>
         <ExternalLink url="https://climatepolicyradar.org/privacy-policy" className="transtion duration-300 hover:text-blue-500">
