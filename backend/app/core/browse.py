@@ -21,9 +21,9 @@ class BrowseArgs(BaseModel):
     end_year: Optional[int] = None
     category: Optional[str] = None
 
+
 def to_search_resp_doc(row: dict) -> SearchResult:
     return SearchResult(
-        document_id=row["id"],
         document_id=row["import_id"],
         document_slug=row["slug"],
         document_name=row["name"],
