@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Layout from "@components/layouts/Main";
 import { ExternalLink } from "@components/ExternalLink";
 
@@ -18,13 +19,11 @@ const About = () => {
           </p>
           <h2>Use and reference of the data</h2>
           <p>
-            The Grantham Research Institute encourages the use of this database. Users are welcome to download, save, or distribute the results electronically or in any other
-            format, without written permission of the authors.
-          </p>
-          <p>
-            <span className="block font-bold italic">Please reference the source as follows:</span>
-            Climate Change Laws of the World database, Grantham Research Institute on Climate Change and the Environment and Sabin Center for Climate Change Law. Available at{" "}
-            <ExternalLink url="https://climate-laws.org">climate-laws.org</ExternalLink>.
+            For information about using and referencing the data, please see our{" "}
+            <Link href="/terms-of-use">
+              <a>Terms of Use</a>
+            </Link>
+            .
           </p>
           <h2>Invitation to contribute</h2>
           <p>
