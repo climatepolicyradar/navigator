@@ -130,8 +130,8 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
               {page.related_documents.length ? (
                 <section className="mt-12">
                   <h3>Associated Documents</h3>
-                  {page.related_documents.map((doc) => (
-                    <div key={doc.slug} className="my-4">
+                  {page.related_documents.map((doc, i) => (
+                    <div key={i + "-" + doc.slug} className="my-4">
                       <RelatedDocument document={doc} />
                     </div>
                   ))}
