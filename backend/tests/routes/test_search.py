@@ -5,6 +5,7 @@ from datetime import datetime
 
 import pytest
 import app.core
+import app.core.jit_query_wrapper
 from app.api.api_v1.routers import search
 from app.api.api_v1.schemas.search import (
     JitQuery,
@@ -18,6 +19,9 @@ import app.core.jit_query_wrapper
 _TOTAL_DOCUMENT_COUNT = 7
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_simple_pagination(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -62,6 +66,9 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
         assert d not in page2_documents
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -151,6 +158,9 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client):
     assert page1_documents[-1] == page2_documents[0]
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_search_body_valid(test_opensearch, monkeypatch, client):
     """Test a simple known valid search responds with success."""
@@ -169,6 +179,9 @@ def test_search_body_valid(test_opensearch, monkeypatch, client):
     assert response.status_code == 200
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_jit_query_is_default(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -190,6 +203,9 @@ def test_jit_query_is_default(test_opensearch, monkeypatch, client, mocker):
     assert background_task_spy.call_count == 1
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_with_jit(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -255,6 +271,9 @@ def test_with_jit(test_opensearch, monkeypatch, client, mocker):
     assert actual_bkg_config == OpenSearchQueryConfig()
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_without_jit(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -296,6 +315,9 @@ def test_without_jit(test_opensearch, monkeypatch, client, mocker):
     assert actual_config == expected_config
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_keyword_filters(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -319,6 +341,9 @@ def test_keyword_filters(test_opensearch, monkeypatch, client, mocker):
     } in query_body["query"]["bool"]["filter"]
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_invalid_keyword_filters(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -337,6 +362,9 @@ def test_invalid_keyword_filters(test_opensearch, monkeypatch, client):
     assert response.status_code == 422
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 @pytest.mark.parametrize(
     "year_range", [(None, None), (1900, None), (None, 2020), (1900, 2020)]
@@ -397,6 +425,9 @@ def test_year_range_filters(
         assert "filter" not in query_body["query"]["bool"]
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_multiple_filters(test_opensearch, monkeypatch, client, mocker):
     """Check that multiple filters are successfully applied"""
@@ -431,6 +462,9 @@ def test_multiple_filters(test_opensearch, monkeypatch, client, mocker):
     } in query_body["query"]["bool"]["filter"]
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_result_order_score(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -455,6 +489,9 @@ def test_result_order_score(test_opensearch, monkeypatch, client, mocker):
         s = new_s
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_date(test_opensearch, monkeypatch, client, order):
@@ -486,6 +523,9 @@ def test_result_order_date(test_opensearch, monkeypatch, client, order):
         dt = new_dt
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_title(test_opensearch, monkeypatch, client, order):
@@ -517,6 +557,9 @@ def test_result_order_title(test_opensearch, monkeypatch, client, order):
         t = new_t
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_invalid_request(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -540,6 +583,9 @@ def test_invalid_request(test_opensearch, monkeypatch, client):
     assert response.status_code == 422
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_case_insensitivity(test_opensearch, monkeypatch, client):
     """Make sure that query string results are not affected by case."""
@@ -569,6 +615,9 @@ def test_case_insensitivity(test_opensearch, monkeypatch, client):
     assert response1_json == response2_json == response3_json
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_punctuation_ignored(test_opensearch, monkeypatch, client):
     """Make sure that punctuation in query strings is ignored."""
@@ -598,6 +647,9 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client):
     assert response1_json == response2_json == response3_json
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_sensitive_queries(test_opensearch, monkeypatch, client):
     """Make sure that queries in the list of sensitive queries only return results containing that term, and not KNN results."""
@@ -651,6 +703,9 @@ def test_sensitive_queries(test_opensearch, monkeypatch, client):
     )
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_accents_ignored(test_opensearch, monkeypatch, client):
     """Make sure that accents in query strings are ignored."""
@@ -680,6 +735,9 @@ def test_accents_ignored(test_opensearch, monkeypatch, client):
     assert response1_json == response2_json == response3_json
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_time_taken(test_opensearch, monkeypatch, client):
     """Make sure that query time taken is sensible."""
@@ -699,6 +757,9 @@ def test_time_taken(test_opensearch, monkeypatch, client):
     assert 0 < reported_response_time_ms < expected_response_time_ms_max
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_empty_search_term_performs_browse(
     test_opensearch,
@@ -716,6 +777,9 @@ def test_empty_search_term_performs_browse(
     assert response.json()["hits"] == _TOTAL_DOCUMENT_COUNT
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_browse_order_by_title(
@@ -752,6 +816,9 @@ def test_browse_order_by_title(
         t = new_t
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_browse_order_by_date(
@@ -788,6 +855,9 @@ def test_browse_order_by_date(
         dt = new_dt
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 @pytest.mark.parametrize("limit", [1, 4, 7, 10])
 @pytest.mark.parametrize("offset", [0, 1, 7, 10])
@@ -812,6 +882,9 @@ def test_browse_limit_offset(
     assert len(documents) == min(limit, max(0, _TOTAL_DOCUMENT_COUNT - offset))
 
 
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_browse_filters(test_opensearch, monkeypatch, client, mocker):
     """Check that multiple filters are successfully applied"""
