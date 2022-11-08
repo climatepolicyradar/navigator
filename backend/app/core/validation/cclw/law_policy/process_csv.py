@@ -214,6 +214,10 @@ def validated_input(csv_file: TextIOWrapper) -> DictReader:
 _ValidMetadata = Mapping[str, Mapping[str, Collection[str]]]
 
 
+def import_id_from_csv_row(row: Mapping[str, str]) -> str:
+    return f"CCLW.{row[CATEGORY_FIELD].strip()}.{row[ACTION_ID_FIELD].strip()}.{row[DOCUMENT_ID_FIELD].strip()}"
+
+
 def extract_documents(
     csv_reader: DictReader,
     valid_metadata: _ValidMetadata,
@@ -247,10 +251,7 @@ def extract_documents(
         year = row[YEAR_FIELD].strip()
         document_name = row[TITLE_FIELD].strip()
         document_description = _strip_tags(row[DESCRIPTION_FIELD])
-        action_id = row[ACTION_ID_FIELD].strip()
-        import_id = (
-            f"CCLW.{presented_category}.{action_id}.{row[DOCUMENT_ID_FIELD].strip()}"
-        )
+        import_id = import_id_from_csv_row(row)
         document_url = _parse_url(row[DOCUMENT_FIELD])
         document_languages = _validated_values(
             valid_cclw_metadata,
