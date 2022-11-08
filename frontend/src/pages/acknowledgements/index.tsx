@@ -47,8 +47,7 @@ const Acknowledgements = () => {
             <p>
               The Sabin Center for Climate Change Law at Columbia Law School develops and promulgates legal techniques to address climate change and trains the next generation of
               lawyers who will be leaders in the field. The Sabin Center is an affiliate of the Earth Institute and the Columbia Climate School. Climate Change Laws of the World
-              builds on more than a decade of data collection by the Grantham Research Institute at LSE and the Sabin Center at Columbia Law School. More details about our
-              collaboration with the Sabin Center can be found in our “About page” and in our <Link href="/methodology#litigation">"Litigation methodology"</Link>. Work to identify
+              builds on more than a decade of data collection by the Grantham Research Institute at LSE and the Sabin Center at Columbia Law School. Work to identify
               cases is now supported by a Global Network of Peer Reviewers, coordinated by the Sabin Center.
             </p>
           </Acknowledgement>
