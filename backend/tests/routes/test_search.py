@@ -74,6 +74,7 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
             "document_source_name",
             "document_date",
             "document_id",
+            "document_slug",
             "document_country_english_shortname",
             "document_description",
             "document_type",
