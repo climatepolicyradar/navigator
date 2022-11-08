@@ -86,7 +86,7 @@ class SearchResponseDocumentPassage(BaseModel):
     text_block_coords: Optional[List[Coord]]
 
 
-class SearchResponseDocument(BaseModel):
+class SearchResult(BaseModel):
     """A single document in a search response."""
 
     document_name: str
@@ -101,10 +101,18 @@ class SearchResponseDocument(BaseModel):
     document_source_url: Optional[str]
     document_cdn_object: Optional[str]
     document_content_type: Optional[str]
-
     document_title_match: bool
     document_description_match: bool
     document_passage_matches: List[SearchResponseDocumentPassage]
+
+
+class SearchResultResponse(SearchResult):
+    """The object that is returned in the response.
+
+    Used to extend with postfix
+    """
+
+    document_postfix: Optional[str]
 
 
 class CategoryName(str, Enum):
@@ -118,7 +126,7 @@ class CategoryName(str, Enum):
     CASE = "Case"
 
 
-Top5DocumentList = conlist(SearchResponseDocument, max_items=5)
+Top5DocumentList = conlist(SearchResult, max_items=5)
 
 
 class SummaryCountryResponse(BaseModel):
@@ -129,13 +137,22 @@ class SummaryCountryResponse(BaseModel):
     targets: List[str]  # TODO: Placeholder for later
 
 
-class SearchResponseBody(BaseModel):
+class SearchResults(BaseModel):
     """The response body produced by the search API endpoint."""
 
     hits: int
     query_time_ms: int
 
-    documents: List[SearchResponseDocument]
+    documents: List[SearchResult]
+
+
+class SearchResultsResponse(BaseModel):
+    """The response body produced by the search API endpoint."""
+
+    hits: int
+    query_time_ms: int
+
+    documents: List[SearchResultResponse]
 
 
 class OpenSearchResponseMatchBase(BaseModel):

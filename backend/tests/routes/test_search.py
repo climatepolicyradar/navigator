@@ -14,6 +14,7 @@ from app.api.api_v1.schemas.search import (
     FilterField,
 )
 from app.core.search import _FILTER_FIELD_MAP, OpenSearchQueryConfig
+import app.core.jit_query_wrapper
 
 _TOTAL_DOCUMENT_COUNT = 6
 
@@ -62,6 +63,55 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
         assert d not in page2_documents
 
 
+@pytest.mark.search
+def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    expected_search_result_schema = sorted(
+        [
+            "document_name",
+            "document_postfix",
+            "document_country_code",
+            "document_source_name",
+            "document_date",
+            "document_id",
+            "document_slug",
+            "document_country_english_shortname",
+            "document_description",
+            "document_type",
+            "document_category",
+            "document_source_url",
+            "document_url",
+            "document_content_type",
+            "document_title_match",
+            "document_description_match",
+            "document_passage_matches",
+        ]
+    )
+    page1_response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": False,
+            "limit": 100,
+            "offset": 0,
+        },
+    )
+    assert page1_response.status_code == 200
+
+    page1_response_body = page1_response.json()
+    page1_documents = page1_response_body["documents"]
+    assert len(page1_documents) == 5
+
+    for d in page1_documents:
+        assert sorted(list(d.keys())) == expected_search_result_schema
+
+    assert "Document ids missing" in caplog.text
+
+
+@pytest.mark.skip(
+    reason="Temporarily disabled while test search index is being recreated"
+)
 @pytest.mark.search
 def test_pagination_overlap(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -126,7 +176,7 @@ def test_search_body_valid(test_opensearch, monkeypatch, client):
 @pytest.mark.search
 def test_jit_query_is_default(test_opensearch, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
-    jit_query_spy = mocker.spy(app.core.jit_query_wrapper, "jit_query")
+    jit_query_spy = mocker.spy(app.core.jit_query_wrapper, "jit_query")  # noqa
     background_task_spy = mocker.spy(fastapi.BackgroundTasks, "add_task")
 
     response = client.post(

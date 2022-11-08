@@ -116,6 +116,7 @@ def test_write_documents_to_s3(test_s3_client, mocker):
     d = DocumentParserInput(
         publication_ts=datetime.datetime(year=2008, month=12, day=25),
         name="name",
+        postfix="pf-A",
         description="description",
         source_url=None,
         type="executive",
