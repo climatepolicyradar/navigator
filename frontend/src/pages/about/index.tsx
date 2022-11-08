@@ -16,18 +16,6 @@ const About = () => {
             as laws and policies promoting low carbon transitions, which reflects the relevance of climate policy in areas including energy, transport, land use, and climate
             resilience. This database originates from a collaboration between the Grantham Research Institute and GLOBE International on a series of Climate Legislation Studies.
           </p>
-          <p>
-            The database also features climate litigation cases from over 40 countries. These cases raise issues of law or fact regarding the science of climate change and/or
-            climate change mitigation and adaptation policies or efforts before an administrative, judicial or other investigatory body. The database uses summaries from the Sabin
-            Center's <ExternalLink url="http://climatecasechart.com/non-us-climate-change-litigation/">Climate Case Chart</ExternalLink>. Work to identify new cases is also
-            supported by a{" "}
-            <ExternalLink url="https://climate.law.columbia.edu/content/global-network-peer-reviewers-climate-litigation">Global Network of Peer Reviewers</ExternalLink>,
-            coordinated by the Sabin Center. This dataset does not include the United States - to access information about climate change litigation in the US, please{" "}
-            <ExternalLink url="http://climatecasechart.com/us-climate-change-litigation/">
-              click here to go to the Sabin Center / Arnold & Porter Kaye Scholer database
-            </ExternalLink>
-            . This will take you to a different website and will open in a new window.
-          </p>
           <h2>Use and reference of the data</h2>
           <p>
             The Grantham Research Institute encourages the use of this database. Users are welcome to download, save, or distribute the results electronically or in any other
