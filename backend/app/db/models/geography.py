@@ -10,7 +10,8 @@ class Geography(Base):  # noqa: D101
 
     id = sa.Column(sa.SmallInteger, primary_key=True)
     # to display to end-users
-    display_value = sa.Column(sa.Text, unique=True)
+    display_value = sa.Column(sa.Text, unique=True, nullable=False)
+    slug = sa.Column(sa.Text, unique=True, nullable=False, index=True)
     # e.g. ISO code, World Bank, etc - not necessarily for display
     # non-unique, as some unrecognised territories might share the same code, e.g.
     # at the time of writing, "Sahrawi Republic" and "Western Sahara" both share "ESH"

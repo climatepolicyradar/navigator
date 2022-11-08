@@ -7,12 +7,12 @@ from app.api.api_v1.routers.lookups.geo_stats import (
     lookup_geo_stats,
 )
 
-TEST_ID = 139
 TEST_GEO_NAME = "Antigua and Barbuda"
-URL_UNDER_TEST = f"/api/v1/geo_stats/{TEST_ID}"
+TEST_GEO_SLUG = "antigua-and-barbuda"
+URL_UNDER_TEST = f"/api/v1/geo_stats/{TEST_GEO_SLUG}"
 
-TEST_ID_BAD = 123456
-URL_UNDER_TEST_BAD = f"/api/v1/geo_stats/{TEST_ID_BAD}"
+TEST_GEO_SLUG_BAD = "this-is-not-a-geography"
+URL_UNDER_TEST_BAD = f"/api/v1/geo_stats/{TEST_GEO_SLUG_BAD}"
 
 
 def test_endpoint_returns_correct_data(client, test_db):
@@ -25,8 +25,7 @@ def test_endpoint_returns_correct_data(client, test_db):
     )
     stats = response.json()
     assert response.status_code == OK
-    assert stats["id"] == 6
-    assert stats["geography_id"] == TEST_ID
+    assert stats["geography_slug"] == TEST_GEO_SLUG
     assert stats["name"] == TEST_GEO_NAME
     assert stats["federal"] is False
 
@@ -58,9 +57,8 @@ def test_queries_db():
     db.query.return_value = query
     query.filter_by.return_value = filter_by
     filter_by.first.return_value = GeoStatsResponse(
-        id=TEST_ID,
         name=TEST_GEO_NAME,
-        geography_id=1,
+        geography_slug=TEST_GEO_SLUG,
         legislative_process="row.legislative_process",
         federal=True,
         federal_details="row.federal_details",
@@ -71,7 +69,7 @@ def test_queries_db():
         visibility_status="row.visibility_status",
     )
 
-    response = lookup_geo_stats(TEST_ID, db=db)
-    db.query.assert_called_once()
-    assert response.id == TEST_ID
+    response = lookup_geo_stats(TEST_GEO_SLUG, db=db)
+    assert db.query.call_count == 2  # lookup geography, then stats
+    assert response.geography_slug == TEST_GEO_SLUG
     assert response.name == TEST_GEO_NAME

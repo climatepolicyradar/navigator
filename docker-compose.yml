@@ -34,6 +34,8 @@ services:
     tty: true
     volumes:
       - ./backend:/app/:cached
+    ports:
+      - 8888:8888
     environment:
       PYTHONPATH: .
       DATABASE_URL: ${BACKEND_DATABASE_URL}

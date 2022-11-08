@@ -1,10 +1,9 @@
 """Functions to support browsing the RDS document structure"""
 
 from time import perf_counter
-from typing import List, Optional
+from typing import Optional
 from pydantic import BaseModel
-from app.db.models.document import Category, Document, Event, Geography, DocumentType
-from app.api.api_v1.schemas.metadata import Event as MetaEvent
+from app.db.models.document import Category, Document, Geography, DocumentType
 from app.api.api_v1.schemas.search import (
     SearchResponseDocument,
     SearchResponseBody,
@@ -16,7 +15,7 @@ from sqlalchemy.orm import Session
 class BrowseArgs(BaseModel):
     """Arguements for the browse_rds function"""
 
-    geography_id: Optional[int] = None
+    geography_slug: Optional[str] = None
     country_code: Optional[str] = None
     start_year: Optional[int] = None
     end_year: Optional[int] = None
@@ -25,7 +24,8 @@ class BrowseArgs(BaseModel):
 
 def to_search_resp_doc(row: dict) -> SearchResponseDocument:
     return SearchResponseDocument(
-        document_id=row["id"],
+        document_id=row["import_id"],
+        document_slug=row["slug"],
         document_name=row["name"],
         document_description=row["description"],
         document_date=str(row["publication_ts"]),
@@ -50,7 +50,8 @@ def browse_rds(db: Session, req: BrowseArgs) -> SearchResponseBody:
     t0 = perf_counter()
     query = (
         db.query(
-            Document.id,
+            Document.slug,
+            Document.import_id,
             Document.name,
             Document.description,
             Document.publication_ts,
@@ -63,8 +64,8 @@ def browse_rds(db: Session, req: BrowseArgs) -> SearchResponseBody:
         .join(Category, Document.category_id == Category.id)
     )
 
-    if req.geography_id is not None:
-        query = query.filter(Geography.id == req.geography_id)
+    if req.geography_slug is not None:
+        query = query.filter(Geography.slug == req.geography_slug)
 
     if req.country_code is not None:
         query = query.filter(Geography.value == req.country_code)
@@ -87,18 +88,3 @@ def browse_rds(db: Session, req: BrowseArgs) -> SearchResponseBody:
         query_time_ms=int((perf_counter() - t0) * 1e3),
         documents=documents,
     )
-
-
-def get_events_for_country(db: Session, geography_id: int) -> List[MetaEvent]:
-    query = (
-        db.query(
-            Event.name,
-            Event.description,
-            Event.created_ts,
-        )
-        .join(Document, Document.id == Event.document_id)
-        .filter(Document.geography_id == geography_id)
-    )
-    query = query.order_by(Event.created_ts.desc())
-
-    return [MetaEvent(**(dict(ev))) for ev in query.all()]
