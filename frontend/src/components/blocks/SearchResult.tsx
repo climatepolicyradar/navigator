@@ -57,7 +57,6 @@ const SearchResult = ({ document }: SearchResultProps) => {
         slug: document_slug,
         name: document_name,
         country_code: document_geography,
-        country_name: document_country_english_shortname,
         document_year: year,
         description: document_description,
         category: document_category,
