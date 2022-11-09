@@ -47,6 +47,7 @@ export type TDocument = {
 export type TGeography = {
   id: number;
   display_value: string;
+  slug: string;
   value: string;
   type: string;
   parent_id: number | null;
