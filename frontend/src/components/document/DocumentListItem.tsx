@@ -22,8 +22,6 @@ export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {
   const { slug, country_code, country_name, description, name, document_year, category } = listItem;
   const theme = useContext(ThemeContext);
 
-  console.log(listItem);
-
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
