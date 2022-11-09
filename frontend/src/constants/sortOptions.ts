@@ -5,11 +5,11 @@ export const sortOptions = [
   },
   {
     label: "Title: A - Z",
-    value: "title:asc",
+    value: "document_name:asc",
   },
   {
     label: "Title: Z - A",
-    value: "title:desc",
+    value: "document_name:desc",
   },
   {
     label: "Date: latest first",
@@ -32,10 +32,10 @@ export const sortOptionsBrowse = [
   },
   {
     label: "Title: A - Z",
-    value: "title:asc",
+    value: "document_name:asc",
   },
   {
     label: "Title: Z - A",
-    value: "title:desc",
+    value: "document_name:desc",
   },
 ];

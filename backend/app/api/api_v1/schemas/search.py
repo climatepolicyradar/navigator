@@ -18,7 +18,7 @@ class SortField(str, Enum):
     """Sort field for use building OpenSearch query body."""
 
     DATE = "date"
-    TITLE = "title"
+    TITLE = "document_name"
 
 
 class JitQuery(str, Enum):

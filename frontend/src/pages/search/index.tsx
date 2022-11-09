@@ -146,6 +146,7 @@ const Search = () => {
       field = valArray[0];
       order = valArray[1];
     }
+    console.log(`Ordering on ${order} for field ${field} `);
     handleSearchChange("sort_field", field);
     handleSearchChange("sort_order", order);
   };
