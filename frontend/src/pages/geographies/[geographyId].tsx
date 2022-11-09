@@ -118,9 +118,9 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
     if (selectedCategoryIndex === 3) {
       return (
         <div className="mt-4">
-          Climate litigation case documents are coming soon to Climate Policy Radar. In the meantime,{" "}
-          <ExternalLink className="text-blue-500 transition duration-300 hover:text-indigo-600" url="https://climate-laws.org/litigation_cases">
-            visit the Climate Change Laws of the World website
+          Climate litigation case documents are coming soon. In the meantime, visit the Sabin Center’s{" "}
+          <ExternalLink url="http://climatecasechart.com/" className="text-blue-500 transition duration-300 hover:text-indigo-600">
+            Climate Change Litigation Databases
           </ExternalLink>
           .
         </div>

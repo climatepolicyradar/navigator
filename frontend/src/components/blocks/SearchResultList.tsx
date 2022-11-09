@@ -6,11 +6,8 @@ const SearchResultList = ({ searchCriteria, documents }) => {
     return (
       // TODO: translate
       <div className="h-96 mt-4 md:mt-0">
-        Climate litigation case documents are coming soon to Climate Policy Radar! In the meantime, head to{" "}
-        <ExternalLink className="text-blue-500 transition duration-300 hover:text-indigo-600" url="https://climate-laws.org/litigation_cases">
-          visit the Climate Change Laws of the World website
-        </ExternalLink>
-        .
+        Climate litigation case documents are coming soon. In the meantime, visit the Sabin Center’s{" "}
+        <ExternalLink url="http://climatecasechart.com/">Climate Change Litigation Databases</ExternalLink>.
       </div>
     );
   }
