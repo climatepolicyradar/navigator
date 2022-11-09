@@ -752,7 +752,7 @@ def remove_document_relationship(
     db.commit()
 
 
-def get_postfix_map(db: Session, doc_ids: list[str]) -> Mapping[int, str]:
+def get_postfix_map(db: Session, doc_ids: list[str]) -> Mapping[str, str]:
 
     postfix_map = {
         doc_id: postfix if postfix else ""
