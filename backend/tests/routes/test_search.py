@@ -20,6 +20,7 @@ from app.db.models import Geography
 _TOTAL_DOCUMENT_COUNT = 6
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_simple_pagination(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -64,6 +65,7 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
         assert d not in page2_documents
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -109,6 +111,7 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
     assert "Document ids missing" in caplog.text
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_pagination_overlap(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -603,6 +606,7 @@ def test_result_order_score(test_opensearch, monkeypatch, client, mocker):
         s = new_s
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_date(test_opensearch, monkeypatch, client, order):
@@ -634,6 +638,7 @@ def test_result_order_date(test_opensearch, monkeypatch, client, order):
         dt = new_dt
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_title(test_opensearch, monkeypatch, client, order):
@@ -688,6 +693,7 @@ def test_invalid_request(test_opensearch, monkeypatch, client):
     assert response.status_code == 422
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_case_insensitivity(test_opensearch, monkeypatch, client):
     """Make sure that query string results are not affected by case."""
@@ -717,6 +723,7 @@ def test_case_insensitivity(test_opensearch, monkeypatch, client):
     assert response1_json == response2_json == response3_json
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_punctuation_ignored(test_opensearch, monkeypatch, client):
     """Make sure that punctuation in query strings is ignored."""
@@ -746,6 +753,7 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client):
     assert response1_json == response2_json == response3_json
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_sensitive_queries(test_opensearch, monkeypatch, client):
     """Make sure that queries in the list of sensitive queries only return results containing that term, and not KNN results."""
@@ -799,6 +807,7 @@ def test_sensitive_queries(test_opensearch, monkeypatch, client):
     )
 
 
+@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_accents_ignored(test_opensearch, monkeypatch, client):
     """Make sure that accents in query strings are ignored."""
