@@ -19,7 +19,7 @@ config:
   infra:opensearch_user:
     secure: AAABAHAi2fgQeXBocdVqETHkcSsPNKePXXZsSbfeyKshvxF3n7Fg
   infra:pdf_embed_key:
-    secure: AAABAOkCuV7m0i1O8XjmAFqmq+1HOqvbJ9HBDuY3kXocOVgPlUqCmw/R7lS0z7haZ7zgsvnuEzqmK8sge7JY3A==
+    secure: AAABAM9ihSjy1kQ21v08Wsyk/zYYJajtxmBjBdFJr7/0q/2YGmI0Dy+baF7DkNONC3C8hI8TphBvdc9V5nIAdw==
   infra:pipeline_s3_bucket:
     secure: AAABAB5/A11mk2kym+y/7Z2RaDxsZzKgcQQI6B6eMMh+gq00LbVDCOT5b3hOYnHik6/R38LX+Xh1UC8=
   infra:sendgrid_api_token:
