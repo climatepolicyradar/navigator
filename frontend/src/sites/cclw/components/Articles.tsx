@@ -41,6 +41,7 @@ const ARTICLES: TArticle[] = [
     type: "Legislation",
     title: "Framework Law on Climate Change - Chile",
     meta: "Chile | Published | 2022",
+    countryCode: "chl",
     imageUrl: "/cclw/images/chile.jpg",
     imageAlt: "Chile flag",
   },
