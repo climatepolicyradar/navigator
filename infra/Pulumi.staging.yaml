@@ -19,7 +19,7 @@ config:
   infra:opensearch_user:
     secure: AAABAHAi2fgQeXBocdVqETHkcSsPNKePXXZsSbfeyKshvxF3n7Fg
   infra:pdf_embed_key:
-    secure: AAABANVQDVcdpCdPwTUPoScZ/wCQd7jaFlDRtoqwLy1dzaNAl7Nt3O4mthQEYJj1BWZwub63brBXnVCCli49Bg==
+    secure: AAABAOkCuV7m0i1O8XjmAFqmq+1HOqvbJ9HBDuY3kXocOVgPlUqCmw/R7lS0z7haZ7zgsvnuEzqmK8sge7JY3A==
   infra:pipeline_s3_bucket:
     secure: AAABAB5/A11mk2kym+y/7Z2RaDxsZzKgcQQI6B6eMMh+gq00LbVDCOT5b3hOYnHik6/R38LX+Xh1UC8=
   infra:self_registration_enabled: "False"
