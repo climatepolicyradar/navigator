@@ -1,24 +1,24 @@
-import { useRouter } from "next/router";
-import Layout from "../../components/layouts/Main";
-import { useTranslation } from "react-i18next";
 import { useEffect, useState } from "react";
-import useDocument from "../../hooks/useDocument";
-import EmbeddedPDF from "../../components/EmbeddedPDF";
-import Loader from "../../components/Loader";
-import useDocumentDetail from "../../hooks/useDocumentDetail";
-import TextLink from "../../components/nav/TextLink";
+import { useRouter } from "next/router";
+import { useTranslation } from "react-i18next";
 import { v4 as uuidv4 } from "uuid";
+import Layout from "@components/layouts/Main";
+import useDocument from "@hooks/useDocument";
+import EmbeddedPDF from "@components/EmbeddedPDF";
+import Loader from "@components/Loader";
+import useDocumentDetail from "@hooks/useDocumentDetail";
+import TextLink from "@components/nav/TextLink";
 import { getDocumentTitle } from "@helpers/getDocumentTitle";
 
 const PDFView = () => {
   const [document, setDocument] = useState(null);
-  const { t, i18n, ready } = useTranslation("searchStart");
+  const { t } = useTranslation("searchStart");
   const router = useRouter();
   // get selected document to show passage matches
   const { data: selectedDoc }: any = useDocument();
   // get document detail in case no document was selected
   const documentQuery = useDocumentDetail(router.query.docId as string);
-  const { isFetching, isError, error, data: { data: documentDetail } = {} } = documentQuery;
+  const { data: { data: documentDetail } = {} } = documentQuery;
 
   useEffect(() => {
     setDocument(selectedDoc);
@@ -35,7 +35,7 @@ const PDFView = () => {
       setDocument(doc);
     }
   }, [selectedDoc, documentDetail]);
-  const title = getDocumentTitle(document.document_name, document.document_postfix);
+
   return (
     <>
       {!document ? (
@@ -43,9 +43,9 @@ const PDFView = () => {
           <Loader />
         </div>
       ) : (
-        <Layout title={title ?? "Loading..."} heading={t("Law and Policy Search PDF View")} screenHeight={true}>
+        <Layout title={getDocumentTitle(document.document_name, document.document_postfix) ?? "Loading..."} heading={t("Law and Policy Search PDF View")} screenHeight={true}>
           <div className="container mt-2">
-            <h1 className="text-2xl font-medium">{title}</h1>
+            <h1 className="text-2xl font-medium">{getDocumentTitle(document.document_name, document.document_postfix)}</h1>
             {/* TODO: translate below text */}
             <TextLink href="/search">
               <span className="text-lg">&laquo;</span>Back to search results
