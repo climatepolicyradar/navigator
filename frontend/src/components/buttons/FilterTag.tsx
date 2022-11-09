@@ -4,7 +4,7 @@ interface FilterTagProps {
 }
 const FilterTag = ({ onClick, item }) => {
   return (
-    <div className="inline-block rounded bg-indigo-600 text-white flex py-1 px-2 font-medium">
+    <div className="rounded bg-indigo-600 text-white flex py-1 px-2 font-medium">
       <div className="text-xs">{item}</div>
       <button onClick={onClick} className="ml-2 text-lg leading-none">
         &times;

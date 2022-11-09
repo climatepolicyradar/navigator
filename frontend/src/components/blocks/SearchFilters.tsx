@@ -76,7 +76,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             defaultValue={searchCriteria.keyword_filters?.regions ? searchCriteria.keyword_filters.regions[0] : ""}
             onChange={handleRegionChange}
             title={t("By region")}
-            keyField="display_value"
+            keyField="slug"
+            keyFieldDisplay="display_value"
             filterType="regions"
           />
         </div>
@@ -85,7 +86,8 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
             title={t("By country")}
             list={filteredCountries}
             selectedList={countryFilters}
-            keyField="display_value"
+            keyField="slug"
+            keyFieldDisplay="display_value"
             filterType="countries"
             handleFilterChange={handleFilterChange}
           />
