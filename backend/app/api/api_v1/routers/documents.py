@@ -70,7 +70,6 @@ async def document_browse(
 @documents_router.get(
     "/documents/{import_id_or_slug}",
     response_model=DocumentDetailResponse,
-    response_model_exclude_none=True,
 )
 async def document_detail(
     import_id_or_slug: str,

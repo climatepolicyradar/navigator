@@ -7,7 +7,7 @@ import { Timeline } from "@components/blocks/Timeline";
 import Event from "@components/blocks/Event";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
-import { ExternalLinkIcon, GlobeIcon, PDFIcon } from "@components/svg/Icons";
+import { ExternalLinkIcon, GlobeIcon, DocumentIcon, PDFIcon } from "@components/svg/Icons";
 import { CountryLink } from "@components/CountryLink";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
@@ -37,23 +37,27 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
 
   const renderSourceLink = () => {
     let link: string;
-    if (page.content_type === "application/pdf" && page.source_url.length) {
-      link = page.source_url;
-    } else if (page.source_url.length) {
+    if (page.url?.length) {
+      link = page.url;
+    } else if (page.source_url?.length) {
       link = page.source_url;
     }
 
     if (!link) return null;
 
     return (
-      <div className="mt-4 flex align-bottom">
-        {page?.content_type.includes("pdf") && <PDFIcon height="24" width="24" />}
-        {page?.content_type.includes("html") && <GlobeIcon height="24" width="24" />}
-        <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300 flex ml-2">
-          <span className="mr-1">{page?.content_type.includes("html") ? "Visit source website" : "See full text (opens in new tab)"}</span>
-          <ExternalLinkIcon height="16" width="16" />
-        </ExternalLink>
-      </div>
+      <section className="mt-12">
+        <h3>Source</h3>
+        <div className="mt-4 flex align-bottom gap-2">
+          {page?.content_type.includes("pdf") && <PDFIcon height="24" width="24" />}
+          {page?.content_type.includes("x-ole-storage") && <DocumentIcon height="24" width="24" />}
+          {page?.content_type.includes("html") && <GlobeIcon height="24" width="24" />}
+          <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300 flex">
+            <span className="mr-1">{page?.content_type.includes("html") ? "Visit source website" : "See full text (opens in new tab)"}</span>
+            <ExternalLinkIcon height="16" width="16" />
+          </ExternalLink>
+        </div>
+      </section>
     );
   };
 
@@ -106,10 +110,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                 </section>
               )}
 
-              <section className="mt-12">
-                <h3>Source</h3>
-                {renderSourceLink()}
-              </section>
+              {renderSourceLink()}
 
               {page.events.length > 0 && (
                 <section className="mt-12">
@@ -165,8 +166,13 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                       Grantham Research Institute
                     </ExternalLink>
                     . If you want to use this summary, please check{" "}
-                    <ExternalLink url="https://www.lse.ac.uk/granthaminstitute/cclw-terms-and-conditions"  className="text-blue-500 hover:text-indigo-600 hover:underline transition duration-300">terms of use</ExternalLink> for citation and licensing of third party
-                    data.
+                    <ExternalLink
+                      url="https://www.lse.ac.uk/granthaminstitute/cclw-terms-and-conditions"
+                      className="text-blue-500 hover:text-indigo-600 hover:underline transition duration-300"
+                    >
+                      terms of use
+                    </ExternalLink>{" "}
+                    for citation and licensing of third party data.
                   </p>
                 </div>
               </div>

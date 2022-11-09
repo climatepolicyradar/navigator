@@ -19,10 +19,9 @@ config:
   infra:opensearch_user:
     secure: AAABAO2Q8F3BRfojR9S0eVB3Mk2+fc9EsQCRExLvrm7wDyINLWVTPidE
   infra:pdf_embed_key:
-    secure: AAABAAVgYELm6oSYPJddBCuCtz5sgHP/8UnGJ6k+UAo5MgfTpTTZqKPi10EmXWevpjOz318I0nyUKpy1nHWr5Q==
+    secure: AAABAA2Roy0Z6OJaItyiCaHJvPRzhUBNZmDnUg005ePUusHDLepqyMGrpPaULNw+Acw/tVdk3gg0a0nRUQxheQ==
   infra:pipeline_s3_bucket:
     secure: AAABALXJRpJczixuvOZT1RokX40/HGMWVR10Tt4hSRhdoan9q5oUgHfVrkt3I4/hvQqTtv+i1yaxk3cR
-  infra:self_registration_enabled: "True"
   infra:sendgrid_api_token:
     secure: AAABAM9Xv/4U8jQRGjZQNVWNJtAf8C71HMvJEYQNL28so773EqItQFVyjkwUs2FWgt/nExg7HRk3fbR2aW/lWV8ZX/7SLlZbIArMUZLLSuOe3SxExb6iD3a74WYhBck12RBcdfQ=
   infra:sendgrid_enabled: "True"

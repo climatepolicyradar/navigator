@@ -31,7 +31,7 @@ from app.api.api_v1.schemas.metadata import (
     Source as SourceSchema,
     Topic as TopicSchema,
 )
-from app.core.util import to_cdn_url, s3_to_cdn_url
+from app.core.util import to_cdn_url
 from app.core.validation import IMPORT_ID_MATCHER
 from app.db.models import (
     Document,
@@ -373,10 +373,9 @@ def get_document_detail(db, import_id_or_slug) -> DocumentDetailResponse:
         name=cast(str, document.name),
         description=cast(str, document.description),
         publication_ts=document.publication_ts,
-        postfix=cast(str, document.postfix) if document.postfix else None,
-        source_url=cast(str, document.source_url) if document.source_url else None,
-        # TODO: remove with document.url
-        url=to_cdn_url(document.cdn_object) or s3_to_cdn_url(document.url),
+        postfix=document.postfix,
+        source_url=document.source_url,
+        url=to_cdn_url(document.cdn_object),
         slug=document.slug,
         import_id=document.import_id,
         content_type=document.content_type or "unknown",
