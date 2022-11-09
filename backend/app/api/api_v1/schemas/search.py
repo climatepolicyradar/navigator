@@ -1,10 +1,10 @@
 from enum import Enum
-from typing import Dict, List, Mapping, Optional, Tuple
+from typing import Mapping, Optional, Sequence
 
 from pydantic import BaseModel, conlist
 
 
-Coord = Tuple[float, float]
+Coord = tuple[float, float]
 
 
 class SortOrder(str, Enum):
@@ -64,8 +64,8 @@ class SearchRequestBody(BaseModel):
     max_passages_per_doc: int = 10  # TODO: decide on default
 
     # TODO: Improve filters to allow generics & use filter types
-    keyword_filters: Optional[Dict[FilterField, List[str]]] = None
-    year_range: Optional[Tuple[Optional[int], Optional[int]]] = None
+    keyword_filters: Optional[Mapping[FilterField, Sequence[str]]] = None
+    year_range: Optional[tuple[Optional[int], Optional[int]]] = None
 
     sort_field: Optional[SortField] = None
     sort_order: SortOrder = SortOrder.DESCENDING
@@ -83,7 +83,7 @@ class SearchResponseDocumentPassage(BaseModel):
     text: str
     text_block_id: str
     text_block_page: Optional[int]
-    text_block_coords: Optional[List[Coord]]
+    text_block_coords: Optional[Sequence[Coord]]
 
 
 class SearchResult(BaseModel):
@@ -103,7 +103,7 @@ class SearchResult(BaseModel):
     document_content_type: Optional[str]
     document_title_match: bool
     document_description_match: bool
-    document_passage_matches: List[SearchResponseDocumentPassage]
+    document_passage_matches: list[SearchResponseDocumentPassage]
 
 
 class SearchResultResponse(SearchResult):
@@ -134,7 +134,7 @@ class SummaryCountryResponse(BaseModel):
 
     document_counts: Mapping[CategoryName, int]
     top_documents: Mapping[CategoryName, Top5DocumentList]
-    targets: List[str]  # TODO: Placeholder for later
+    targets: Sequence[str]  # TODO: Placeholder for later
 
 
 class SearchResults(BaseModel):
@@ -143,7 +143,7 @@ class SearchResults(BaseModel):
     hits: int
     query_time_ms: int
 
-    documents: List[SearchResult]
+    documents: list[SearchResult]
 
 
 class SearchResultsResponse(BaseModel):
@@ -152,7 +152,7 @@ class SearchResultsResponse(BaseModel):
     hits: int
     query_time_ms: int
 
-    documents: List[SearchResultResponse]
+    documents: Sequence[SearchResultResponse]
 
 
 class OpenSearchResponseMatchBase(BaseModel):
@@ -190,4 +190,4 @@ class OpenSearchResponsePassageMatch(OpenSearchResponseMatchBase):
     text: str
     text_block_id: str
     text_block_page: int
-    text_block_coords: List[Coord]
+    text_block_coords: Sequence[Coord]

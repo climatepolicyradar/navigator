@@ -2,10 +2,10 @@ from typing import List
 from fastapi import Depends, Request, Response
 
 from app.api.api_v1.schemas.metadata import Config
+from app.core.lookups import get_metadata
 from app.db.session import get_db
 from app.db.crud.document import get_document_ids
 from .router import lookups_router
-from .util import get_metadata
 
 
 @lookups_router.get("/config", response_model=Config)

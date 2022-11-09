@@ -6,10 +6,10 @@ for the type of document search being performed.
 """
 import json
 import logging
-from app.db.crud.document import get_postfix_map
-from app.db.session import get_db
+from typing import Mapping, Sequence
 
 from fastapi import APIRouter, Request, BackgroundTasks, Depends
+from sqlalchemy.orm import Session
 
 from app.api.api_v1.schemas.search import (
     SearchRequestBody,
@@ -18,11 +18,15 @@ from app.api.api_v1.schemas.search import (
     SearchResultResponse,
 )
 from app.core.jit_query_wrapper import jit_query_wrapper
+from app.core.lookups import get_countries_for_region, get_country_by_slug
 from app.core.search import (
+    FilterField,
     OpenSearchConnection,
     OpenSearchConfig,
     OpenSearchQueryConfig,
 )
+from app.db.crud.document import get_postfix_map
+from app.db.session import get_db
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -52,6 +56,12 @@ def search_documents(
         },
     )
 
+    if search_body.keyword_filters is not None:
+        search_body.keyword_filters = process_search_keyword_filters(
+            db,
+            search_body.keyword_filters,
+        )
+
     results: SearchResults = jit_query_wrapper(
         _OPENSEARCH_CONNECTION,
         background_tasks=background_tasks,
@@ -76,3 +86,36 @@ def search_documents(
     )
 
     return response
+
+
+def process_search_keyword_filters(
+    db: Session,
+    request_filters: Mapping[FilterField, Sequence[str]],
+) -> Mapping[FilterField, Sequence[str]]:
+    filter_map = {}
+
+    for field, values in request_filters.items():
+        if field == FilterField.REGION:
+            field = FilterField.COUNTRY
+            filter_values = []
+            for geo_slug in values:
+                filter_values.extend(
+                    [g.value for g in get_countries_for_region(db, geo_slug)]
+                )
+            print(f"FILTER VALUES: {filter_values}")
+        elif field == FilterField.COUNTRY:
+            filter_values = [
+                country.value
+                for geo_slug in values
+                if (country := get_country_by_slug(db, geo_slug)) is not None
+            ]
+        else:
+            filter_values = values
+
+        if filter_values:
+            values = filter_map.get(field, [])
+            values.extend(filter_values)
+            values = list(set(values))
+            filter_map[field] = values
+
+    return filter_map

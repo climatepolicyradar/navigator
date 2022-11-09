@@ -4,7 +4,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from app.api.api_v1.routers.lookups.util import tree_table_to_json
+from app.core.util import tree_table_to_json
 from app.db.session import SessionLocal
 from tests.routes.test_documents import create_4_documents
 

@@ -1,9 +1,10 @@
 import dataclasses
 import time
-import fastapi
 from datetime import datetime
 
+import fastapi
 import pytest
+
 import app.core
 import app.core.jit_query_wrapper
 from app.api.api_v1.routers import search
@@ -14,6 +15,7 @@ from app.api.api_v1.schemas.search import (
     FilterField,
 )
 from app.core.search import _FILTER_FIELD_MAP, OpenSearchQueryConfig
+from app.db.models import Geography
 
 _TOTAL_DOCUMENT_COUNT = 6
 
@@ -296,8 +298,27 @@ def test_without_jit(test_opensearch, monkeypatch, client, mocker):
 
 
 @pytest.mark.search
-def test_keyword_filters(test_opensearch, monkeypatch, client, mocker):
+def test_keyword_filters(test_opensearch, client, test_db, monkeypatch, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    ssa = Geography(
+        display_value="Sub-Saharan Africa",
+        slug="sub-saharan-africa",
+        value="Sub-Saharan Africa",
+        type="region",
+    )
+    test_db.add(ssa)
+    test_db.flush()
+    test_db.add(
+        Geography(
+            display_value="Kenya",
+            slug="kenya",
+            value="KEN",
+            type="country",
+            parent_id=ssa.id,
+        )
+    )
+    test_db.commit()
 
     query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
     response = client.post(
@@ -305,7 +326,7 @@ def test_keyword_filters(test_opensearch, monkeypatch, client, mocker):
         json={
             "query_string": "climate",
             "exact_match": False,
-            "keyword_filters": {"countries": ["Kenya"]},
+            "keyword_filters": {"countries": ["kenya"]},
             "jit_query": "disabled",
         },
     )
@@ -314,13 +335,122 @@ def test_keyword_filters(test_opensearch, monkeypatch, client, mocker):
     query_body = query_spy.mock_calls[0].args[0]
 
     assert {
-        "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["Kenya"]}
+        "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["KEN"]}
     } in query_body["query"]["bool"]["filter"]
 
 
 @pytest.mark.search
-def test_invalid_keyword_filters(test_opensearch, monkeypatch, client):
+def test_keyword_filters_region(test_opensearch, test_db, monkeypatch, client, mocker):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    region = Geography(
+        display_value="South Asia",
+        slug="south-asia",
+        value="South Asia",
+        type="region",
+    )
+    test_db.add(region)
+    test_db.flush()
+    afghanistan = Geography(
+        display_value="Afghanistan",
+        slug="afghanistan",
+        value="AFG",
+        type="country",
+        parent_id=region.id,
+    )
+    test_db.add(afghanistan)
+    test_db.add(
+        Geography(
+            display_value="Bhutan",
+            slug="bhutan",
+            value="BTN",
+            type="country",
+            parent_id=region.id,
+        )
+    )
+    test_db.flush()
+    test_db.add(
+        Geography(
+            display_value="Kabul",
+            slug="kabul",
+            value="Kabul",
+            type="city",
+            parent_id=afghanistan.id,
+        )
+    )
+    test_db.commit()
+
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": False,
+            "keyword_filters": {"regions": ["south-asia"]},
+            "jit_query": "disabled",
+        },
+    )
+    assert response.status_code == 200
+    assert query_spy.call_count == 1
+    query_body = query_spy.mock_calls[0].args[0]
+
+    assert {
+        "terms": {_FILTER_FIELD_MAP[FilterField.COUNTRY]: ["AFG", "BTN"]}
+    } in query_body["query"]["bool"]["filter"]
+
+    # Only country filters should be added
+    query_term_keys = []
+    for d in query_body["query"]["bool"]["filter"]:
+        search_term_dict = d["terms"]
+        query_term_keys.extend(search_term_dict.keys())
+
+    assert [_FILTER_FIELD_MAP[FilterField.COUNTRY]] == query_term_keys
+
+
+@pytest.mark.search
+def test_keyword_filters_region_invalid(test_opensearch, monkeypatch, client, mocker):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
+    response = client.post(
+        "/api/v1/searches",
+        json={
+            "query_string": "climate",
+            "exact_match": False,
+            "keyword_filters": {"regions": ["daves-region"]},
+            "jit_query": "disabled",
+        },
+    )
+    assert response.status_code == 200
+    assert query_spy.call_count == 1
+    query_body = query_spy.mock_calls[0].args[0]
+
+    # The region is invalid, so no filters should be applied
+    assert "filter" not in query_body["query"]["bool"]
+
+
+@pytest.mark.search
+def test_invalid_keyword_filters(test_opensearch, test_db, monkeypatch, client):
+    monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    ssa = Geography(
+        display_value="Sub-Saharan Africa",
+        slug="sub-saharan-africa",
+        value="Sub-Saharan Africa",
+        type="region",
+    )
+    test_db.add(ssa)
+    test_db.flush()
+    test_db.add(
+        Geography(
+            display_value="Kenya",
+            slug="kenya",
+            value="KEN",
+            type="country",
+            parent_id=ssa.id,
+        )
+    )
+    test_db.commit()
 
     response = client.post(
         "/api/v1/searches",
@@ -328,7 +458,7 @@ def test_invalid_keyword_filters(test_opensearch, monkeypatch, client):
             "query_string": "disaster",
             "exact_match": False,
             "keyword_filters": {
-                "geographies": ["Kenya"],
+                "geographies": ["kenya"],
                 "unknown_filter_no1": ["BOOM"],
             },
         },
@@ -397,9 +527,28 @@ def test_year_range_filters(
 
 
 @pytest.mark.search
-def test_multiple_filters(test_opensearch, monkeypatch, client, mocker):
+def test_multiple_filters(test_opensearch, test_db, monkeypatch, client, mocker):
     """Check that multiple filters are successfully applied"""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    ssa = Geography(
+        display_value="Sub-Saharan Africa",
+        slug="sub-saharan-africa",
+        value="Sub-Saharan Africa",
+        type="region",
+    )
+    test_db.add(ssa)
+    test_db.flush()
+    test_db.add(
+        Geography(
+            display_value="Kenya",
+            slug="kenya",
+            value="KEN",
+            type="country",
+            parent_id=ssa.id,
+        )
+    )
+    test_db.commit()
 
     query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
     response = client.post(
@@ -408,7 +557,7 @@ def test_multiple_filters(test_opensearch, monkeypatch, client, mocker):
             "query_string": "disaster",
             "exact_match": False,
             "keyword_filters": {
-                "countries": ["Kenya"],
+                "countries": ["kenya"],
                 "sources": ["CCLW"],
             },
             "year_range": (1900, 2020),
@@ -420,7 +569,7 @@ def test_multiple_filters(test_opensearch, monkeypatch, client, mocker):
     query_body = query_spy.mock_calls[0].args[0]
 
     assert {
-        "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["Kenya"]}
+        "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["KEN"]}
     } in query_body["query"]["bool"]["filter"]
     assert {
         "terms": {_FILTER_FIELD_MAP[FilterField("sources")]: ["CCLW"]}
@@ -812,9 +961,28 @@ def test_browse_limit_offset(
 
 
 @pytest.mark.search
-def test_browse_filters(test_opensearch, monkeypatch, client, mocker):
+def test_browse_filters(test_opensearch, test_db, monkeypatch, client, mocker):
     """Check that multiple filters are successfully applied"""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
+
+    ssa = Geography(
+        display_value="Sub-Saharan Africa",
+        slug="sub-saharan-africa",
+        value="Sub-Saharan Africa",
+        type="region",
+    )
+    test_db.add(ssa)
+    test_db.flush()
+    test_db.add(
+        Geography(
+            display_value="Kenya",
+            slug="kenya",
+            value="KEN",
+            type="country",
+            parent_id=ssa.id,
+        )
+    )
+    test_db.commit()
 
     query_spy = mocker.spy(search._OPENSEARCH_CONNECTION, "raw_query")
     response = client.post(
@@ -822,7 +990,7 @@ def test_browse_filters(test_opensearch, monkeypatch, client, mocker):
         json={
             "query_string": "",
             "keyword_filters": {
-                "countries": ["Kenya"],
+                "countries": ["kenya"],
                 "sources": ["CCLW"],
             },
             "year_range": (1900, 2020),
@@ -834,7 +1002,7 @@ def test_browse_filters(test_opensearch, monkeypatch, client, mocker):
     query_body = query_spy.mock_calls[0].args[0]
 
     assert {
-        "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["Kenya"]}
+        "terms": {_FILTER_FIELD_MAP[FilterField("countries")]: ["KEN"]}
     } in query_body["query"]["bool"]["filter"]
     assert {
         "terms": {_FILTER_FIELD_MAP[FilterField("sources")]: ["CCLW"]}
