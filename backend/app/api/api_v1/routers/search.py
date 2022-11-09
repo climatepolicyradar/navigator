@@ -102,7 +102,6 @@ def process_search_keyword_filters(
                 filter_values.extend(
                     [g.value for g in get_countries_for_region(db, geo_slug)]
                 )
-            print(f"FILTER VALUES: {filter_values}")
         elif field == FilterField.COUNTRY:
             filter_values = [
                 country.value
