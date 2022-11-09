@@ -16,6 +16,7 @@ import { truncateString } from "@helpers/index";
 import { TEvent } from "@types";
 import { ExternalLink } from "@components/ExternalLink";
 import { ApiClient } from "@api/http-common";
+import { getDocumentTitle } from "@helpers/getDocumentTitle";
 
 const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ page }) => {
   const [showFullSummary, setShowFullSummary] = useState(false);
@@ -61,13 +62,13 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
   const sourceName = page?.source?.name === "CCLW" ? "Grantham Research Institute" : page?.source?.name;
 
   return (
-    <Layout title={page?.name}>
+    <Layout title={page?.title}>
       <section className="mb-8">
         <div className="bg-offwhite border-solid border-lineBorder border-b">
           <div className="container">
             <div className="flex flex-col md:flex-row">
               <div className="flex-1 mt-6">
-                <h1 className="text-3xl lg:smaller">{page.name}</h1>
+                <h1 className="text-3xl lg:smaller">{page.title}</h1>
                 <div className="flex text-base text-indigo-400 mt-3 items-center w-full mb-6 font-medium">
                   <CountryLink countryCode={page.geography.value}>
                     <span className={`rounded-sm border border-black flag-icon-background flag-icon-${page.geography.value.toLowerCase()}`} />
@@ -180,11 +181,11 @@ export default DocumentCoverPage;
 
 export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params.docId;
-
   const client = new ApiClient(process.env.NEXT_PUBLIC_API_URL);
 
   const { data: page } = ({} = await client.get(`/documents/${id}`, null));
 
+  page.title = getDocumentTitle(page.name, page.document_postfix ?? "")
   return {
     props: {
       page: page,

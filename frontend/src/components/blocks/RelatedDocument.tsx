@@ -7,13 +7,14 @@ interface RelatedDocumentProps {
 }
 
 export const RelatedDocument = ({ document }: RelatedDocumentProps) => {
-  const { country_code, country_name, slug, publication_ts, category, description, name } = document;
+  const { country_code, postfix, slug, publication_ts, category, description, name } = document;
   const [year] = convertDate(publication_ts);
 
   return (
     <DocumentListItem
       listItem={{
         slug: slug,
+        postfix: postfix,
         name: name,
         country_code: country_code,
         document_year: year,

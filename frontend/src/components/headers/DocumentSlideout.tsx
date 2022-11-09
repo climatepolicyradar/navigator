@@ -2,6 +2,7 @@ import Link from "next/link";
 import { TDocument } from "@types";
 import DocumentMenu from "../menus/DocumentMenu";
 import TextLink from "../nav/TextLink";
+import { getDocumentTitle } from "@helpers/getDocumentTitle";
 
 type TProps = {
   document: TDocument;
@@ -23,7 +24,7 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
             <div className="pl-6 pr-10 mt-2">
               <Link href={`/document/${document.document_slug}`}>
                 <a>
-                  <h1 className="text-lg text-blue-500 font-medium">{document.document_name}</h1>
+                  <h1 className="text-lg text-blue-500 font-medium">{getDocumentTitle(document.document_name, document.document_postfix)}</h1>
                 </a>
               </Link>
               <div className="flex flex-wrap lg:flex-nowrap text-sm text-indigo-400 my-2 items-center">

@@ -8,6 +8,7 @@ import Loader from "../../components/Loader";
 import useDocumentDetail from "../../hooks/useDocumentDetail";
 import TextLink from "../../components/nav/TextLink";
 import { v4 as uuidv4 } from "uuid";
+import { getDocumentTitle } from "@helpers/getDocumentTitle";
 
 const PDFView = () => {
   const [document, setDocument] = useState(null);
@@ -34,6 +35,7 @@ const PDFView = () => {
       setDocument(doc);
     }
   }, [selectedDoc, documentDetail]);
+  const title = getDocumentTitle(document.document_name, document.document_postfix);
   return (
     <>
       {!document ? (
@@ -41,9 +43,9 @@ const PDFView = () => {
           <Loader />
         </div>
       ) : (
-        <Layout title={document.document_name ?? "Loading..."} heading={t("Law and Policy Search PDF View")} screenHeight={true}>
+        <Layout title={title ?? "Loading..."} heading={t("Law and Policy Search PDF View")} screenHeight={true}>
           <div className="container mt-2">
-            <h1 className="text-2xl font-medium">{document.document_name}</h1>
+            <h1 className="text-2xl font-medium">{title}</h1>
             {/* TODO: translate below text */}
             <TextLink href="/search">
               <span className="text-lg">&laquo;</span>Back to search results
