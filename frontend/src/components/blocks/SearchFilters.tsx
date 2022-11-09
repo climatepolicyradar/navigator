@@ -93,7 +93,7 @@ const SearchFilters: React.FC<SearchFiltersProps> = ({
           />
           <MultiList list={countryFilters} removeFilter={handleFilterChange} type="countries" />
         </div>
-        <div className="relative mt-6">
+        <div className="relative mt-6 hidden">
           <BySelect
             list={sectors.filter((sector) => !sectorFilters.includes(sector.name))}
             onChange={handleFilterChange}
