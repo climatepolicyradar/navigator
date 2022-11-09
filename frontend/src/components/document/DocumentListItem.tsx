@@ -12,7 +12,6 @@ type TProps = {
   listItem: {
     slug: string;
     country_code: string;
-    country_name: string;
     description: string;
     name: string;
     document_year: string;

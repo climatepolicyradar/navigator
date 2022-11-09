@@ -16,7 +16,6 @@ export const RelatedDocument = ({ document }: RelatedDocumentProps) => {
         slug: slug,
         name: name,
         country_code: country_code,
-        country_name: country_name,
         document_year: year,
         description: description,
         category: category,
