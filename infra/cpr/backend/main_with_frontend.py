@@ -54,7 +54,7 @@ services:
     image: {frontend_image}
     mem_limit: 256m
     command: npm run start
-    environment:
+    args:
       PORT: 3000
       # not sure if these 3 need to be here, as it's already baked into the image.
       NEXT_PUBLIC_API_URL: {frontend_api_url}
