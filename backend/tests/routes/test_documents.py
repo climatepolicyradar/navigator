@@ -521,7 +521,12 @@ def test_document_detail(
     }
     assert get_detail_json_2["type"] == {"name": "just my type", "description": "sigh"}
     assert get_detail_json_2["languages"] == [
-        {"language_code": "afr", "name": "Afrikaans"}
+        {
+            "language_code": "afr",
+            "part1_code": None,
+            "part2_code": None,
+            "name": "Afrikaans",
+        }
     ]
     assert get_detail_json_2["category"] == {
         "name": "a category",
