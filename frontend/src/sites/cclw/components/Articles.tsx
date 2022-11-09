@@ -17,7 +17,7 @@ const ARTICLES: TArticle[] = [
     url: "https://climate-laws.org/geographies/united-states-of-america/laws/inflation-reduction-act",
     type: "Legislation",
     title: "US Inflation Reduction Act",
-    countryCode: "fra",
+    countryCode: "usa",
     meta: "USA | Filing | 2022",
   },
   {
@@ -32,6 +32,7 @@ const ARTICLES: TArticle[] = [
   {
     url: "https://climate-laws.org/geographies/fiji/laws/climate-change-act-2021",
     type: "Legislation",
+    countryCode: "fji",
     title: "Fiji's Climate Change Act 2021",
     meta: "Fiji | Filing | 2019",
   },
@@ -40,6 +41,7 @@ const ARTICLES: TArticle[] = [
     type: "Legislation",
     title: "Framework Law on Climate Change - Chile",
     meta: "Chile | Published | 2022",
+    countryCode: "chl",
     imageUrl: "/cclw/images/chile.jpg",
     imageAlt: "Chile flag",
   },
