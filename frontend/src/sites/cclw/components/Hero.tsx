@@ -61,7 +61,7 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
             <div className="text-lg font-bold">Technology</div>
             <div className="mt-4">We are now powered by data science and AI</div>
             <div className="mt-4">
-              <ExternalLink url="https://climatepolicyradar.org/what-we-do">
+              <ExternalLink url="https://climatepolicyradar.org">
                 <Button extraClasses="flex items-center">
                   <span>Learn more about our technology</span>
                   <span className="text-3xl ml-4">&gt;</span>
