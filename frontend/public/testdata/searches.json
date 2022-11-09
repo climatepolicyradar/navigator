@@ -11,6 +11,7 @@
       "document_geography_english_shortname": "Kenya",
       "document_slug": "Slug_1299",
       "document_name": "National Policy for Disaster Management",
+      "document_postfix": "PF1",
       "document_passage_matches": [
         {
           "text": "Disaster Profiling, Disaster Management and Disaster Risk Reduction",
@@ -114,6 +115,7 @@
       "document_geography_english_shortname": "Saint Kitts and Nevis",
       "document_slug": "Slug_2097",
       "document_name": "Food and Nutrition Security Policy and Plan of Action",
+      "document_postfix": "PF2",
       "document_passage_matches": [
         {
           "text": "A national disaster fund.",
@@ -195,6 +197,7 @@
       "document_geography_english_shortname": "Turkey",
       "document_slug": "Slug_2547",
       "document_name": "Climate Change Action Plan 2011-2023",
+      "document_postfix": "PF3",
       "document_passage_matches": [
         {
           "text": "NATURAL DISASTER RISK MANAGEMENT",
@@ -221,6 +224,7 @@
       "document_geography_english_shortname": "Fiji",
       "document_slug": "Slug_781",
       "document_name": "5-Year and 20-Year National Development Plan",
+      "document_postfix": "PF4",
       "document_passage_matches": [
         {
           "text": "waste management, beautification, disaster planning",
@@ -346,6 +350,7 @@
       "document_geography_english_shortname": "Bhutan",
       "document_slug": "Slug_198",
       "document_name": "National Forestry Policy",
+      "document_postfix": "",
       "document_passage_matches": [
         {
           "text": "All forests are covered by forest management plans focused on the sustainable supply \nof forestry products or ecosystem services. Such management plans shall include \nForest Management Units for commercial timber and non-timber production, \nCommunity and Private Forests for participatory social and economic forestry, Parks \nand Protected areas for participatory conservation and development and participatory \nwatershed management for enhancing ecosystem services and local development. \nSuch plan should also include management of recreational areas. Management plans \nmust ensure that pest and disease, forest fire and natural disaster management related \nto the particular resources are integral part of the plan in addition to use, management \nand replenishment of the forest.",
@@ -365,6 +370,7 @@
     },
     {
       "document_name": "American Recovery and Reinvestment Act",
+      "document_postfix": "",
       "document_geography": "usa",
       "document_source_name": "cclw",
       "document_date": "2009",
@@ -385,6 +391,7 @@
     },
     {
       "document_name": "Duncan Hunter National Defense Authorisation Act for Fiscal Year 2009 - Energy Provisions",
+      "document_postfix": "",
       "document_geography": "ukr",
       "document_source_name": "cclw",
       "document_date": "2008",
@@ -411,6 +418,7 @@
     },
     {
       "document_name": "Energy Independence and Security Act of 2007",
+      "document_postfix": "",
       "document_geography": "usa",
       "document_source_name": "cclw",
       "document_date": "2007",

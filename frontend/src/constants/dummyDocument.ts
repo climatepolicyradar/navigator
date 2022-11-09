@@ -9,6 +9,7 @@ export const dummyDocument = {
   document_geography_english_shortname: 'Saint Kitts and Nevis',
   slug: "Slug_2097",
   document_name: 'Food and Nutrition Security Policy and Plan of Action',
+  document_postfix: '',
   document_passage_matches: [
     {
       text: 'A national disaster fund.',
@@ -153,6 +154,7 @@ export const dummyDocument2 = {
   document_geography_english_shortname: 'Saint Kitts and Nevis',
   slug: "Slug_2097",
   document_name: 'Food and Nutrition Security Policy and Plan of Action',
+  document_postfix: '',
   document_passage_matches: [
     {
       text: 'A national disaster fund.',
