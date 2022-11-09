@@ -5,6 +5,8 @@ import { truncateString } from "@helpers/index";
 import { getCategoryIcon } from "@helpers/getCatgeoryIcon";
 import { CountryLink } from "@components/CountryLink";
 import { ThemeContext } from "@context/ThemeContext";
+import { getCountryName } from "@helpers/getCountryFields";
+import useConfig from "@hooks/useConfig";
 
 type TProps = {
   listItem: {
@@ -19,9 +21,12 @@ type TProps = {
 };
 
 export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {
-  const { slug, country_code, country_name, description, name, document_year, category } = listItem;
+  const { slug, country_code, description, name, document_year, category } = listItem;
   const theme = useContext(ThemeContext);
+  const configQuery: any = useConfig("config");
+  const { data: { countries = [] } = {} } = configQuery;
 
+  const country_name = getCountryName(country_code, countries);
   return (
     <div className="relative">
       <div className="flex justify-between items-start">
