@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { TDocument } from "@types";
+import useConfig from "@hooks/useConfig";
 import DocumentMenu from "../menus/DocumentMenu";
 import TextLink from "../nav/TextLink";
+import { getCountryName } from "@helpers/getCountryFields";
 
 type TProps = {
   document: TDocument;
@@ -11,9 +13,14 @@ type TProps = {
 };
 
 const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps) => {
+  const configQuery: any = useConfig("config");
+  const { data: { countries = [] } = {} } = configQuery;
+
   if (!document) return null;
 
   const year = document?.document_date.split("/")[2] ?? "";
+
+  const country_name = getCountryName(document.document_geography, countries);
 
   return (
     <>
@@ -29,7 +36,7 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
               <div className="flex flex-wrap lg:flex-nowrap text-sm text-indigo-400 my-2 items-center">
                 <div className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_geography.toLowerCase()}`} />
                 <span className="ml-2">
-                  {document.document_country_english_shortname}, {year}
+                  {country_name}, {year}
                 </span>
               </div>
 
