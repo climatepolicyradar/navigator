@@ -37,18 +37,18 @@ services:
     environment:
       PYTHONPATH: .
       PORT: 8888
-      OPENSEARCH_INDEX_PREFIX: navigator
+      CDN_DOMAIN: {cdn_domain}
       DATABASE_URL: {database_url}
-      SECRET_KEY: {secret_key}
+      OPENSEARCH_INDEX_PREFIX: navigator
       OPENSEARCH_USER: {opensearch_user}
       OPENSEARCH_PASSWORD: {opensearch_password}
       OPENSEARCH_URL: {opensearch_url}
+      PIPELINE_BUCKET: "{pipeline_s3_bucket}"
       PUBLIC_APP_URL: {public_app_url}
+      SECRET_KEY: {secret_key}
       SENDGRID_API_KEY: {sendgrid_api_token}
       SENDGRID_FROM_EMAIL: {sendgrid_from_email}
       SENDGRID_ENABLED: "{sendgrid_enabled}"
-      ENABLE_SELF_REGISTRATION: "{self_registration_enabled}"
-      PIPELINE_BUCKET: "{pipeline_s3_bucket}"
 
   frontend:
     image: {frontend_image}
@@ -80,6 +80,7 @@ class Backend:
         # get all config
         config = pulumi.Config()
         backend_secret_key = config.require_secret("backend_secret_key")
+        cdn_domain = config.require("cdn_domain")
         opensearch_user = config.require_secret("opensearch_user")
         opensearch_password = config.require_secret("opensearch_password")
         opensearch_url = config.require_secret("opensearch_url")
@@ -93,11 +94,9 @@ class Backend:
         frontend_api_url = f"https://{app_domain}/api/v1"
         frontend_api_url_login = f"https://{app_domain}/api/tokens"
         public_app_url = f"https://{app_domain}"
-        self_registration_enabled = config.require("self_registration_enabled")
 
         # pulumi.export("opensearch_url", opensearch_url)
         pulumi.export("app_domain", app_domain)
-        pulumi.export("self_registration_enabled", self_registration_enabled)
         pulumi.export("frontend_api_url", frontend_api_url)
         pulumi.export("frontend_api_url_login", frontend_api_url_login)
         pulumi.export("public_app_url", public_app_url)
@@ -174,6 +173,7 @@ class Backend:
                         "nginx_image",
                         "backend_image",
                         "frontend_image",
+                        "cdn_domain",
                         "database_url",
                         "secret_key",
                         "opensearch_user",
@@ -186,7 +186,6 @@ class Backend:
                         "frontend_api_url",
                         "frontend_api_url_login",
                         "frontend_pdf_embed_key",
-                        "self_registration_enabled",
                         "pipeline_s3_bucket",
                     ],
                     arg_list,
@@ -198,6 +197,7 @@ class Backend:
             nginx_image.image_name,
             backend_image.image_name,
             frontend_image.image_name,
+            cdn_domain,
             storage.backend_database_connection_url,
             backend_secret_key,
             opensearch_user,
@@ -210,7 +210,6 @@ class Backend:
             frontend_api_url,
             frontend_api_url_login,
             frontend_pdf_embed_key,
-            self_registration_enabled,
             pipeline_s3_bucket,
         ).apply(fill_template)
 
@@ -334,16 +333,6 @@ class Backend:
                     namespace="aws:elasticbeanstalk:healthreporting:system",
                     name="SystemType",
                     value="enhanced",
-                ),
-                aws.elasticbeanstalk.EnvironmentSettingArgs(
-                    namespace="aws:autoscaling:launchconfiguration",
-                    name="RootVolumeType",
-                    value="gp2",
-                ),
-                aws.elasticbeanstalk.EnvironmentSettingArgs(
-                    namespace="aws:autoscaling:launchconfiguration",
-                    name="RootVolumeSize",
-                    value="16",  # default is 8GB, but we're making space for pytorch
                 ),
             ],
         )
