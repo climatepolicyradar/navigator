@@ -190,10 +190,13 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const client = new ApiClient(process.env.NEXT_PUBLIC_API_URL);
 
   const { data: page } = ({} = await client.get(`/documents/${id}`, null));
-  page.title =  getDocumentTitle(page.name, page.postfix)
+  const title = getDocumentTitle(page.name, page.postfix)
   return {
     props: {
-      page: page,
+      page : {
+        ...page, 
+        title,
+      }
     },
   };
 };
