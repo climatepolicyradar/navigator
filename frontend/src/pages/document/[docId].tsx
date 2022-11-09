@@ -7,7 +7,7 @@ import { Timeline } from "@components/blocks/Timeline";
 import Event from "@components/blocks/Event";
 import { RelatedDocument } from "@components/blocks/RelatedDocument";
 import TabbedNav from "@components/nav/TabbedNav";
-import { ExternalLinkIcon, GlobeIcon, PDFIcon } from "@components/svg/Icons";
+import { ExternalLinkIcon, GlobeIcon, DocumentIcon, PDFIcon } from "@components/svg/Icons";
 import { CountryLink } from "@components/CountryLink";
 import { convertDate } from "@utils/timedate";
 import { initialSummaryLength } from "@constants/document";
@@ -47,10 +47,11 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
     return (
       <section className="mt-12">
         <h3>Source</h3>
-        <div className="mt-4 flex align-bottom">
+        <div className="mt-4 flex align-bottom gap-2">
           {page?.content_type.includes("pdf") && <PDFIcon height="24" width="24" />}
+          {page?.content_type.includes("x-ole-storage") && <DocumentIcon height="24" width="24" />}
           {page?.content_type.includes("html") && <GlobeIcon height="24" width="24" />}
-          <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300 flex ml-2">
+          <ExternalLink url={link} className="text-blue-500 underline font-medium hover:text-indigo-600 transition duration-300 flex">
             <span className="mr-1">{page?.content_type.includes("html") ? "Visit source website" : "See full text (opens in new tab)"}</span>
             <ExternalLinkIcon height="16" width="16" />
           </ExternalLink>
@@ -189,6 +190,8 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const client = new ApiClient(process.env.NEXT_PUBLIC_API_URL);
 
   const { data: page } = ({} = await client.get(`/documents/${id}`, null));
+
+  console.log(page);
 
   return {
     props: {
