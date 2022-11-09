@@ -8,7 +8,7 @@ interface SearchResultProps {
 
 const SearchResult = ({ document }: SearchResultProps) => {
   const {
-    document_country_code,
+    document_geography,
     document_country_english_shortname,
     document_slug,
     document_date,
@@ -56,7 +56,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
       listItem={{
         slug: document_slug,
         name: document_name,
-        country_code: document_country_code,
+        country_code: document_geography,
         country_name: document_country_english_shortname,
         document_year: year,
         description: document_description,
