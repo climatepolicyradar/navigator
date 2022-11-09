@@ -50,6 +50,7 @@ export type TGeography = {
   value: string;
   type: string;
   parent_id: number | null;
+  slug: string;
 };
 
 export type TTarget = {
