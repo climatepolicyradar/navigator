@@ -166,7 +166,7 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
                   <KeyDetail
                     detail="Litigation"
                     extraDetail="Court cases and tribunal proceedings"
-                    amount={summary.document_counts.Case}
+                    amount={<span className="text-sm font-normal">Coming soon</span>}
                     icon={<CaseIcon />}
                     onClick={() => setselectedCategoryIndex(3)}
                   />
