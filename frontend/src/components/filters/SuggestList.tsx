@@ -1,60 +1,63 @@
 import { useEffect, useRef, useCallback } from "react";
 import { addClass, removeClass } from "@utils/cssClass";
 
-const SuggestList = ({ list, setList, keyField, type, setInput, handleFilterChange }) => {
+const SuggestList = ({ list, setList, keyField, keyFieldDisplay, type, setInput, handleFilterChange }) => {
   const ulRef = useRef(null);
   let liSelected;
   let index = -1;
 
-  const navigateList = useCallback((e): void => {
-    const ul = ulRef.current;
-    const len = list.length - 1;
+  const navigateList = useCallback(
+    (e): void => {
+      const ul = ulRef.current;
+      const len = list.length - 1;
 
-    if (e.key === "ArrowDown") {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      index += 1;
-      // down
-      if (liSelected) {
-        removeClass(liSelected, "selected");
-        let next = ul.getElementsByTagName("li")[index];
-        if (typeof next !== undefined && index <= len) {
-          // eslint-disable-next-line react-hooks/exhaustive-deps
-          liSelected = next;
+      if (e.key === "ArrowDown") {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        index += 1;
+        // down
+        if (liSelected) {
+          removeClass(liSelected, "selected");
+          let next = ul.getElementsByTagName("li")[index];
+          if (typeof next !== undefined && index <= len) {
+            // eslint-disable-next-line react-hooks/exhaustive-deps
+            liSelected = next;
+          } else {
+            index = 0;
+            liSelected = ul.getElementsByTagName("li")[0];
+          }
+          addClass(liSelected, "selected");
         } else {
           index = 0;
           liSelected = ul.getElementsByTagName("li")[0];
+          addClass(liSelected, "selected");
         }
-        addClass(liSelected, "selected");
-      } else {
-        index = 0;
-        liSelected = ul.getElementsByTagName("li")[0];
-        addClass(liSelected, "selected");
-      }
-    } else if (e.key === "ArrowUp") {
-      // up
-      if (liSelected) {
-        removeClass(liSelected, "selected");
-        index -= 1;
-        let next = ul.getElementsByTagName("li")[index];
-        if (typeof next !== undefined && index >= 0) {
-          liSelected = next;
+      } else if (e.key === "ArrowUp") {
+        // up
+        if (liSelected) {
+          removeClass(liSelected, "selected");
+          index -= 1;
+          let next = ul.getElementsByTagName("li")[index];
+          if (typeof next !== undefined && index >= 0) {
+            liSelected = next;
+          } else {
+            index = len;
+            liSelected = ul.getElementsByTagName("li")[len];
+          }
+          addClass(liSelected, "selected");
         } else {
-          index = len;
+          index = 0;
           liSelected = ul.getElementsByTagName("li")[len];
+          addClass(liSelected, "selected");
         }
-        addClass(liSelected, "selected");
-      } else {
-        index = 0;
-        liSelected = ul.getElementsByTagName("li")[len];
-        addClass(liSelected, "selected");
+      } else if (e.key === "Enter") {
+        if (liSelected) {
+          liSelected.click();
+          window.removeEventListener("keydown", navigateList);
+        }
       }
-    } else if (e.key === "Enter") {
-      if (liSelected) {
-        liSelected.click();
-        window.removeEventListener("keydown", navigateList);
-      }
-    }
-  }, [liSelected, index, list]);
+    },
+    [liSelected, index, list]
+  );
 
   const handleClick = (item) => {
     handleFilterChange(type, item[keyField]);
@@ -88,7 +91,7 @@ const SuggestList = ({ list, setList, keyField, type, setInput, handleFilterChan
               }}
               className="hover:bg-blue-200 cursor-pointer my-1 p-2"
             >
-              {item[keyField]}
+              {item[keyFieldDisplay ?? keyField]}
             </li>
           )
       )}

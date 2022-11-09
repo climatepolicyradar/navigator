@@ -8,11 +8,12 @@ interface ByTextInputProps {
   list: Object[];
   selectedList: string[];
   keyField: string;
+  keyFieldDisplay?: string;
   filterType: string;
   handleFilterChange(filterType: string, value: string, action?: string): void;
 }
 
-const ByTextInput = ({ title, list, selectedList, keyField, filterType, handleFilterChange }: ByTextInputProps) => {
+const ByTextInput = ({ title, list, selectedList, keyField, keyFieldDisplay, filterType, handleFilterChange }: ByTextInputProps) => {
   const [input, setInput] = useState("");
   const [suggestList, setSuggestList] = useState([]);
   const { t } = useTranslation("searchResults");
@@ -28,10 +29,10 @@ const ByTextInput = ({ title, list, selectedList, keyField, filterType, handleFi
     }
     const filteredList = list?.filter((item) => {
       /* Make sure item hasn't already been selected and limit list to 20 items */
-      return item[keyField].toLowerCase().indexOf(input.toLowerCase()) > -1 && selectedList.indexOf(item[keyField]) === -1;
+      return item[keyFieldDisplay ?? keyField].toLowerCase().indexOf(input.toLowerCase()) > -1 && selectedList.indexOf(item[keyField]) === -1;
     });
     setSuggestList(sortData(filteredList, keyField));
-  }, [input, keyField, list, selectedList]);
+  }, [input, keyField, keyFieldDisplay, list, selectedList]);
 
   return (
     <div className="relative">
@@ -46,7 +47,7 @@ const ByTextInput = ({ title, list, selectedList, keyField, filterType, handleFi
 
       {suggestList.length > 0 && (
         <div className="absolute top-3 mt-12 left-0 w-full z-30">
-          <SuggestList list={suggestList} setList={setSuggestList} keyField={keyField} type={filterType} setInput={setInput} handleFilterChange={handleFilterChange} />
+          <SuggestList list={suggestList} setList={setSuggestList} keyField={keyField} keyFieldDisplay={keyFieldDisplay} type={filterType} setInput={setInput} handleFilterChange={handleFilterChange} />
         </div>
       )}
     </div>
