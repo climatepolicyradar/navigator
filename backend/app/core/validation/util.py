@@ -7,9 +7,9 @@ from app.core.aws import S3Document
 
 from sqlalchemy.orm import Session
 
-from app.api.api_v1.routers.lookups.util import get_metadata
 from app.api.api_v1.schemas.document import DocumentParserInput
 from app.core.aws import S3Client
+from app.core.lookups import get_metadata
 from app.core.validation import PIPELINE_BUCKET
 
 _LOGGER = logging.getLogger(__file__)

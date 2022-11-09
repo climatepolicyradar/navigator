@@ -35,7 +35,7 @@ def to_search_resp_doc(row: dict) -> SearchResult:
         document_source="",
         document_type="",
         document_source_url="",
-        document_cdn_object="",
+        document_url="",
         document_content_type="",
         document_title_match=False,
         document_description_match=False,

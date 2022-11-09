@@ -6,13 +6,27 @@ import time
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Mapping, Optional, Sequence, Tuple, Set
+from typing import Any, Mapping, Optional, Sequence
 import string
 
 from opensearchpy import OpenSearch
 from opensearchpy import JSONSerializer as jss
 from sentence_transformers import SentenceTransformer
 
+from app.api.api_v1.schemas.search import (
+    FilterField,
+    OpenSearchResponseDescriptionMatch,
+    OpenSearchResponseNameMatch,
+    OpenSearchResponseMatchBase,
+    OpenSearchResponsePassageMatch,
+    SearchRequestBody,
+    SearchResults,
+    SearchResult,
+    SearchResponseDocumentPassage,
+    SortField,
+    SortOrder,
+    IncludedResults,
+)
 from app.core.config import (
     OPENSEARCH_INDEX_INNER_PRODUCT_THRESHOLD,
     OPENSEARCH_INDEX_MAX_DOC_COUNT,
@@ -39,20 +53,7 @@ from app.core.config import (
     OPENSEARCH_JIT_MAX_DOC_COUNT,
 )
 from app.core.util import to_cdn_url
-from app.api.api_v1.schemas.search import (
-    FilterField,
-    OpenSearchResponseDescriptionMatch,
-    OpenSearchResponseNameMatch,
-    OpenSearchResponseMatchBase,
-    OpenSearchResponsePassageMatch,
-    SearchRequestBody,
-    SearchResults,
-    SearchResult,
-    SearchResponseDocumentPassage,
-    SortField,
-    SortOrder,
-    IncludedResults,
-)
+
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -67,20 +68,13 @@ _SORT_FIELD_MAP: Mapping[SortField, str] = {
 }
 # TODO: Map a filter field type to the document key used by OpenSearch
 _FILTER_FIELD_MAP: Mapping[FilterField, str] = {
-    FilterField.SOURCE: "document_source_name",
-    FilterField.COUNTRY: "document_country_english_shortname",
-    FilterField.REGION: "document_region_english_shortname",
-    FilterField.SECTOR: "document_sector_name",
+    FilterField.SOURCE: "document_source",
+    FilterField.COUNTRY: "document_geography",
+    FilterField.SECTOR: "document_sector",
     FilterField.TYPE: "document_type",
     FilterField.CATEGORY: "document_category",
     FilterField.KEYWORD: "document_keyword",
-    FilterField.HAZARD: "document_hazard_name",
     FilterField.LANGUAGE: "document_language",
-    FilterField.FRAMEWORK: "document_framework_name",
-    # TODO: we need to fix the lookup API for instruments
-    FilterField.INSTRUMENT: "document_instrument_name",
-    # TODO: we still call this 'response' in the database. We might want to propagate the rename to 'topic' everywhere.
-    FilterField.TOPIC: "document_response_name",
 }
 _REQUIRED_FIELDS = ["document_name"]
 _DEFAULT_BROWSE_SORT_FIELD = SortField.DATE
@@ -110,7 +104,7 @@ def _innerproduct_threshold_to_lucene_threshold(ip_thresh: float) -> float:
         return 1 / (1 - ip_thresh)
 
 
-def load_sensitive_query_terms() -> Set[str]:
+def load_sensitive_query_terms() -> set[str]:
     """
     Return sensitive query terms from the first column of a TSV file. Outputs are lowercased for case-insensitive matching.
 
@@ -306,8 +300,8 @@ class OpenSearchConnection:
 
 
 def _year_range_filter(
-    year_range: Tuple[Optional[int], Optional[int]]
-) -> Optional[Dict[str, Any]]:
+    year_range: tuple[Optional[int], Optional[int]]
+) -> Optional[dict[str, Any]]:
     """Get an Opensearch filter for year range.
 
     The filter returned is between the first term of `year_range` and the last term,
@@ -332,7 +326,7 @@ class QueryBuilder:
     def __init__(self, config: OpenSearchQueryConfig):
         self._config = config
         self._mode: Optional[QueryMode] = None
-        self._request_body: Dict[str, Any] = {}
+        self._request_body: dict[str, Any] = {}
 
     @property
     def query(self) -> Mapping[str, Any]:
@@ -557,14 +551,13 @@ class QueryBuilder:
         """Configure the query to browse documents according to supplied filters."""
         self._with_browse_base()
 
-    def with_keyword_filter(self, field: FilterField, values: List[str]):
+    def with_keyword_filter(self, field: FilterField, values: Sequence[str]):
         """Add a keyword filter to the configured query."""
-
         filters = self._request_body["query"]["bool"].get("filter") or []
         filters.append({"terms": {_FILTER_FIELD_MAP[field]: values}})
         self._request_body["query"]["bool"]["filter"] = filters
 
-    def with_year_range_filter(self, year_range: Tuple[Optional[int], Optional[int]]):
+    def with_year_range_filter(self, year_range: tuple[Optional[int], Optional[int]]):
         """Add a year range filter to the configured query."""
 
         year_range_filter = _year_range_filter(year_range)
@@ -629,7 +622,7 @@ class QueryBuilder:
 def build_opensearch_request_body(
     search_request: SearchRequestBody,
     opensearch_internal_config: Optional[OpenSearchQueryConfig] = None,
-    sensitive_query_terms: Set[str] = set(),
+    sensitive_query_terms: set[str] = set(),
 ) -> QueryBuilder:
     """Build a complete OpenSearch request body."""
 
