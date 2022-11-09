@@ -4,7 +4,7 @@ import { ThemeContext } from "@context/ThemeContext";
 type TProps = {
   detail: string;
   extraDetail?: string;
-  amount: number;
+  amount: number | string | JSX.Element;
   icon?: JSX.Element;
   onClick?: () => void;
 };
@@ -28,7 +28,7 @@ export const KeyDetail = ({ detail, amount, icon, extraDetail, onClick }: TProps
       <div>
         <div className="flex items-center">
           <div className="text-lg ml-2">{detail}</div>
-          <div className="ml-3 text-2xl font-bold drop-shadow">{amount}</div>
+          <div className="flex items-center ml-3 text-2xl font-bold drop-shadow">{amount}</div>
         </div>
         <div className="ml-2 text-sm">{extraDetail}</div>
       </div>
