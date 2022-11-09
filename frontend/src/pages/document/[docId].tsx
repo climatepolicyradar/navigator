@@ -191,8 +191,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
 
   const { data: page } = ({} = await client.get(`/documents/${id}`, null));
 
-  console.log(page);
-
   return {
     props: {
       page: page,
