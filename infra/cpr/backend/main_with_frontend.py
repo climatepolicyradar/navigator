@@ -54,12 +54,6 @@ services:
     image: {frontend_image}
     mem_limit: 256m
     command: npm run start
-    environment:
-      PORT: 3000
-      # not sure if these 3 need to be here, as it's already baked into the image.
-      NEXT_PUBLIC_API_URL: {frontend_api_url}
-      NEXT_PUBLIC_LOGIN_API_URL: {frontend_api_url_login}
-      NEXT_PUBLIC_ADOBE_API_KEY: {frontend_pdf_embed_key}
     ports:
       - 3000:3000
     volumes:
@@ -136,6 +130,7 @@ class Backend:
                     context=frontend_docker_context,
                     dockerfile=frontend_dockerfile,
                     args={
+                        "PORT": 3000,
                         "NEXT_PUBLIC_API_URL": frontend_api_url,
                         "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
                         "NEXT_PUBLIC_ADOBE_API_KEY": pdf_embed_key,
