@@ -34,9 +34,6 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
                 laws and policies
                 <span className="font-bold"> &gt;</span>
               </span>
-              {/* <span>
-                Browse more than 3000 laws and policies <span className="font-bold"> &gt;</span>
-              </span> */}
             </a>
           </div>
           <div className="border-y lg:border-y-0 lg:border-x border-white py-5 lg:py-0 lg:px-8">
