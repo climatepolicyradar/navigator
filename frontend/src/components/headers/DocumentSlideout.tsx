@@ -27,7 +27,7 @@ const DocumentSlideout = ({ document, searchTerm, showPDF, setShowPDF }: TProps)
                 </a>
               </Link>
               <div className="flex flex-wrap lg:flex-nowrap text-sm text-indigo-400 my-2 items-center">
-                <div className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_country_code.toLowerCase()}`} />
+                <div className={`rounded-sm border border-black flag-icon-background flag-icon-${document.document_geography.toLowerCase()}`} />
                 <span className="ml-2">
                   {document.document_country_english_shortname}, {year}
                 </span>

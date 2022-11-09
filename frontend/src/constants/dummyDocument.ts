@@ -1,7 +1,7 @@
 export const dummyDocument = {
   document_url: 'http://localhost:3000/food_and_nutrition_security_policy.pdf',
   document_fileid: '3A5E36C8AA950DCDEBFBFE46FFCDE0A6',
-  document_country_code: 'KNA',
+  document_geography: 'KNA',
   document_date: '12/07/2019',
   document_description:
     'The Food and Nutrition Security Policy aims at promoting rational food choices and healthy lifestyles by the population. It further seeks to enhance the resilience of food supplies in front of natural and socio-economic shocks, and climate change.\n\nThe Policy states that the government shall facilitate the implementation of Risk Management and Climate Change Adaptation and Mitigation strategies, including in the food sector. It charges the government to 1) establish a National Task Force for the implementation and supervision of such strategies, 2) to enable capacity building of stakeholders with respect to disaster management, 3) to develop an agricultural risk management scheme, 4) and to facilitate the re-zoning of agricultural production as necessary to reduce vulnerability to adverse effects of climate change.',
@@ -145,7 +145,7 @@ export const dummyDocument2 = {
   // document_url:
   //   'https://cdn.climatepolicyradar.org/CAN/2021/CAN-2021-08-03-A+Healthy+Environment+and+a+Healthy+Economy-405_ff8da848e71d476e55038da84c5573f5.pdf',
   document_fileid: '3A5E36C8AA950DCDEBFBFE46FFCDE0A7',
-  document_country_code: 'KNA',
+  document_geography: 'KNA',
   document_date: '12/07/2019',
   document_description:
     'The Food and Nutrition Security Policy aims at promoting rational food choices and healthy lifestyles by the population. It further seeks to enhance the resilience of food supplies in front of natural and socio-economic shocks, and climate change.\n\nThe Policy states that the government shall facilitate the implementation of Risk Management and Climate Change Adaptation and Mitigation strategies, including in the food sector. It charges the government to 1) establish a National Task Force for the implementation and supervision of such strategies, 2) to enable capacity building of stakeholders with respect to disaster management, 3) to develop an agricultural risk management scheme, 4) and to facilitate the re-zoning of agricultural production as necessary to reduce vulnerability to adverse effects of climate change.',
