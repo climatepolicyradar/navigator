@@ -68,19 +68,13 @@ _SORT_FIELD_MAP: Mapping[SortField, str] = {
 }
 # TODO: Map a filter field type to the document key used by OpenSearch
 _FILTER_FIELD_MAP: Mapping[FilterField, str] = {
-    FilterField.SOURCE: "document_source_name",
+    FilterField.SOURCE: "document_source",
     FilterField.COUNTRY: "document_geography",
-    FilterField.SECTOR: "document_sector_name",
+    FilterField.SECTOR: "document_sector",
     FilterField.TYPE: "document_type",
     FilterField.CATEGORY: "document_category",
     FilterField.KEYWORD: "document_keyword",
-    FilterField.HAZARD: "document_hazard_name",
     FilterField.LANGUAGE: "document_language",
-    FilterField.FRAMEWORK: "document_framework_name",
-    # TODO: we need to fix the lookup API for instruments
-    FilterField.INSTRUMENT: "document_instrument_name",
-    # TODO: we still call this 'response' in the database. We might want to propagate the rename to 'topic' everywhere.
-    FilterField.TOPIC: "document_response_name",
 }
 _REQUIRED_FIELDS = ["document_name"]
 _DEFAULT_BROWSE_SORT_FIELD = SortField.DATE

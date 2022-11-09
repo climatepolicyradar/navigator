@@ -115,7 +115,8 @@ def process_search_keyword_filters(
         if filter_values:
             values = filter_map.get(field, [])
             values.extend(filter_values)
-            values = list(set(values))
+            # Be consistent in ordering for search
+            values = sorted(list(set(values)))
             filter_map[field] = values
 
     return filter_map
