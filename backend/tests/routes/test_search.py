@@ -27,7 +27,7 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
         json={
             "query_string": "climate",
             "exact_match": False,
-            "limit": 1,
+            "limit": 2,
             "offset": 0,
         },
     )
@@ -35,28 +35,28 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
 
     page1_response_body = page1_response.json()
     page1_documents = page1_response_body["documents"]
-    assert len(page1_documents) == 1
+    assert len(page1_documents) == 2
 
     page2_response = client.post(
         "/api/v1/searches",
         json={
             "query_string": "climate",
             "exact_match": False,
-            "limit": 1,
-            "offset": 1,
+            "limit": 2,
+            "offset": 2,
         },
     )
     assert page2_response.status_code == 200
 
     page2_response_body = page2_response.json()
     page2_documents = page2_response_body["documents"]
-    assert len(page2_documents) == 1
+    assert len(page2_documents) == 2
 
     # Sanity check that we really do have 2 different documents
     document_slugs = {d["document_slug"] for d in page1_documents} | {
         d["document_slug"] for d in page2_documents
     }
-    assert len(document_slugs) == 2
+    assert len(document_slugs) == 4
 
     for d in page1_documents:
         assert d not in page2_documents
@@ -125,7 +125,7 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client):
 
     page1_response_body = page1_response.json()
     page1_documents = page1_response_body["documents"]
-    assert len(page1_documents) > 0
+    assert len(page1_documents) > 1
 
     page2_response = client.post(
         "/api/v1/searches",
