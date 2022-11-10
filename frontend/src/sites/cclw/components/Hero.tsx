@@ -58,8 +58,7 @@ export const Hero = ({ handleSearchInput, searchInput }: TProps) => {
             </div>
           </div>
           <div className="flex flex-col justify-between items-center lg:px-8">
-            <div className="text-lg font-bold">Technology</div>
-            <div className="mt-4">We are now powered by data science and AI</div>
+            <div className="text-lg font-bold">We are now powered by data science and AI in partnership with Climate Policy Radar</div>
             <div className="mt-4">
               <ExternalLink url="https://climatepolicyradar.org">
                 <Button extraClasses="flex items-center">

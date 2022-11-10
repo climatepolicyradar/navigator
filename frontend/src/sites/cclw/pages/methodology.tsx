@@ -366,9 +366,11 @@ const Methodology = () => {
           rarely contain explicit mentions of climate change, they are often closely related to and may impact on climate action at the national level. Cases are therefore
           considered to be within the scope of the database insofar as they relate directly to the enactment or withdrawal of a domestic measure explicitly adopted to meet a
           country’s climate goals and objectives. Examples of ‘climate-justified’ policy measures at the heart of these cases could include the enactment of plans to phase out
-          coal-fired power plants within the coming decades or the withdrawal of existing subsidies or other incentives to encourage investment in renewable energy. More
-          information on these cases and their inclusion in the database can be found{" "}
-          <ExternalLink url="https://www.lse.ac.uk/granthaminstitute/news/investor-state-dispute-settlement-as-a-new-avenue-for-climate-change-litigation/">here</ExternalLink>.
+          coal-fired power plants within the coming decades or the withdrawal of existing subsidies or other incentives to encourage investment in renewable energy.{" "}
+          <ExternalLink url="https://www.lse.ac.uk/granthaminstitute/news/investor-state-dispute-settlement-as-a-new-avenue-for-climate-change-litigation/">
+            Find out more about these cases
+          </ExternalLink>{" "}
+          and their inclusion in the database.
         </p>
         <h4>Categorisation</h4>
         <p>Prior to addition to the database, cases are categorised according to:</p>
