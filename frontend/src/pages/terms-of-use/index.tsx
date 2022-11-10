@@ -186,7 +186,7 @@ const TermsOfUse = () => {
             </thead>
             <tbody>
               <tr>
-                <td>Grantham research Institute, LSE</td>
+                <td>Grantham Research Institute, LSE</td>
                 <td>Law and policy document summaries; selected document metadata</td>
                 <td>October 2022</td>
                 <td>
