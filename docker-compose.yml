@@ -58,9 +58,9 @@ services:
       context: ./frontend
       dockerfile: Dockerfile
       args:
-        NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL}
-        NEXT_PUBLIC_LOGIN_API_URL: ${NEXT_PUBLIC_LOGIN_API_URL}
-        NEXT_PUBLIC_ADOBE_API_KEY: ${NEXT_PUBLIC_ADOBE_API_KEY}
+        API_URL: ${API_URL}
+        LOGIN_API_URL: ${LOGIN_API_URL}
+        ADOBE_API_KEY: ${ADOBE_API_KEY}
     command: npm run dev
     ports:
       - 3000:3000

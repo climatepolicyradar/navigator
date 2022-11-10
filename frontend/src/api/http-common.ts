@@ -12,7 +12,7 @@ class ApiClient {
     if (baseUrl) {
       this.baseUrl = baseUrl;
     } else {
-      this.baseUrl = process.env.NEXT_PUBLIC_API_URL;
+      this.baseUrl = process.env.API_URL;
     }
     this.axiosClient = axios.create();
   }
