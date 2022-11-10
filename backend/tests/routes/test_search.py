@@ -17,8 +17,6 @@ from app.api.api_v1.schemas.search import (
 from app.core.search import _FILTER_FIELD_MAP, OpenSearchQueryConfig
 from app.db.models import Geography
 
-_TOTAL_DOCUMENT_COUNT = 6
-
 
 @pytest.mark.search
 def test_simple_pagination(test_opensearch, monkeypatch, client):
@@ -940,26 +938,41 @@ def test_browse_order_by_date(
 
 @pytest.mark.search
 @pytest.mark.parametrize("limit", [1, 4, 7, 10])
-@pytest.mark.parametrize("offset", [0, 1, 7, 10])
 def test_browse_limit_offset(
     test_opensearch,
     monkeypatch,
     client,
     limit,
-    offset,
 ):
     """Make sure that the offset parameter in browse mode works."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
-    response = client.post(
+    response_offset_0 = client.post(
         "/api/v1/searches",
-        json={"query_string": "", "limit": limit, "offset": offset},
+        json={"query_string": "", "limit": limit, "offset": 0},
     )
-    assert response.status_code == 200
+    response_offset_2 = client.post(
+        "/api/v1/searches",
+        json={"query_string": "", "limit": limit, "offset": 2},
+    )
 
-    response_body = response.json()
-    documents = response_body["documents"]
+    assert response_offset_0.status_code == 200
+    assert response_offset_2.status_code == 200
+
+    response_offset_0_body = response_offset_0.json()
+    documents = response_offset_0_body["documents"]
     assert len(documents) <= limit
+
+    response_offset_2_body = response_offset_2.json()
+    documents = response_offset_2_body["documents"]
+    assert len(documents) <= limit
+
+    assert (
+        response_offset_0_body["documents"][
+            2 : len(response_offset_2_body["documents"])
+        ]
+        == response_offset_2_body["documents"][:-2]
+    )
 
 
 @pytest.mark.search
