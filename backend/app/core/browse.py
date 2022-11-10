@@ -32,6 +32,7 @@ def to_search_resp_doc(row: dict) -> SearchResult:
         document_category=row["category"],
         document_geography=row["country_code"],
         # Stuff we don't use
+        document_sectors=[],  # FIXME: empty placeholder for tests to pass
         document_source="",
         document_type="",
         document_source_url="",

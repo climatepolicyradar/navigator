@@ -91,6 +91,7 @@ class SearchResult(BaseModel):
 
     document_name: str
     document_geography: str
+    document_sectors: Sequence[str]
     document_source: str
     document_date: str
     document_id: str
@@ -161,6 +162,7 @@ class OpenSearchResponseMatchBase(BaseModel):
     document_name: str
     document_geography: str
     document_description: str
+    document_sectors: Sequence[str]
     document_source: str
     document_id: str  # Changed semantics to be import_id, not database id
     document_date: str

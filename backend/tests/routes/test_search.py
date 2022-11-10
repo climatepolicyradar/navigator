@@ -17,10 +17,7 @@ from app.api.api_v1.schemas.search import (
 from app.core.search import _FILTER_FIELD_MAP, OpenSearchQueryConfig
 from app.db.models import Geography
 
-_TOTAL_DOCUMENT_COUNT = 6
 
-
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_simple_pagination(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -30,7 +27,7 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
         json={
             "query_string": "climate",
             "exact_match": False,
-            "limit": 1,
+            "limit": 2,
             "offset": 0,
         },
     )
@@ -38,34 +35,33 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
 
     page1_response_body = page1_response.json()
     page1_documents = page1_response_body["documents"]
-    assert len(page1_documents) == 1
+    assert len(page1_documents) == 2
 
     page2_response = client.post(
         "/api/v1/searches",
         json={
             "query_string": "climate",
             "exact_match": False,
-            "limit": 1,
-            "offset": 1,
+            "limit": 2,
+            "offset": 2,
         },
     )
     assert page2_response.status_code == 200
 
     page2_response_body = page2_response.json()
     page2_documents = page2_response_body["documents"]
-    assert len(page2_documents) == 1
+    assert len(page2_documents) == 2
 
-    # Sanity check that we really do have 2 different documents
+    # Sanity check that we really do have 4 different documents
     document_slugs = {d["document_slug"] for d in page1_documents} | {
         d["document_slug"] for d in page2_documents
     }
-    assert len(document_slugs) == 2
+    assert len(document_slugs) == 4
 
     for d in page1_documents:
         assert d not in page2_documents
 
 
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -76,6 +72,7 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
             "document_postfix",
             "document_geography",
             "document_source",
+            "document_sectors",
             "document_date",
             "document_id",
             "document_slug",
@@ -103,7 +100,7 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
 
     page1_response_body = page1_response.json()
     page1_documents = page1_response_body["documents"]
-    assert len(page1_documents) == 2
+    assert len(page1_documents) > 0
 
     for d in page1_documents:
         assert sorted(list(d.keys())) == expected_search_result_schema
@@ -111,7 +108,6 @@ def test_search_result_schema(caplog, test_opensearch, monkeypatch, client):
     assert "Document ids missing" in caplog.text
 
 
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_pagination_overlap(test_opensearch, monkeypatch, client):
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
@@ -129,7 +125,7 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client):
 
     page1_response_body = page1_response.json()
     page1_documents = page1_response_body["documents"]
-    assert len(page1_documents) == 2
+    assert len(page1_documents) > 1
 
     page2_response = client.post(
         "/api/v1/searches",
@@ -144,13 +140,13 @@ def test_pagination_overlap(test_opensearch, monkeypatch, client):
 
     page2_response_body = page2_response.json()
     page2_documents = page2_response_body["documents"]
-    assert len(page2_documents) == 1
+    assert len(page2_documents) > 0
 
-    # Sanity check that we really do have 3 different documents
-    document_names = {d["document_name"] for d in page1_documents} | {
-        d["document_name"] for d in page2_documents
-    }
-    assert len(document_names) == 1
+    # Check that page 2 documents are different to page 1 documents
+    assert len(
+        {d["document_slug"] for d in page1_documents}
+        | {d["document_slug"] for d in page2_documents}
+    ) > len({d["document_slug"] for d in page1_documents})
 
     assert page1_documents[-1] == page2_documents[0]
 
@@ -606,7 +602,6 @@ def test_result_order_score(test_opensearch, monkeypatch, client, mocker):
         s = new_s
 
 
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_date(test_opensearch, monkeypatch, client, order):
@@ -638,7 +633,6 @@ def test_result_order_date(test_opensearch, monkeypatch, client, order):
         dt = new_dt
 
 
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 @pytest.mark.parametrize("order", [SortOrder.ASCENDING, SortOrder.DESCENDING])
 def test_result_order_title(test_opensearch, monkeypatch, client, order):
@@ -693,7 +687,6 @@ def test_invalid_request(test_opensearch, monkeypatch, client):
     assert response.status_code == 422
 
 
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_case_insensitivity(test_opensearch, monkeypatch, client):
     """Make sure that query string results are not affected by case."""
@@ -723,7 +716,6 @@ def test_case_insensitivity(test_opensearch, monkeypatch, client):
     assert response1_json == response2_json == response3_json
 
 
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_punctuation_ignored(test_opensearch, monkeypatch, client):
     """Make sure that punctuation in query strings is ignored."""
@@ -753,7 +745,6 @@ def test_punctuation_ignored(test_opensearch, monkeypatch, client):
     assert response1_json == response2_json == response3_json
 
 
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_sensitive_queries(test_opensearch, monkeypatch, client):
     """Make sure that queries in the list of sensitive queries only return results containing that term, and not KNN results."""
@@ -807,7 +798,6 @@ def test_sensitive_queries(test_opensearch, monkeypatch, client):
     )
 
 
-@pytest.mark.skip(reason="new test data dump needed")
 @pytest.mark.search
 def test_accents_ignored(test_opensearch, monkeypatch, client):
     """Make sure that accents in query strings are ignored."""
@@ -862,7 +852,7 @@ def test_empty_search_term_performs_browse(
     monkeypatch,
     client,
 ):
-    """Make sure that empty search terms return no results."""
+    """Make sure that empty search term returns results in browse mode."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
     response = client.post(
@@ -870,7 +860,8 @@ def test_empty_search_term_performs_browse(
         json={"query_string": ""},
     )
     assert response.status_code == 200
-    assert response.json()["hits"] == _TOTAL_DOCUMENT_COUNT
+    assert response.json()["hits"] > 0
+    assert len(response.json()["documents"]) > 0
 
 
 @pytest.mark.search
@@ -896,7 +887,7 @@ def test_browse_order_by_title(
 
     response_body = response.json()
     documents = response_body["documents"]
-    assert len(documents) == _TOTAL_DOCUMENT_COUNT
+    assert len(documents) > 0
 
     t = None
     for d in documents:
@@ -932,7 +923,7 @@ def test_browse_order_by_date(
 
     response_body = response.json()
     documents = response_body["documents"]
-    assert len(documents) == _TOTAL_DOCUMENT_COUNT
+    assert len(documents) > 0
 
     dt = None
     for d in documents:
@@ -947,26 +938,41 @@ def test_browse_order_by_date(
 
 @pytest.mark.search
 @pytest.mark.parametrize("limit", [1, 4, 7, 10])
-@pytest.mark.parametrize("offset", [0, 1, 7, 10])
 def test_browse_limit_offset(
     test_opensearch,
     monkeypatch,
     client,
     limit,
-    offset,
 ):
-    """Make sure that empty search terms return no results."""
+    """Make sure that the offset parameter in browse mode works."""
     monkeypatch.setattr(search, "_OPENSEARCH_CONNECTION", test_opensearch)
 
-    response = client.post(
+    response_offset_0 = client.post(
         "/api/v1/searches",
-        json={"query_string": "", "limit": limit, "offset": offset},
+        json={"query_string": "", "limit": limit, "offset": 0},
     )
-    assert response.status_code == 200
+    response_offset_2 = client.post(
+        "/api/v1/searches",
+        json={"query_string": "", "limit": limit, "offset": 2},
+    )
 
-    response_body = response.json()
-    documents = response_body["documents"]
-    assert len(documents) == min(limit, max(0, _TOTAL_DOCUMENT_COUNT - offset))
+    assert response_offset_0.status_code == 200
+    assert response_offset_2.status_code == 200
+
+    response_offset_0_body = response_offset_0.json()
+    documents = response_offset_0_body["documents"]
+    assert len(documents) <= limit
+
+    response_offset_2_body = response_offset_2.json()
+    documents = response_offset_2_body["documents"]
+    assert len(documents) <= limit
+
+    assert (
+        response_offset_0_body["documents"][
+            2 : len(response_offset_2_body["documents"])
+        ]
+        == response_offset_2_body["documents"][:-2]
+    )
 
 
 @pytest.mark.search

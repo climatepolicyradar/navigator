@@ -787,6 +787,7 @@ def create_search_response_document(
         document_name=opensearch_match.document_name,
         document_description=opensearch_match.document_description,
         document_geography=opensearch_match.document_geography,
+        document_sectors=opensearch_match.document_sectors,
         document_source=opensearch_match.document_source,
         document_date=opensearch_match.document_date,
         document_id=opensearch_match.document_id,
