@@ -52,7 +52,7 @@ def test_simple_pagination(test_opensearch, monkeypatch, client):
     page2_documents = page2_response_body["documents"]
     assert len(page2_documents) == 2
 
-    # Sanity check that we really do have 2 different documents
+    # Sanity check that we really do have 4 different documents
     document_slugs = {d["document_slug"] for d in page1_documents} | {
         d["document_slug"] for d in page2_documents
     }
