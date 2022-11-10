@@ -261,9 +261,6 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     };
   }
 
-  console.log("GEO", geographyData);
-  console.log("SUMMARY", summaryData.top_documents.Law);
-
   return {
     props: {
       geography: geographyData,
