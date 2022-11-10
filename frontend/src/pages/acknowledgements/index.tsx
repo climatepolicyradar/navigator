@@ -19,8 +19,8 @@ const Acknowledgement: FC<TAcknowledgement> = ({ partnerImage, children }) => {
       {partnerImage && (
         <div className="flex mb-6">
           <div className="w-full max-w-full md:w-1/3">
-            <ExternalLink className="flex relative h-[96px]" url={partnerImage.url}>
-              <img src={`/cclw/partners/${partnerImage.imageUrl}`} alt={partnerImage.imageAlt} className="h-full" />
+            <ExternalLink className="flex" url={partnerImage.url}>
+              <img src={`/cclw/partners/${partnerImage.imageUrl}`} alt={partnerImage.imageAlt} className=" max-h-[96px]" />
             </ExternalLink>
           </div>
         </div>
@@ -41,7 +41,7 @@ const Acknowledgements = () => {
             acknowledge the contributions of the following key partners:
           </p>
           <Acknowledgement
-            partnerImage={{ url: "https://climate.law.columbia.edu", imageUrl: "Sabin_logo.png", imageAlt: "Sabin Center for Climate Change Law at Columbia Law School logo" }}
+            partnerImage={{ url: "https://climate.law.columbia.edu", imageUrl: "sabin-logo-full.jpg", imageAlt: "Sabin Center for Climate Change Law at Columbia Law School logo" }}
           >
             <h4>The Sabin Center for Climate Change Law at Columbia Law School</h4>
             <p>

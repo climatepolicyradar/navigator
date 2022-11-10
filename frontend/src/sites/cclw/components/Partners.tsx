@@ -5,7 +5,7 @@ import { ExternalLink } from "@components/ExternalLink";
 const partners = [
   {
     link: "https://climate.law.columbia.edu",
-    logo: "Sabin_logo.png",
+    logo: "sabin-logo-full.jpg",
     name: "The Sabin Centre for Climate Change Law at Columbia Law School",
   },
   {
