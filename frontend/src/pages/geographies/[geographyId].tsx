@@ -66,11 +66,11 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
 
   const handleDocumentSeeMoreClick = (event: React.FormEvent<HTMLButtonElement>) => {
     event.preventDefault();
-    let newSearchCritera = { ["keyword_filters"]: { ["countries"]: [geography.name] } };
+    let newSearchCritera = { ["keyword_filters"]: { ["countries"]: [geography.geography_slug] } };
     const documentCategory = selectedCategoryIndex === 1 ? "Law" : selectedCategoryIndex === 2 ? "Policy" : null;
     let additionalCriteria = {};
     if (documentCategory) {
-      additionalCriteria = { ["keyword_filters"]: { ["countries"]: [geography.name], ["categories"]: [documentCategory] } };
+      additionalCriteria = { ["keyword_filters"]: { ["countries"]: [geography.geography_slug], ["categories"]: [documentCategory] } };
     }
     updateSearchCriteria.mutate({ ...initialSearchCriteria, ...newSearchCritera, ...additionalCriteria });
     router.push("/search");
@@ -89,7 +89,7 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
         return new Date(b.document_date).getTime() - new Date(a.document_date).getTime();
       });
       return allDocuments.slice(0, 5).map((doc) => (
-        <div key={doc.slug} className="mt-4 mb-10">
+        <div key={doc.document_slug} className="mt-4 mb-10">
           <RelatedDocumentFull document={doc} />
         </div>
       ));
@@ -99,7 +99,7 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
       return summary.top_documents.Law.length === 0
         ? renderEmpty("Legislative")
         : summary.top_documents.Law.map((doc) => (
-            <div key={doc.slug} className="mt-4 mb-10">
+            <div key={doc.document_slug} className="mt-4 mb-10">
               <RelatedDocumentFull document={doc} />
             </div>
           ));
@@ -109,7 +109,7 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
       return summary.top_documents.Policy.length === 0
         ? renderEmpty("Executive")
         : summary.top_documents.Policy.map((doc) => (
-            <div key={doc.slug} className="mt-4 mb-10">
+            <div key={doc.document_slug} className="mt-4 mb-10">
               <RelatedDocumentFull document={doc} />
             </div>
           ));
