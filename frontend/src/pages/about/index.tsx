@@ -29,7 +29,7 @@ const About = () => {
           <p>
             We aim for the datasets to be as comprehensive and accurate as possible. However, there is no claim to have identified every relevant law, policy or court case in the
             countries covered. We invite anyone to draw our attention to any information we may have missed or any errors or updates to existing data. Please{" "}
-            <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLSdBdX2mLzFdeP8sTd_K7dsv8oylX6EBQucR_HhiXYZm1GA6gg/viewform">fill out our form</ExternalLink> or email{" "}
+            <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLScNy6pZTInQKdxNDaZPKyPGgbfRktstzgVDjGBCeTnLVzl3Pg/viewform">fill out our form</ExternalLink> or email{" "}
             <ExternalLink url="mailto:gri.cgl@lse.co.uk">gri.cgl@lse.ac.uk</ExternalLink> to contribute.
           </p>
         </div>
