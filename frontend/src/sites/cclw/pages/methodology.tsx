@@ -199,7 +199,7 @@ const Methodology = () => {
           Since the database has moved online, updates to the data are collected in real time from official sources such as government websites, parliamentary records and court
           documents. Most entries contain a link to the actual text of the law or the filing and court decision. The efforts of the CCLW team are regularly supplemented by
           contributions from lawyers, scholars, policymakers and other colleagues from around the world who alert us to new data as it becomes available. Please{" "}
-          <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLSdBdX2mLzFdeP8sTd_K7dsv8oylX6EBQucR_HhiXYZm1GA6gg/viewform">fill out our form</ExternalLink> if you wish to
+          <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLScNy6pZTInQKdxNDaZPKyPGgbfRktstzgVDjGBCeTnLVzl3Pg/viewform">fill out our form</ExternalLink> if you wish to
           contribute or email us at <ExternalLink url="mailto:gri.cgl@lse.co.uk">gri.cgl@lse.ac.uk</ExternalLink>.
         </p>
         <h4>Principles and Limitations</h4>
