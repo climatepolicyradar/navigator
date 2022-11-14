@@ -11,8 +11,8 @@ on:
       - dev
 
 env:
-  IMAGE_NAME1: navigator_backend
-  IMAGE_NAME2: navigator_frontend
+  IMAGE_NAME1: navigator-backend
+  IMAGE_NAME2: navigator-frontend
 
 # https://github.com/marketplace/actions/docker-layer-caching
 jobs:
@@ -32,10 +32,10 @@ jobs:
 
       - name: Build
         run: |
-          docker pull docker.io/library/hello-world:latest
-          docker tag docker.io/library/hello-world:latest navigator-backend:latest
-          # docker-compose build
-          # docker images
+          docker-compose build
+          docker images
+          docker tag navigator_backend navigator-backend
+          docker tag navigator_frontend navigator-frontend
 
       # - name: Build docker-compose stack
       #   run:  make start
