@@ -22,7 +22,7 @@ image_tag="$2"
 # login
 DOCKER_REGISTRY="${DOCKER_REGISTRY:-}"
 
-aws ecr get-login-password --region eu-west-2 | \
+aws ecr get-login-password --region eu-west-1 | \
     docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
 
 name="$(echo "${DOCKER_REGISTRY}/${project}" | tr -d '\n' | tr -d ' ')"
@@ -47,6 +47,11 @@ short_sha=${GITHUB_SHA:0:8}
 
 if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
     # push `branch-sha` tagged image
+
+    # NOTE: Looks like the behaviour has changed for GITHHUB_REF
+    # See: https://github.com/semantic-release/env-ci/issues/157
+    # ... branches will no longer be handled here but in the 'else' statement below.
+
     branch="${GITHUB_REF/refs\/heads\//}"
     echo "Detected Branch: ${branch}"
 
@@ -77,6 +82,7 @@ elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]
     docker push "${name}:${major}-${maturity}"
 else
     echo "${GITHUB_REF} is neither a branch head nor valid semver tag"
+    echo "Assuming '${GITHUB_HEAD_REF}' is a branch"
     if [[ -n "${GITHUB_HEAD_REF}" ]]; then
         branch="$(echo ${GITHUB_HEAD_REF}| tr -c '[0-9,A-Z,a-z]' '-')"
         docker_tag "${input_image}" "${name}:${branch}-${timestamp}-${short_sha}"
