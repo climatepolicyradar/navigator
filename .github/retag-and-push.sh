@@ -55,14 +55,18 @@ if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
     branch="${GITHUB_REF/refs\/heads\//}"
     echo "Detected Branch: ${branch}"
 
-    docker_tag "${input_image}" "${name}:${branch}-${timestamp}_${short_sha}"
-    docker push "${name}:${branch}-${timestamp}_${short_sha}"
 
     # Only update latest if on main
     if [[ "${branch}" = "main" ]]; then
         # push `latest` tag
         docker_tag "${input_image}" "${name}:latest"
         docker push "${name}:latest"
+        # Also tag for any versioning that might get done
+        docker_tag "${input_image}" "${name}:${branch}-${timestamp}-${short_sha}"
+        docker push "${name}:${branch}-${timestamp}-${short_sha}"
+        # Also tag for any versioning that might get done
+        docker_tag "${input_image}" "${name}:${branch}-${short_sha}"
+        docker push "${name}:${branch}-${short_sha}"
     fi
 elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]]; then
     # push `semver` tagged image
