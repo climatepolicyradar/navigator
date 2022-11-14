@@ -12,9 +12,9 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-#[ "${AWS_ACCESS_KEY_ID}" == "" ] && (echo "AWS_ACCESS_KEY_ID is not set" ; exit 1)
-#[ "${AWS_SECRET_ACCESS_KEY}" == "" ] && (echo "AWS_SECRET_ACCESS_KEY is not set" ; exit 1)
-#[ "${DOCKER_REGISTRY}" == "" ] && (echo "DOCKER_REGISTRY is not set" ; exit 1)
+[ "${AWS_ACCESS_KEY_ID}" == "" ] && (echo "AWS_ACCESS_KEY_ID is not set" ; exit 1)
+[ "${AWS_SECRET_ACCESS_KEY}" == "" ] && (echo "AWS_SECRET_ACCESS_KEY is not set" ; exit 1)
+[ "${DOCKER_REGISTRY}" == "" ] && (echo "DOCKER_REGISTRY is not set" ; exit 1)
 
 project="$1"
 image_tag="$2"
@@ -22,8 +22,8 @@ image_tag="$2"
 # login
 DOCKER_REGISTRY="${DOCKER_REGISTRY:-}"
 
-#aws ecr get-login-password --region eu-west-2 | \
-#    docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
+aws ecr get-login-password --region eu-west-2 | \
+    docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
 
 name="$(echo "${DOCKER_REGISTRY}/${project}" | tr -d '\n' | tr -d ' ')"
 input_image="${project}:${image_tag}"
@@ -40,16 +40,20 @@ docker_tag() {
     echo "Re-tagging $1 -> $2"
     docker tag $1 $2
 }
+
 timestamp=$(date --utc -Iseconds | cut -c1-19 | tr -c '[0-9]T\n' '-')
 short_sha=${GITHUB_SHA:0:8}
 
 if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
     # push `branch-sha` tagged image
     branch="${GITHUB_REF/refs\/heads\//}"
+    echo "Detected Branch: ${branch}"
+
+    docker_tag "${input_image}" "${name}:${branch}-${timestamp}_${short_sha}"
+    docker push "${name}:${branch}-${timestamp}_${short_sha}"
+
+    # Only update latest if on main
     if [[ "${branch}" = "main" ]]; then
-        # push a `version` tag
-        docker_tag "${input_image}" "${name}:${branch}-${timestamp}_${short_sha}"
-        docker push "${name}:${branch}-${timestamp}_${short_sha}"
         # push `latest` tag
         docker_tag "${input_image}" "${name}:latest"
         docker push "${name}:latest"
@@ -57,16 +61,19 @@ if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
 elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]]; then
     # push `semver` tagged image
     semver="${GITHUB_REF/refs\/tags\/v/}"
+    echo "Detected Tag: ${semver}"
     major="$(echo "${semver}" | cut -d'.' -f1)"
     minor="$(echo "${semver}" | cut -d'.' -f2)"
-    patch="$(echo "${semver}" | cut -d'.' -f3)"
+    patch="$(echo "${semver}" | cut -d'.' -f3 | cut -d'-' -f1)"
+    maturity="$(echo "${semver}" | cut -d'.' -f3 | cut -d'-' -f2)"
+    echo "Detected Version: ${major} . ${minor} . ${patch} [${maturity}]"
 
-    docker_tag "${input_image}" "${name}:${major}.${minor}.${patch}"
-    docker_tag "${input_image}" "${name}:${major}.${minor}"
-    docker_tag "${input_image}" "${name}:${major}"
-    docker push "${name}:${major}.${minor}.${patch}"
-    docker push "${name}:${major}.${minor}"
-    docker push "${name}:${major}"
+    docker_tag "${input_image}" "${name}:${major}.${minor}.${patch}-${maturity}"
+    docker_tag "${input_image}" "${name}:${major}.${minor}-${maturity}"
+    docker_tag "${input_image}" "${name}:${major}-${maturity}"
+    docker push "${name}:${major}.${minor}.${patch}-${maturity}"
+    docker push "${name}:${major}.${minor}-${maturity}"
+    docker push "${name}:${major}-${maturity}"
 else
     echo "${GITHUB_REF} is neither a branch head or valid semver tag"
     if [[ -n "${GITHUB_HEAD_REF}" ]]; then
