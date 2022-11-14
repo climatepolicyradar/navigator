@@ -28,13 +28,14 @@ aws ecr get-login-password --region eu-west-2 | \
 name="$(echo "${DOCKER_REGISTRY}/${project}" | tr -d '\n' | tr -d ' ')"
 input_image="${project}:${image_tag}"
 
-echo "----------"
-echo "Input    : ${project}:${image_tag}"
-echo "Output   : ${name}"
-echo "GitRef   : ${GITHUB_REF}"
-echo "Branch   : ${GITHUB_REF/refs\/heads\//}"
-echo "Repo Tag : ${name}"
-echo "----------"
+echo "-------------"
+echo "Input       : ${project}:${image_tag}"
+echo "Output      : ${name}"
+echo "GitRef      : ${GITHUB_REF}"
+echo "GitHeadRef  : ${GITHUB_HEAD_REF}"
+echo "Branch      : ${GITHUB_REF/refs\/heads\//}"
+echo "Repo Tag    : ${name}"
+echo "-------------"
 
 docker_tag() {
     echo "Re-tagging $1 -> $2"
@@ -75,14 +76,11 @@ elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]
     docker push "${name}:${major}.${minor}-${maturity}"
     docker push "${name}:${major}-${maturity}"
 else
-    echo "${GITHUB_REF} is neither a branch head or valid semver tag"
+    echo "${GITHUB_REF} is neither a branch head nor valid semver tag"
     if [[ -n "${GITHUB_HEAD_REF}" ]]; then
-        branch="${GITHUB_HEAD_REF}"
-        echo "Not yet publishing for branches, so not publishing for '${branch}'."
-        # docker images
-        # docker_tag "${input_image}" "${name}:${branch}-${timestamp}-${short_sha}"
-        # docker images
-        # docker push "${name}:${branch}-${short_sha}-${timestamp}"
+        branch="$(echo ${GITHUB_HEAD_REF}| tr -c '[0-9,A-Z,a-z]' '-')"
+        docker_tag "${input_image}" "${name}:${branch}-${timestamp}-${short_sha}"
+        docker push "${name}:${branch}-${timestamp}-${short_sha}"
     else
         echo "No branch found, not a PR so not publishing."
     fi
