@@ -12,8 +12,9 @@ if [ "$#" -ne 2 ]; then
     exit 1
 fi
 
-[ "${AWS_ACCESS_KEY_ID}" == "" ] && (echo "AWS_ACCESS_KEY_ID is not set" ; exit 1)
-[ "${AWS_SECRET_ACCESS_KEY}" == "" ] && (echo "AWS_SECRET_ACCESS_KEY is not set" ; exit 1)
+#[ "${AWS_ACCESS_KEY_ID}" == "" ] && (echo "AWS_ACCESS_KEY_ID is not set" ; exit 1)
+#[ "${AWS_SECRET_ACCESS_KEY}" == "" ] && (echo "AWS_SECRET_ACCESS_KEY is not set" ; exit 1)
+#[ "${DOCKER_REGISTRY}" == "" ] && (echo "DOCKER_REGISTRY is not set" ; exit 1)
 
 project="$1"
 image_tag="$2"
@@ -21,19 +22,25 @@ image_tag="$2"
 # login
 DOCKER_REGISTRY="${DOCKER_REGISTRY:-}"
 
-aws ecr get-login-password --region eu-west-2 | \
-    docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
+#aws ecr get-login-password --region eu-west-2 | \
+#    docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
 
 name="$(echo "${DOCKER_REGISTRY}/${project}" | tr -d '\n' | tr -d ' ')"
 input_image="${project}:${image_tag}"
 
-echo "Input:   ${project}:${image_tag}"
-echo "Output:  ${name}"
-echo "GitRef:  ${GITHUB_REF}"
-echo "Branch:  ${GITHUB_REF/refs\/heads\//}"
-echo "Repo Tag ${name}"
+echo "----------"
+echo "Input    : ${project}:${image_tag}"
+echo "Output   : ${name}"
+echo "GitRef   : ${GITHUB_REF}"
+echo "Branch   : ${GITHUB_REF/refs\/heads\//}"
+echo "Repo Tag : ${name}"
+echo "----------"
 
-timestamp=$(date --utc +%Y%m%d.%H%M.%S%N)
+docker_tag() {
+    echo "Re-tagging $1 -> $2"
+    docker tag $1 $2
+}
+timestamp=$(date --utc -Iseconds | cut -c1-19 | tr -c '[0-9]T\n' '-')
 short_sha=${GITHUB_SHA:0:8}
 
 if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
@@ -41,10 +48,10 @@ if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
     branch="${GITHUB_REF/refs\/heads\//}"
     if [[ "${branch}" = "main" ]]; then
         # push a `version` tag
-        docker tag "${input_image}" "${name}:${branch}-${timestamp}_${short_sha}"
+        docker_tag "${input_image}" "${name}:${branch}-${timestamp}_${short_sha}"
         docker push "${name}:${branch}-${timestamp}_${short_sha}"
         # push `latest` tag
-        docker tag "${input_image}" "${name}:latest"
+        docker_tag "${input_image}" "${name}:latest"
         docker push "${name}:latest"
     fi
 elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]]; then
@@ -54,9 +61,9 @@ elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]
     minor="$(echo "${semver}" | cut -d'.' -f2)"
     patch="$(echo "${semver}" | cut -d'.' -f3)"
 
-    docker tag "${input_image}" "${name}:${major}.${minor}.${patch}"
-    docker tag "${input_image}" "${name}:${major}.${minor}"
-    docker tag "${input_image}" "${name}:${major}"
+    docker_tag "${input_image}" "${name}:${major}.${minor}.${patch}"
+    docker_tag "${input_image}" "${name}:${major}.${minor}"
+    docker_tag "${input_image}" "${name}:${major}"
     docker push "${name}:${major}.${minor}.${patch}"
     docker push "${name}:${major}.${minor}"
     docker push "${name}:${major}"
@@ -66,7 +73,7 @@ else
         branch="${GITHUB_HEAD_REF}"
         echo "Not yet publishing for branches, so not publishing for '${branch}'."
         # docker images
-        # docker tag "${input_image}" "${name}:${branch}-${timestamp}-${short_sha}"
+        # docker_tag "${input_image}" "${name}:${branch}-${timestamp}-${short_sha}"
         # docker images
         # docker push "${name}:${branch}-${short_sha}-${timestamp}"
     else
