@@ -131,9 +131,9 @@ class Backend:
                     dockerfile=frontend_dockerfile,
                     args={
                         "PORT": 3000,
-                        "NEXT_PUBLIC_API_URL": frontend_api_url,
-                        "NEXT_PUBLIC_LOGIN_API_URL": frontend_api_url_login,
-                        "NEXT_PUBLIC_ADOBE_API_KEY": pdf_embed_key,
+                        "API_URL": frontend_api_url,
+                        "LOGIN_API_URL": frontend_api_url_login,
+                        "ADOBE_API_KEY": pdf_embed_key,
                     },
                 ),
                 image_name=deployment_resources.navigator_frontend_repo.repository_url,

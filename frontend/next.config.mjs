@@ -2,7 +2,7 @@ const getSite = process.env.THEME || "cpr";
 
 console.log("===== IN: next.config.mjs =====");
 console.log("process.env.THEME: ", process.env.THEME);
-console.log("process.env.NEXT_PUBLIC_API_URL: ", process.env.NEXT_PUBLIC_API_URL);
+console.log("process.env.API_URL: ", process.env.API_URL);
 console.log("===== OUT: next.config.mjs =====");
 
 // for pages that are not in cclw's sitemap
@@ -57,11 +57,6 @@ const nextConfig = {
     ].concat(getSite === "cpr" ? cprRedirects : cclwRedirects);
 
     return standardRedirects.concat(await read(REDIRECT_FILE));
-  },
-  env: {
-    THEME: process.env.THEME,
-    NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
-    NEXT_PUBLIC_LOGIN_API_URL: process.env.NEXT_PUBLIC_LOGIN_API_URL,
   },
 };
 

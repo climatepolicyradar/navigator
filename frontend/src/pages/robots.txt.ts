@@ -3,7 +3,7 @@ const crawlableRobotsTxt = `User-agent: *\nAllow: /`;
 const uncrawlableRobotsTxt = `User-agent: *\nDisallow: /`;
 
 const isProd = () => {
-  return process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_API_URL.includes("dev");
+  return process.env.API_URL && !process.env.API_URL.includes("dev");
 };
 
 function Robots() {}
