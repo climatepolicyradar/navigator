@@ -54,7 +54,7 @@ refresh_all_dbs:
 # building images
 # ----------------------------------
 build_bats:
-	./bats/build.sh
+	docker build bats -t bats-with-helpers:latest
 
 build_backend:
 	docker-compose build --no-cache backend
@@ -69,7 +69,7 @@ build: build_backend build_frontend
 # ----------------------------------
 
 test_bashscripts: build_bats
-	docker run -it -v "${PWD}/bats:/code" bats-with-helpers:latest /code/tests/test_example1.bats
+	docker run --rm -v "${PWD}/bats:/code" bats-with-helpers:latest /code/tests/test_example1.bats
 
 test_frontend:
 	# TODO: setup a proper test user for cypress

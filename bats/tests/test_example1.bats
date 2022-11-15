@@ -9,5 +9,5 @@
 @test "func1 function should return 2" {
   source /code/example1.sh
   run func1
-  [ "$status" -eq 2]
+  [ "$status" -eq 2 ]
 }
