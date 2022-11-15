@@ -69,7 +69,7 @@ build: build_backend build_frontend
 # ----------------------------------
 
 test_bashscripts: build_bats
-	docker run --rm -v "${PWD}/bats:/code" bats-with-helpers:latest /code/tests/test_example1.bats
+	docker run --rm -v "${PWD}/.github:/code" bats-with-helpers:latest /code/tests/test_retag_and_push.bats
 
 test_frontend:
 	# TODO: setup a proper test user for cypress
