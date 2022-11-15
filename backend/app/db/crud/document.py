@@ -732,7 +732,7 @@ def create_document_relationship(
         # The call to db.commit() must exist outside the nested transaction
         db.commit()
     except IntegrityError:
-        # ensure impotency
+        # ensure its idempotent
         raise HTTPException(
             200, detail="Document-Relationship already exists - Nothing to do"
         )
