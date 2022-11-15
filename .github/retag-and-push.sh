@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+script_folder=$(dirname "${BASH_SOURCE[0]}")
+source $script_folder/funcs.sh
+
 if [ "$#" -ne 2 ]; then
     echo "Pushes a container image to ECR with tags"
     echo
@@ -20,12 +23,10 @@ project="$1"
 image_tag="$2"
 
 # login
-DOCKER_REGISTRY="${DOCKER_REGISTRY:-}"
-
 aws ecr get-login-password --region eu-west-1 | \
     docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
 
-name="$(echo "${DOCKER_REGISTRY}/${project}" | tr -d '\n' | tr -d ' ')"
+name="$(clean_string "${DOCKER_REGISTRY}/${project}")
 input_image="${project}:${image_tag}"
 
 echo "-------------"
