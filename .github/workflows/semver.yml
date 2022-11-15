@@ -11,6 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       - run: |
+          aws ecr get-login-password --region eu-west-1 | docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
           docker pull ${DOCKER_REGISTRY}/navigator-backend:main-${GITHUB_SHA::8}
           docker pull ${DOCKER_REGISTRY}/navigator-frontend:main-${GITHUB_SHA::8}
           .github/retag-and-push.sh navigator-backend main-${GITHUB_SHA::8}
