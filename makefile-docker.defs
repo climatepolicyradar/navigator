@@ -53,17 +53,24 @@ refresh_all_dbs:
 # ----------------------------------
 # building images
 # ----------------------------------
+build_bats:
+	./bats/build.sh
+
 build_backend:
 	docker-compose build --no-cache backend
 
 build_frontend:
 	docker-compose build --no-cache frontend
 
-build: build_backend build_frontend
+build: build_backend build_frontend 
 
 # ----------------------------------
 # testing
 # ----------------------------------
+
+test_bashscripts: build_bats
+	docker run -it -v "${PWD}/bats:/code" bats-with-helpers:latest /code/tests/test_example1.bats
+
 test_frontend:
 	# TODO: setup a proper test user for cypress
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
