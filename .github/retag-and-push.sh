@@ -10,8 +10,8 @@ if [ "$#" -ne 2 ]; then
     echo "Usage: $0 project input_tag"
     echo "Example: $0 container-name 6cd9d7ebad4f16ef7273a7a831d79d5d5caf4164"
     echo "Relies on the following environment variables:"
-    echo "- GITHUB_REF, GITHUB_SHA (GH Action default)"
-    echo "- DOCKER_USERNAME, DOCKER_PASSWORD"
+    echo "- GITHUB_HEAD_REF, GITHUB_REF, GITHUB_SHA (GH Action default)"
+    echo "- AWS_ACCESS_KEY_ID, AWS_SECRET_ACCESS_KEY, DOCKER_REGISTRY"
     exit 1
 fi
 
