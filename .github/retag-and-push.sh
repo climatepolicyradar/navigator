@@ -26,7 +26,7 @@ image_tag="$2"
 aws ecr get-login-password --region eu-west-1 | \
     docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
 
-name="$(clean_string "${DOCKER_REGISTRY}/${project}")
+name=$(clean_string "${DOCKER_REGISTRY}/${project}")
 input_image="${project}:${image_tag}"
 
 echo "-------------"
