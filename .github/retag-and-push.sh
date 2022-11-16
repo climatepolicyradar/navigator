@@ -69,14 +69,14 @@ if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
         docker_tag "${input_image}" "${name}:${branch}-${short_sha}"
         docker push "${name}:${branch}-${short_sha}"
     fi
-elif [[ "${GITHUB_REF}" =~ refs/tags/v(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*) ]]; then
+elif is_tagged_verion ${GITHUB_REF} ; then
     # push `semver` tagged image
     semver="${GITHUB_REF/refs\/tags\/v/}"
     echo "Detected Tag: ${semver}"
-    major="$(echo "${semver}" | cut -d'.' -f1)"
-    minor="$(echo "${semver}" | cut -d'.' -f2)"
-    patch="$(echo "${semver}" | cut -d'.' -f3 | cut -d'-' -f1)"
-    maturity="$(echo "${semver}" | cut -d'.' -f3 | cut -d'-' -f2)"
+    major=$(get_major "${semver}")
+    minor=$(get_minor "${semver}")
+    patch=$(get_patch "${semver}")
+    maturity=$(get_maturity "${semver}")
     echo "Detected Version: ${major} . ${minor} . ${patch} [${maturity}]"
 
     docker_tag "${input_image}" "${name}:${major}.${minor}.${patch}-${maturity}"

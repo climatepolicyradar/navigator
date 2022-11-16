@@ -41,3 +41,37 @@ load '/opt/bats-test-helpers/lox-bats-mock/stub.bash'
 }
 
 # ------
+
+@test "get_major returns major version" {
+  source /code/funcs.sh
+  run get_major "8.9.7-alpha"
+  [ "$status" -eq 0 ]
+  [ "$output" == "8" ]
+}
+
+# ------
+
+@test "get_minor returns minor version" {
+  source /code/funcs.sh
+  run get_minor "8.9.7-alpha"
+  [ "$status" -eq 0 ]
+  [ "$output" == "9" ]
+}
+
+# ------
+
+@test "get_patch returns patch version" {
+  source /code/funcs.sh
+  run get_patch "8.9.7-alpha"
+  [ "$status" -eq 0 ]
+  [ "$output" == "7" ]
+}
+
+# ------
+
+@test "get_maturity returns maturity version" {
+  source /code/funcs.sh
+  run get_maturity "8.9.7-alpha"
+  [ "$status" -eq 0 ]
+  [ "$output" == "alpha" ]
+}

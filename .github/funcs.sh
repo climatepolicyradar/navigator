@@ -14,3 +14,20 @@ is_tagged_version() {
         return 1
     fi
 }
+
+
+get_major() {
+    echo "${1}" | cut -d'.' -f1
+}
+
+get_minor() {
+    echo "${1}" | cut -d'.' -f2
+}
+
+get_patch() {
+    echo "${1}" | cut -d'.' -f3 | cut -d'-' -f1
+}
+
+get_maturity() {
+    echo "${1}" | cut -d'.' -f3 | cut -d'-' -f2
+}
