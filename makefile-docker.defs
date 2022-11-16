@@ -53,6 +53,9 @@ refresh_all_dbs:
 # ----------------------------------
 # building images
 # ----------------------------------
+build_bats:
+	docker build bats -t bats-with-helpers:latest
+
 build_backend:
 	docker-compose build --no-cache backend
 
@@ -64,6 +67,10 @@ build: build_backend build_frontend
 # ----------------------------------
 # testing
 # ----------------------------------
+
+test_bashscripts: build_bats
+	docker run --rm -v "${PWD}/.github:/code" bats-with-helpers:latest /code/tests/test_retag_and_push.bats
+
 test_frontend:
 	# TODO: setup a proper test user for cypress
 	cd frontend/e2e && docker-compose up --exit-code-from cypress
