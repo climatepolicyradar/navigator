@@ -62,7 +62,7 @@ build_backend:
 build_frontend:
 	docker-compose build --no-cache frontend
 
-build: build_backend build_frontend 
+build: build_backend build_frontend
 
 # ----------------------------------
 # testing
