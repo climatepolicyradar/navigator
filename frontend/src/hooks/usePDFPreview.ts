@@ -49,7 +49,7 @@ function generateHighlights(document: TDocument) {
   });
 }
 
-export default function usePDFPreview(document: TDocument) {
+export default function usePDFPreview(document: TDocument, adobeKey: string) {
   const viewerConfig = {
     showDownloadPDF: true,
     showPrintPDF: true,
@@ -68,7 +68,7 @@ export default function usePDFPreview(document: TDocument) {
   const createPDFClient = () => {
     viewSDKClient = new ViewSDKClient();
     viewSDKClient.ready().then(() => {
-      const previewFilePromise = viewSDKClient.previewFile(document, "pdf-div", viewerConfig);
+      const previewFilePromise = viewSDKClient.previewFile(document, adobeKey, "pdf-div", viewerConfig);
       previewFilePromise.then((adobeViewer) => {
         adobeViewer.getAPIs().then((api: any) => {
           embedApi = api;

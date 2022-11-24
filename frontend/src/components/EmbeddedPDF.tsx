@@ -1,8 +1,9 @@
-import { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect, useContext } from "react";
 import Script from "next/script";
 import { TDocument } from "@types";
 import usePDFPreview from "@hooks/usePDFPreview";
 import Loader from "./Loader";
+import { AdobeContext } from "@context/AdobeContext";
 
 type TProps = {
   document: TDocument;
@@ -11,7 +12,10 @@ type TProps = {
 
 const EmbeddedPDF = ({ document, passageIndex = null }: TProps) => {
   const containerRef = useRef();
-  const pdfPreview = usePDFPreview(document);
+  const adobeKey = useContext(AdobeContext);
+
+  const pdfPreview = usePDFPreview(document, adobeKey);
+  
   // Ensure the instance of the PDF client is not reset on render 
   // otherwise we lose the ability to interact with the pdf
   // eslint-disable-next-line react-hooks/exhaustive-deps
