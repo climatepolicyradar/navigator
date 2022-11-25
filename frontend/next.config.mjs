@@ -1,10 +1,12 @@
-const getSite = process.env.THEME || "cpr";
+/*
+  THIS IS BURNED AT BUILDTIME - ENV ARE IGNORED AT RUNTIME
+*/
 
-console.log("===== IN: next.config.mjs =====");
-console.log("process.env.THEME: ", process.env.THEME);
-console.log("process.env.API_URL: ", process.env.API_URL);
-console.log("process.env.ADOBE_API_KEY: ", process.env.ADOBE_API_KEY);
-console.log("===== OUT: next.config.mjs =====");
+// console.log("===== IN: next.config.mjs =====");
+// console.log("process.env.THEME: ", process.env.THEME);
+// console.log("process.env.API_URL: ", process.env.API_URL);
+// console.log("process.env.ADOBE_API_KEY: ", process.env.ADOBE_API_KEY);
+// console.log("===== OUT: next.config.mjs =====");
 
 // for pages that are not in cclw's sitemap
 const cclwRedirects = [
@@ -55,7 +57,7 @@ const nextConfig = {
         destination: "/",
         permanent: false, // will become a page eventually
       },
-    ].concat(getSite === "cpr" ? cprRedirects : cclwRedirects);
+    ].concat(process.env.THEME === "cclw" ? cclwRedirects : cprRedirects);
 
     return standardRedirects.concat(await read(REDIRECT_FILE));
   },
