@@ -134,7 +134,7 @@ MyApp.getInitialProps = async () => {
   if (typeof window !== "undefined") {
     return { ...initialProps };
   }
-  console.log("in _APP: ", process.env.ADOBE_API_KEY);
+
   return { ...initialProps, theme: process.env.THEME ?? "cpr", adobeApiKey: process.env.ADOBE_API_KEY ?? "" };
 };
 
