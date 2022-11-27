@@ -7,7 +7,7 @@ const FALSE_VALUES = ["0", "OFF", "NO", "FALSE"];
 
 /**
  * read - Reads redirect definitions given the filename - currently only CSV.
- * 
+ *
  * @param {*} filename - Only the filename which should be a file in the top-level "redirects" folder
  * @returns Promise to an array of redirects
  */
@@ -15,7 +15,7 @@ const read = (filename) => {
 
   /**
    * readFromCSV - Reads redirects from file - for use by a Promise.
-   * 
+   *
    * @param {*} redirectFile - file to read from.
    * @param {*} resolve - calls the function to return the array of redirects.
    * @param {*} reject - calls this function when an error occurs with a string represtation of the error.
