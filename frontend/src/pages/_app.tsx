@@ -9,6 +9,7 @@ import "../styles/flag-icon.css";
 import "@cclw/styles/cclw.main.scss";
 
 import { ThemeContext } from "@context/ThemeContext";
+import { AdobeContext } from "@context/AdobeContext";
 
 import { CookieConsent } from "@components/cookies/CookieConsent";
 import { Banner } from "@cclw/components/Banner";
@@ -64,10 +65,12 @@ function getThemeColours(theme: string): string {
 
 type TProps = AppProps & {
   theme?: string;
+  adobeApiKey?: string;
 };
 
-function MyApp({ Component, pageProps, theme }: TProps) {
+function MyApp({ Component, pageProps, theme, adobeApiKey }: TProps) {
   const [siteTheme, setSiteTheme] = useState(null);
+  const [adobeKey, setAdobeKey] = useState(null);
 
   useEffect(() => {
     // For access inside Cypress:
@@ -82,20 +85,28 @@ function MyApp({ Component, pageProps, theme }: TProps) {
     }
   }, [theme]);
 
-  const dynamicTheme = theme ?? siteTheme;
+  useEffect(() => {
+    if (adobeApiKey && adobeApiKey !== "") {
+      setAdobeKey(adobeApiKey);
+    }
+  }, [adobeApiKey]);
 
-  const favicon = siteTheme === "cclw" ? "/cclw/images/favicon.png" : "/favicon.png";
+  const dynamicTheme = theme ?? siteTheme;
+  const dynamicAdobeKey = adobeApiKey ?? adobeKey;
+
+  const favicon = dynamicTheme === "cclw" ? "/cclw/images/favicon.png" : "/favicon.png";
 
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeContext.Provider value={dynamicTheme}>
-        <Head>
-          <link rel="icon" href={favicon} />
-          <style>{getThemeColours(dynamicTheme)}</style>
-        </Head>
-        <Script src="https://www.googletagmanager.com/gtag/js?id=G-ZD1WWE49TL" strategy="afterInteractive" />
-        <Script id="google-analytics" strategy="afterInteractive">
-          {`
+        <AdobeContext.Provider value={dynamicAdobeKey}>
+          <Head>
+            <link rel="icon" href={favicon} />
+            <style>{getThemeColours(dynamicTheme)}</style>
+          </Head>
+          <Script src="https://www.googletagmanager.com/gtag/js?id=G-ZD1WWE49TL" strategy="afterInteractive" />
+          <Script id="google-analytics" strategy="afterInteractive">
+            {`
           window.dataLayer = window.dataLayer || [];
           function gtag(){window.dataLayer.push(arguments);}
           gtag('js', new Date());
@@ -105,12 +116,13 @@ function MyApp({ Component, pageProps, theme }: TProps) {
           });
           gtag('config', 'G-ZD1WWE49TL');
         `}
-        </Script>
-        {dynamicTheme === "cclw" && <Banner />}
-        <div id={dynamicTheme}>
-          <Component {...pageProps} />
-        </div>
-        <CookieConsent />
+          </Script>
+          {dynamicTheme === "cclw" && <Banner />}
+          <div id={dynamicTheme}>
+            <Component {...pageProps} />
+          </div>
+          <CookieConsent />
+        </AdobeContext.Provider>
       </ThemeContext.Provider>
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
@@ -122,17 +134,8 @@ MyApp.getInitialProps = async () => {
   if (typeof window !== "undefined") {
     return { ...initialProps };
   }
-  return { ...initialProps, theme: process.env.THEME ?? "cpr" };
+
+  return { ...initialProps, theme: process.env.THEME ?? "cpr", adobeApiKey: process.env.ADOBE_API_KEY ?? "" };
 };
 
 export default MyApp;
-
-// <ThemeContext.Provider value={dynamicTheme}>
-//   <Head>
-//     <link rel="icon" href={favicon} />
-//     <style>{getThemeColours(dynamicTheme)}</style>
-//   </Head>
-//   <div id={dynamicTheme}>
-//     <Component {...pageProps} />
-//   </div>
-// </ThemeContext.Provider>

@@ -28,11 +28,11 @@ class ViewSDKClient {
     return this.readyPromise;
   }
 
-  previewFile(doc, divId, viewerConfig) {
+  previewFile(doc, adobeKey, divId, viewerConfig) {
     if(!doc) return;
     const config = {
       /* Pass your registered client id */
-      clientId: process.env.ADOBE_API_KEY,
+      clientId: adobeKey,
     };
     if (divId) {
       /* Optional only for Light Box embed mode */
