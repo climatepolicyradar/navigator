@@ -2,7 +2,7 @@
   THIS IS BURNED AT BUILDTIME - ENV ARE IGNORED AT RUNTIME
 */
 
-const nextConfig = {
+module.exports = {
   i18n: {
     locales: ["en", "fr"],
     defaultLocale: "en",
@@ -34,4 +34,3 @@ const nextConfig = {
   },
 };
 
-export default nextConfig;
