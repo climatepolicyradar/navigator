@@ -16,7 +16,6 @@
     "incremental": true,
     "baseUrl": "src",
     "paths": {
-      "*": ["src/types*"],
       "@api/*": ["api/*"],
       "@components/*": ["components/*"],
       "@constants/*": ["constants/*"],
