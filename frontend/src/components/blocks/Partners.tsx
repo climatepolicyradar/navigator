@@ -1,5 +1,5 @@
 import { ExternalLink } from "@components/ExternalLink";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { partners } from "../../constants/partners";
 
 const Partners = () => {

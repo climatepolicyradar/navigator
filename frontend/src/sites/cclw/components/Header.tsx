@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { ExternalLink } from "@components/ExternalLink";
 import Logo from "@components/svg/LogoMono";
 import { SearchIcon } from "@components/svg/Icons";
