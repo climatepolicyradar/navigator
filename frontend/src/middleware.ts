@@ -2,8 +2,9 @@
 import { NextResponse } from 'next/server'
 import type { NextRequest } from 'next/server'
 import { TRedirect } from './types';
-import read from "../redirects/reader.mjs";
-const REDIRECT_FILE = process.env.NEXT_REDIRECT_FILE || "default.csv";
+
+const REDIRECT_FILE = process.env.NEXT_REDIRECT_FILE || "default.json";
+const redirectsFromFile = require(`./redirects/${REDIRECT_FILE}`);
 
 
 // console.log("===== IN: next.config.mjs =====");
@@ -26,9 +27,9 @@ const cprRedirects: Array<TRedirect> = [
     { source: "/methodology", destination: "/", permanent: true },
 ];
 
-async function get_redirects(): Promise<Map<string, TRedirect>> {
+function get_redirects(): Map<string, TRedirect> {
     let standardRedirects = process.env.THEME === "cclw" ? cclwRedirects : cprRedirects;
-    standardRedirects.concat(await read(REDIRECT_FILE));
+    standardRedirects.concat(redirectsFromFile);
 
     return standardRedirects.reduce(
         (acc, item) => ( acc.set(item["source"], item) ),
@@ -36,12 +37,15 @@ async function get_redirects(): Promise<Map<string, TRedirect>> {
     );
 }
 
-const redirect_map = await get_redirects();
+const redirect_map = get_redirects();
+
 // This function can be marked `async` if using `await` inside
 export function middleware(request: NextRequest) {
     if (redirect_map.has(request.url)) {
         let redirect_detail = redirect_map.get(request.url);
         if (redirect_detail) {
+            console.log(`Found redirect: ${redirect_detail}`);
+
             let status = redirect_detail['permanent'] ? 308 : 307;
             return NextResponse.redirect(new URL(redirect_detail['target'], request.url), status)
         }

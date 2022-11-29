@@ -1,0 +1,9 @@
+{
+   "table": [
+      {
+         "source": "/testing-redirects",
+         "destination": "/",
+         "permanent": "on"
+      }
+   ]
+}
