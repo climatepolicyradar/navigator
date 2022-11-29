@@ -16,6 +16,7 @@
     "incremental": true,
     "baseUrl": "src",
     "paths": {
+      "*": ["src/types*"],
       "@api/*": ["api/*"],
       "@components/*": ["components/*"],
       "@constants/*": ["constants/*"],
@@ -27,7 +28,7 @@
       "@pages/*": ["pages/*"],
       "@utils/*": ["utils/*"],
       "@cclw/*": ["sites/cclw/*"],
-      "@cpr/*": ["sites/cpr/*"],
+      "@cpr/*": ["sites/cpr/*"]
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "src/api/pdf.js"],

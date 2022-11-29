@@ -1,9 +1,7 @@
-{
-   "table": [
-      {
-         "source": "/testing-redirects",
-         "destination": "/",
-         "permanent": "on"
-      }
-   ]
-}
+[
+   {
+      "source": "/test",
+      "destination": "/test-redirect",
+      "permanent": true
+   }
+]
