@@ -57,7 +57,7 @@ const Footer = () => {
     }
     return (
       <Link href={item.url}>
-        <a>{item.text}</a>
+        {item.text}
       </Link>
     );
   };
@@ -91,7 +91,7 @@ const Footer = () => {
                         gri.cgl@lse.co.uk
                       </ExternalLink>
                       <Link href="/contact">
-                        <a>Full contact details</a>
+                        Full contact details
                       </Link>
                     </div>
                   </div>
@@ -157,8 +157,8 @@ const Footer = () => {
             <ExternalLink url="https://www.climatepolicyradar.org/privacy-policy" className="text-secondary-700 underline">
               Privacy policy
             </ExternalLink>
-            <Link href={"/terms-of-use"}>
-              <a className="text-secondary-700 underline">Terms of use</a>
+            <Link href={"/terms-of-use"} className="text-secondary-700 underline">
+              Terms of use
             </Link>
           </div>
         </div>

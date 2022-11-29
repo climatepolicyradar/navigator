@@ -15,8 +15,10 @@ export const CountryLink: FC<TCountryLink> = ({ countryCode, className = "", chi
   const slug = getCountrySlug(countryCode, countries);
   if (!slug) return <>{children}</>;
   return (
-    <Link href={`/geographies/${slug}`}>
-      <a className={`flex items-center underline ${className}`}>{children}</a>
+    <Link
+      href={`/geographies/${slug}`}
+      className={`flex items-center underline ${className}`}>
+      {children}
     </Link>
   );
 };

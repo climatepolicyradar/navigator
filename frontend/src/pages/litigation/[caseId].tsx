@@ -110,18 +110,18 @@ const LitigationCoverPage = () => {
                       </p>
                       <ul>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                       </ul>
@@ -150,18 +150,18 @@ const LitigationCoverPage = () => {
                       </p>
                       <ul>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                       </ul>
@@ -193,18 +193,18 @@ const LitigationCoverPage = () => {
                       </p>
                       <ul>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                       </ul>
@@ -233,18 +233,18 @@ const LitigationCoverPage = () => {
                       </p>
                       <ul>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                         <li>
-                          <Link href="#">
-                            <a className="underline text-blue-600">Document title often with long names</a>
+                          <Link href="#" className="underline text-blue-600">
+                            Document title often with long names
                           </Link>
                         </li>
                       </ul>
@@ -270,30 +270,26 @@ const LitigationCoverPage = () => {
                   <h4 className="text-base text-indigo-400 font-semibold flex">Connected cases</h4>
                   <ul className="ml-4 list-disc list-outside mb-4">
                     <li>
-                      <Link href="#">
-                        <a className="underline text-blue-600">
-                          Type of connection <br /> Case Title
-                        </a>
+                      <Link href="#" className="underline text-blue-600">
+                        Type of connection<br />Case Title
                       </Link>
                     </li>
                     <li>
-                      <Link href="#">
-                        <a className="underline text-blue-600">
-                          Type of connection <br /> Case Title
-                        </a>
+                      <Link href="#" className="underline text-blue-600">
+                        Type of connection<br />Case Title
                       </Link>
                     </li>
                   </ul>
                   <h4 className="text-base text-indigo-400 font-semibold flex">Related laws</h4>
                   <ul className="ml-4 list-disc list-outside mb-4">
                     <li>
-                      <Link href="#">
-                        <a className="underline text-blue-600">Document name</a>
+                      <Link href="#" className="underline text-blue-600">
+                        Document name
                       </Link>
                     </li>
                     <li>
-                      <Link href="#">
-                        <a className="underline text-blue-600">Document name</a>
+                      <Link href="#" className="underline text-blue-600">
+                        Document name
                       </Link>
                     </li>
                   </ul>

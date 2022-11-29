@@ -82,8 +82,10 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                 </div>
               </div>
               <div className="my-6 md:w-2/5 lg:w-1/4 md:pl-16 flex-shrink-0">
-                <Link href="/search">
-                  <a className="underline text-primary-400 hover:text-indigo-600 duration-300">Back to search results</a>
+                <Link
+                  href="/search"
+                  className="underline text-primary-400 hover:text-indigo-600 duration-300">
+                  Back to search results
                 </Link>
               </div>
             </div>
