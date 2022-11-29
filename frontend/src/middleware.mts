@@ -30,10 +30,10 @@ async function get_redirects(): Promise<Map<string, TRedirect>> {
     let standardRedirects = process.env.THEME === "cclw" ? cclwRedirects : cprRedirects;
     standardRedirects.concat(await read(REDIRECT_FILE));
 
-    return standardRedirects.reduce((acc, item) => {
-        acc[item["source"]] = item;
-        return acc;
-    }, new Map<string, TRedirect>());
+    return standardRedirects.reduce(
+        (acc, item) => ( acc.set(item["source"], item) ),
+        new Map<string, TRedirect>()
+    );
 }
 
 const redirect_map = await get_redirects();
