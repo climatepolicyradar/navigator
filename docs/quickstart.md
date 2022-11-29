@@ -20,13 +20,13 @@ It will also create an [environment](./environment.md) file at `.env`.
 
 The frontend uses Node 16.13.2
 
-```
+```shell
 cd frontend
 npm install
 npm start
 ```
 
-This should redirect you to http://localhost:3000
+This should redirect you to `http://localhost:3000`
 
 ## Docker-based development
 
@@ -40,28 +40,28 @@ cp .env.example .env
 
 Then run the following command:
 
-```bash
+```shell
 make start
 make show_logs
 ```
 
 This will build and bring up the containers, run database migrations and populate the database with initial data.
 
-# Running services
+## Running services
 
-The backend will be at http://localhost:8000
+The backend will be at `http://localhost:8000`
 
-Auto-generated docs will be at http://localhost:8000/api/docs
+Auto-generated docs will be at `http://localhost:8000/api/docs`
 
-The frontend will be at http://localhost:3000
+The frontend will be at `http://localhost:3000`
 
-# Common issues
+## Common issues
 
-## Tests pass locally, but not on CI
+### Tests pass locally, but not on CI
 
 CI uses docker, so ensure all containers are built with latest dependencies, and all tests pass:
 
-``` 
+```shell
 make build
 make test
 ```
@@ -71,7 +71,7 @@ Missing code might be
 - ignored by `.gitignore` and not be seen/found by CI
 - ignored by `.dockerignore` and not be seen/found by the containers
 
-# Further information
+## Further information
 
 - [environment](./environment.md)
 - [testing](./testing.md)
