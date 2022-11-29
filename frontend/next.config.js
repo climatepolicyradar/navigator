@@ -1,8 +1,14 @@
 /*
   THIS IS BURNED AT BUILDTIME - ENV ARE IGNORED AT RUNTIME
+
+  NOTE: If you are writing code in here beyond setting vars...
+            ... you probably shouldn't be.
 */
 
-module.exports = {
+/**
+ * @type {import('next').NextConfig}
+ */
+const nextConfig = {
   i18n: {
     locales: ["en", "fr"],
     defaultLocale: "en",
@@ -34,3 +40,4 @@ module.exports = {
   },
 };
 
+module.exports = nextConfig;
