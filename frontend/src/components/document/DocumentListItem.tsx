@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC, ReactNode, useContext } from "react";
 import Link from "next/link";
 import { TEventCategory } from "@types";
 import { truncateString } from "@helpers/index";
@@ -19,6 +19,7 @@ type TProps = {
     document_year: string;
     category?: TEventCategory;
   };
+  children?: ReactNode;
 };
 
 export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {

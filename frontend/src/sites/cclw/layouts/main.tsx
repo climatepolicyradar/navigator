@@ -1,8 +1,10 @@
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import Header from "@cclw/components/Header";
 import Footer from "@cclw/components/Footer";
 
-type TProps = {};
+type TProps = {
+  children?: ReactNode;
+};
 
 const Main: FC<TProps> = ({ children }) => (
   <>

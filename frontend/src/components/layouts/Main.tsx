@@ -1,4 +1,4 @@
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import Head from "next/head";
 import CPRMain from "@cpr/layouts/main";
 import CCLWMain from "@cclw/layouts/main";
@@ -11,6 +11,7 @@ type TProps = {
   title?: string;
   heading?: string;
   screenHeight?: boolean;
+  children?: ReactNode;
 };
 
 const Layout: FC<TProps> = ({ children, title = "", screenHeight = false }) => {

@@ -1,6 +1,10 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 
-export const Divider: FC = ({ children }) => {
+type TProps = {
+  children?: ReactNode; 
+};
+
+export const Divider: FC<TProps> = ({ children }) => {
   return (
     <div className="relative">
       <div className="bg-secondary-700 w-full h-px absolute top-1/2 z-0"></div>

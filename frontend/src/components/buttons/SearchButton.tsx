@@ -1,9 +1,10 @@
-import { FC, useContext } from "react";
+import { FC, ReactNode, useContext } from "react";
 import { ThemeContext } from "@context/ThemeContext";
 import { SearchIcon } from "../svg/Icons";
 
 type TProps = {
   onClick?: () => void;
+  children?: ReactNode;
 };
 
 const SearchButton: FC<TProps> = ({ onClick, children }) => {
