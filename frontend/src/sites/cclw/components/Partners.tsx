@@ -1,5 +1,4 @@
-/* eslint-disable @next/next/no-img-element */
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { ExternalLink } from "@components/ExternalLink";
 
 const partners = [
