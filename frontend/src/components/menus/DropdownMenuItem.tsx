@@ -24,20 +24,18 @@ const DropdownMenuItem = ({ first = false, title, href, target = "", external = 
       </ExternalLink>
     );
 
-  return (
-    <>
-      {href ? (
-        <Link href={href}>
-          <a onClick={handleClick} target={target} className={cssClass}>
-            {title}
-          </a>
-        </Link>
-      ) : (
-        <button className={cssClass} onClick={handleClick}>
-          {title}
-        </button>
-      )}
-    </>
-  );
+  return <>
+    {href ? (
+      (<Link href={href} onClick={handleClick} target={target} className={cssClass}>
+
+        {title}
+
+      </Link>)
+    ) : (
+      <button className={cssClass} onClick={handleClick}>
+        {title}
+      </button>
+    )}
+  </>;
 };
 export default DropdownMenuItem;
