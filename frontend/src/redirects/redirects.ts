@@ -14,11 +14,27 @@ const cprRedirects = [
     { source: "/methodology", destination: "/", permanent: true },
 ];
 
-export function get_redirects(): Array<TRedirect> {
+const theme = process.env.THEME;
+
+function getRedirects(): Array<TRedirect> {
     const REDIRECT_FILE = process.env.NEXT_REDIRECT_FILE || "default.json";
     const redirectsFromFile = require(`./${REDIRECT_FILE}`);
-    let standardRedirects = process.env.THEME === "cclw" ? cclwRedirects : cprRedirects;
-    const reds = standardRedirects.concat(redirectsFromFile);
-    console.log(`>>>>> GRD - Complete with ${reds.length}`)
-    return reds;
+    let redirects = redirectsFromFile;
+    switch (theme)  {
+        case "cclw": redirects.push.apply(redirects, cclwRedirects); break;
+        case "cpr": redirects.push.apply(redirects, cprRedirects); break;
+    }
+    console.log(`Loaded ${redirects.length} redirects for ${theme}`);
+    console.log(JSON.stringify(redirects, null, 4));
+    return redirects;
 }
+
+
+function getRedirectsMap() {
+  return getRedirects().reduce(
+      (acc, item) => ( acc.set(item.source, item) ),
+      new Map<string, TRedirect>()
+  );
+}
+
+export default getRedirectsMap();
