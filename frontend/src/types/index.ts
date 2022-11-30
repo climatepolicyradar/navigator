@@ -16,6 +16,12 @@ export type TSector = {
   source_id: number;
 };
 
+export type TRedirect = {
+  source: string;
+  destination: string;
+  permanent: boolean;
+};
+
 export type TPassageBlockCoords = [number, number];
 
 export type TPassage = {
