@@ -23,8 +23,8 @@ project="$1"
 image_tag="$2"
 
 # login
-aws ecr get-login-password --region eu-west-1 | \
-    docker login --username AWS --password-stdin "${DOCKER_REGISTRY}"
+# This should now be performed as a GA
+# See: https://docs.docker.com/build/ci/github-actions/#step-three-define-the-workflow-steps
 
 name=$(clean_string "${DOCKER_REGISTRY}/${project}")
 input_image="${project}:${image_tag}"
