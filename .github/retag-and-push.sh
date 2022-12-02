@@ -69,7 +69,7 @@ if [[ "${GITHUB_REF}" == "refs/heads"* ]]; then
         docker_tag "${input_image}" "${name}:${branch}-${short_sha}"
         docker push "${name}:${branch}-${short_sha}"
     fi
-elif is_tagged_verion ${GITHUB_REF} ; then
+elif is_tagged_version ${GITHUB_REF} ; then
     # push `semver` tagged image
     semver="${GITHUB_REF/refs\/tags\/v/}"
     echo "Detected Tag: ${semver}"
