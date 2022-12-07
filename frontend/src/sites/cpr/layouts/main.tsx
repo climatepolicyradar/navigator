@@ -1,10 +1,11 @@
-import React, { FC } from "react";
+import React, { FC, ReactNode } from "react";
 import Header from "@components/headers/Main";
 import Banner from "@components/banner/Main";
 import Footer from "@components/footer/Footer";
 
 type TProps = {
   screenHeight?: boolean;
+  children?: ReactNode;
 };
 
 const Main: FC<TProps> = ({ screenHeight, children }) => (

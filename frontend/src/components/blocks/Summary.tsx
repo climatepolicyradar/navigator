@@ -16,14 +16,15 @@ const Summary = () => {
           </p>
         </div>
 
-        <Link href="/methodology">
-          <a className="mt-4 md:mt-0 block w-full text-center bg-blue-500 text-white md:grow-0 p-2 rounded-xl md:w-48 hover:bg-indigo-600 transition duration-300">
-            <div className="flex justify-center">
-              <ReadMoreIcon />
-            </div>
+        <Link
+          href="/methodology"
+          className="mt-4 md:mt-0 block w-full text-center bg-blue-500 text-white md:grow-0 p-2 rounded-xl md:w-48 hover:bg-indigo-600 transition duration-300">
 
-            <span>Read more</span>
-          </a>
+          <div className="flex justify-center">
+            <ReadMoreIcon />
+          </div>
+          <span>Read more</span>
+
         </Link>
       </div>
     </section>

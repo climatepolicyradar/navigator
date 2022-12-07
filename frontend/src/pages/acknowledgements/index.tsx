@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import Layout from "@components/layouts/Main";
 import { ExternalLink } from "@components/ExternalLink";
 
@@ -11,6 +11,7 @@ type TAcknowledgement = {
     imageUrl: string;
     imageAlt: string;
   };
+  children?: ReactNode;
 };
 
 const Acknowledgement: FC<TAcknowledgement> = ({ partnerImage, children }) => {

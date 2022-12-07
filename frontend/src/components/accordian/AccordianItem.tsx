@@ -1,8 +1,9 @@
-import { FC, useState, useEffect } from "react";
+import { FC, ReactNode, useState, useEffect } from "react";
 
 type TProps = {
   headerContent: React.ReactNode;
   isOpen?: boolean;
+  children?: ReactNode;
 };
 
 export const AccordianItem: FC<TProps> = ({ headerContent, isOpen = false, children }) => {

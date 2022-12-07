@@ -1,7 +1,7 @@
 /* eslint-disable @next/next/no-img-element */
 import { useRouter } from "next/router";
 import Link from "next/link";
-import Image from "next/image";
+import Image from "next/legacy/image";
 import { ExternalLink } from "@components/ExternalLink";
 import Logo from "@components/svg/LogoMono";
 import { SearchIcon } from "@components/svg/Icons";
@@ -38,8 +38,8 @@ const Header = ({ background = true }) => {
             className={`flex-1 flex justify-center items-end text-white order-last lg:-order-none basis-full text-center lg:basis-auto mb-6 lg:mb-0 ${isHome ? "mt-10" : "mt-6"}`}
           >
             <div className="cclw-font font-bold text-2xl md:text-4xl lg:text-3xl xl:text-4xl">
-              <Link href={`/`}>
-                <a className="">Climate Change Laws of the World</a>
+              <Link href={`/`} className="">
+                Climate Change Laws of the World
               </Link>
             </div>
           </div>
@@ -65,33 +65,32 @@ const Header = ({ background = true }) => {
           <nav className={`mt-8 flex-1 text-white transition duration-300 ${menuOpen ? "" : "hidden md:block"}`}>
             <ul className="grid grid-cols-2 md:flex justify-center items-end gap-1 h-full text-sm lg:text-base font-bold">
               <li>
-                <Link href="/">
-                  <a className={linkClass("/")}>Home</a>
+                <Link href="/" className={linkClass("/")}>
+                  Home
                 </Link>
               </li>
               <li>
-                <Link href="/about">
-                  <a className={linkClass("/about")}>About</a>
+                <Link href="/about" className={linkClass("/about")}>
+                  About
                 </Link>
               </li>
               <li>
-                <Link href="/methodology">
-                  <a className={linkClass("/methodology")}>Methodology</a>
+                <Link href="/methodology" className={linkClass("/methodology")}>
+                  Methodology
                 </Link>
               </li>
               <li>
-                <Link href="/acknowledgements">
-                  <a className={linkClass("/acknowledgements")}>Acknowledgements</a>
+                <Link href="/acknowledgements" className={linkClass("/acknowledgements")}>
+                  Acknowledgements
                 </Link>
               </li>
               <li>
-                <Link href="/search">
-                  <a className={linkClass("/search") + " !flex gap-2"}>
-                    Search{" "}
-                    <span className="mt-[-2px]">
-                      <SearchIcon height="24" width="24" />
-                    </span>
-                  </a>
+                <Link href="/search" className={linkClass("/search") + " !flex gap-2"}>
+                  Search{" "}
+                  <span className="mt-[-2px]">
+                    <SearchIcon height="24" width="24" />
+                  </span>
+
                 </Link>
               </li>
             </ul>

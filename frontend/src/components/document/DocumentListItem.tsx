@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC, ReactNode, useContext } from "react";
 import Link from "next/link";
 import { TEventCategory } from "@types";
 import { truncateString } from "@helpers/index";
@@ -19,6 +19,7 @@ type TProps = {
     document_year: string;
     category?: TEventCategory;
   };
+  children?: ReactNode;
 };
 
 export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {
@@ -32,8 +33,10 @@ export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {
     <div className="relative">
       <div className="flex justify-between items-start">
         <h2 className="leading-none flex items-start">
-          <Link href={`/document/${slug}`}>
-            <a className={`text-left text-blue-500 font-medium text-lg transition duration-300 leading-tight hover:underline ${theme === "cpr" ? "underline" : ""}`}>{getDocumentTitle(name, postfix)}</a>
+          <Link
+            href={`/document/${slug}`}
+            className={`text-left text-blue-500 font-medium text-lg transition duration-300 leading-tight hover:underline ${theme === "cpr" ? "underline" : ""}`}>
+            {getDocumentTitle(name, postfix)}
           </Link>
         </h2>
       </div>

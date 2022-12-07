@@ -89,8 +89,10 @@ export const Articles = () => {
                 {renderArticleContent(article)}
               </ExternalLink>
             ) : (
-              <Link href={article.url}>
-                <a className="block relative border border-grey-400 rounded h-full">{renderArticleContent(article)}</a>
+              <Link
+                href={article.url}
+                className="block relative border border-grey-400 rounded h-full">
+                {renderArticleContent(article)}
               </Link>
             )}
           </div>

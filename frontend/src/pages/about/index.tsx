@@ -21,7 +21,7 @@ const About = () => {
           <p>
             For information about using and referencing the data, please see our{" "}
             <Link href="/terms-of-use">
-              <a>Terms of Use</a>
+              Terms of Use
             </Link>
             .
           </p>
