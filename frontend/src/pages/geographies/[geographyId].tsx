@@ -36,7 +36,8 @@ const Targets = ({ targets }: TTargets) => {
           <span className="block">
             <span className="font-semibold mr-1">{target.group}</span>
             <span>
-              | Base year: {target.base_year} | Target year: {target.target_year}
+              {target.base_year && <>| Base year: {target.base_year}</>}
+              {target.target_year && <>| Target year: {target.target_year}</>}
             </span>
           </span>
         </li>
@@ -46,6 +47,7 @@ const Targets = ({ targets }: TTargets) => {
 };
 
 const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ geography, summary }) => {
+  console.log(geography, summary);
   const router = useRouter();
   const { geographyId } = router.query;
   const updateSearchCriteria = useUpdateSearchCriteria();
@@ -53,7 +55,8 @@ const CountryPage: InferGetServerSidePropsType<typeof getServerSideProps> = ({ g
   const [selectedCategoryIndex, setselectedCategoryIndex] = useState(0);
 
   const hasEvents = !!summary?.events && summary?.events?.length > 0;
-  const hasTargets = !!summary?.targets && summary?.targets?.length > 0;
+  // const hasTargets = !!summary?.targets && summary?.targets?.length > 0;
+  const hasTargets = true;
   const hasDocuments = !!summary?.top_documents;
 
   const documentCategories = DOCUMENT_CATEGORIES;
@@ -260,6 +263,12 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
       notFound: true,
     };
   }
+  if (geographyData.name === "Guinea") {
+    summaryData.targets = GData;
+  }
+  if (geographyData.name === "European Union") {
+    summaryData.targets = EUData;
+  }
 
   return {
     props: {
@@ -268,3 +277,39 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
     },
   };
 };
+
+const GData: TTarget[] = [
+  {
+    target: "By 2040 70% of farmers will have put in place adaptation actions",
+    group: "Agriculture",
+    base_year: "",
+    target_year: "",
+  },
+  {
+    target: "By 2040, 40% of the territory should be forested",
+    group: "LULUCF",
+    base_year: "",
+    target_year: "",
+  },
+  {
+    target: "By 2040, 70% of rural households use improved cook stoves",
+    group: "Residential and Commercial",
+    base_year: "",
+    target_year: "",
+  },
+  {
+    target: "By 2040 the level of renewable energy in the energy mix will pass between 22% and 44%",
+    group: "Energy",
+    base_year: "",
+    target_year: "",
+  },
+];
+
+const EUData: TTarget[] = [
+  {
+    target: "",
+    group: "",
+    base_year: "",
+    target_year: "",
+  },
+];

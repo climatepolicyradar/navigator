@@ -1,0 +1,5 @@
+Target ID,Action ID,Document ID,Target type,Source,Description,GHG target?,Year,Base year period,Single year,Geography,Geography iso,Sector,Scopes,Visibility status
+9245,10245,4860,,strategy,By 2040 70% of farmers will have put in place adaptation actions,FALSE,,,FALSE,Guinea,GIN,Agriculture,,published
+9246,10245,4860,,strategy,"By 2040, 40% of the territory should be forested",FALSE,,,TRUE,Guinea,GIN,LULUCF,,published
+9247,10245,4860,,strategy,"By 2040, 70% of rural households use improved cook stoves",FALSE,,,FALSE,Guinea,GIN,Residential and Commercial,,published
+9248,10245,4860,,,By 2040 the level of renewable energy in the energy mix will pass between 22% and 44%,FALSE,,,FALSE,Guinea,GIN,Energy,,published

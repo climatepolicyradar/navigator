@@ -112,7 +112,7 @@ function MyApp({ Component, pageProps, theme }: TProps) {
         </div>
         <CookieConsent />
       </ThemeContext.Provider>
-      <ReactQueryDevtools initialIsOpen={false} />
+      {/* <ReactQueryDevtools initialIsOpen={false} /> */}
     </QueryClientProvider>
   );
 }
