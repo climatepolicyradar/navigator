@@ -26,7 +26,6 @@ async function getGeographyIds(): Promise<string[]> {
 
 async function getGeographyPages(res: any, hostname: string): Promise<string[]> {
   const slug_list: string[] = await getGeographyIds();
-  // TODO: Fix this: https://linear.app/climate-policy-radar/issue/FRO-114/replace-hardcoded-hostname-with-one-injected-at-deploytime
   return slug_list.map((geo_slug: string) => `${hostname ?? ''}/geographies/${geo_slug}`);
 }
 

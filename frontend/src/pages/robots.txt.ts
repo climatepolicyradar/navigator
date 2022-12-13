@@ -9,8 +9,6 @@ export async function getServerSideProps({ res }) {
   res.write(process.env.ROBOTS === "true" ? crawlableRobotsTxt : uncrawlableRobotsTxt);
   res.end();
 
-  console.log(process.env.ROBOTS);
-
   return {
     props: {},
   };
