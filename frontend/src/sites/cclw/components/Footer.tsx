@@ -68,10 +68,9 @@ const Footer = () => {
         <div className="container">
           <p className="text-lg mb-6 md:text-center">
             To report a problem email us at support@climatepolicyradar.org <br /> Spotted missing or inaccurate data?{" "}
-            <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLScNy6pZTInQKdxNDaZPKyPGgbfRktstzgVDjGBCeTnLVzl3Pg/viewform">Let us know</ExternalLink>
+            <ExternalLink url="https://docs.google.com/forms/d/e/1FAIpQLScNy6pZTInQKdxNDaZPKyPGgbfRktstzgVDjGBCeTnLVzl3Pg/viewform" className="underline">Let us know</ExternalLink>
           </p>
           <p className="font-bold text-xl mb-8">Climate Change Laws of the World</p>
-          {/* <p className="mb-10">In partnership with the Sabin Center for Climate Change Law, Columbia Law School</p> */}
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-4">
             <div key={navLinks.title} className="footer__section">
               <h5>{navLinks.title}</h5>
