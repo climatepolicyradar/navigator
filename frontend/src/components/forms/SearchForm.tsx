@@ -65,7 +65,7 @@ const SearchForm = ({ input, placeholder, handleSearchInput, handleSuggestion }:
           data-cy="search-input"
           className="bg-transparent text-indigo-600 appearance-none py-2 pl-2 z-10 rounded-lg relative flex-grow mr-8 placeholder:text-indigo-400 border-transparent"
           type="search"
-          placeholder={`${windowSize.width > 540 ? placeholder : ""}`}
+          placeholder={`${windowSize.width > 767 ? placeholder : ""}`}
           value={term}
           onChange={onChange}
         />
