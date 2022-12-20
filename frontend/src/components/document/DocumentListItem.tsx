@@ -35,7 +35,10 @@ export const DocumentListItem: FC<TProps> = ({ children, listItem }) => {
         <h2 className="leading-none flex items-start">
           <Link
             href={`/document/${slug}`}
-            className={`text-left text-blue-500 font-medium text-lg transition duration-300 leading-tight hover:underline ${theme === "cpr" ? "underline" : ""}`}>
+            className={`text-left text-blue-500 font-medium text-lg transition duration-300 leading-tight hover:underline ${theme === "cpr" ? "underline" : ""}`}
+            prefetch={false}
+            passHref
+          >
             {getDocumentTitle(name, postfix)}
           </Link>
         </h2>
