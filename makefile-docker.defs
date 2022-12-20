@@ -7,6 +7,9 @@ start_containers:
 	# Build and run containers
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d
 
+start_frontend:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml up -d frontend
+
 show_logs:
 	docker-compose logs -f
 

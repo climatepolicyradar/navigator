@@ -66,7 +66,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
   const sourceName = page?.source?.name === "CCLW" ? "Grantham Research Institute" : page?.source?.name;
 
   return (
-    <Layout title={page?.title}>
+    <Layout title={page.title}>
       <section className="mb-8">
         <div className="bg-offwhite border-solid border-lineBorder border-b">
           <div className="container">
@@ -82,9 +82,7 @@ const DocumentCoverPage: InferGetServerSidePropsType<typeof getServerSideProps> 
                 </div>
               </div>
               <div className="my-6 md:w-2/5 lg:w-1/4 md:pl-16 flex-shrink-0">
-                <Link
-                  href="/search"
-                  className="underline text-primary-400 hover:text-indigo-600 duration-300">
+                <Link href="/search" className="underline text-primary-400 hover:text-indigo-600 duration-300">
                   Back to search results
                 </Link>
               </div>
@@ -191,14 +189,15 @@ export const getServerSideProps: GetServerSideProps = async (context) => {
   const id = context.params.docId;
   const client = new ApiClient(process.env.API_URL);
 
-  const { data: page } = ({} = await client.get(`/documents/${id}`, null));
-  const title = getDocumentTitle(page.name, page.postfix)
+  const { data: page } = await client.get(`/documents/${id}`, null);
+  const title = getDocumentTitle(page.name, page.postfix);
+
   return {
     props: {
-      page : {
-        ...page, 
+      page: {
+        ...page,
         title,
-      }
+      },
     },
   };
 };
