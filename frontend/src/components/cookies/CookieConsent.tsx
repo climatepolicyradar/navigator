@@ -7,21 +7,37 @@ import { ExternalLink } from "@components/ExternalLink";
 
 export const CookieConsent = () => {
   const [hide, setHide] = useState(true);
+  const [enableAnalytics, setEnableAnalytics] = useState(false);
   const [hotjar, setHotjar] = useState(false);
 
   useEffect(() => {
     const cc = getCookie(COOKIE_CONSENT_NAME);
     if (!cc) setHide(false);
-    if (cc === "true") setHotjar(true);
+    if (cc === "true") setEnableAnalytics(true);
   }, []);
+
+  useEffect(() => {
+    // If the user has accepted cookies, enable Google Tag Manager
+    // and Hotjar
+    if (enableAnalytics) {
+      setHotjar(true);
+      (function (w, d, s, l, i) {
+        w[l] = w[l] || [];
+        w[l].push({ "gtm.start": new Date().getTime(), event: "gtm.js" });
+        var f = d.getElementsByTagName(s)[0],
+          j = d.createElement(s) as HTMLScriptElement,
+          dl = l != "dataLayer" ? "&l=" + l : "";
+        j.async = true;
+        j.src = "https://www.googletagmanager.com/gtm.js?id=" + i + dl;
+        f.parentNode.insertBefore(j, f);
+      })(window, document, "script", "dataLayer", "GTM-NTNH983");
+    }
+  }, [enableAnalytics]);
 
   const cookiesAcceptHandler = () => {
     setCookie(COOKIE_CONSENT_NAME, "true");
-    gtag("consent", "update", {
-      analytics_storage: "granted",
-    });
     setHide(true);
-    setHotjar(true);
+    setEnableAnalytics(true);
   };
 
   const cookiesRejectHandler = () => {
@@ -53,18 +69,19 @@ export const CookieConsent = () => {
           </div>
         </div>
       </div>
+      {enableAnalytics && <Script id="google-tag-manager" async src={`https://www.googletagmanager.com/gtm.js?id=GTM-NTNH983`} />}
       {hotjar && (
         <Script id="hotjar" strategy="afterInteractive">
           {`
-        (function(h,o,t,j,a,r){
-          h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
-          h._hjSettings={hjid:3192374,hjsv:6};
-          a=o.getElementsByTagName('head')[0];
-          r=o.createElement('script');r.async=1;
-          r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
-          a.appendChild(r);
-        })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
-      `}
+            (function(h,o,t,j,a,r){
+              h.hj=h.hj||function(){(h.hj.q=h.hj.q||[]).push(arguments)};
+              h._hjSettings={hjid:3192374,hjsv:6};
+              a=o.getElementsByTagName('head')[0];
+              r=o.createElement('script');r.async=1;
+              r.src=t+h._hjSettings.hjid+j+h._hjSettings.hjsv;
+              a.appendChild(r);
+            })(window,document,'https://static.hotjar.com/c/hotjar-','.js?sv=');
+          `}
         </Script>
       )}
     </>
