@@ -2,7 +2,6 @@ import "../../i18n";
 import { useEffect, useState } from "react";
 import App, { AppProps } from "next/app";
 import Head from "next/head";
-import Script from "next/script";
 import { QueryClient, QueryClientProvider } from "react-query";
 import { ReactQueryDevtools } from "react-query/devtools";
 import "../styles/flag-icon.css";
@@ -104,19 +103,6 @@ function MyApp({ Component, pageProps, theme, adobeApiKey }: TProps) {
             <link rel="icon" href={favicon} />
             <style>{getThemeColours(dynamicTheme)}</style>
           </Head>
-          <Script src="https://www.googletagmanager.com/gtag/js?id=G-ZD1WWE49TL" strategy="afterInteractive" />
-          <Script id="google-analytics" strategy="afterInteractive">
-            {`
-          window.dataLayer = window.dataLayer || [];
-          function gtag(){window.dataLayer.push(arguments);}
-          gtag('js', new Date());
-          gtag('consent', 'default', {
-            'ad_storage': 'denied',
-            'analytics_storage': 'denied',
-          });
-          gtag('config', 'G-ZD1WWE49TL');
-        `}
-          </Script>
           {dynamicTheme === "cclw" && <Banner />}
           <div id={dynamicTheme}>
             <Component {...pageProps} />
