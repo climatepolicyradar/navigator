@@ -62,14 +62,14 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
       ? "placeholder:text-white pr-16 text-2xl bg-transparent border-t-0 border-l-0 border-r-0 border-white border-b-2 focus:border-white focus:ring-0 w-full"
       : "py-3 pl-6 pr-16 w-full text-indigo-400 focus:ring-0";
 
-  const buttonCssClass = theme === "cpr" ? "absolute top-0 right-0 -mt-1" : "absolute right-0 h-full pr-2 text-grey-700";
+  const buttonCssClass = theme === "cpr" ? "absolute top-0 right-0 h-full" : "absolute right-0 h-full pr-2 text-grey-700";
 
   return (
     <form data-cy="search-form" ref={formRef} onSubmit={(e) => e.preventDefault()}>
       <div className={`max-w-screen-lg mx-auto flex items-stretch relative ${wrapperCssClass}`}>
         <input data-cy="search-input" ref={inputRef} type="search" className={inputCssClass} value={term} onChange={onChange} onClick={clearPlaceholder} />
         {theme === "cpr" && term.length > 0 && (
-          <div data-cy="search-clear-button" className="flex mx-2 shrink-0 absolute top-0 right-0 mr-20 z-20 h-full items-center">
+          <div data-cy="search-clear-button" className="flex mx-2 shrink-0 absolute top-0 right-0 mr-14 z-20 h-full items-center">
             <Close onClick={clearSearch} size="16" />
           </div>
         )}
