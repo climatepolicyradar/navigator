@@ -42,7 +42,7 @@ const SearchResult = ({ document }: SearchResultProps) => {
             </div>
           </div>
           {document_content_type === "application/pdf" && document_passage_matches.length > 0 && (
-            <button data-slug={document_slug} className="mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600">
+            <button data-analytics="seeMatches" data-slug={document_slug} className="analytics-seeMatches mt-2 lg:mt-0 py-1 px-4 bg-blue-600 text-white font-medium transition duration-300 rounded-lg hover:bg-indigo-600">
               {`See ${document_passage_matches.length} match${document_passage_matches.length > 1 ? "es" : ""} in document`}
             </button>
           )}

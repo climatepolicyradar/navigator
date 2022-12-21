@@ -67,7 +67,16 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
   return (
     <form data-cy="search-form" ref={formRef} onSubmit={(e) => e.preventDefault()}>
       <div className={`max-w-screen-lg mx-auto flex items-stretch relative ${wrapperCssClass}`}>
-        <input data-cy="search-input" ref={inputRef} type="search" className={inputCssClass} value={term} onChange={onChange} onClick={clearPlaceholder} />
+        <input
+          data-analytics="landingPage-searchInput"
+          data-cy="search-input"
+          ref={inputRef}
+          type="search"
+          className={`analytics-landingPage-searchInput ${inputCssClass}`}
+          value={term}
+          onChange={onChange}
+          onClick={clearPlaceholder}
+        />
         {theme === "cpr" && term.length > 0 && (
           <div data-cy="search-clear-button" className="flex mx-2 shrink-0 absolute top-0 right-0 mr-20 z-20 h-full items-center">
             <Close onClick={clearSearch} size="16" />

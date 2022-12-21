@@ -51,8 +51,9 @@ const SearchForm = ({ input, placeholder, handleSearchInput, handleSuggestion }:
     <form data-cy="search-form" ref={formRef} onSubmit={(e) => e.preventDefault()}>
       <div className="relative shadow-md rounded-lg bg-white flex items-stretch z-40">
         <input
+          data-analytics="seachPage-searchInput"
           data-cy="search-input"
-          className="bg-transparent text-indigo-600 appearance-none py-2 pl-2 z-10 rounded-lg relative flex-grow mr-8 placeholder:text-indigo-400 border-transparent"
+          className="analytics-searchPage-searchInput bg-transparent text-indigo-600 appearance-none py-2 pl-2 z-10 rounded-lg relative flex-grow mr-8 placeholder:text-indigo-400 border-transparent"
           type="search"
           placeholder={`${windowSize.width > 540 ? placeholder : ""}`}
           value={term}
