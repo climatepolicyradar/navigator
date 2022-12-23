@@ -76,7 +76,7 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
           onBlur={showPlaceholderAnimation}
           placeholder={displayPlaceholder}
         />
-        {theme === "cpr" && showAnimation && <div className="search-animated-placeholder">{displayPlaceholder}</div>}
+        {theme === "cpr" && showAnimation && term.length === 0 && <div className="search-animated-placeholder">{displayPlaceholder}</div>}
         {theme === "cpr" && term.length > 0 && (
           <div data-cy="search-clear-button" className="flex mx-2 shrink-0 absolute top-0 right-0 mr-20 z-20 h-full items-center">
             <Close onClick={clearSearch} size="16" />
