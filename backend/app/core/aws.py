@@ -74,17 +74,19 @@ class S3Client:
         """
         try:
             if content_type:
-                logger.info(f"upload_fileobj: {bucket} {key}")
+                logger.info(f"upload_fileobj: {bucket} {key} with content-type {content_type}")
                 self.client.upload_fileobj(
                     fileobj, bucket, key, ExtraArgs={"ContentType": content_type}
                 )
-                logger.info("upload_fileobj: DONE")
+                logger.info("upload_fileobj with content-type: DONE")
             else:
+                logger.info(f"upload_fileobj: {bucket} {key} with no content-type")
                 self.client.upload_fileobj(fileobj, bucket, key)
+                logger.info("upload_fileobj with no content-type: DONE")
         except ClientError as e:
             logger.error(e)
             return False
-
+        logger.info("Returning S3Document {} {} {}".format(bucket, AWS_REGION, key))
         return S3Document(bucket, AWS_REGION, key)
 
     def upload_file(
