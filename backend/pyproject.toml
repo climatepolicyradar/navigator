@@ -31,6 +31,7 @@ SQLAlchemy-Utils = "^0.38.2"
 tenacity = "^8.0.1"
 torch = "^1.13.0"
 uvicorn = { extras = ["standard"], version = "^0.17.6" }
+psutil = "^5.9.4"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^4.0.1"
