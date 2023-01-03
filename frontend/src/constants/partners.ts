@@ -47,12 +47,5 @@ export const partners = [
     link: 'http://www.dlapiper.com/',
     height: '790',
     width: '462',
-  },
-  {
-    name: 'Adobe logo',
-    logo: 'adobe-logo.png',
-    link: 'https://www.adobe.com/',
-    height: '720',
-    width: '188',
-  },
+  }
 ];
