@@ -74,9 +74,11 @@ class S3Client:
         """
         try:
             if content_type:
+                logger.info(f"upload_fileobj: {bucket} {key}")
                 self.client.upload_fileobj(
                     fileobj, bucket, key, ExtraArgs={"ContentType": content_type}
                 )
+                logger.info("upload_fileobj: DONE")
             else:
                 self.client.upload_fileobj(fileobj, bucket, key)
         except ClientError as e:
