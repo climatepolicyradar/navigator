@@ -5,6 +5,12 @@ import { Hero } from "../components/Hero";
 import { Articles } from "../components/Articles";
 import { Partners } from "@cclw/components/Partners";
 
+import dynamic from "next/dynamic";
+
+const Map = dynamic(() => import("@components/map/Map"), {
+  ssr: false,
+});
+
 type TProps = {
   handleSearchInput: (term: string, filter?: string, filterValue?: string) => void;
   searchInput: string;
@@ -13,6 +19,7 @@ type TProps = {
 const LandingPage = ({ handleSearchInput, searchInput }: TProps) => {
   return (
     <>
+      <Map />
       <main className="flex flex-col flex-1">
         <div className="gradient-container">
           <Header background={false} />
