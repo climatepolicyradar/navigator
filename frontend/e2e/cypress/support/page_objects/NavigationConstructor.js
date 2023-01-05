@@ -67,7 +67,7 @@ export class NavigationConstructor {
     return this;
   }
   footerLinkTerms() {
-    handleFooterTextLink("Terms & conditions");
+    handleFooterExternalLink("Terms & conditions", "/terms-of-use");
     return this;
   }
   footerLinkPrivacy() {

@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef, useContext } from "react";
-import { StartTextAnimation } from "@utils/typewriter";
 import Close from "../buttons/Close";
 import { SearchIcon } from "../svg/Icons";
 import { SearchDropdown } from "./SearchDropdown";
@@ -14,7 +13,7 @@ interface SearchFormProps {
 const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchFormProps) => {
   const [term, setTerm] = useState("");
   const [formFocus, setFormFocus] = useState(false);
-  const inputRef = useRef(null);
+  const [showAnimation, setShowAnimation] = useState(true);
   const formRef = useRef(null);
   const theme = useContext(ThemeContext);
 
@@ -22,9 +21,14 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
     setTerm("");
   };
 
-  const clearPlaceholder = () => {
+  const clearPlaceholderAnimation = () => {
     if (theme !== "cpr") return;
-    inputRef.current.placeholder = "";
+    setShowAnimation(false);
+  };
+
+  const showPlaceholderAnimation = () => {
+    if (theme !== "cpr") return;
+    if (term.length === 0) setShowAnimation(true);
   };
 
   const onChange = (e) => {
@@ -34,13 +38,6 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
   useEffect(() => {
     if (input) setTerm(input);
   }, [input]);
-
-  useEffect(() => {
-    if (inputRef.current) {
-      const text = [placeholder ?? "Search full text of 3000+ laws and policies"];
-      StartTextAnimation(0, text, inputRef.current);
-    }
-  }, [inputRef, placeholder]);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -63,11 +60,23 @@ const LandingSearchForm = ({ placeholder, input, handleSearchInput }: SearchForm
       : "py-3 pl-6 pr-16 w-full text-indigo-400 focus:ring-0";
 
   const buttonCssClass = theme === "cpr" ? "absolute top-0 right-0 h-full" : "absolute right-0 h-full pr-2 text-grey-700";
+  const displayPlaceholder = placeholder ?? "Search full text of 3000+ laws and policies";
 
   return (
     <form data-cy="search-form" ref={formRef} onSubmit={(e) => e.preventDefault()}>
       <div className={`max-w-screen-lg mx-auto flex items-stretch relative ${wrapperCssClass}`}>
-        <input data-cy="search-input" ref={inputRef} type="search" className={inputCssClass} value={term} onChange={onChange} onClick={clearPlaceholder} />
+        <input
+          id="landingPage-searchInput"
+          data-cy="search-input"
+          type="search"
+          className={inputCssClass}
+          value={term}
+          onChange={onChange}
+          onFocus={clearPlaceholderAnimation}
+          onBlur={showPlaceholderAnimation}
+          placeholder={displayPlaceholder}
+        />
+        {theme === "cpr" && showAnimation && term.length === 0 && <div className="search-animated-placeholder">{displayPlaceholder}</div>}
         {theme === "cpr" && term.length > 0 && (
           <div data-cy="search-clear-button" className="flex mx-2 shrink-0 absolute top-0 right-0 mr-14 z-20 h-full items-center">
             <Close onClick={clearSearch} size="16" />

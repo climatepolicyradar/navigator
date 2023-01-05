@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef } from "react";
 import { useTranslation } from "react-i18next";
+import { TDocument } from "@types";
 import { useDidUpdateEffect } from "@hooks/useDidUpdateEffect";
 import useSearch from "@hooks/useSearch";
 import useSearchCriteria from "@hooks/useSearchCriteria";
@@ -26,12 +27,12 @@ import EmbeddedPDF from "@components/EmbeddedPDF";
 import DocumentSlideout from "@components/headers/DocumentSlideout";
 import Pagination from "@components/pagination";
 import SearchResultList from "@components/blocks/SearchResultList";
-import { calculatePageCount } from "@utils/paging";
 import { initialSearchCriteria } from "@constants/searchCriteria";
+import { ExternalLink } from "@components/ExternalLink";
+import Tooltip from "@components/tooltip";
+import { calculatePageCount } from "@utils/paging";
 import { PER_PAGE } from "@constants/paging";
 import { DOCUMENT_CATEGORIES } from "@constants/documentCategories";
-import { TDocument } from "@types";
-import { ExternalLink } from "@components/ExternalLink";
 
 const Search = () => {
   const [showFilters, setShowFilters] = useState(false);
@@ -232,6 +233,37 @@ const Search = () => {
     resultsQuery.refetch();
   }, [searchCriteria]);
 
+  const renderNoOfResults = () => {
+    let resultsMsg = `Showing`;
+    if (hits < 100) {
+      resultsMsg += ` ${hits} results`;
+    } else {
+      resultsMsg += ` the top 100 results`;
+    }
+    return (
+      <>
+        {resultsMsg}{" "}
+        {searchCriteria.query_string && (
+          <>
+            <>
+              for "<i className="text-blue-600">{searchCriteria.query_string}</i>"
+            </>
+            {hits > 100 && (
+              <div className="ml-2 inline-block">
+                <Tooltip
+                  id="search-results-number"
+                  tooltip={<>We limit the number of search results to 100 so that you get the best performance from our tool. We’re working on a way to remove this limit.</>}
+                  icon="i"
+                  place="bottom"
+                />
+              </div>
+            )}
+          </>
+        )}
+      </>
+    );
+  };
+
   return (
     <>
       {isFetchingSearchCriteria || !ready ? (
@@ -289,13 +321,16 @@ const Search = () => {
                   </div>
                 </div>
                 <div className="md:w-3/4">
-                  <div className="flex justify-end">
-                    <ExternalLink
-                      url="https://docs.google.com/forms/d/e/1FAIpQLSdFkgTNfzms7PCpfIY3d2xGDP5bYXx8T2-2rAk_BOmHMXvCoA/viewform"
-                      className="text-sm text-blue-600 mt-4 md:mt-0 hover:underline"
-                    >
-                      Request to download all data (.csv)
-                    </ExternalLink>
+                  <div className="md:pl-8">
+                    <div className="lg:flex justify-between">
+                      <div className="text-sm my-4 md:my-0 md:flex">{!resultsQuery.isFetching && renderNoOfResults()}</div>
+                      <ExternalLink
+                        url="https://docs.google.com/forms/d/e/1FAIpQLSdFkgTNfzms7PCpfIY3d2xGDP5bYXx8T2-2rAk_BOmHMXvCoA/viewform"
+                        className="text-sm text-blue-600 mt-4 md:mt-0 hover:underline"
+                      >
+                        Request to download all data (.csv)
+                      </ExternalLink>
+                    </div>
                   </div>
                   <div className="mt-4 md:flex">
                     <div className="flex-grow">
