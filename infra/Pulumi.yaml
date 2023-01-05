@@ -1,6 +1,0 @@
-name: infra
-runtime:
-  name: python
-  options:
-    virtualenv: venv
-description: Climate Policy Radar cloud infrastructure
