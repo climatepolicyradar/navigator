@@ -1,13 +1,13 @@
 import Script from "next/script";
 import Head from "next/head";
 import { MapContainer, Marker, Popup, TileLayer, Polygon } from "react-leaflet";
-import GeoJsonData from "../../../public/data/geojson/countries.json";
+import GeoJsonData from "../../../public/data/geojson/world.geo.json";
 
 const geoOptions = { color: "purple" };
 
 type TGeo = {
   type: string;
-  properties: { ADMIN: string; ISO_A3: string };
+  properties: { adm0_a3: string; };
   geometry: {
     type: string;
     coordinates: [number, number][];
@@ -16,7 +16,6 @@ type TGeo = {
 
 const Map = () => {
   const data: any = GeoJsonData;
-  console.log(data);
 
   return (
     <>
@@ -32,9 +31,11 @@ const Map = () => {
               A pretty CSS3 popup. <br /> Easily customizable.
             </Popup>
           </Marker> */}
-          {data.features.map((geo: TGeo) => (
-            <Polygon pathOptions={geoOptions} positions={geo.geometry.coordinates} key={geo.properties.ADMIN} />
-          ))}
+          {data.features
+            .filter((geo: TGeo) => geo.properties.adm0_a3 === "GBR")
+            .map((geo: TGeo) => {
+              return <Polygon pathOptions={geoOptions} positions={geo.geometry.coordinates} key={geo.properties.adm0_a3} />;
+            })}
         </MapContainer>
       </div>
     </>
