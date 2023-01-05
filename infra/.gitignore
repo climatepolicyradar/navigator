@@ -1,7 +1,0 @@
-*.pyc
-venv/
-# generated file
-Dockerrun.aws.json
-graph.dot
-output.png
-docker-compose.yml
