@@ -50,7 +50,9 @@ class S3Client:
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
             config=botocore.client.Config(
-                signature_version="s3v4", region_name=AWS_REGION
+                signature_version="s3v4",
+                region_name=AWS_REGION,
+                connect_timeout=10,
             ),
         )
 
@@ -74,7 +76,9 @@ class S3Client:
         """
         try:
             if content_type:
-                logger.info(f"upload_fileobj: {bucket} {key} with content-type {content_type}")
+                logger.info(
+                    f"upload_fileobj: {bucket} {key} with content-type {content_type}"
+                )
                 self.client.upload_fileobj(
                     fileobj, bucket, key, ExtraArgs={"ContentType": content_type}
                 )

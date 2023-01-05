@@ -1,5 +1,4 @@
 import logging
-import psutil
 from io import StringIO
 from typing import cast, Union
 
@@ -191,7 +190,7 @@ async def request_password_reset(
     response_model=BulkImportValidatedResult,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def import_law_policy(
+def import_law_policy(
     request: Request,
     law_policy_csv: UploadFile,
     background_tasks: BackgroundTasks,
@@ -201,15 +200,11 @@ async def import_law_policy(
 ):
     """Process a Law/Policy data import"""
     _LOGGER.info("Received bulk import request for CCLW Law & Policy data")
-    stats = psutil.virtual_memory()
-    _LOGGER.info(f"Called import MEM={getattr(stats, 'available')}")
 
     try:
         file_contents = law_policy_csv.file.read().decode("utf8")
         csv_reader = validated_input(StringIO(file_contents))
 
-        stats = psutil.virtual_memory()
-        _LOGGER.info(f"Validated import MEM={getattr(stats, 'available')}")
         valid_metadata = get_valid_metadata(db)
         existing_import_ids = [id[0] for id in db.query(Document.import_id)]
 
@@ -252,13 +247,9 @@ async def import_law_policy(
             },
         )
 
-        stats = psutil.virtual_memory()
-        _LOGGER.info(f"Pre-write CSV MEM={getattr(stats, 'available')}")
         result: Union[S3Document, bool] = write_csv_to_s3(
             s3_client=s3_client, file_contents=file_contents
         )
-        stats = psutil.virtual_memory()
-        _LOGGER.info(f"Post-write CSV MEM={getattr(stats, 'available')}")
 
         csv_s3_location = "write failed" if type(result) is bool else str(result.url)
         _LOGGER.info(

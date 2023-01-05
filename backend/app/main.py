@@ -140,5 +140,8 @@ async def startup() -> None:
 
 if __name__ == "__main__":
     uvicorn.run(
-        app, host="0.0.0.0", port=8888, log_config=DEFAULT_LOGGING, debug=True
+        app,
+        host="0.0.0.0",
+        port=8888,
+        log_config=DEFAULT_LOGGING,
     )  # type: ignore
