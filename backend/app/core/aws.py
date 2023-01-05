@@ -11,7 +11,7 @@ from botocore.response import StreamingBody
 
 logger = logging.getLogger(__name__)
 
-AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
+AWS_REGION = os.getenv("AWS_REGION", "eu-west-1")
 
 
 class S3Document:
@@ -74,7 +74,9 @@ class S3Client:
         """
         try:
             if content_type:
-                logger.info(f"upload_fileobj: {bucket} {key} with content-type {content_type}")
+                logger.info(
+                    f"upload_fileobj: {bucket} {key} with content-type {content_type}"
+                )
                 self.client.upload_fileobj(
                     fileobj, bucket, key, ExtraArgs={"ContentType": content_type}
                 )
