@@ -172,7 +172,7 @@ const Methodology = () => {
           </span>
           <span className="block" id="DandC-ii">
             [ii] See further: Nachmany M et al. 2015, “The 2015 Global Climate Legislation Study: A Review of Climate Change Legislation in 99 Countries” London: Grantham Research
-            Institute , Nash, S. , & Steurer, R. 2019. “Taking stock of Climate Change Acts in Europe: Living policy processes or symbolic gestures?” Climate Policy 3:1, World
+            Institute , Nash, S. , &amp; Steurer, R. 2019. “Taking stock of Climate Change Acts in Europe: Living policy processes or symbolic gestures?” Climate Policy 3:1, World
             Bank, 2020. “World Bank Reference Guide to Climate Change Framework Legislation” EFI Insight-Governance. Washington, DC: World
           </span>
           <span className="block" id="DandC-iii">
@@ -277,8 +277,8 @@ const Methodology = () => {
         <ul>
           <li>Standards, obligations and norms</li>
           <li>Disclosure obligations</li>
-          <li>Moratoria & bans</li>
-          <li>Zoning & spatial planning</li>
+          <li>Moratoria &amp; bans</li>
+          <li>Zoning &amp; spatial planning</li>
           <li>Other</li>
         </ul>
         <p>
@@ -287,7 +287,7 @@ const Methodology = () => {
         <ul>
           <li>Subsidies</li>
           <li>Tax incentives</li>
-          <li>Carbon pricing & emissions trading</li>
+          <li>Carbon pricing &amp; emissions trading</li>
           <li>Insurance</li>
           <li>Climate finance tools</li>
           <li>Other</li>
@@ -321,7 +321,7 @@ const Methodology = () => {
         </p>
         <ul>
           <li>Education, training and knowledge dissemination</li>
-          <li>Research & Development, knowledge generation</li>
+          <li>Research &amp; Development, knowledge generation</li>
         </ul>
         {/* LITIGATION */}
       </div>
