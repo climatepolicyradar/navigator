@@ -18,6 +18,7 @@ import pytest
         ("https://app.climatepolicyradar.com", False),  # wrong domain
         ("https://app.devclimatepolicyradar.com", False),  # prefixed wrong domain
         ("https://app-climatepolicyradar.com", False),  # prefixed wrong domain
+        ("https://prefix-climate-laws.org", False),  # climate laws prefixed domain
     ],
 )
 def test_cors_regex(client, origin, should_be_allowed):
