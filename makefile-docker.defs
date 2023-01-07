@@ -85,6 +85,9 @@ setup_test_search_index:
 test_backend_search: setup_test_search_index
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'search'
 
+test_backend_cors:
+	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -m 'cors'
+
 test_backend:
 	docker-compose -f docker-compose.yml -f docker-compose.dev.yml run --rm backend pytest -v -m 'not search'
 

@@ -70,21 +70,19 @@ json_logging.init_fastapi(enable_json=True)
 json_logging.init_request_instrument(app)
 json_logging.config_root_logger()
 
+_ALLOW_ORIGIN_REGEX = (
+    r"http://localhost:3000|"
+    r"https://.+\.climatepolicyradar\.org|"
+    r"https://.+\.dev.climatepolicyradar\.org|"
+    r"https://.+\.sandbox\.climatepolicyradar\.org|"
+    r"https://climate-laws\.org|"
+    r"https://.+\.climate-laws\.org"
+)
 
 # Add CORS middleware to allow cross origin requests from any port
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=[
-        "http://localhost:3000",
-        "https://app.climatepolicyradar.org",
-        "https://cclw.climatepolicyradar.org",
-        "https://app.dev.climatepolicyradar.org",
-        "https://cclw.dev.climatepolicyradar.org",
-        "https://cclw-preview.climatepolicyradar.org",
-        "https://preview.climate-laws.org",
-        "https://www.climate-laws.org",
-        "https://climate-laws.org",
-    ],
+    allow_origin_regex=_ALLOW_ORIGIN_REGEX,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
