@@ -72,11 +72,11 @@ json_logging.config_root_logger()
 
 _ALLOW_ORIGIN_REGEX = (
     r"http://localhost:3000|"
-    r"https://.*\.climatepolicyradar\.org|"
-    r"https://.*\.dev.climatepolicyradar\.org|"
-    r"https://.*\.sandbox\.climatepolicyradar\.org|"
+    r"https://.+\.climatepolicyradar\.org|"
+    r"https://.+\.dev.climatepolicyradar\.org|"
+    r"https://.+\.sandbox\.climatepolicyradar\.org|"
     r"https://climate-laws\.org|"
-    r"https://.*\.climate-laws\.org"
+    r"https://.+\.climate-laws\.org"
 )
 
 # Add CORS middleware to allow cross origin requests from any port

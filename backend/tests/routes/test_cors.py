@@ -14,6 +14,7 @@ import pytest
         ("https://climate-laws.org", True),  # base climate laws URL
         ("https://preview.climate-laws.org", True),  # climate laws subdomain URL
         ("http://app.climatepolicyradar.org", False),  # bad scheme
+        ("https://.climatepolicyradar.org", False),  # empty subdomain
         ("https://app.climatepolicyradar.com", False),  # wrong domain
         ("https://app.devclimatepolicyradar.com", False),  # prefixed wrong domain
         ("https://app-climatepolicyradar.com", False),  # prefixed wrong domain
