@@ -19,7 +19,7 @@ from app.db.models import (
     Keyword,
 )
 from app.api.api_v1.schemas.document import DocumentCreateRequest
-from app.db.crud.document import create_document, write_metadata, UnknownMetadataError
+from app.db.crud.document import create_document, UnknownMetadataError
 
 
 def test_create_documents(client, superuser_token_headers, test_db):
@@ -86,8 +86,7 @@ def test_create_documents(client, superuser_token_headers, test_db):
     }
     create_request = DocumentCreateRequest(**create_request_content)
     with test_db.begin_nested():
-        new_document = create_document(test_db, create_request)
-        write_metadata(test_db, new_document, create_request)
+        create_document(test_db, create_request)
 
     # This commit is necessary after completing the nested transaction
     test_db.commit()
@@ -178,8 +177,7 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
     create_request = DocumentCreateRequest(**create_request_content)
     with pytest.raises(UnknownMetadataError):
         with test_db.begin_nested():
-            new_document = create_document(test_db, create_request)
-            write_metadata(test_db, new_document, create_request)
+            create_document(test_db, create_request)
 
         test_db.commit()
 

@@ -174,6 +174,132 @@ def _create_document_slug(
     )
 
 
+def _write_metadata(
+    db: Session,
+    new_document: Document,
+    document_create_request: DocumentCreateRequest,
+) -> None:
+    # doc languages
+    for language in document_create_request.languages:
+        existing_language = _get_language_by_code_or_name(db, language)
+
+        # TODO: Need to ensure uniqueness for metadata links, especially for future
+        #       update paths.
+        doc_language = DocumentLanguage(
+            language_id=existing_language.id,
+            document_id=new_document.id,
+        )
+        db.add(doc_language)
+
+    # events
+    for event in document_create_request.events:
+        new_event = Event(
+            document_id=new_document.id,
+            name=event.name,
+            description=event.description,
+            created_ts=event.created_ts,
+        )
+        db.add(new_event)
+
+    # TODO: are source IDs really necessary on metadata? Perhaps we really do
+    #       want to keep metadata limited to values from the same source as the
+    #       document, but we should validate this assumption.
+
+    # sectors
+    for sector in document_create_request.sectors:
+        # A sector should already exist, so fail if we cannot find it
+        existing_sector_id = (
+            db.query(Sector.id)
+            .filter(Sector.name == sector)
+            .filter(Sector.source_id == new_document.source_id)
+        ).scalar()
+        if existing_sector_id is None:
+            raise UnknownSectorError(sector)
+
+        doc_sector = DocumentSector(
+            sector_id=existing_sector_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_sector)
+
+    # instruments
+    for instrument in document_create_request.instruments:
+        # An instrument should already exist, so fail if we cannot find it
+        existing_instrument_id = (
+            db.query(Instrument.id)
+            .filter(Instrument.name == instrument)
+            .filter(Instrument.source_id == new_document.source_id)
+        ).scalar()
+        if existing_instrument_id is None:
+            raise UnknownInstrumentError(instrument)
+
+        doc_instrument = DocumentInstrument(
+            instrument_id=existing_instrument_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_instrument)
+
+    # hazards
+    for hazard in document_create_request.hazards:
+        # A hazard should already exist, so fail if we cannot find it
+        existing_hazard_id = (
+            db.query(Hazard.id).filter(Hazard.name == hazard)
+        ).scalar()
+        if existing_hazard_id is None:
+            raise UnknownHazardError(hazard)
+
+        doc_hazard = DocumentHazard(
+            hazard_id=existing_hazard_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_hazard)
+
+    # responses/topics
+    for topic in document_create_request.topics:
+        # A response should already exist, so fail if we cannot find it
+        existing_response_id = (
+            db.query(Response.id).filter(Response.name == topic)
+        ).scalar()
+        if existing_response_id is None:
+            raise UnknownTopicError(topic)
+
+        doc_response = DocumentResponse(
+            response_id=existing_response_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_response)
+
+    # frameworks
+    for framework in document_create_request.frameworks:
+        # A framework should already exist, so fail if we cannot find it
+        existing_framework_id = (
+            db.query(Framework.id).filter(Framework.name == framework)
+        ).scalar()
+        if existing_framework_id is None:
+            raise UnknownFrameworkError(framework)
+
+        doc_framework = DocumentFramework(
+            framework_id=existing_framework_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_framework)
+
+    # keywords
+    for keyword in document_create_request.keywords:
+        # A keyword should already exist, so fail if we cannot find it
+        existing_keyword_id = (
+            db.query(Keyword.id).filter(Keyword.name == keyword)
+        ).scalar()
+        if existing_keyword_id is None:
+            raise UnknownKeywordError(keyword)
+
+        doc_keyword = DocumentKeyword(
+            keyword_id=existing_keyword_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_keyword)
+
+
 def create_document(
     db: Session,
     document_create_request: DocumentCreateRequest,
@@ -227,6 +353,13 @@ def create_document(
     db.add(new_document)
     db.flush()
     db.refresh(new_document)
+
+    _write_metadata(
+        db=db,
+        new_document=new_document,
+        document_create_request=document_create_request,
+    )
+    _LOGGER.info(f"Created Metadata: {document_create_request.import_id}")
 
     return new_document
 
@@ -486,132 +619,6 @@ def _get_language_by_code_or_name(db: Session, code_or_name: str) -> Language:
     return existing_language
 
 
-def write_metadata(
-    db: Session,
-    new_document: Document,
-    document_create_request: DocumentCreateRequest,
-) -> None:
-    # doc languages
-    for language in document_create_request.languages:
-        existing_language = _get_language_by_code_or_name(db, language)
-
-        # TODO: Need to ensure uniqueness for metadata links, especially for future
-        #       update paths.
-        doc_language = DocumentLanguage(
-            language_id=existing_language.id,
-            document_id=new_document.id,
-        )
-        db.add(doc_language)
-
-    # events
-    for event in document_create_request.events:
-        new_event = Event(
-            document_id=new_document.id,
-            name=event.name,
-            description=event.description,
-            created_ts=event.created_ts,
-        )
-        db.add(new_event)
-
-    # TODO: are source IDs really necessary on metadata? Perhaps we really do
-    #       want to keep metadata limited to values from the same source as the
-    #       document, but we should validate this assumption.
-
-    # sectors
-    for sector in document_create_request.sectors:
-        # A sector should already exist, so fail if we cannot find it
-        existing_sector_id = (
-            db.query(Sector.id)
-            .filter(Sector.name == sector)
-            .filter(Sector.source_id == new_document.source_id)
-        ).scalar()
-        if existing_sector_id is None:
-            raise UnknownSectorError(sector)
-
-        doc_sector = DocumentSector(
-            sector_id=existing_sector_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_sector)
-
-    # instruments
-    for instrument in document_create_request.instruments:
-        # An instrument should already exist, so fail if we cannot find it
-        existing_instrument_id = (
-            db.query(Instrument.id)
-            .filter(Instrument.name == instrument)
-            .filter(Instrument.source_id == new_document.source_id)
-        ).scalar()
-        if existing_instrument_id is None:
-            raise UnknownInstrumentError(instrument)
-
-        doc_instrument = DocumentInstrument(
-            instrument_id=existing_instrument_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_instrument)
-
-    # hazards
-    for hazard in document_create_request.hazards:
-        # A hazard should already exist, so fail if we cannot find it
-        existing_hazard_id = (
-            db.query(Hazard.id).filter(Hazard.name == hazard)
-        ).scalar()
-        if existing_hazard_id is None:
-            raise UnknownHazardError(hazard)
-
-        doc_hazard = DocumentHazard(
-            hazard_id=existing_hazard_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_hazard)
-
-    # responses/topics
-    for topic in document_create_request.topics:
-        # A response should already exist, so fail if we cannot find it
-        existing_response_id = (
-            db.query(Response.id).filter(Response.name == topic)
-        ).scalar()
-        if existing_response_id is None:
-            raise UnknownTopicError(topic)
-
-        doc_response = DocumentResponse(
-            response_id=existing_response_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_response)
-
-    # frameworks
-    for framework in document_create_request.frameworks:
-        # A framework should already exist, so fail if we cannot find it
-        existing_framework_id = (
-            db.query(Framework.id).filter(Framework.name == framework)
-        ).scalar()
-        if existing_framework_id is None:
-            raise UnknownFrameworkError(framework)
-
-        doc_framework = DocumentFramework(
-            framework_id=existing_framework_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_framework)
-
-    # keywords
-    for keyword in document_create_request.keywords:
-        # A keyword should already exist, so fail if we cannot find it
-        existing_keyword_id = (
-            db.query(Keyword.id).filter(Keyword.name == keyword)
-        ).scalar()
-        if existing_keyword_id is None:
-            raise UnknownKeywordError(keyword)
-
-        doc_keyword = DocumentKeyword(
-            keyword_id=existing_keyword_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_keyword)
-
-
 def start_import(
     db: Session,
     s3_client: S3Client,
@@ -631,8 +638,6 @@ def start_import(
                 if existing_document is None:
                     new_document = create_document(db, dco)
                     _LOGGER.info(f"Created Document: {dco.import_id}")
-                    write_metadata(db, new_document, dco)
-                    _LOGGER.info(f"Created Metadata: {dco.import_id}")
 
                     document_parser_inputs.append(
                         DocumentParserInput(

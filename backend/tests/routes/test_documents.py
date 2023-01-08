@@ -20,7 +20,6 @@ from app.db.crud.document import (
     create_document,
     get_document_detail,
     get_postfix_map,
-    write_metadata,
 )
 
 
@@ -128,7 +127,6 @@ def create_4_documents(test_db):
     document_create_request_1 = DocumentCreateRequest(**document1_payload)
     with test_db.begin_nested():
         new_document_1 = create_document(test_db, document_create_request_1)
-        write_metadata(test_db, new_document_1, document_create_request_1)
 
     # This commit is necessary after completing the nested transaction
     test_db.commit()
@@ -175,7 +173,6 @@ def create_4_documents(test_db):
     document_create_request_2 = DocumentCreateRequest(**document2_payload)
     with test_db.begin_nested():
         new_document_2 = create_document(test_db, document_create_request_2)
-        write_metadata(test_db, new_document_2, document_create_request_2)
 
     # This commit is necessary after completing the nested transaction
     test_db.commit()
@@ -213,7 +210,6 @@ def create_4_documents(test_db):
     document_create_request_3 = DocumentCreateRequest(**document3_payload)
     with test_db.begin_nested():
         new_document_3 = create_document(test_db, document_create_request_3)
-        write_metadata(test_db, new_document_3, document_create_request_3)
 
     # This commit is necessary after completing the nested transaction
     test_db.commit()
@@ -251,7 +247,6 @@ def create_4_documents(test_db):
     document_create_request_4 = DocumentCreateRequest(**document4_payload)
     with test_db.begin_nested():
         new_document_4 = create_document(test_db, document_create_request_4)
-        write_metadata(test_db, new_document_4, document_create_request_4)
 
     # This commit is necessary after completing the nested transaction
     test_db.commit()
