@@ -32,7 +32,10 @@ def search_by_country(
     db=Depends(get_db),
 ):
     """Searches the documents filtering by country and grouping by category."""
-    _LOGGER.info(f"Getting geography summary for {geography_slug}")
+    _LOGGER.info(
+        f"Getting geography summary for {geography_slug}",
+        extra={"props": {"geography_slug": geography_slug}},
+    )
     top_documents = {}
     document_counts = {}
 

@@ -48,6 +48,7 @@ def get_db():
         db.close()
 
 
+# TODO: Update to async db connection
 # https://fastapi.tiangolo.com/advanced/async-sql-databases/
 # async def get_session() -> AsyncSession:
 #     async with async_session() as session:
