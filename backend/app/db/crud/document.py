@@ -304,62 +304,65 @@ def create_document(
     db: Session,
     document_create_request: DocumentCreateRequest,
 ) -> Document:
-    existing_geography = _get_geography_by_slug_or_display_or_value(
-        db,
-        document_create_request.geography,
-    )
-
-    existing_source_id = (
-        db.query(Source.id).filter(Source.name == document_create_request.source)
-    ).scalar()
-    if existing_source_id is None:
-        raise UnknownSourceError(document_create_request.source)
-
-    existing_type_id = (
-        db.query(DocumentType.id).filter(
-            DocumentType.name == document_create_request.type
+    with db.begin_nested():
+        existing_geography = _get_geography_by_slug_or_display_or_value(
+            db,
+            document_create_request.geography,
         )
-    ).scalar()
-    if existing_type_id is None:
-        raise UnknownDocumentTypeError(document_create_request.type)
 
-    existing_category_id = (
-        db.query(Category.id).filter(Category.name == document_create_request.category)
-    ).scalar()
-    if existing_category_id is None:
-        raise UnknownCategoryError(document_create_request.category)
+        existing_source_id = (
+            db.query(Source.id).filter(Source.name == document_create_request.source)
+        ).scalar()
+        if existing_source_id is None:
+            raise UnknownSourceError(document_create_request.source)
 
-    document_slug = _create_document_slug(
-        document_create_request,
-        geography=existing_geography,
-    )
+        existing_type_id = (
+            db.query(DocumentType.id).filter(
+                DocumentType.name == document_create_request.type
+            )
+        ).scalar()
+        if existing_type_id is None:
+            raise UnknownDocumentTypeError(document_create_request.type)
 
-    new_document = Document(
-        name=document_create_request.name,
-        description=document_create_request.description,
-        source_url=document_create_request.source_url,
-        source_id=existing_source_id,
-        slug=document_slug,
-        url=None,  # Added by processing pipeline
-        md5_sum=None,  # Added by processing pipeline
-        cdn_object=None,  # Added by processing pipeline
-        import_id=document_create_request.import_id,
-        geography_id=existing_geography.id,
-        type_id=existing_type_id,
-        category_id=existing_category_id,
-        publication_ts=document_create_request.publication_ts,
-        postfix=document_create_request.postfix,
-    )
-    db.add(new_document)
-    db.flush()
-    db.refresh(new_document)
+        existing_category_id = (
+            db.query(Category.id).filter(
+                Category.name == document_create_request.category
+            )
+        ).scalar()
+        if existing_category_id is None:
+            raise UnknownCategoryError(document_create_request.category)
 
-    _write_metadata(
-        db=db,
-        new_document=new_document,
-        document_create_request=document_create_request,
-    )
-    _LOGGER.info(f"Created Metadata: {document_create_request.import_id}")
+        document_slug = _create_document_slug(
+            document_create_request,
+            geography=existing_geography,
+        )
+
+        new_document = Document(
+            name=document_create_request.name,
+            description=document_create_request.description,
+            source_url=document_create_request.source_url,
+            source_id=existing_source_id,
+            slug=document_slug,
+            url=None,  # Added by processing pipeline
+            md5_sum=None,  # Added by processing pipeline
+            cdn_object=None,  # Added by processing pipeline
+            import_id=document_create_request.import_id,
+            geography_id=existing_geography.id,
+            type_id=existing_type_id,
+            category_id=existing_category_id,
+            publication_ts=document_create_request.publication_ts,
+            postfix=document_create_request.postfix,
+        )
+        db.add(new_document)
+        db.flush()
+        db.refresh(new_document)
+
+        _write_metadata(
+            db=db,
+            new_document=new_document,
+            document_create_request=document_create_request,
+        )
+        _LOGGER.info(f"Created Metadata: {document_create_request.import_id}")
 
     return new_document
 

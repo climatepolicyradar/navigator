@@ -85,10 +85,7 @@ def test_create_documents(client, superuser_token_headers, test_db):
         "keywords": ["some keyword"],
     }
     create_request = DocumentCreateRequest(**create_request_content)
-    with test_db.begin_nested():
-        create_document(test_db, create_request)
-
-    # This commit is necessary after completing the nested transaction
+    create_document(test_db, create_request)
     test_db.commit()
 
     doc: Document = test_db.query(Document).first()
@@ -110,7 +107,7 @@ def test_create_documents(client, superuser_token_headers, test_db):
     assert test_db.query(DocumentLanguage).first().document_id == 1
 
 
-def test_post_documents_fail(client, superuser_token_headers, test_db):
+def test_create_documents_fail(client, superuser_token_headers, test_db):
     """Document creation should fail unless all referenced metadata already exists."""
 
     # ensure meta
@@ -176,9 +173,7 @@ def test_post_documents_fail(client, superuser_token_headers, test_db):
     }
     create_request = DocumentCreateRequest(**create_request_content)
     with pytest.raises(UnknownMetadataError):
-        with test_db.begin_nested():
-            create_document(test_db, create_request)
-
+        create_document(test_db, create_request)
         test_db.commit()
 
     assert len(list(test_db.query(Document).all())) == 0
