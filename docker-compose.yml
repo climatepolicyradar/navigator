@@ -1,15 +1,5 @@
 version: '3.7'
 services:
-  nginx:
-    image: nginx:1.23.2
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/default.conf
-    ports:
-      - 8000:80
-    depends_on:
-      - "backend"
-      - "frontend"
-
   backend_db:
     image: postgres:12
     restart: always
@@ -63,9 +53,11 @@ services:
     stdin_open: true
     environment:
       NODE_ENV: development
-      # API_URL: $API_URL
-      # ADOBE_API_KEY: $ADOBE_API_KEY
-      # THEME: $THEME
+      API_URL: http://backend:8888/api/v1
+      ADOBE_API_KEY: $ADOBE_API_KEY
+      THEME: $THEME
+      HOSTNAME: http://localhost:3000
+      ROBOTS: false
     volumes:
       - ./frontend:/opt/node_app/app
       # bind-mounting these two files in will let you add packages during development without rebuilding.
