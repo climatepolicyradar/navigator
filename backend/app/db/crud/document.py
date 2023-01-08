@@ -14,6 +14,7 @@ from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
+    DocumentParserInput,
     RelationshipEntityResponse,
     RelationshipGetResponse,
 )
@@ -31,8 +32,10 @@ from app.api.api_v1.schemas.metadata import (
     Source as SourceSchema,
     Topic as TopicSchema,
 )
+from app.core.aws import S3Client
 from app.core.util import to_cdn_url
 from app.core.validation import IMPORT_ID_MATCHER
+from app.core.validation.util import write_documents_to_s3
 from app.db.models import (
     Document,
     DocumentFramework,
@@ -441,26 +444,6 @@ def get_document_detail(db, import_id_or_slug) -> DocumentDetailResponse:
     )
 
 
-def persist_document_and_metadata(
-    db: Session,
-    document_create_request: DocumentCreateRequest,
-) -> DocumentDetailResponse:
-    try:
-        # Create a savepoint & start a transaction if necessary
-        with db.begin_nested():
-            new_document = create_document(db, document_create_request)
-            write_metadata(db, new_document, document_create_request)
-
-        # This commit is necessary after completing the nested transaction
-        db.commit()
-        return get_document_detail(db, new_document.import_id)
-    except Exception as e:
-        _LOGGER.exception(f"Error saving document {document_create_request}")
-        if isinstance(e, IntegrityError):
-            raise HTTPException(409, detail="Document already exists")
-        raise e
-
-
 def _get_geography_by_slug_or_display_or_value(
     db: Session,
     display_or_value_or_slug: str,
@@ -627,6 +610,47 @@ def write_metadata(
             document_id=new_document.id,
         )
         db.add(doc_keyword)
+
+
+def start_import(
+    db: Session,
+    s3_client: S3Client,
+    document_create_objects: Sequence[DocumentCreateRequest],
+):
+    document_parser_inputs: list[DocumentParserInput] = []
+    try:
+        # Create a savepoint & start a transaction if necessary
+        with db.begin_nested():
+            for dco in document_create_objects:
+                _LOGGER.info(f"Importing: {dco.import_id}")
+                existing_document = (
+                    db.query(Document)
+                    .filter(Document.import_id == dco.import_id)
+                    .scalar()
+                )
+                if existing_document is None:
+                    new_document = create_document(db, dco)
+                    _LOGGER.info(f"Created Document: {dco.import_id}")
+                    write_metadata(db, new_document, dco)
+                    _LOGGER.info(f"Created Metadata: {dco.import_id}")
+
+                    document_parser_inputs.append(
+                        DocumentParserInput(
+                            slug=cast(str, new_document.slug),
+                            **dco.dict(),
+                        )
+                    )
+
+        # This commit is necessary after completing the nested transaction
+        _LOGGER.info("Importing performing final commit.")
+        db.commit()
+    except Exception as e:
+        _LOGGER.exception("Unexpected error creating document entries")
+        if isinstance(e, IntegrityError):
+            raise HTTPException(409, detail="Document already exists")
+        raise e
+
+    write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
 
 
 def _get_related_documents(

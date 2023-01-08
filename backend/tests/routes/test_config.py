@@ -87,10 +87,9 @@ def test_tree_table_to_json(data, expected):
 
 def test_document_ids(
     client,
-    superuser_token_headers,
     test_db,
 ):
-    create_4_documents(test_db, client, superuser_token_headers)
+    create_4_documents(test_db)
 
     # Test properties
     get_ids_response = client.get("/api/v1/config/ids")
