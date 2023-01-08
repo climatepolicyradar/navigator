@@ -57,7 +57,7 @@ services:
       ADOBE_API_KEY: $ADOBE_API_KEY
       THEME: $THEME
       HOSTNAME: http://localhost:3000
-      ROBOTS: false
+      ROBOTS: "false"
     volumes:
       - ./frontend:/opt/node_app/app
       # bind-mounting these two files in will let you add packages during development without rebuilding.
