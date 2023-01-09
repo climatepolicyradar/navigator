@@ -1,4 +1,4 @@
-# import logging  # TODO: Uncomment when adding endpoint logs
+import logging
 from typing import List, Union
 
 from fastapi import (
@@ -30,7 +30,7 @@ from app.api.api_v1.schemas.document import (
 
 from app.db.session import get_db
 
-# _LOGGER = logging.getLogger(__file__)  # TODO: Uncomment when adding endpoint logs
+_LOGGER = logging.getLogger(__file__)
 
 documents_router = APIRouter()
 
@@ -47,6 +47,16 @@ async def document_browse(
     db=Depends(get_db),
 ):
     """Get matching document overviews"""
+    _LOGGER.info(
+        "Getting a list of documents",
+        extra={
+            "props": {
+                "country_code": country_code,
+                "start_year": start_year,
+                "end_year": end_year,
+            },
+        },
+    )
     return get_document_overviews(db, country_code, start_year, end_year)
 
 
@@ -59,6 +69,14 @@ async def document_detail(
     db=Depends(get_db),
 ):
     """Get details of the document with the given ID."""
+    _LOGGER.info(
+        f"Getting detailed information for document '{import_id_or_slug}'",
+        extra={
+            "props": {
+                "import_id_or_slug": import_id_or_slug,
+            },
+        },
+    )
     return get_document_detail(db, import_id_or_slug)
 
 
@@ -74,6 +92,15 @@ async def post_relationship(
     current_user=Depends(get_current_active_superuser),
 ):
     """Create a relationship"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' creating a new document relationship",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "relationship_details": relationship.dict(),
+            },
+        },
+    )
     return create_relationship(
         db,
         relationship.name,
@@ -91,6 +118,14 @@ async def get_all_relationships(
     current_user=Depends(get_current_active_superuser),
 ):
     """Get all relationships"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' getting a list of document relationships",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+            },
+        },
+    )
     return get_relationships(db).relationships
 
 
@@ -105,6 +140,16 @@ async def get_relationship(
     current_user=Depends(get_current_active_superuser),
 ):
     """Get a single relationship and all documents"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' getting detailed information "
+        f"for document relationship '{relationship_id}'",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "relationship_id": relationship_id,
+            },
+        },
+    )
     return RelationshipAndDocumentsGetResponse(
         documents=get_documents_in_relationship(db, relationship_id),
         relationship=get_relationship_by_id(db, relationship_id),
@@ -122,6 +167,17 @@ async def put_document_relationship(
     current_user=Depends(get_current_active_superuser),
 ):
     """Create a document-relationship link"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' adding a document to "
+        f"relationship '{relationship_id}'",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "document_id": document_id,
+                "relationship_id": relationship_id,
+            },
+        },
+    )
     create_document_relationship(
         db,
         document_id,
@@ -140,6 +196,17 @@ async def delete_document_relationship(
     current_user=Depends(get_current_active_superuser),
 ):
     """Removes a document-relationship link"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' removing a document from "
+        f"relationship '{relationship_id}'",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "document_id": document_id,
+                "relationship_id": relationship_id,
+            },
+        },
+    )
     remove_document_relationship(
         db,
         document_id,
