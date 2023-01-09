@@ -19,7 +19,6 @@ from app.core.aws import S3Document
 from app.api.api_v1.schemas.document import (
     BulkImportValidatedResult,
     DocumentCreateRequest,
-    DocumentParserInput,
     DocumentUpdateRequest,
 )
 from app.api.api_v1.schemas.user import User, UserCreateAdmin
@@ -37,14 +36,13 @@ from app.core.validation.types import (
 )
 from app.core.validation.util import (
     get_valid_metadata,
-    write_documents_to_s3,
     write_csv_to_s3,
 )
 from app.core.validation.cclw.law_policy.process_csv import (
     extract_documents,
     validated_input,
 )
-from app.db.crud.document import create_document, write_metadata
+from app.db.crud.document import start_import
 from app.db.crud.password_reset import (
     create_password_reset_token,
     invalidate_existing_password_reset_tokens,
@@ -203,7 +201,7 @@ def import_law_policy(
 
     try:
         file_contents = law_policy_csv.file.read().decode("utf8")
-        csv_reader = validated_input(StringIO(file_contents))
+        csv_reader = validated_input(StringIO(initial_value=file_contents))
 
         valid_metadata = get_valid_metadata(db)
         existing_import_ids = [id[0] for id in db.query(Document.import_id)]
@@ -264,7 +262,7 @@ def import_law_policy(
             extra={"props": {"csv_s3_location": csv_s3_location}},
         )
 
-        # TODO: Add some way the callee can monitor processing pipeline...
+        # TODO: Add some way the caller can monitor processing pipeline...
 
         return BulkImportValidatedResult(
             document_count=total_document_count,
@@ -288,43 +286,6 @@ def import_law_policy(
         raise HTTPException(
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         ) from e
-
-
-def start_import(db, s3_client, document_create_objects):
-    document_parser_inputs: list[DocumentParserInput] = []
-    try:
-        # Create a savepoint & start a transaction if necessary
-        with db.begin_nested():
-            for dco in document_create_objects:
-                _LOGGER.info(f"Importing: {dco.import_id}")
-                existing_document = (
-                    db.query(Document)
-                    .filter(Document.import_id == dco.import_id)
-                    .scalar()
-                )
-                if existing_document is None:
-                    new_document = create_document(db, dco)
-                    _LOGGER.info(f"Created Document: {dco.import_id}")
-                    write_metadata(db, new_document, dco)
-                    _LOGGER.info(f"Created Metadata: {dco.import_id}")
-
-                    document_parser_inputs.append(
-                        DocumentParserInput(
-                            slug=cast(str, new_document.slug),
-                            **dco.dict(),
-                        )
-                    )
-
-        # This commit is necessary after completing the nested transaction
-        _LOGGER.info("Importing performing final commit.")
-        db.commit()
-    except Exception as e:
-        _LOGGER.exception("Unexpected error creating document entries")
-        if isinstance(e, IntegrityError):
-            raise HTTPException(409, detail="Document already exists")
-        raise e
-
-    write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
 
 
 @r.put("/documents/{import_id_or_slug}", status_code=status.HTTP_200_OK)

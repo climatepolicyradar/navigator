@@ -1,29 +1,29 @@
-from datetime import datetime, timezone
-from pathlib import Path
-
 from app.db.models import (
     Document,
     Source,
     Geography,
     DocumentType,
     Language,
-    Event,
     Sector,
     Response,
     Hazard,
     Framework,
     Instrument,
-    DocumentLanguage,
     Category,
     Keyword,
 )
 from app.api.api_v1.schemas.document import (
+    DocumentCreateRequest,
     RelationshipCreateRequest,
 )
-from app.db.crud.document import get_postfix_map
+from app.db.crud.document import (
+    create_document,
+    get_document_detail,
+    get_postfix_map,
+)
 
 
-def create_4_documents(test_db, client, superuser_token_headers):
+def create_4_documents(test_db):
     # ensure meta
     test_db.add(Source(name="may it be with you"))
     test_db.add(
@@ -124,11 +124,15 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "hazards": ["some hazard"],
         "keywords": ["some keyword"],
     }
-    response1 = client.post(
-        "/api/v1/documents", headers=superuser_token_headers, json=document1_payload
-    )
-    assert response1.status_code == 200
-    response1_document = response1.json()
+    document_create_request_1 = DocumentCreateRequest(**document1_payload)
+    with test_db.begin_nested():
+        new_document_1 = create_document(test_db, document_create_request_1)
+
+    # This commit is necessary after completing the nested transaction
+    test_db.commit()
+    document1_created_content = get_document_detail(
+        test_db, new_document_1.import_id
+    ).dict()
 
     # Document 2 payload also checks that we correctly associate new documents with
     # existing metadata values.
@@ -166,11 +170,15 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "hazards": ["some hazard", "some other hazard 1", "some other hazard 2"],
         "keywords": ["some keyword", "some other keyword"],
     }
-    response2 = client.post(
-        "/api/v1/documents", headers=superuser_token_headers, json=document2_payload
-    )
-    assert response2.status_code == 200
-    response2_document = response2.json()
+    document_create_request_2 = DocumentCreateRequest(**document2_payload)
+    with test_db.begin_nested():
+        new_document_2 = create_document(test_db, document_create_request_2)
+
+    # This commit is necessary after completing the nested transaction
+    test_db.commit()
+    document2_created_content = get_document_detail(
+        test_db, new_document_2.import_id
+    ).dict()
 
     # Document 3 payload checks we find related documents across the master doc.
     document3_payload = {
@@ -199,11 +207,15 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "hazards": ["some hazard"],
         "keywords": ["some keyword"],
     }
-    response3 = client.post(
-        "/api/v1/documents", headers=superuser_token_headers, json=document3_payload
-    )
-    assert response3.status_code == 200
-    response3_document = response3.json()
+    document_create_request_3 = DocumentCreateRequest(**document3_payload)
+    with test_db.begin_nested():
+        new_document_3 = create_document(test_db, document_create_request_3)
+
+    # This commit is necessary after completing the nested transaction
+    test_db.commit()
+    document3_created_content = get_document_detail(
+        test_db, new_document_3.import_id
+    ).dict()
 
     # Document 4 payload checks we do not find unrelated docs.
     document4_payload = {
@@ -232,224 +244,26 @@ def create_4_documents(test_db, client, superuser_token_headers):
         "hazards": ["some hazard"],
         "keywords": ["some keyword"],
     }
-    response4 = client.post(
-        "/api/v1/documents", headers=superuser_token_headers, json=document4_payload
-    )
-    assert response4.status_code == 200
-    response4_document = response4.json()
+    document_create_request_4 = DocumentCreateRequest(**document4_payload)
+    with test_db.begin_nested():
+        new_document_4 = create_document(test_db, document_create_request_4)
+
+    # This commit is necessary after completing the nested transaction
+    test_db.commit()
+    document4_created_content = get_document_detail(
+        test_db, new_document_4.import_id
+    ).dict()
 
     return (
-        response1_document,
+        document1_created_content,
         document1_payload,
-        response2_document,
+        document2_created_content,
         document2_payload,
-        response3_document,
+        document3_created_content,
         document3_payload,
-        response4_document,
+        document4_created_content,
         document4_payload,
     )
-
-
-def test_document_upload(
-    client, superuser_token_headers, test_s3_client, s3_document_bucket_names
-):
-
-    test_valid_filename = (
-        Path(__file__) / "../data/cclw-1618-884b7d6efcf448ff92d27f37ff22cb65.pdf"
-    ).resolve()
-
-    with open(test_valid_filename, "rb") as f:
-        response = client.post(
-            "/api/v1/document",
-            files={"file": (test_valid_filename.name, f, "application/pdf")},
-            headers=superuser_token_headers,
-        )
-
-    queue_bucket_contents = test_s3_client.client.list_objects(
-        Bucket=s3_document_bucket_names["queue"],
-    ).get("Contents")
-
-    assert response.status_code == 200
-    # There should be 2 documents in the mocked bucket: test_document.pdf, and the document just uploaded.
-    assert len(queue_bucket_contents) == 2
-
-    test_invalid_filename = (Path(__file__) / "../data/empty_img.png").resolve()
-
-    with open(test_invalid_filename, "rb") as f:
-        response = client.post(
-            "/api/v1/document",
-            files={"file": (test_invalid_filename.name, f, "application/pdf")},
-            headers=superuser_token_headers,
-        )
-
-    queue_bucket_contents = test_s3_client.client.list_objects(
-        Bucket=s3_document_bucket_names["queue"],
-    ).get("Contents")
-    assert response.status_code == 415
-    # No more documents should have been uploaded to the queue bucket.
-    assert len(queue_bucket_contents) == 2
-
-
-def test_post_documents(client, superuser_token_headers, test_db):
-
-    # ensure meta
-    test_db.add(Source(name="may it be with you"))
-    test_db.add(
-        Geography(
-            display_value="not my favourite subject",
-            slug="not-my-favourite-subject",
-            value="NMFS",
-            type="country",
-        )
-    )
-    test_db.add(DocumentType(name="just my type", description="sigh"))
-    test_db.add(Language(language_code="afr", name="Afrikaans"))
-    test_db.add(Category(name="a category", description="a category description"))
-    test_db.add(Hazard(name="some hazard", description="Imported by CPR loader"))
-    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
-    test_db.add(Framework(name="some framework", description="Imported by CPR loader"))
-    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
-    test_db.commit()
-
-    test_db.add(
-        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
-    )
-    test_db.add(
-        Instrument(
-            name="some instrument", description="Imported by CPR loader", source_id=1
-        )
-    )
-    test_db.add(
-        Instrument(
-            name="another instrument", description="Imported by CPR loader", source_id=1
-        )
-    )
-    test_db.commit()
-
-    payload = {
-        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
-        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
-        "postfix": "A",
-        "description": "the document description",
-        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "type": "just my type",
-        "geography": "not my favourite subject",
-        "source": "may it be with you",
-        "import_id": "CCLW.001.000.XXX",
-        "category": "a category",
-        "languages": ["afr"],
-        "events": [
-            {
-                "name": "Publication",
-                "description": "The publication date",
-                "created_ts": "2008-12-25T00:00:00+00:00",
-            }
-        ],
-        "sectors": ["Energy"],
-        "instruments": ["some instrument", "another instrument"],
-        "frameworks": ["some framework"],
-        "topics": ["Mitigation"],
-        "hazards": ["some hazard"],
-        "keywords": ["some keyword"],
-    }
-
-    response = client.post(
-        "/api/v1/documents", headers=superuser_token_headers, json=payload
-    )
-
-    assert response.status_code == 200
-
-    doc: Document = test_db.query(Document).first()
-    assert doc.name == payload["name"]
-    assert doc.postfix == payload["postfix"]
-    assert doc.description == payload["description"]
-    assert doc.url is None
-    assert doc.md5_sum is None
-    assert doc.import_id == payload["import_id"]
-    assert doc.publication_ts == datetime(2000, 1, 1)
-    assert doc.slug == (
-        "not-my-favourite-subject_2000_energy-sector-strategy-"
-        "1387-1391-2007-8-2012-3_000_xxx"
-    )
-
-    event = test_db.query(Event).first()
-    assert event.name == "Publication"
-    assert event.created_ts == datetime(2008, 12, 25, 0, 0, tzinfo=timezone.utc)
-    assert test_db.query(DocumentLanguage).first().document_id == 1
-
-
-def test_post_documents_fail(client, superuser_token_headers, test_db):
-    """Document creation should fail unless all referenced metadata already exists."""
-
-    # ensure meta
-    test_db.add(Source(name="may it be with you"))
-    test_db.add(
-        Geography(
-            display_value="not my favourite subject",
-            slug="not-my-favourite-subject",
-            value="NMFS",
-            type="country",
-        )
-    )
-    test_db.add(DocumentType(name="just my type", description="sigh"))
-    test_db.add(Language(language_code="afr", name="Afrikaans"))
-    test_db.add(Category(name="a category", description="a category description"))
-    test_db.add(Hazard(name="some other hazard", description="Imported by CPR loader"))
-    test_db.add(Response(name="Mitigation", description="Imported by CPR loader"))
-    test_db.add(
-        Framework(name="some other framework", description="Imported by CPR loader")
-    )
-    test_db.add(Keyword(name="some keyword", description="Imported by CPR loader"))
-    test_db.commit()
-
-    test_db.add(
-        Sector(name="Energy", description="Imported by CPR loader", source_id=1)
-    )
-    test_db.add(
-        Instrument(
-            name="some instrument", description="Imported by CPR loader", source_id=1
-        )
-    )
-    test_db.add(
-        Instrument(
-            name="another instrument", description="Imported by CPR loader", source_id=1
-        )
-    )
-    test_db.commit()
-
-    payload = {
-        "publication_ts": "2000-01-01T00:00:00.000000+00:00",
-        "name": "Energy Sector Strategy 1387-1391 (2007/8-2012/3)",
-        "description": "the document description",
-        "source_url": "https://climate-laws.org/rails/active_storage/blobs/eyJfcmFpbHMiOnsibWVzc2FnZSI6IkJBaHBBcG9IIiwiZXhwIjpudWxsLCJwdXIiOiJibG9iX2lkIn19--be6991246abda10bef5edc0a4d196b73ce1b1a26/f",
-        "type": "just my type",
-        "geography": "not my favourite subject",
-        "source": "may it be with you",
-        "import_id": "CCLW.001.000.XXX",
-        "category": "a category",
-        "languages": ["afr"],
-        "events": [
-            {
-                "name": "Publication",
-                "description": "The publication date",
-                "created_ts": "2008-12-25T00:00:00+00:00",
-            }
-        ],
-        "sectors": ["Energy"],
-        "instruments": ["some instrument", "another instrument"],
-        "frameworks": ["some framework"],
-        "topics": ["Mitigation"],
-        "hazards": ["some hazard"],
-        "keywords": ["some keyword"],
-    }
-
-    response = client.post(
-        "/api/v1/documents", headers=superuser_token_headers, json=payload
-    )
-
-    assert response.status_code == 422
-    assert len(list(test_db.query(Document).all())) == 0
-    assert test_db.query(Event).first() is None
 
 
 def test_document_detail(
@@ -467,7 +281,7 @@ def test_document_detail(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     # Set up doc relationships
     response_create = client.post(
@@ -673,7 +487,6 @@ def test_document_detail(
 
 def test_update_document_security(
     client,
-    superuser_token_headers,
     test_db,
 ):
 
@@ -686,7 +499,7 @@ def test_update_document_security(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     doc_id = response1_document["id"]
     payload = {
@@ -715,7 +528,7 @@ def test_update_document(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     import_id = response1_document["import_id"]
     payload = {
@@ -761,7 +574,7 @@ def test_update_document_with_import_id(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     import_id = response1_document["import_id"]
     payload = {
@@ -794,8 +607,6 @@ def test_update_document_with_import_id(
 
 
 def test_postfix_map(
-    client,
-    superuser_token_headers,
     test_db,
 ):
 
@@ -808,7 +619,7 @@ def test_postfix_map(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     pf_map = get_postfix_map(
         test_db,

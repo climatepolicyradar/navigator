@@ -14,6 +14,7 @@ from app.api.api_v1.schemas.document import (
     DocumentCreateRequest,
     DocumentDetailResponse,
     DocumentOverviewResponse,
+    DocumentParserInput,
     RelationshipEntityResponse,
     RelationshipGetResponse,
 )
@@ -31,8 +32,10 @@ from app.api.api_v1.schemas.metadata import (
     Source as SourceSchema,
     Topic as TopicSchema,
 )
+from app.core.aws import S3Client
 from app.core.util import to_cdn_url
 from app.core.validation import IMPORT_ID_MATCHER
+from app.core.validation.util import write_documents_to_s3
 from app.db.models import (
     Document,
     DocumentFramework,
@@ -171,59 +174,195 @@ def _create_document_slug(
     )
 
 
+def _write_metadata(
+    db: Session,
+    new_document: Document,
+    document_create_request: DocumentCreateRequest,
+) -> None:
+    # doc languages
+    for language in document_create_request.languages:
+        existing_language = _get_language_by_code_or_name(db, language)
+
+        # TODO: Need to ensure uniqueness for metadata links, especially for future
+        #       update paths.
+        doc_language = DocumentLanguage(
+            language_id=existing_language.id,
+            document_id=new_document.id,
+        )
+        db.add(doc_language)
+
+    # events
+    for event in document_create_request.events:
+        new_event = Event(
+            document_id=new_document.id,
+            name=event.name,
+            description=event.description,
+            created_ts=event.created_ts,
+        )
+        db.add(new_event)
+
+    # TODO: are source IDs really necessary on metadata? Perhaps we really do
+    #       want to keep metadata limited to values from the same source as the
+    #       document, but we should validate this assumption.
+
+    # sectors
+    for sector in document_create_request.sectors:
+        # A sector should already exist, so fail if we cannot find it
+        existing_sector_id = (
+            db.query(Sector.id)
+            .filter(Sector.name == sector)
+            .filter(Sector.source_id == new_document.source_id)
+        ).scalar()
+        if existing_sector_id is None:
+            raise UnknownSectorError(sector)
+
+        doc_sector = DocumentSector(
+            sector_id=existing_sector_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_sector)
+
+    # instruments
+    for instrument in document_create_request.instruments:
+        # An instrument should already exist, so fail if we cannot find it
+        existing_instrument_id = (
+            db.query(Instrument.id)
+            .filter(Instrument.name == instrument)
+            .filter(Instrument.source_id == new_document.source_id)
+        ).scalar()
+        if existing_instrument_id is None:
+            raise UnknownInstrumentError(instrument)
+
+        doc_instrument = DocumentInstrument(
+            instrument_id=existing_instrument_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_instrument)
+
+    # hazards
+    for hazard in document_create_request.hazards:
+        # A hazard should already exist, so fail if we cannot find it
+        existing_hazard_id = (
+            db.query(Hazard.id).filter(Hazard.name == hazard)
+        ).scalar()
+        if existing_hazard_id is None:
+            raise UnknownHazardError(hazard)
+
+        doc_hazard = DocumentHazard(
+            hazard_id=existing_hazard_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_hazard)
+
+    # responses/topics
+    for topic in document_create_request.topics:
+        # A response should already exist, so fail if we cannot find it
+        existing_response_id = (
+            db.query(Response.id).filter(Response.name == topic)
+        ).scalar()
+        if existing_response_id is None:
+            raise UnknownTopicError(topic)
+
+        doc_response = DocumentResponse(
+            response_id=existing_response_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_response)
+
+    # frameworks
+    for framework in document_create_request.frameworks:
+        # A framework should already exist, so fail if we cannot find it
+        existing_framework_id = (
+            db.query(Framework.id).filter(Framework.name == framework)
+        ).scalar()
+        if existing_framework_id is None:
+            raise UnknownFrameworkError(framework)
+
+        doc_framework = DocumentFramework(
+            framework_id=existing_framework_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_framework)
+
+    # keywords
+    for keyword in document_create_request.keywords:
+        # A keyword should already exist, so fail if we cannot find it
+        existing_keyword_id = (
+            db.query(Keyword.id).filter(Keyword.name == keyword)
+        ).scalar()
+        if existing_keyword_id is None:
+            raise UnknownKeywordError(keyword)
+
+        doc_keyword = DocumentKeyword(
+            keyword_id=existing_keyword_id,
+            document_id=new_document.id,
+        )
+        db.add(doc_keyword)
+
+
 def create_document(
     db: Session,
     document_create_request: DocumentCreateRequest,
 ) -> Document:
-    existing_geography = _get_geography_by_slug_or_display_or_value(
-        db,
-        document_create_request.geography,
-    )
-
-    existing_source_id = (
-        db.query(Source.id).filter(Source.name == document_create_request.source)
-    ).scalar()
-    if existing_source_id is None:
-        raise UnknownSourceError(document_create_request.source)
-
-    existing_type_id = (
-        db.query(DocumentType.id).filter(
-            DocumentType.name == document_create_request.type
+    with db.begin_nested():
+        existing_geography = _get_geography_by_slug_or_display_or_value(
+            db,
+            document_create_request.geography,
         )
-    ).scalar()
-    if existing_type_id is None:
-        raise UnknownDocumentTypeError(document_create_request.type)
 
-    existing_category_id = (
-        db.query(Category.id).filter(Category.name == document_create_request.category)
-    ).scalar()
-    if existing_category_id is None:
-        raise UnknownCategoryError(document_create_request.category)
+        existing_source_id = (
+            db.query(Source.id).filter(Source.name == document_create_request.source)
+        ).scalar()
+        if existing_source_id is None:
+            raise UnknownSourceError(document_create_request.source)
 
-    document_slug = _create_document_slug(
-        document_create_request,
-        geography=existing_geography,
-    )
+        existing_type_id = (
+            db.query(DocumentType.id).filter(
+                DocumentType.name == document_create_request.type
+            )
+        ).scalar()
+        if existing_type_id is None:
+            raise UnknownDocumentTypeError(document_create_request.type)
 
-    new_document = Document(
-        name=document_create_request.name,
-        description=document_create_request.description,
-        source_url=document_create_request.source_url,
-        source_id=existing_source_id,
-        slug=document_slug,
-        url=None,  # Added by processing pipeline
-        md5_sum=None,  # Added by processing pipeline
-        cdn_object=None,  # Added by processing pipeline
-        import_id=document_create_request.import_id,
-        geography_id=existing_geography.id,
-        type_id=existing_type_id,
-        category_id=existing_category_id,
-        publication_ts=document_create_request.publication_ts,
-        postfix=document_create_request.postfix,
-    )
-    db.add(new_document)
-    db.flush()
-    db.refresh(new_document)
+        existing_category_id = (
+            db.query(Category.id).filter(
+                Category.name == document_create_request.category
+            )
+        ).scalar()
+        if existing_category_id is None:
+            raise UnknownCategoryError(document_create_request.category)
+
+        document_slug = _create_document_slug(
+            document_create_request,
+            geography=existing_geography,
+        )
+
+        new_document = Document(
+            name=document_create_request.name,
+            description=document_create_request.description,
+            source_url=document_create_request.source_url,
+            source_id=existing_source_id,
+            slug=document_slug,
+            url=None,  # Added by processing pipeline
+            md5_sum=None,  # Added by processing pipeline
+            cdn_object=None,  # Added by processing pipeline
+            import_id=document_create_request.import_id,
+            geography_id=existing_geography.id,
+            type_id=existing_type_id,
+            category_id=existing_category_id,
+            publication_ts=document_create_request.publication_ts,
+            postfix=document_create_request.postfix,
+        )
+        db.add(new_document)
+        db.flush()
+        db.refresh(new_document)
+
+        _write_metadata(
+            db=db,
+            new_document=new_document,
+            document_create_request=document_create_request,
+        )
+        _LOGGER.info(f"Created Metadata: {document_create_request.import_id}")
 
     return new_document
 
@@ -441,26 +580,6 @@ def get_document_detail(db, import_id_or_slug) -> DocumentDetailResponse:
     )
 
 
-def persist_document_and_metadata(
-    db: Session,
-    document_create_request: DocumentCreateRequest,
-) -> DocumentDetailResponse:
-    try:
-        # Create a savepoint & start a transaction if necessary
-        with db.begin_nested():
-            new_document = create_document(db, document_create_request)
-            write_metadata(db, new_document, document_create_request)
-
-        # This commit is necessary after completing the nested transaction
-        db.commit()
-        return get_document_detail(db, new_document.import_id)
-    except Exception as e:
-        _LOGGER.exception(f"Error saving document {document_create_request}")
-        if isinstance(e, IntegrityError):
-            raise HTTPException(409, detail="Document already exists")
-        raise e
-
-
 def _get_geography_by_slug_or_display_or_value(
     db: Session,
     display_or_value_or_slug: str,
@@ -503,130 +622,43 @@ def _get_language_by_code_or_name(db: Session, code_or_name: str) -> Language:
     return existing_language
 
 
-def write_metadata(
+def start_import(
     db: Session,
-    new_document: Document,
-    document_create_request: DocumentCreateRequest,
-) -> None:
-    # doc languages
-    for language in document_create_request.languages:
-        existing_language = _get_language_by_code_or_name(db, language)
+    s3_client: S3Client,
+    document_create_objects: Sequence[DocumentCreateRequest],
+):
+    document_parser_inputs: list[DocumentParserInput] = []
+    try:
+        # Create a savepoint & start a transaction if necessary
+        with db.begin_nested():
+            for dco in document_create_objects:
+                _LOGGER.info(f"Importing: {dco.import_id}")
+                existing_document = (
+                    db.query(Document)
+                    .filter(Document.import_id == dco.import_id)
+                    .scalar()
+                )
+                if existing_document is None:
+                    new_document = create_document(db, dco)
+                    _LOGGER.info(f"Created Document: {dco.import_id}")
 
-        # TODO: Need to ensure uniqueness for metadata links, especially for future
-        #       update paths.
-        doc_language = DocumentLanguage(
-            language_id=existing_language.id,
-            document_id=new_document.id,
-        )
-        db.add(doc_language)
+                    document_parser_inputs.append(
+                        DocumentParserInput(
+                            slug=cast(str, new_document.slug),
+                            **dco.dict(),
+                        )
+                    )
 
-    # events
-    for event in document_create_request.events:
-        new_event = Event(
-            document_id=new_document.id,
-            name=event.name,
-            description=event.description,
-            created_ts=event.created_ts,
-        )
-        db.add(new_event)
+        # This commit is necessary after completing the nested transaction
+        _LOGGER.info("Importing performing final commit.")
+        db.commit()
+    except Exception as e:
+        _LOGGER.exception("Unexpected error creating document entries")
+        if isinstance(e, IntegrityError):
+            raise HTTPException(409, detail="Document already exists")
+        raise e
 
-    # TODO: are source IDs really necessary on metadata? Perhaps we really do
-    #       want to keep metadata limited to values from the same source as the
-    #       document, but we should validate this assumption.
-
-    # sectors
-    for sector in document_create_request.sectors:
-        # A sector should already exist, so fail if we cannot find it
-        existing_sector_id = (
-            db.query(Sector.id)
-            .filter(Sector.name == sector)
-            .filter(Sector.source_id == new_document.source_id)
-        ).scalar()
-        if existing_sector_id is None:
-            raise UnknownSectorError(sector)
-
-        doc_sector = DocumentSector(
-            sector_id=existing_sector_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_sector)
-
-    # instruments
-    for instrument in document_create_request.instruments:
-        # An instrument should already exist, so fail if we cannot find it
-        existing_instrument_id = (
-            db.query(Instrument.id)
-            .filter(Instrument.name == instrument)
-            .filter(Instrument.source_id == new_document.source_id)
-        ).scalar()
-        if existing_instrument_id is None:
-            raise UnknownInstrumentError(instrument)
-
-        doc_instrument = DocumentInstrument(
-            instrument_id=existing_instrument_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_instrument)
-
-    # hazards
-    for hazard in document_create_request.hazards:
-        # A hazard should already exist, so fail if we cannot find it
-        existing_hazard_id = (
-            db.query(Hazard.id).filter(Hazard.name == hazard)
-        ).scalar()
-        if existing_hazard_id is None:
-            raise UnknownHazardError(hazard)
-
-        doc_hazard = DocumentHazard(
-            hazard_id=existing_hazard_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_hazard)
-
-    # responses/topics
-    for topic in document_create_request.topics:
-        # A response should already exist, so fail if we cannot find it
-        existing_response_id = (
-            db.query(Response.id).filter(Response.name == topic)
-        ).scalar()
-        if existing_response_id is None:
-            raise UnknownTopicError(topic)
-
-        doc_response = DocumentResponse(
-            response_id=existing_response_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_response)
-
-    # frameworks
-    for framework in document_create_request.frameworks:
-        # A framework should already exist, so fail if we cannot find it
-        existing_framework_id = (
-            db.query(Framework.id).filter(Framework.name == framework)
-        ).scalar()
-        if existing_framework_id is None:
-            raise UnknownFrameworkError(framework)
-
-        doc_framework = DocumentFramework(
-            framework_id=existing_framework_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_framework)
-
-    # keywords
-    for keyword in document_create_request.keywords:
-        # A keyword should already exist, so fail if we cannot find it
-        existing_keyword_id = (
-            db.query(Keyword.id).filter(Keyword.name == keyword)
-        ).scalar()
-        if existing_keyword_id is None:
-            raise UnknownKeywordError(keyword)
-
-        doc_keyword = DocumentKeyword(
-            keyword_id=existing_keyword_id,
-            document_id=new_document.id,
-        )
-        db.add(doc_keyword)
+    write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
 
 
 def _get_related_documents(
