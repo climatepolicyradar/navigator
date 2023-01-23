@@ -28,7 +28,7 @@ from app.db.session import get_db
 
 unauthenticated_router = r = APIRouter()
 
-logger = logging.getLogger(__file__)
+_LOGGER = logging.getLogger(__file__)
 
 
 ENABLE_SELF_REGISTRATION = (
@@ -59,10 +59,26 @@ async def user_create(
             detail="User registration is disabled",
         )
 
+    _LOGGER.info(
+        "User registration request received",
+        extra={
+            "props": {
+                "user_details": user.dict(),
+            },
+        },
+    )
+
     try:
         db_user = create_user(db, user)
     except IntegrityError:
-        logger.error(f"Email already registered: {user.email}")
+        _LOGGER.error(
+            f"Email already registered: {user.email}",
+            extra={
+                "props": {
+                    "user_details": user.dict(),
+                },
+            },
+        )
         return True
 
     activation_token = create_password_reset_token(
@@ -81,9 +97,20 @@ async def set_password(
     db=Depends(get_db),
 ):
     """Activates a new user and sets a password."""
+    _LOGGER.info("User activation request received")
 
     reset_token = get_password_reset_token_by_token(db, payload.token)
     user = get_user(db, cast(int, reset_token.user_id))
+
+    _LOGGER.info(
+        f"Processing activation for user '{user.email}'",
+        extra={
+            "props": {
+                "user_id": user.id,
+                "user_email": user.email,
+            },
+        },
+    )
     activated_user = activate_user(db, user, reset_token, payload.password)
     send_password_changed_email(activated_user)
     return activated_user
@@ -106,6 +133,14 @@ async def request_password_reset(
 
     Also see the equivalent admin endpoint.
     """
+    _LOGGER.info(
+        f"Password reset request received for '{email}'",
+        extra={
+            "props": {
+                "reset_email": email,
+            }
+        },
+    )
 
     try:
         user = get_user_by_email(db, email)
@@ -121,5 +156,13 @@ async def request_password_reset(
         send_password_reset_email(user, password_reset_token)
     except HTTPException:
         # if the user for this email couldn't be found, don't 404
+        _LOGGER.info(
+            f"User with email '{email}' not found while processing password reset",
+            extra={
+                "props": {
+                    "reset_email": email,
+                }
+            },
+        )
         pass
     return True

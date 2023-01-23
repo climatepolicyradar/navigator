@@ -73,6 +73,7 @@ export type TGeographyConfigNode = {
   value: string;
   type: string;
   parent_id: number;
+  slug: string;
 };
 
 export type TGeographyConfig = {

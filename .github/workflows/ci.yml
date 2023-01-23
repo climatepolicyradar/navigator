@@ -45,7 +45,7 @@ jobs:
         run:  make start
 
       - name: verify backend is up
-        run:  curl http://localhost:8000/api/docs
+        run:  curl http://localhost:8888/api/docs
 
       - name: Run backend tests
         run:  make test_backend

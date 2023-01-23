@@ -28,7 +28,18 @@ const SearchForm = ({ input, placeholder, handleSearchInput, handleSuggestion }:
   const handleSuggestionClick = (term: string, filter?: string, filterValue?: string) => {
     setTerm(term);
     handleSuggestion(term, filter, filterValue);
-  }
+    return setFormFocus(false);
+  };
+
+  const onFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    return setFormFocus(false);
+  };
+
+  const handleSearchButtonClick = () => {
+    handleSearchInput(term);
+    return setFormFocus(false);
+  };
 
   useEffect(() => {
     if (input) setTerm(input);
@@ -48,14 +59,14 @@ const SearchForm = ({ input, placeholder, handleSearchInput, handleSuggestion }:
   }, [formRef]);
 
   return (
-    <form data-cy="search-form" ref={formRef} onSubmit={(e) => e.preventDefault()}>
+    <form data-cy="search-form" ref={formRef} onSubmit={onFormSubmit}>
       <div className="relative shadow-md rounded-lg bg-white flex items-stretch z-40">
         <input
           data-analytics="seachPage-searchInput"
           data-cy="search-input"
           className="analytics-searchPage-searchInput bg-transparent text-indigo-600 appearance-none py-2 pl-2 z-10 rounded-lg relative flex-grow mr-8 placeholder:text-indigo-400 border-transparent"
           type="search"
-          placeholder={`${windowSize.width > 540 ? placeholder : ""}`}
+          placeholder={`${windowSize.width > 767 ? placeholder : ""}`}
           value={term}
           onChange={onChange}
         />
@@ -66,7 +77,7 @@ const SearchForm = ({ input, placeholder, handleSearchInput, handleSuggestion }:
           </div>
         )}
         <div className="flex items-center justify-end">
-          <SearchButton onClick={() => handleSearchInput(term)} />
+          <SearchButton onClick={handleSearchButtonClick} />
         </div>
         <SearchDropdown term={term} show={formFocus} handleSearchClick={handleSuggestionClick} />
       </div>

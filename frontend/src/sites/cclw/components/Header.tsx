@@ -21,7 +21,7 @@ const Header = ({ background = true }) => {
   return (
     <header data-cy="header" className={`${background ? "bg-secondary-700" : ""} w-full border-b-2 pt-6 lg:pt-0`}>
       <div className="container">
-        <div className={`flex flex-wrap lg:flex-nowrap justify-between ${isHome ? "lg:mb-6" : ""}`}>
+        <div className={`grid grid-cols-2 auto-cols-auto lg:flex lg:flex-nowrap lg:justify-between ${isHome ? "lg:mb-6" : ""}`}>
           <div className="items-end flex flex-grow-0 lg:basis-1/5">
             <ExternalLink className="flex" url="https://www.lse.ac.uk/">
               <div className="h-[40px] w-[40px] flex">
@@ -35,7 +35,7 @@ const Header = ({ background = true }) => {
             </ExternalLink>
           </div>
           <div
-            className={`flex-1 flex justify-center items-end text-white order-last lg:-order-none basis-full text-center lg:basis-auto mb-6 lg:mb-0 ${isHome ? "mt-10" : "mt-6"}`}
+            className={`col-span-2 flex-1 flex justify-center text-white order-last lg:-order-none basis-full text-center lg:basis-auto mb-6 lg:mb-0 ${isHome ? "mt-10" : "mt-6"}`}
           >
             <div className="cclw-font font-bold text-2xl md:text-4xl lg:text-3xl xl:text-4xl">
               <Link href={`/`} className="">
@@ -43,9 +43,9 @@ const Header = ({ background = true }) => {
               </Link>
             </div>
           </div>
-          <div className="text-white items-end flex justify-end text-sm flex-grow-0 lg:basis-1/5">
-            <div className="flex gap-2">
-              <p>Powered by</p>
+          <div className="text-white flex justify-self-end text-sm flex-grow-0 lg:basis-1/5 lg:justify-end lg:items-end">
+            <div className="flex flex-wrap justify-end items-end gap-2">
+              <p className="text-right basis-full md:basis-auto md:self-start">Powered by</p>
               <ExternalLink className="flex" url="https://www.climatepolicyradar.org">
                 <Logo fixed />
               </ExternalLink>

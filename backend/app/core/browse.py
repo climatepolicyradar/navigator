@@ -31,8 +31,8 @@ def to_search_resp_doc(row: dict) -> SearchResult:
         document_date=str(row["publication_ts"]),
         document_category=row["category"],
         document_geography=row["country_code"],
-        # Stuff we don't use
-        document_sectors=[],  # FIXME: empty placeholder for tests to pass
+        # ↓ Stuff we don't currently use for search ↓
+        document_sectors=[],  # empty placeholder for tests to pass
         document_source="",
         document_type="",
         document_source_url="",

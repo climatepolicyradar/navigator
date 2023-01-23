@@ -288,7 +288,7 @@ const Search = () => {
             <section>
               <div className="px-4 container">
                 <div className="md:py-8 md:w-3/4 md:mx-auto">
-                  <p className="sm:hidden mt-4 mb-2">{placeholder}</p>
+                  <p className="md:hidden mt-4 mb-2">{placeholder}</p>
                   <SearchForm placeholder={placeholder} handleSearchInput={handleSearchInput} input={searchCriteria.query_string} handleSuggestion={handleSuggestion} />
                 </div>
               </div>

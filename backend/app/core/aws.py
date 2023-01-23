@@ -11,7 +11,7 @@ from botocore.response import StreamingBody
 
 logger = logging.getLogger(__name__)
 
-AWS_REGION = os.getenv("AWS_REGION", "eu-west-2")
+AWS_REGION = os.getenv("AWS_REGION", "eu-west-1")
 
 
 class S3Document:
@@ -50,7 +50,9 @@ class S3Client:
             aws_access_key_id=os.getenv("AWS_ACCESS_KEY_ID"),
             aws_secret_access_key=os.getenv("AWS_SECRET_ACCESS_KEY"),
             config=botocore.client.Config(
-                signature_version="s3v4", region_name=AWS_REGION
+                signature_version="s3v4",
+                region_name=AWS_REGION,
+                connect_timeout=10,
             ),
         )
 
@@ -74,15 +76,21 @@ class S3Client:
         """
         try:
             if content_type:
+                logger.info(
+                    f"upload_fileobj: {bucket} {key} with content-type {content_type}"
+                )
                 self.client.upload_fileobj(
                     fileobj, bucket, key, ExtraArgs={"ContentType": content_type}
                 )
+                logger.info("upload_fileobj with content-type: DONE")
             else:
+                logger.info(f"upload_fileobj: {bucket} {key} with no content-type")
                 self.client.upload_fileobj(fileobj, bucket, key)
+                logger.info("upload_fileobj with no content-type: DONE")
         except ClientError as e:
             logger.error(e)
             return False
-
+        logger.info("Returning S3Document {} {} {}".format(bucket, AWS_REGION, key))
         return S3Document(bucket, AWS_REGION, key)
 
     def upload_file(

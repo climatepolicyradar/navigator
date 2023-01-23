@@ -100,7 +100,8 @@ input[type="number"],
 input[type="password"],
 input[type="email"],
 textarea,
-select {
+select,
+option {
   font-family: "Neue Haas Grotesk Display";
   @apply p-3 rounded-lg text-lg w-full text-indigo-500;
   &.small {
@@ -116,6 +117,7 @@ select {
 }
 
 select {
+  font-family: "Neue Haas Grotesk Display", Arial, Helvetica, sans-serif;
   appearance: none;
   position: relative;
   background-image: url(/images/down-arrow.svg);
@@ -129,6 +131,10 @@ select {
     background-position-x: calc(100% - 6px);
     background-size: 12px 12px;
   }
+}
+
+option {
+  font-family: "Neue Haas Grotesk Display", Arial, Helvetica, sans-serif;
 }
 
 // radar loader
@@ -329,8 +335,12 @@ ul li.selected {
   }
   table {
     @apply text-left my-6;
-    th { @apply p-2; }
-    td { @apply border border-gray-300 p-2 align-top; }
+    th {
+      @apply p-2;
+    }
+    td {
+      @apply border border-gray-300 p-2 align-top;
+    }
   }
 }
 .pdf-container {
@@ -416,5 +426,69 @@ ul li.selected {
 .accordian__content {
   p {
     @apply mb-2;
+  }
+}
+
+#landingPage-searchInput {
+  @screen md {
+    &::-webkit-input-placeholder {
+      /* WebKit browsers */
+      color: transparent;
+    }
+    &:-moz-placeholder {
+      /* Mozilla Firefox 4 to 18 */
+      color: transparent;
+    }
+    &::-moz-placeholder {
+      /* Mozilla Firefox 19+ */
+      color: transparent;
+    }
+    &:-ms-input-placeholder {
+      /* Internet Explorer 10+ */
+      color: transparent;
+    }
+    &::placeholder {
+      color: transparent;
+    }
+  }
+}
+
+.search-animated-placeholder {
+  display: none;
+  @screen md {
+    @apply pr-1 text-2xl bg-transparent;
+    overflow: hidden;
+    position: absolute;
+    display: flex;
+    flex-wrap: nowrap;
+    align-items: center;
+    z-index: -1;
+    height: 75%;
+    border-right: 2px solid;
+    white-space: nowrap;
+    padding-left: 0.75rem;
+    animation: typing 3s steps(60, end), blink-caret 0.75s step-end infinite;
+    max-width: 75%;
+  }
+}
+
+/* The typing effect */
+@keyframes typing {
+  from {
+    width: 0;
+  }
+  to {
+    width: 50%;
+  }
+}
+
+/* The typewriter cursor effect */
+@keyframes blink-caret {
+  from,
+  to {
+    border-color: transparent;
+  }
+  50% {
+    border-color: white;
   }
 }

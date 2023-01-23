@@ -102,7 +102,7 @@ def test_add_document_to_relationship(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     rel_ids = _create_10_relationships(client, superuser_token_headers)
 
@@ -134,7 +134,7 @@ def test_add_document_to_relationship_is_idempotent(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     rel_ids = _create_10_relationships(client, superuser_token_headers)
 
@@ -185,7 +185,7 @@ def test_delete_document_from_relationship(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     rel_ids = _create_10_relationships(client, superuser_token_headers)
 
@@ -249,7 +249,7 @@ def test_get_relationship_documents(
         document3_payload,
         response4_document,
         document4_payload,
-    ) = create_4_documents(test_db, client, superuser_token_headers)
+    ) = create_4_documents(test_db)
 
     rel_ids = _create_10_relationships(client, superuser_token_headers)
 

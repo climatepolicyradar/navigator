@@ -19,7 +19,6 @@ from app.core.aws import S3Document
 from app.api.api_v1.schemas.document import (
     BulkImportValidatedResult,
     DocumentCreateRequest,
-    DocumentParserInput,
     DocumentUpdateRequest,
 )
 from app.api.api_v1.schemas.user import User, UserCreateAdmin
@@ -37,14 +36,13 @@ from app.core.validation.types import (
 )
 from app.core.validation.util import (
     get_valid_metadata,
-    write_documents_to_s3,
     write_csv_to_s3,
 )
 from app.core.validation.cclw.law_policy.process_csv import (
     extract_documents,
     validated_input,
 )
-from app.db.crud.document import create_document, write_metadata
+from app.db.crud.document import start_import
 from app.db.crud.password_reset import (
     create_password_reset_token,
     invalidate_existing_password_reset_tokens,
@@ -79,10 +77,15 @@ async def users_list(
     current_user=Depends(get_current_active_superuser),
 ):
     """Gets all users"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' listing all users.",
+        extra={"props": {"superuser_email": current_user.email}},
+    )
     users = get_users(db)
     # This is necessary for react-admin to work
     response.headers["Content-Range"] = f"0-9/{len(users)}"
     response.headers["Cache-Control"] = "no-cache, no-store, private"
+    _LOGGER.info(f"Successfully retrieved user list for '{current_user.email}'.")
     return users
 
 
@@ -99,8 +102,18 @@ async def user_details(
     current_user=Depends(get_current_active_superuser),
 ):
     """Gets any user details"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' retrieving details "
+        f"about user id '{user_id}'",
+        extra={"props": {"superuser_email": current_user.email, "user_id": user_id}},
+    )
     user = get_user(db, user_id)
     response.headers["Cache-Control"] = "no-cache, no-store, private"
+    _LOGGER.info(
+        f"Successfully retrieved details about user id '{user_id}' "
+        f"for '{current_user.email}'",
+        extra={"props": {"superuser_email": current_user.email, "user_id": user_id}},
+    )
     return user
 
 
@@ -112,6 +125,15 @@ async def user_create(
     current_user=Depends(get_current_active_superuser),
 ):
     """Creates a new user"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' creating a new user",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "user_details": user.dict(),
+            }
+        },
+    )
     try:
         db_user = create_user(db, user)
     except IntegrityError:
@@ -125,6 +147,15 @@ async def user_create(
     )
     send_new_account_email(db_user, activation_token)
 
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' successfully created new user",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "user_details": user.dict(),
+            }
+        },
+    )
     return db_user
 
 
@@ -138,11 +169,32 @@ async def user_edit(
     current_user=Depends(get_current_active_superuser),
 ):
     """Updates existing user"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' updating user with id '{user_id}'",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "user_details": user.dict(),
+            }
+        },
+    )
     updated_user = edit_user(db, user_id, user)
 
+    # TODO: User updated email
     # send_email(EmailType.account_changed, updated_user)
 
     response.headers["Cache-Control"] = "no-cache, no-store, private"
+
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' successfully "
+        f"updated user with id '{user_id}'",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "user_details": user.dict(),
+            }
+        },
+    )
     return updated_user
 
 
@@ -154,6 +206,15 @@ async def user_delete(
     current_user=Depends(get_current_active_superuser),
 ):
     """Deletes existing user"""
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' deactivating user with id '{user_id}'",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "user_id": user_id,
+            }
+        },
+    )
     return deactivate_user(db, user_id)
 
 
@@ -177,11 +238,32 @@ async def request_password_reset(
 
     Also see the equivalent unauthenticated endpoint.
     """
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' resetting password for "
+        f"user with id '{user_id}'",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "user_id": user_id,
+            }
+        },
+    )
 
     deactivated_user = deactivate_user(db, user_id)
     invalidate_existing_password_reset_tokens(db, user_id)
     reset_token = create_password_reset_token(db, user_id)
     send_password_reset_email(deactivated_user, reset_token)
+
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' successfully reset password for "
+        f"user with id '{user_id}'",
+        extra={
+            "props": {
+                "superuser_email": current_user.email,
+                "user_id": user_id,
+            }
+        },
+    )
     return True
 
 
@@ -190,7 +272,7 @@ async def request_password_reset(
     response_model=BulkImportValidatedResult,
     status_code=status.HTTP_202_ACCEPTED,
 )
-async def import_law_policy(
+def import_law_policy(
     request: Request,
     law_policy_csv: UploadFile,
     background_tasks: BackgroundTasks,
@@ -199,10 +281,15 @@ async def import_law_policy(
     s3_client=Depends(get_s3_client),
 ):
     """Process a Law/Policy data import"""
-    _LOGGER.info("Received bulk import request for CCLW Law & Policy data")
+    _LOGGER.info(
+        f"Superuser '{current_user.email}' triggered bulk import request for "
+        "CCLW Law & Policy data"
+    )
+
     try:
         file_contents = law_policy_csv.file.read().decode("utf8")
-        csv_reader = validated_input(StringIO(file_contents))
+        csv_reader = validated_input(StringIO(initial_value=file_contents))
+
         valid_metadata = get_valid_metadata(db)
         existing_import_ids = [id[0] for id in db.query(Document.import_id)]
 
@@ -233,9 +320,10 @@ async def import_law_policy(
         )
         document_skipped_count = len(documents_ids_already_exist)
         _LOGGER.info(
-            "Validation complete.",
+            "Bulk Import Validation Complete.",
             extra={
                 "props": {
+                    "superuser_email": current_user.email,
                     "document_count": total_document_count,
                     "document_added_count": total_document_count
                     - document_skipped_count,
@@ -248,20 +336,31 @@ async def import_law_policy(
         result: Union[S3Document, bool] = write_csv_to_s3(
             s3_client=s3_client, file_contents=file_contents
         )
+
         csv_s3_location = "write failed" if type(result) is bool else str(result.url)
         _LOGGER.info(
-            "Write to CSV complete.",
-            extra={"props": {"csv_s3_location": csv_s3_location}},
+            "Write Bulk Import CSV complete.",
+            extra={
+                "props": {
+                    "superuser_email": current_user.email,
+                    "csv_s3_location": csv_s3_location,
+                }
+            },
         )
 
         background_tasks.add_task(start_import, db, s3_client, document_create_objects)
 
         _LOGGER.info(
-            "Background Task added",
-            extra={"props": {"csv_s3_location": csv_s3_location}},
+            "Background Bulk Import Task added",
+            extra={
+                "props": {
+                    "superuser_email": current_user.email,
+                    "csv_s3_location": csv_s3_location,
+                }
+            },
         )
 
-        # TODO: Add some way the callee can monitor processing pipeline...
+        # TODO: Add some way the caller can monitor processing pipeline...
 
         return BulkImportValidatedResult(
             document_count=total_document_count,
@@ -287,43 +386,6 @@ async def import_law_policy(
         ) from e
 
 
-def start_import(db, s3_client, document_create_objects):
-    document_parser_inputs: list[DocumentParserInput] = []
-    try:
-        # Create a savepoint & start a transaction if necessary
-        with db.begin_nested():
-            for dco in document_create_objects:
-                _LOGGER.info(f"Importing: {dco.import_id}")
-                existing_document = (
-                    db.query(Document)
-                    .filter(Document.import_id == dco.import_id)
-                    .scalar()
-                )
-                if existing_document is None:
-                    new_document = create_document(db, dco)
-                    _LOGGER.info(f"Created Document: {dco.import_id}")
-                    write_metadata(db, new_document, dco)
-                    _LOGGER.info(f"Created Metadata: {dco.import_id}")
-
-                    document_parser_inputs.append(
-                        DocumentParserInput(
-                            slug=cast(str, new_document.slug),
-                            **dco.dict(),
-                        )
-                    )
-
-        # This commit is necessary after completing the nested transaction
-        _LOGGER.info("Importing performing final commit.")
-        db.commit()
-    except Exception as e:
-        _LOGGER.exception("Unexpected error creating document entries")
-        if isinstance(e, IntegrityError):
-            raise HTTPException(409, detail="Document already exists")
-        raise e
-
-    write_documents_to_s3(s3_client=s3_client, documents=document_parser_inputs)
-
-
 @r.put("/documents/{import_id_or_slug}", status_code=status.HTTP_200_OK)
 async def update_document(
     request: Request,
@@ -335,9 +397,10 @@ async def update_document(
     # TODO: As this grows move it out into the crud later.
 
     _LOGGER.info(
-        "update_document called",
+        f"Superuser '{current_user.email}' called update_document",
         extra={
             "props": {
+                "superuser_email": current_user.email,
                 "import_id_or_slug": import_id_or_slug,
                 "meta_data": meta_data,
             }
@@ -381,16 +444,20 @@ async def update_document(
         # This should never happen due to table uniqueness constraints
         # TODO Rollback
         raise HTTPException(
-            detail=f"There was more than one document identified by {import_id_or_slug}. This should not happen!!!",
+            detail=(
+                f"There was more than one document identified by {import_id_or_slug}. "
+                "This should not happen!!!"
+            ),
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
         )
 
     db.commit()
     db.refresh(existing_doc)
     _LOGGER.info(
-        "update_document complete",
+        "Call to update_document complete",
         extra={
             "props": {
+                "superuser_email": current_user.email,
                 "num_changed": num_changed,
                 "import_id": existing_doc.import_id,
                 "md5_sum": existing_doc.md5_sum,
